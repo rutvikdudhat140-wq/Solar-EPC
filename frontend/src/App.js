@@ -81,6 +81,8 @@ import HrmPermissionsPage from './pages/HrmPermissionsPage';
 import ProfilePage from './pages/ProfilePage';
 import TasksPage from './pages/TasksPage';
 import NotificationSystem from './components/NotificationSystem';
+import UserManagementPage from './pages/UserManagementPage';
+import TeamManagementPage from './pages/TeamManagementPage';
 
 
 
@@ -147,6 +149,8 @@ const PAGE_MAP = {
   documents: { component: DocumentPage, title: 'Documents' },
   profile: { component: ProfilePage, title: 'My Profile' },
   tasks: { component: TasksPage, title: 'Tasks' },
+  'user-management': { component: UserManagementPage, title: 'User Management' },
+  'team-management': { component: TeamManagementPage, title: 'Team Management' },
 };
 
 

@@ -467,11 +467,12 @@ export class LeadsService {
   private async assertValidStatusKey(statusKey: string | undefined, tenantId?: string): Promise<void> {
     if (!statusKey || statusKey === '') return;
 
-    const normalizedStatusKey = statusKey.toString().trim().toLowerCase();
+    // Normalize: lowercase, trim, replace spaces with underscores
+    const normalizedStatusKey = statusKey.toString().trim().toLowerCase().replace(/\s+/g, '_');
     if (!normalizedStatusKey) return;
     
     // Allow common lead status keys without DB validation
-    const commonStatusKeys = ['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost', 'estimate', 'survey', 'sitesurvey', 'site_survey'];
+    const commonStatusKeys = ['new', 'contacted', 'qualified', 'proposal', 'proposal_sent', 'negotiation', 'won', 'lost', 'estimate', 'survey', 'sitesurvey', 'site_survey'];
     if (commonStatusKeys.includes(normalizedStatusKey)) {
       return;
     }
@@ -587,8 +588,10 @@ export class LeadsService {
     const leadId = `LEAD-${Date.now()}`;
 
     const tid = tenantId && Types.ObjectId.isValid(tenantId) ? new Types.ObjectId(tenantId) : undefined;
-    if (!tid && !(user?.isSuperAdmin || user?.role?.toLowerCase() === 'superadmin')) {
-      throw new BadRequestException('Tenant context is required for creating leads');
+    // Allow lead creation without tenant context - tenantId is now optional
+    // This enables leads to be created even when tenant context is not available
+    if (!tid) {
+      Logger.log(`[create] Creating lead without tenant context`, 'LeadsService');
     }
 
     // Check for duplicate email within tenant
@@ -608,6 +611,9 @@ export class LeadsService {
 
     await this.assertValidStatusKey(createLeadDto.statusKey, tenantId);
     
+    // Normalize statusKey: replace spaces with underscores
+    const normalizedStatusKey = createLeadDto.statusKey?.toString().trim().toLowerCase().replace(/\s+/g, '_') || 'new';
+    
     const activities = [{
       type: 'created',
       ts: this.formatTimestamp(now),
@@ -619,7 +625,7 @@ export class LeadsService {
     const leadData: any = {
       ...createLeadDto,
       leadId,
-      statusKey: createLeadDto.statusKey || 'new',
+      statusKey: normalizedStatusKey,
       activities,
       created: now,
       lastContact: now,
@@ -2361,15 +2367,16 @@ export class LeadsService {
             });
             result.updated++;
           } else {
+            // Allow importing leads without tenant context
             if (!tid) {
-              throw new Error('Tenant ID is required for new leads');
+              Logger.log(`[importLeads] Importing lead without tenant context`, 'LeadsService');
             }
             const leadId = `LEAD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
             const now = new Date();
             const leadData: any = {
               ...normalizedData,
               leadId,
-              tenantId: tid,
+              tenantId: tid || undefined,
               createdBy: user?._id,
               created: now,
               lastContact: now,

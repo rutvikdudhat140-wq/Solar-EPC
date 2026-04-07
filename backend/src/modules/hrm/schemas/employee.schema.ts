@@ -43,6 +43,9 @@ export class Employee {
   @Prop({ default: '' })
   department!: string;
 
+  @Prop({ type: Types.ObjectId, ref: 'Department', required: false, index: true })
+  departmentId?: Types.ObjectId;
+
   @Prop({ type: String, index: true })
   roleId?: string;
 

@@ -99,6 +99,15 @@ export class InstallationController {
   }
 
   /**
+   * Get installation stats (alias for statistics - used by dashboard)
+   */
+  @Get('stats')
+  @RequirePermission('installation', 'view')
+  async getStats(@Request() req: AuthenticatedRequest) {
+    return this.installationService.getStatistics(this.getUserContext(req));
+  }
+
+  /**
    * Get single installation by ID
    */
   @Get(':id')
