@@ -2415,10 +2415,10 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
           {showSummaryCards && (
             <>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <KPICard className="glass-card bg-white" label="Total Revenue" value={fmt(revenueCurrent)} sub="From invoices" icon={TrendingUp} variant="emerald" />
+                <KPICard className="glass-card bg-white" label="Total Revenue" value={fmt(revenueCurrent)} sub="From invoices" icon={TrendingUp} variant="indigo" />
                 <KPICard className="glass-card bg-white" label="Cash Position" value={fmt(cashPosition)} sub="Collected - Payables" icon={IndianRupee} variant="blue" />
                 <KPICard className="glass-card bg-white" label="Receivables" value={fmt(receivables)} sub="Outstanding" icon={Clock} variant="amber" />
-                <KPICard className="glass-card bg-white" label="Payables" value={fmt(payablesTotal)} sub="Due" icon={TrendingDown} variant="red" />
+                <KPICard className="glass-card bg-white" label="Payables" value={fmt(payablesTotal)} sub="Due" icon={TrendingDown} variant="emerald" />
               </div>
               <div className="space-y-2">
                 <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Cashflow Summary</p>

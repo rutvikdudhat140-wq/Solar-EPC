@@ -111,7 +111,7 @@ const DashboardKPI = ({ title, value, change, icon: Icon, color, subtitle, trend
     '#f59e0b': 'amber',
     '#ef4444': 'red',
     '#8b5cf6': 'purple',
-    '#06b6d4': 'indigo'
+    '#6366f1': 'indigo'
   };
   const variant = colorMap[color] || 'blue';
 
@@ -1855,22 +1855,38 @@ const CRMPage = ({ onNavigate }) => {
       console.log('[ASSIGN] Roles count:', rolesMapped.length);
       setRoles(rolesMapped);
 
-      // Fetch all employees upfront
-      const employeesResult = await leadsApi.getAllEmployees();
-      const employeesBody = employeesResult?.data ?? employeesResult;
-      const employeesPayload = employeesBody?.success === true && employeesBody?.data != null ? employeesBody.data : employeesBody;
-      const employeesData = employeesPayload?.data ?? employeesPayload ?? [];
-      console.log('[ASSIGN] Fetched employees:', employeesData);
-      setAllEmployees(Array.isArray(employeesData) ? employeesData : []);
+      // Fetch all HRM employees when modal opens
+      try {
+        const employeesResult = await leadsApi.getAllEmployees();
+        console.log('[ASSIGN] HRM Employees API response:', employeesResult);
+        
+        let employeesData = [];
+        if (Array.isArray(employeesResult)) {
+          employeesData = employeesResult;
+        } else if (employeesResult?.success === true && Array.isArray(employeesResult?.data)) {
+          employeesData = employeesResult.data;
+        } else if (employeesResult?.data?.data && Array.isArray(employeesResult.data.data)) {
+          employeesData = employeesResult.data.data;
+        } else if (employeesResult?.data && Array.isArray(employeesResult.data)) {
+          employeesData = employeesResult.data;
+        } else if (typeof employeesResult === 'object' && employeesResult !== null) {
+          employeesData = Object.values(employeesResult);
+        }
+        
+        console.log('[ASSIGN] Parsed employees:', employeesData);
+        setAllEmployees(Array.isArray(employeesData) ? employeesData : []);
+      } catch (empErr) {
+        console.error('[ASSIGN] Failed to fetch employees:', empErr);
+        setAllEmployees([]);
+      }
 
-      if (rolesData.length === 0) {
+      if (rolesMapped.length === 0) {
         console.warn('[ASSIGN] No roles found in system');
       }
 
     } catch (err) {
-      console.error('Failed to fetch roles/employees:', err);
+      console.error('Failed to fetch roles:', err);
       setRoles([]);
-      setAllEmployees([]);
     } finally {
       setRolesLoading(false);
     }
@@ -1924,7 +1940,7 @@ const CRMPage = ({ onNavigate }) => {
 
     if (!roleId) return;
 
-    // Filter employees by selected role ID
+    // Filter employees from allEmployees by selected role (client-side filtering)
     try {
       setUsersLoading(true);
 
@@ -1937,37 +1953,37 @@ const CRMPage = ({ onNavigate }) => {
         : null;
       const selectedRoleNameLower = String(selectedRoleObj?.name || selectedRoleObj?.label || '').toLowerCase();
 
-      // Build dropdown-ready list of employees whose role matches the selected role
+      console.log('[ASSIGN] Selected role name (lowercase):', selectedRoleNameLower);
+
+      // Filter employees whose role matches the selected role
       const filtered = allEmployees.reduce((acc, emp) => {
-        const empRoleRaw = emp?.roleId;
-        const candidates = new Set(
-          [
-            empRoleRaw,
-            empRoleRaw?._id,
-            empRoleRaw?.id,
-            empRoleRaw?.roleId,
-            empRoleRaw?.label,
-            empRoleRaw?.name,
-          ]
-            .filter(Boolean)
-            .map((v) => String(v).toLowerCase())
-        );
+        // Get employee role from various possible fields
+        const empRole = emp?.role || emp?.roleId || emp?.roleName || emp?.user?.role || '';
+        const empRoleLower = String(empRole).toLowerCase();
+        
+        // Check if employee role matches selected role (by ID or name)
+        const matches = 
+          empRoleLower === selectedRoleLower || 
+          empRoleLower === selectedRoleNameLower ||
+          empRoleLower.includes(selectedRoleNameLower) ||
+          selectedRoleNameLower.includes(empRoleLower);
 
-        const matches =
-          candidates.has(selectedRoleLower) ||
-          (selectedRoleNameLower ? candidates.has(selectedRoleNameLower) : false);
-
-        const empName = `${emp?.firstName || ''} ${emp?.lastName || ''}`.trim() || emp?.email;
+        // Build employee name from available fields (prioritize API's name field)
+        const empName = emp?.name || 
+          `${emp?.firstName || emp?.first_name || ''} ${emp?.lastName || emp?.last_name || ''}`.trim() || 
+          emp?.email?.split('@')[0] || 
+          'Unknown';
+        
         console.log(
-          `[ASSIGN] Employee: ${empName}, emp.roleId: ${JSON.stringify(empRoleRaw)}, matches: ${matches}`
+          `[ASSIGN] Employee: ${empName}, emp.role: ${empRole}, matches: ${matches}`
         );
 
         if (!matches) return acc;
 
-        const empId = emp?._id || emp?.id;
+        const empId = emp?._id || emp?.id || emp?.userId || emp?.user?._id;
         if (!empId) return acc;
 
-        acc.push({ ...emp, _id: empId, name: empName });
+        acc.push({ ...emp, _id: String(empId), name: empName });
         return acc;
       }, []);
 

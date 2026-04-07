@@ -369,7 +369,7 @@ const ServiceDashboardPage = ({ onNavigate }) => {
           value={dynamicTicketStats.total}
           icon={Headphones}
           sub={`${dynamicTicketStats.openTickets} open now`}
-          variant="blue"
+          variant="indigo"
         />
         <KPICard
           label="Open Tickets"
@@ -380,23 +380,12 @@ const ServiceDashboardPage = ({ onNavigate }) => {
           variant="amber"
         />
         <KPICard
-          label="Scheduled"
-          value={dynamicVisitStats.scheduled}
-          icon={Calendar}
-          sub={`${dynamicVisitStats.total} total visits`}
-          variant="purple"
-        />
-        <KPICard
           label="In Progress"
           value={dynamicTicketStats.inProgress}
           icon={Clock}
           sub="Being handled"
-          variant="indigo"
+          variant="blue"
         />
-      </div>
-
-      {/* Second Row Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KPICard
           label="Resolved"
           value={dynamicTicketStats.resolved}
@@ -405,19 +394,23 @@ const ServiceDashboardPage = ({ onNavigate }) => {
           trendUp={true}
           variant="emerald"
         />
+      </div>
+
+      {/* Second Row Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KPICard
           label="Closed"
           value={dynamicTicketStats.closed}
           icon={XCircle}
           sub="Completed"
-          variant="indigo"
+          variant="emerald"
         />
         <KPICard
           label="AMC Contracts"
           value={dynamicAmcStats.total}
           icon={Shield}
           sub={`${dynamicAmcStats.active} active contracts`}
-          variant="purple"
+          variant="indigo"
         />
         <KPICard
           label="Total Visits"
@@ -425,6 +418,13 @@ const ServiceDashboardPage = ({ onNavigate }) => {
           icon={Activity}
           sub={`${dynamicVisitStats.scheduled} scheduled`}
           variant="blue"
+        />
+        <KPICard
+          label="Scheduled"
+          value={dynamicVisitStats.scheduled}
+          icon={Calendar}
+          sub={`${dynamicVisitStats.total} total visits`}
+          variant="amber"
         />
       </div>
 
