@@ -20,7 +20,7 @@ const PayrollViewModal = ({ payroll, onClose }) => {
   const initial = `${emp.firstName?.[0] || ''}${emp.lastName?.[0] || ''}`.toUpperCase() || 'P';
   const monthName = new Date(2000, (payroll.month || 1) - 1, 1).toLocaleString('default', { month: 'long' });
   const net = payroll.netSalary || (payroll.baseSalary + (payroll.allowances||0) + (payroll.bonus||0) - (payroll.deductions||0));
-  const stCls = { pending: 'bg-amber-500/10 text-amber-500', paid: 'bg-emerald-500/10 text-emerald-500', failed: 'bg-red-500/10 text-red-500' };
+  const stCls = { pending: 'bg-amber-500/10 text-amber-500', paid: 'bg-[var(--green)]/10 text-[var(--green)]', failed: 'bg-red-500/10 text-red-500' };
   const BreakItem = ({ label, value, color, bold }) => (
     <div className={`flex items-center justify-between py-2.5 border-b border-[var(--border-muted)] last:border-0 ${bold ? 'font-bold' : ''}`}>
       <span className="text-sm text-[var(--text-secondary)]">{label}</span>
@@ -33,7 +33,7 @@ const PayrollViewModal = ({ payroll, onClose }) => {
     }>
       {/* Hero */}
       <div className="relative overflow-hidden rounded-xl mb-4 p-5 bg-gradient-to-br from-emerald-500/15 via-emerald-500/5 to-transparent border border-[var(--border-base)]">
-        <div className="absolute top-0 right-0 w-28 h-28 rounded-full bg-emerald-500/10 -translate-y-6 translate-x-6" />
+        <div className="absolute top-0 right-0 w-28 h-28 rounded-full bg-[var(--green)]/10 -translate-y-6 translate-x-6" />
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold text-lg shadow-lg">{initial}</div>
           <div className="flex-1">
@@ -45,7 +45,7 @@ const PayrollViewModal = ({ payroll, onClose }) => {
             </div>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold text-emerald-500">₹{Number(net).toLocaleString()}</p>
+            <p className="text-2xl font-bold text-[var(--green)]">₹{Number(net).toLocaleString()}</p>
             <p className="text-xs text-[var(--text-faint)]">Net Salary</p>
           </div>
         </div>
@@ -59,7 +59,7 @@ const PayrollViewModal = ({ payroll, onClose }) => {
         <BreakItem label="Deductions" value={payroll.deductions} color="text-red-500" />
         <div className="mt-2 pt-2 flex items-center justify-between border-t-2 border-[var(--border-base)]">
           <span className="text-sm font-bold text-[var(--text-primary)]">Net Salary</span>
-          <span className="text-xl font-bold text-emerald-500">₹{Number(net).toLocaleString()}</span>
+          <span className="text-xl font-bold text-[var(--green)]">₹{Number(net).toLocaleString()}</span>
         </div>
       </div>
       {payroll.createdAt && (
@@ -320,7 +320,7 @@ const PayrollPage = () => {
     columns.netSalary && {
       key: 'netSalary',
       header: 'Net Salary',
-      render: (val) => <span className="font-bold text-emerald-600">₹{val?.toLocaleString() || 0}</span>,
+      render: (val) => <span className="font-bold text-[var(--green)]">₹{val?.toLocaleString() || 0}</span>,
     },
     columns.status && {
       key: 'paymentStatus',
@@ -328,7 +328,7 @@ const PayrollPage = () => {
       render: (val) => {
         const colors = {
           pending: 'bg-amber-500/10 text-amber-500',
-          paid: 'bg-emerald-500/10 text-emerald-500',
+          paid: 'bg-[var(--green)]/10 text-[var(--green)]',
           failed: 'bg-red-500/10 text-red-500',
         };
         return (
@@ -595,7 +595,7 @@ const PayrollPage = () => {
           </div>
           <div className="mt-4 p-3 rounded-lg bg-[var(--bg-elevated)] border-t-2 border-[var(--primary)]">
             <p className="text-sm text-[var(--text-muted)]">Updated Net Salary</p>
-            <p className="text-2xl font-bold text-emerald-500">
+            <p className="text-2xl font-bold text-[var(--green)]">
               ₹{(payrollForm.baseSalary + payrollForm.allowances + payrollForm.bonus - payrollForm.deductions).toLocaleString()}
             </p>
           </div>

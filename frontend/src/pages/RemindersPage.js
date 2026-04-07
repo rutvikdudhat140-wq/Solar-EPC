@@ -432,7 +432,7 @@ const RemindersPage = () => {
                                     className={`w-12 h-6 rounded-full transition-colors ${settings.voiceAlerts ? 'bg-[var(--primary)]' : 'bg-[var(--bg-overlay)]'
                                         }`}
                                 >
-                                    <div className={`w-5 h-5 bg-white rounded-full transition-transform ${settings.voiceAlerts ? 'translate-x-6' : 'translate-x-0.5'
+                                    <div className={`w-5 h-5 bg-[var(--bg-surface)] rounded-full transition-transform ${settings.voiceAlerts ? 'translate-x-6' : 'translate-x-0.5'
                                         }`} />
                                 </button>
                             </div>
@@ -444,7 +444,7 @@ const RemindersPage = () => {
                                     className={`w-12 h-6 rounded-full transition-colors ${settings.smsNotifications ? 'bg-[var(--primary)]' : 'bg-[var(--bg-overlay)]'
                                         }`}
                                 >
-                                    <div className={`w-5 h-5 bg-white rounded-full transition-transform ${settings.smsNotifications ? 'translate-x-6' : 'translate-x-0.5'
+                                    <div className={`w-5 h-5 bg-[var(--bg-surface)] rounded-full transition-transform ${settings.smsNotifications ? 'translate-x-6' : 'translate-x-0.5'
                                         }`} />
                                 </button>
                             </div>
@@ -456,7 +456,7 @@ const RemindersPage = () => {
                                     className={`w-12 h-6 rounded-full transition-colors ${settings.notificationSound ? 'bg-[var(--primary)]' : 'bg-[var(--bg-overlay)]'
                                         }`}
                                 >
-                                    <div className={`w-5 h-5 bg-white rounded-full transition-transform ${settings.notificationSound ? 'translate-x-6' : 'translate-x-0.5'
+                                    <div className={`w-5 h-5 bg-[var(--bg-surface)] rounded-full transition-transform ${settings.notificationSound ? 'translate-x-6' : 'translate-x-0.5'
                                         }`} />
                                 </button>
                             </div>

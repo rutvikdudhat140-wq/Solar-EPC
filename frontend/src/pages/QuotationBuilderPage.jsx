@@ -23,7 +23,7 @@ import {
 import api from '../lib/apiClient';
 import { toast } from '../components/ui/Toast';
 import { Button } from '../components/ui/Button';
-import { Input, Select, Textarea, FormField } from '../components/ui/Input';
+import { Input, Textarea, FormField } from '../components/ui/Input';
 import { PageHeader } from '../components/ui/PageHeader';
 import { CURRENCY } from '../config/app.config';
 import { cn } from '../lib/utils';
@@ -364,7 +364,7 @@ const QuotationBuilderPage = () => {
     }
   };
 
-  if (loading) return <div className="flex h-96 items-center justify-center"><Loader2 className="animate-spin text-orange-500" size={40} /></div>;
+  if (loading) return <div className="flex h-96 items-center justify-center"><Loader2 className="animate-spin text-[var(--primary)]" size={40} /></div>;
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-20 animate-fade-in">
@@ -384,15 +384,16 @@ const QuotationBuilderPage = () => {
         <div className="lg:col-span-2 space-y-6">
           
           {/* Section 1: Customer */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div className="flex items-center gap-2 mb-6 text-orange-600">
+          <div className="bg-[var(--bg-surface)] rounded-2xl shadow-sm border border-[var(--border-base)] p-6">
+            <div className="flex items-center gap-2 mb-6 text-[var(--primary)]">
               <User size={20} />
               <h2 className="font-bold text-lg">Customer Selection</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField label="Existing Customer / Lead">
                 <select 
-                  className="w-full h-10 px-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full h-10 px-3 border border-[var(--border-base)] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[var(--primary)]/20 text-[var(--text-primary)]"
+                  style={{ backgroundColor: 'var(--bg-elevated)' }}
                   value={selectedCustomerId}
                   onChange={(e) => setSelectedCustomerId(e.target.value)}
                 >
@@ -407,7 +408,7 @@ const QuotationBuilderPage = () => {
                   ))}
                 </select>
                 {customers.length === 0 && !loading && (
-                  <p className="text-xs text-orange-500 mt-1">No leads found. Please add leads in CRM first.</p>
+                  <p className="text-xs text-[var(--primary)] mt-1">No leads found. Please add leads in CRM first.</p>
                 )}
               </FormField>
               <FormField label="Customer Name">
@@ -458,8 +459,8 @@ const QuotationBuilderPage = () => {
           </div>
 
           {/* Section 2: Project Information & Quick Material Add */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <div className="flex items-center gap-2 mb-6 text-orange-600">
+          <div className="bg-[var(--bg-surface)] rounded-2xl shadow-sm border border-[var(--border-base)] p-6">
+            <div className="flex items-center gap-2 mb-6 text-[var(--primary)]">
               <Zap size={20} />
               <h2 className="font-bold text-lg">Project Information</h2>
             </div>
@@ -525,9 +526,9 @@ const QuotationBuilderPage = () => {
             </div>
 
             {/* QUICK MATERIAL ADD - AS REQUESTED */}
-            <div className="pt-6 border-t border-gray-50">
+            <div className="pt-6 border-t border-[var(--border-muted)]">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Quick Add Material</h3>
+                <h3 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-wider">Quick Add Material</h3>
                 <Button type="button" variant="secondary" size="sm" onClick={handleAddMaterial} className="flex items-center gap-1">
                   <Plus size={16} /> Add More Rows
                 </Button>
@@ -535,11 +536,12 @@ const QuotationBuilderPage = () => {
               
               <div className="space-y-4">
                 {quotation.materials.map((m, idx) => (
-                  <div key={m.itemId + idx} className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-gray-50/50 border border-gray-100 items-end">
+                  <div key={m.itemId + idx} className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 rounded-xl bg-[var(--bg-elevated)]/50 border border-[var(--border-base)] items-end">
                     <div className="md:col-span-2">
                       <FormField label="Item Name">
                         <select 
-                          className="w-full h-10 px-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-orange-500/20"
+                          className="w-full h-10 px-3 border border-[var(--border-base)] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[var(--primary)]/20 text-[var(--text-primary)]"
+                          style={{ backgroundColor: 'var(--bg-surface)' }}
                           value={m.itemId.startsWith('TEMP-') ? '' : m.itemId}
                           onChange={(e) => handleSelectInventoryItem(idx, e.target.value)}
                         >
@@ -553,7 +555,8 @@ const QuotationBuilderPage = () => {
                     <div>
                       <FormField label="Category">
                         <select 
-                          className="w-full h-10 px-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-orange-500/20"
+                          className="w-full h-10 px-3 border border-[var(--border-base)] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[var(--primary)]/20 text-[var(--text-primary)]"
+                          style={{ backgroundColor: 'var(--bg-surface)' }}
                           value={m.category}
                           onChange={(e) => handleUpdateMaterial(idx, 'category', e.target.value)}
                         >
@@ -567,7 +570,8 @@ const QuotationBuilderPage = () => {
                     <div>
                       <FormField label="Unit">
                         <select 
-                          className="w-full h-10 px-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-orange-500/20"
+                          className="w-full h-10 px-3 border border-[var(--border-base)] rounded-xl text-sm outline-none focus:ring-2 focus:ring-[var(--primary)]/20 text-[var(--text-primary)]"
+                          style={{ backgroundColor: 'var(--bg-surface)' }}
                           value={m.unit}
                           onChange={(e) => handleUpdateMaterial(idx, 'unit', e.target.value)}
                         >
@@ -590,7 +594,7 @@ const QuotationBuilderPage = () => {
                       </div>
                       <button 
                         onClick={() => handleRemoveMaterial(idx)}
-                        className="mb-2 p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                        className="mb-2 p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--red)] hover:bg-[var(--red)]/10 transition-all"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -598,8 +602,8 @@ const QuotationBuilderPage = () => {
                   </div>
                 ))}
                 {quotation.materials.length === 0 && (
-                  <div className="text-center py-8 border-2 border-dashed border-gray-100 rounded-2xl">
-                    <p className="text-sm text-gray-400">No items added yet. Click "Add More Rows" to start.</p>
+                  <div className="text-center py-8 border-2 border-dashed border-[var(--border-base)] rounded-2xl">
+                    <p className="text-sm text-[var(--text-muted)]">No items added yet. Click "Add More Rows" to start.</p>
                   </div>
                 )}
               </div>
@@ -607,28 +611,28 @@ const QuotationBuilderPage = () => {
           </div>
 
           {/* Section 3: Detailed Table (Summary View) */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 overflow-hidden">
-            <div className="flex items-center gap-2 mb-6 text-orange-600">
+          <div className="bg-[var(--bg-surface)] rounded-2xl shadow-sm border border-[var(--border-base)] p-6 overflow-hidden">
+            <div className="flex items-center gap-2 mb-6 text-[var(--primary)]">
               <Package size={20} />
               <h2 className="font-bold text-lg">Material Breakdown</h2>
             </div>
             
             <div className="overflow-x-auto -mx-6">
               <table className="w-full text-left">
-                <thead className="bg-gray-50 border-y border-gray-100">
+                <thead className="bg-[var(--bg-elevated)] border-y border-[var(--border-base)]">
                   <tr>
-                    <th className="px-6 py-3 text-[10px] font-bold text-gray-500 uppercase">Description</th>
-                    <th className="px-6 py-3 text-[10px] font-bold text-gray-500 uppercase text-center w-20">Qty</th>
-                    <th className="px-6 py-3 text-[10px] font-bold text-gray-500 uppercase text-right">Unit Price</th>
-                    <th className="px-6 py-3 text-[10px] font-bold text-gray-500 uppercase text-right">Total</th>
+                    <th className="px-6 py-3 text-[10px] font-bold text-[var(--text-muted)] uppercase">Description</th>
+                    <th className="px-6 py-3 text-[10px] font-bold text-[var(--text-muted)] uppercase text-center w-20">Qty</th>
+                    <th className="px-6 py-3 text-[10px] font-bold text-[var(--text-muted)] uppercase text-right">Unit Price</th>
+                    <th className="px-6 py-3 text-[10px] font-bold text-[var(--text-muted)] uppercase text-right">Total</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {quotation.materials.map((m, idx) => (
-                    <tr key={m.itemId + idx} className="hover:bg-gray-50/50">
+                    <tr key={m.itemId + idx} className="hover:bg-[var(--bg-elevated)]/50">
                       <td className="px-6 py-4">
-                        <p className="text-sm font-semibold text-gray-800">{m.name || 'Unnamed Item'}</p>
-                        <p className="text-[10px] text-gray-400 uppercase">{m.category} • {m.unit}</p>
+                        <p className="text-sm font-semibold text-[var(--text-primary)]">{m.name || 'Unnamed Item'}</p>
+                        <p className="text-[10px] text-[var(--text-muted)] uppercase">{m.category} • {m.unit}</p>
                       </td>
                       <td className="px-6 py-4 text-center">
                         <span className="text-sm font-medium">{m.quantity}</span>
@@ -642,7 +646,7 @@ const QuotationBuilderPage = () => {
                         />
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <p className="text-sm font-bold text-gray-800">{CURRENCY.format(m.totalPrice)}</p>
+                        <p className="text-sm font-bold text-[var(--text-primary)]">{CURRENCY.format(m.totalPrice)}</p>
                       </td>
                     </tr>
                   ))}
@@ -655,15 +659,15 @@ const QuotationBuilderPage = () => {
         {/* Right Column: Summary */}
         <div className="space-y-6">
           
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
-            <div className="flex items-center gap-2 mb-6 text-orange-600">
+          <div className="bg-[var(--bg-surface)] rounded-2xl shadow-sm border border-[var(--border-base)] p-6 sticky top-24">
+            <div className="flex items-center gap-2 mb-6 text-[var(--primary)]">
               <Calculator size={20} />
               <h2 className="font-bold text-lg">Price Summary</h2>
             </div>
             
             <div className="space-y-4">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Material Total</span>
+                <span className="text-[var(--text-muted)]">Material Total</span>
                 <span className="font-semibold">{CURRENCY.format(totals.materialTotal)}</span>
               </div>
               
@@ -695,19 +699,19 @@ const QuotationBuilderPage = () => {
                 </FormField>
               </div>
 
-              <div className="flex justify-between text-sm border-t border-gray-50 pt-3">
-                <span className="text-gray-600 font-medium">Subtotal</span>
+              <div className="flex justify-between text-sm border-t border-[var(--border-muted)] pt-3">
+                <span className="text-[var(--text-secondary)] font-medium">Subtotal</span>
                 <span className="font-bold">{CURRENCY.format(totals.subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">GST ({quotation.gstPercentage}%)</span>
-                <span className="font-semibold text-amber-600">{CURRENCY.format(totals.tax)}</span>
+                <span className="text-[var(--text-muted)]">GST ({quotation.gstPercentage}%)</span>
+                <span className="font-semibold text-[var(--amber)]">{CURRENCY.format(totals.tax)}</span>
               </div>
               
-              <div className="pt-4 border-t border-dashed border-gray-100">
+              <div className="pt-4 border-t border-dashed border-[var(--border-base)]">
                 <div className="flex justify-between items-end">
-                  <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Grand Total</span>
-                  <span className="text-2xl font-black text-orange-600">
+                  <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest">Grand Total</span>
+                  <span className="text-2xl font-black text-[var(--primary)]">
                     {new Intl.NumberFormat('en-IN', {
                       style: 'currency',
                       currency: 'INR',
@@ -719,7 +723,7 @@ const QuotationBuilderPage = () => {
 
               <div className="pt-6 space-y-3">
                 <Button 
-                  className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-100"
+                  className="w-full h-12 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white shadow-lg shadow-[var(--primary)]/20"
                   onClick={() => handleSave('Sent')}
                   disabled={saving}
                 >

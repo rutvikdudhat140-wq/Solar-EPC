@@ -1668,8 +1668,8 @@ const ProjectPage = () => {
                         </div>
                         <div className="w-16 text-[10px] text-right">
                           <span className="text-blue-600 font-semibold">{active}</span>
-                          <span className="text-gray-400 mx-1">|</span>
-                          <span className="text-emerald-600 font-semibold">{completed}</span>
+                          <span className="text-[var(--text-muted)] mx-1">|</span>
+                          <span className="text-[var(--green)] font-semibold">{completed}</span>
                         </div>
                       </div>
                     );
@@ -2296,7 +2296,7 @@ const ProjectPage = () => {
                   <div className={`w-2 h-2 rounded-full mt-1 ${log.type === 'create' ? 'bg-green-500' :
                     log.type === 'update' ? 'bg-blue-500' :
                       log.type === 'milestone' ? 'bg-purple-500' :
-                        'bg-gray-500'
+                        'bg-[var(--primary)]'
                     }`} />
                   <div className="flex-1">
                     <div className="text-xs font-medium text-[var(--text-primary)]">{log.action}</div>

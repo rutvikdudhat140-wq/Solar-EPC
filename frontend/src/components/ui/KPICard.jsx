@@ -49,8 +49,8 @@ export const KPICard = ({
         emerald: {
             accent: '#22c55e',
             gradient: 'from-emerald-100 to-green-200',
-            iconBg: 'bg-emerald-100',
-            iconColor: 'text-emerald-600',
+            iconBg: 'bg-[var(--green)]/10',
+            iconColor: 'text-[var(--green)]',
         },
         blue: {
             accent: '#3b82f6',
@@ -61,14 +61,14 @@ export const KPICard = ({
         amber: {
             accent: '#f59e0b',
             gradient: 'from-amber-100 to-orange-200',
-            iconBg: 'bg-amber-100',
-            iconColor: 'text-amber-600',
+            iconBg: 'bg-[var(--amber)]/10',
+            iconColor: 'text-[var(--amber)]',
         },
         red: {
             accent: '#ef4444',
             gradient: 'from-red-100 to-rose-200',
-            iconBg: 'bg-red-100',
-            iconColor: 'text-red-600',
+            iconBg: 'bg-[var(--red)]/10',
+            iconColor: 'text-[var(--red)]',
         },
         purple: {
             accent: '#8b5cf6',
@@ -102,11 +102,11 @@ export const KPICard = ({
             >
                 <div className="flex items-start justify-between mb-4">
                     <div className={cn('p-3 rounded-xl', v.iconBg)}>
-                        <div className="w-[22px] h-[22px] bg-gray-300 rounded" />
+                        <div className="w-[22px] h-[22px] bg-[var(--bg-elevated)] rounded" />
                     </div>
                 </div>
-                <div className="h-4 w-20 bg-gray-300 rounded mb-2" />
-                <div className="h-8 w-32 bg-gray-300 rounded" />
+                <div className="h-4 w-20 bg-[var(--bg-elevated)] rounded mb-2" />
+                <div className="h-8 w-32 bg-[var(--bg-elevated)] rounded" />
             </div>
         );
     }
@@ -165,36 +165,27 @@ export const KPICard = ({
 
 
 
-                {trend && (
-
+{trend && (
                     <div className="flex items-center gap-1">
-
                         {trendUp
-
-                            ? <ArrowUpRight size={14} className="text-emerald-500" />
-
-                            : <ArrowDownRight size={14} className="text-red-500" />}
-
-                        <span className={cn('text-xs font-semibold', trendUp ? 'text-emerald-500' : 'text-red-500')}>
-
+                            ? <ArrowUpRight size={14} className="text-[var(--green)]" />
+                            : <ArrowDownRight size={14} className="text-[var(--red)]" />}
+                        <span className={cn('text-xs font-semibold', trendUp ? 'text-[var(--green)]' : 'text-[var(--red)]')}>
                             {trend}
-
                         </span>
-
                     </div>
-
                 )}
 
             </div>
 
             <div className="relative z-10">
-                <div className="text-sm font-semibold text-gray-700 mb-1">
+                <div className="text-sm font-semibold text-[var(--text-secondary)] mb-1">
                     {label}
                 </div>
-                <div className="text-3xl font-bold text-gray-900">
+                <div className="text-3xl font-bold text-[var(--text-primary)]">
                     {value}
                 </div>
-                {sub && <div className="text-xs text-gray-500 mt-1">{sub}</div>}
+                {sub && <div className="text-xs text-[var(--text-muted)] mt-1">{sub}</div>}
             </div>
         </div>
     );

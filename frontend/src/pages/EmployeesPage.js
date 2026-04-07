@@ -21,7 +21,7 @@ import { api } from '../lib/apiClient';
 const EmployeeViewModal = ({ employee, onClose, onEdit, inline = false }) => {
   if (!employee) return null;
   const initial = `${employee.firstName?.[0] || ''}${employee.lastName?.[0] || ''}`.toUpperCase();
-  const statusColor = employee.status === 'active' ? 'text-emerald-500 bg-emerald-500/10' : 'text-red-500 bg-red-500/10';
+  const statusColor = employee.status === 'active' ? 'text-[var(--green)] bg-[var(--green)]/10' : 'text-red-500 bg-red-500/10';
   const InfoRow = ({ icon: Icon, label, value, accent }) => (
     <div className="flex items-start gap-3 py-2.5 border-b border-[var(--border-muted)] last:border-0">
       <div className="w-8 h-8 rounded-lg bg-[var(--bg-elevated)] flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -489,7 +489,7 @@ const EmployeesPage = () => {
       header: 'Status',
       render: (val) => (
         <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${val === 'active'
-          ? 'bg-emerald-500/10 text-emerald-600'
+          ? 'bg-[var(--green)]/10 text-[var(--green)]'
           : 'bg-red-500/10 text-red-600'
           }`}>
           {val}

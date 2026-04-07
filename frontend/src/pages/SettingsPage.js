@@ -51,7 +51,7 @@ const Toggle = ({ on, onChange, size = 'md', disabled = false }) => {
             disabled={disabled}
             className={`relative inline-flex items-center rounded-full transition-all duration-200 focus:outline-none ${w} ${on ? 'bg-[var(--accent)]' : 'bg-[var(--bg-overlay)]'} ${disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
         >
-            <span className={`inline-block ${k} rounded-full bg-white shadow transform transition-transform duration-200 ml-0.5 ${t}`} />
+            <span className={`inline-block ${k} rounded-full bg-[var(--bg-surface)] shadow transform transition-transform duration-200 ml-0.5 ${t}`} />
         </button>
     );
 };
@@ -1748,7 +1748,7 @@ const UserPermissionsPanel = () => {
                 <button onClick={() => cycleOverride(moduleId, actionId)}
                     title={`Base: ${base ? '✓' : '✗'} | Override: ${override === null ? 'none' : override ? 'grant' : 'revoke'}\nClick to cycle: default → grant → revoke → default`}
                     className={`relative w-7 h-7 rounded-md mx-auto flex items-center justify-center border transition-all
-                        ${isGrant ? 'border-emerald-500/50 bg-emerald-500/20 text-emerald-400' :
+                        ${isGrant ? 'border-[var(--green)]/50 bg-[var(--green)]/20 text-[var(--green)]' :
                             isRevoke ? 'border-red-500/50 bg-red-500/10 text-red-400' :
                                 effective ? 'border-[var(--accent)]/30 bg-[var(--accent)]/10 text-[var(--accent)]' :
                                     'border-[var(--border-base)] text-[var(--text-faint)] hover:border-[var(--accent)]/30'}`}>
@@ -1861,7 +1861,7 @@ const UserPermissionsPanel = () => {
                             <div className="flex flex-wrap gap-3 text-[10px] px-1">
                                 <div className="flex items-center gap-1.5"><div className="w-4 h-4 rounded border border-[var(--accent)]/30 bg-[var(--accent)]/10 flex items-center justify-center"><Check size={8} className="text-[var(--accent)] opacity-60" /></div><span className="text-[var(--text-faint)]">Role default (granted)</span></div>
                                 <div className="flex items-center gap-1.5"><div className="w-4 h-4 rounded border border-[var(--border-base)] flex items-center justify-center"><X size={8} className="text-[var(--text-faint)] opacity-30" /></div><span className="text-[var(--text-faint)]">Role default (denied)</span></div>
-                                <div className="flex items-center gap-1.5 relative"><div className="w-4 h-4 rounded border border-emerald-500/50 bg-emerald-500/20 flex items-center justify-center"><Check size={8} className="text-emerald-400" /></div><div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-emerald-400" /><span className="text-[var(--text-faint)] ml-2">Override: force grant</span></div>
+                                <div className="flex items-center gap-1.5 relative"><div className="w-4 h-4 rounded border border-[var(--green)]/50 bg-[var(--green)]/20 flex items-center justify-center"><Check size={8} className="text-[var(--green)]" /></div><div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[var(--green)]" /><span className="text-[var(--text-faint)] ml-2">Override: force grant</span></div>
                                 <div className="flex items-center gap-1.5 relative"><div className="w-4 h-4 rounded border border-red-500/50 bg-red-500/10 flex items-center justify-center"><X size={8} className="text-red-400" /></div><div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-red-400" /><span className="text-[var(--text-faint)] ml-2">Override: force revoke</span></div>
                                 <span className="text-[var(--text-faint)] ml-auto italic">Click cell to cycle: default → grant → revoke</span>
                             </div>

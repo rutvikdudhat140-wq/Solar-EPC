@@ -88,7 +88,7 @@ const COLUMNS = [
       const avail = (v || 0) - (row.reserved || 0);
       return (
         <div className="flex items-center gap-2 min-w-[80px]">
-          <span className="text-xs font-bold text-emerald-400">{avail}</span>
+          <span className="text-xs font-bold text-[var(--green)]">{avail}</span>
           <Progress value={v > 0 ? Math.round((avail / v) * 100) : 0} className="h-1.5 w-16" />
         </div>
       );
@@ -122,7 +122,7 @@ const InvCard = ({ item, onDragStart, onClick }) => {
       <div className="grid grid-cols-2 gap-1 text-center">
         <div>
           <p className="text-[9px] text-[var(--text-faint)]">Available</p>
-          <p className="text-[11px] font-bold text-emerald-400">{available}</p>
+          <p className="text-[11px] font-bold text-[var(--green)]">{available}</p>
         </div>
         <div>
           <p className="text-[9px] text-[var(--text-faint)]">Reserved</p>
@@ -1583,7 +1583,7 @@ const InventoryPage = ({ onNavigate }) => {
       {activeTab === 'dashboard' && (
         <div className="space-y-6">
           {/* Welcome Banner */}
-          <div className="glass-card p-5 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border-blue-500/20">
+          <div className="glass-card p-5 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border-[var(--primary)]/20">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                 <LayoutDashboard size={24} className="text-white" />
@@ -1597,11 +1597,11 @@ const InventoryPage = ({ onNavigate }) => {
 
 {filteredInventoryForDashboard.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 px-4">
-              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                <Package size={32} className="text-gray-400" />
+              <div className="w-16 h-16 rounded-full bg-[var(--bg-elevated)] flex items-center justify-center mb-4">
+                <Package size={32} className="text-[var(--text-muted)]" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">No Data Available</h3>
-              <p className="text-sm text-gray-500 text-center max-w-md">
+              <h3 className="text-lg font-semibold text-[var(--text-secondary)] mb-2">No Data Available</h3>
+              <p className="text-sm text-[var(--text-muted)] text-center max-w-md">
                 No inventory data found for the selected time period. Try selecting a different month or click "All Time" to view all data.
               </p>
             </div>
@@ -2559,7 +2559,7 @@ const InventoryPage = ({ onNavigate }) => {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={(e) => { e.stopPropagation(); setViewingWarehouse(w); }}
-                            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-blue-500 hover:bg-blue-500/10"
+                            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10"
                             title="View"
                           >
                             <Eye size={14} />
@@ -2947,10 +2947,10 @@ const InventoryPage = ({ onNavigate }) => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowCategoryCards(v => !v)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${showCategoryCards ? 'bg-white border-gray-200 text-gray-700 shadow-sm' : 'bg-white border-gray-200 text-gray-700 shadow-sm'}`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${showCategoryCards ? 'bg-[var(--bg-surface)] border-[var(--border-base)] text-[var(--text-secondary)] shadow-sm' : 'bg-[var(--bg-surface)] border-[var(--border-base)] text-[var(--text-secondary)] shadow-sm'}`}
                 title={showCategoryCards ? 'Hide Cards' : 'Show Cards'}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="16" rx="1" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-muted)]"><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="16" rx="1" /></svg>
                 {showCategoryCards ? 'Hide Cards' : 'Show Cards'}
               </button>
               {selectedCategories.size > 0 && (
@@ -3036,26 +3036,26 @@ const InventoryPage = ({ onNavigate }) => {
               {categories.map((cat, index) => {
                 const catItems = uniqueBaseItems.filter(i => i.category === cat);
                 if (catItems.length === 0) return null;
-                const colors = ['bg-gradient-to-br from-emerald-100 to-emerald-200 border-emerald-200', 'bg-gradient-to-br from-blue-100 to-sky-200 border-blue-200', 'bg-gradient-to-br from-amber-100 to-orange-200 border-amber-200', 'bg-gradient-to-br from-rose-100 to-rose-200 border-rose-200', 'bg-gradient-to-br from-violet-100 to-purple-200 border-violet-200', 'bg-gradient-to-br from-cyan-100 to-teal-200 border-cyan-200', 'bg-gradient-to-br from-orange-100 to-orange-200 border-orange-200', 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-200'];
-                const iconColors = ['text-emerald-700', 'text-blue-700', 'text-amber-700', 'text-rose-700', 'text-violet-700', 'text-cyan-700', 'text-orange-700', 'text-pink-700'];
-                const bgColors = ['bg-emerald-200', 'bg-blue-200', 'bg-amber-200', 'bg-rose-200', 'bg-violet-200', 'bg-cyan-200', 'bg-orange-200', 'bg-pink-200'];
+                const colors = ['bg-gradient-to-br from-emerald-100 to-emerald-200 border-[var(--green)]/20', 'bg-gradient-to-br from-[var(--blue-bg)] to-[var(--cyan-bg)] border-[var(--blue)]/20', 'bg-gradient-to-br from-amber-100 to-orange-200 border-amber-200', 'bg-gradient-to-br from-rose-100 to-rose-200 border-rose-200', 'bg-gradient-to-br from-violet-100 to-purple-200 border-violet-200', 'bg-gradient-to-br from-cyan-100 to-teal-200 border-[var(--blue)]/20', 'bg-gradient-to-br from-orange-100 to-orange-200 border-orange-200', 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-200'];
+                const iconColors = ['text-[var(--green)]', 'text-[var(--blue)]', 'text-amber-700', 'text-rose-700', 'text-violet-700', 'text-[var(--blue)]', 'text-orange-700', 'text-pink-700'];
+                const bgColors = ['bg-[var(--green)]/20', 'bg-[var(--blue)]/20', 'bg-amber-200', 'bg-rose-200', 'bg-violet-200', 'bg-[var(--blue)]/20', 'bg-orange-200', 'bg-pink-200'];
                 return (
                   <div key={cat} className={`${colors[index % colors.length]} border rounded-xl p-4 flex flex-col gap-2 hover:shadow-md transition-all`}>
                     <div className="flex items-center justify-between">
                       <div className={`w-10 h-10 rounded-xl ${bgColors[index % bgColors.length]} flex items-center justify-center shadow-sm`}>
                         <Package size={20} className={iconColors[index % iconColors.length]} />
                       </div>
-                      <span className="text-xs font-medium text-gray-700">{catItems.length} items</span>
+                      <span className="text-xs font-medium text-[var(--text-secondary)]">{catItems.length} items</span>
                     </div>
-                    <span className="text-sm font-semibold text-gray-800">{cat}</span>
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">{cat}</span>
                     <div className="flex flex-wrap gap-1">
                       {catItems.slice(0, 3).map((item, idx) => (
-                        <span key={`${item.itemId}-${idx}`} className="text-[10px] px-2 py-1 bg-white/80 rounded text-gray-700 border border-white/30">
+                        <span key={`${item.itemId}-${idx}`} className="text-[10px] px-2 py-1 bg-[var(--bg-surface)]/80 rounded text-[var(--text-secondary)] border border-white/30">
                           {item.name || item.description}
                         </span>
                       ))}
                       {catItems.length > 3 && (
-                        <span className="text-[10px] px-2 py-1 text-gray-500">
+                        <span className="text-[10px] px-2 py-1 text-[var(--text-muted)]">
                           +{catItems.length - 3} more
                         </span>
                       )}
@@ -3130,7 +3130,7 @@ const InventoryPage = ({ onNavigate }) => {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={(e) => { e.stopPropagation(); setViewingCategory(cat); }}
-                            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-blue-500 hover:bg-blue-500/10"
+                            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10"
                             title="View"
                           >
                             <Eye size={14} />
@@ -3171,10 +3171,10 @@ const InventoryPage = ({ onNavigate }) => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowUnitCards(v => !v)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${showUnitCards ? 'bg-white border-gray-200 text-gray-700 shadow-sm' : 'bg-white border-gray-200 text-gray-700 shadow-sm'}`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${showUnitCards ? 'bg-[var(--bg-surface)] border-[var(--border-base)] text-[var(--text-secondary)] shadow-sm' : 'bg-[var(--bg-surface)] border-[var(--border-base)] text-[var(--text-secondary)] shadow-sm'}`}
                 title={showUnitCards ? 'Hide Cards' : 'Show Cards'}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="16" rx="1" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-muted)]"><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="16" rx="1" /></svg>
                 {showUnitCards ? 'Hide Cards' : 'Show Cards'}
               </button>
               {selectedUnits.size > 0 && (
@@ -3234,26 +3234,26 @@ const InventoryPage = ({ onNavigate }) => {
               {units.map((unit, index) => {
                 const unitItems = inventory.filter(i => i.unit === unit);
                 if (unitItems.length === 0) return null;
-                const colors = ['bg-gradient-to-br from-emerald-100 to-emerald-200 border-emerald-200', 'bg-gradient-to-br from-blue-100 to-sky-200 border-blue-200', 'bg-gradient-to-br from-amber-100 to-orange-200 border-amber-200', 'bg-gradient-to-br from-rose-100 to-rose-200 border-rose-200', 'bg-gradient-to-br from-violet-100 to-purple-200 border-violet-200', 'bg-gradient-to-br from-cyan-100 to-teal-200 border-cyan-200', 'bg-gradient-to-br from-orange-100 to-orange-200 border-orange-200', 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-200'];
-                const iconColors = ['text-emerald-700', 'text-blue-700', 'text-amber-700', 'text-rose-700', 'text-violet-700', 'text-cyan-700', 'text-orange-700', 'text-pink-700'];
-                const bgColors = ['bg-emerald-200', 'bg-blue-200', 'bg-amber-200', 'bg-rose-200', 'bg-violet-200', 'bg-cyan-200', 'bg-orange-200', 'bg-pink-200'];
+                const colors = ['bg-gradient-to-br from-emerald-100 to-emerald-200 border-[var(--green)]/20', 'bg-gradient-to-br from-[var(--blue-bg)] to-[var(--cyan-bg)] border-[var(--blue)]/20', 'bg-gradient-to-br from-amber-100 to-orange-200 border-amber-200', 'bg-gradient-to-br from-rose-100 to-rose-200 border-rose-200', 'bg-gradient-to-br from-violet-100 to-purple-200 border-violet-200', 'bg-gradient-to-br from-cyan-100 to-teal-200 border-[var(--blue)]/20', 'bg-gradient-to-br from-orange-100 to-orange-200 border-orange-200', 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-200'];
+                const iconColors = ['text-[var(--green)]', 'text-[var(--blue)]', 'text-amber-700', 'text-rose-700', 'text-violet-700', 'text-[var(--blue)]', 'text-orange-700', 'text-pink-700'];
+                const bgColors = ['bg-[var(--green)]/20', 'bg-[var(--blue)]/20', 'bg-amber-200', 'bg-rose-200', 'bg-violet-200', 'bg-[var(--blue)]/20', 'bg-orange-200', 'bg-pink-200'];
                 return (
                   <div key={unit} className={`${colors[index % colors.length]} border rounded-xl p-4 flex flex-col gap-2 hover:shadow-md transition-all`}>
                     <div className="flex items-center justify-between">
                       <div className={`w-10 h-10 rounded-xl ${bgColors[index % bgColors.length]} flex items-center justify-center shadow-sm`}>
                         <Package size={20} className={iconColors[index % iconColors.length]} />
                       </div>
-                      <span className="text-xs font-medium text-gray-700">{unitItems.length} items</span>
+                      <span className="text-xs font-medium text-[var(--text-secondary)]">{unitItems.length} items</span>
                     </div>
-                    <span className="text-sm font-semibold text-gray-800">{unit}</span>
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">{unit}</span>
                     <div className="flex flex-wrap gap-1">
                       {unitItems.slice(0, 3).map((item, idx) => (
-                        <span key={`${item.itemId}-${idx}`} className="text-[10px] px-2 py-1 bg-white/80 rounded text-gray-700 border border-white/30">
+                        <span key={`${item.itemId}-${idx}`} className="text-[10px] px-2 py-1 bg-[var(--bg-surface)]/80 rounded text-[var(--text-secondary)] border border-white/30">
                           {item.name || item.description}
                         </span>
                       ))}
                       {unitItems.length > 3 && (
-                        <span className="text-[10px] px-2 py-1 text-gray-500">
+                        <span className="text-[10px] px-2 py-1 text-[var(--text-muted)]">
                           +{unitItems.length - 3} more
                         </span>
                       )}
@@ -3328,7 +3328,7 @@ const InventoryPage = ({ onNavigate }) => {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={(e) => { e.stopPropagation(); setViewingUnit(unit); }}
-                            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-blue-500 hover:bg-blue-500/10"
+                            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10"
                             title="View"
                           >
                             <Eye size={14} />
@@ -3421,7 +3421,7 @@ const InventoryPage = ({ onNavigate }) => {
                       </td>
                       <td className="px-3 py-2 text-right text-xs font-semibold text-[var(--text-primary)]">{i.stock} {i.unit}</td>
                       <td className="px-3 py-2 text-right text-xs font-semibold text-amber-400">{i.reserved} {i.unit}</td>
-                      <td className="px-3 py-2 text-right text-xs font-semibold text-emerald-400">{i.available} {i.unit}</td>
+                      <td className="px-3 py-2 text-right text-xs font-semibold text-[var(--green)]">{i.available} {i.unit}</td>
                     </tr>
                   ))
                 )}
@@ -3756,7 +3756,7 @@ const InventoryPage = ({ onNavigate }) => {
                           }}
                           className={`group p-3 rounded-xl transition-all duration-200 border-2 ${
                             !hasStock 
-                              ? 'bg-gray-100 border-gray-200 cursor-not-allowed opacity-60'
+                              ? 'bg-[var(--bg-elevated)] border-[var(--border-base)] cursor-not-allowed opacity-60'
                               : isSelected 
                                 ? 'bg-[var(--primary)]/5 border-[var(--primary)] shadow-sm cursor-pointer' 
                                 : 'bg-[var(--bg-surface)] border-[var(--border-base)] hover:border-[var(--primary)]/30 hover:shadow-sm cursor-pointer'
@@ -3766,21 +3766,21 @@ const InventoryPage = ({ onNavigate }) => {
                             {/* Checkbox */}
                             <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
                               !hasStock
-                                ? 'bg-gray-200 border-gray-300'
+                                ? 'bg-[var(--bg-hover)] border-[var(--border-base)]'
                                 : isSelected 
                                   ? 'bg-[var(--primary)] border-[var(--primary)]' 
                                   : 'border-[var(--border-base)] group-hover:border-[var(--primary)]/50'
                             }`}>
                               {isSelected && hasStock && <Check size={12} className="text-white" />}
-                              {!hasStock && <span className="text-gray-400 text-[10px]">×</span>}
+                              {!hasStock && <span className="text-[var(--text-muted)] text-[10px]">×</span>}
                             </div>
                             
                             {/* Item Info */}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
-                                <span className={`text-sm font-medium truncate ${hasStock ? 'text-[var(--text-primary)]' : 'text-gray-500'}`}>{item.name}</span>
+                                <span className={`text-sm font-medium truncate ${hasStock ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]'}`}>{item.name}</span>
                                 {!hasStock && (
-                                  <span className="text-[10px] px-1.5 py-0.5 bg-gray-200 text-gray-600 rounded-full font-medium flex items-center gap-1">
+                                  <span className="text-[10px] px-1.5 py-0.5 bg-[var(--bg-hover)] text-[var(--text-secondary)] rounded-full font-medium flex items-center gap-1">
                                     <AlertCircle size={10} />
                                     Out of Stock
                                   </span>
@@ -3797,7 +3797,7 @@ const InventoryPage = ({ onNavigate }) => {
                                   <Package size={10} />
                                   Req: {item.quantity}
                                 </span>
-                                <span className={`flex items-center gap-1 font-medium ${!hasStock ? 'text-gray-400' : isLowStock ? 'text-red-500' : 'text-green-600'}`}>
+                                <span className={`flex items-center gap-1 font-medium ${!hasStock ? 'text-[var(--text-muted)]' : isLowStock ? 'text-red-500' : 'text-green-600'}`}>
                                   <Warehouse size={10} />
                                   Avail: {available}
                                 </span>

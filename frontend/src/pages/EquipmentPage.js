@@ -264,7 +264,7 @@ const EquipmentCard = ({ equipment, onClick, onEdit, onDelete }) => {
   return (
     <div
       onClick={() => onClick(equipment)}
-      className="bg-white rounded-xl border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-all hover:border-orange-300"
+      className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-4 cursor-pointer hover:shadow-md transition-all hover:border-orange-300"
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
@@ -272,8 +272,8 @@ const EquipmentCard = ({ equipment, onClick, onEdit, onDelete }) => {
             <Hammer size={20} className="text-orange-600" />
           </div>
           <div>
-            <p className="text-sm font-bold text-gray-900">{equipment.name}</p>
-            <p className="text-xs text-gray-500">{equipment.id}</p>
+            <p className="text-sm font-bold text-[var(--text-primary)]">{equipment.name}</p>
+            <p className="text-xs text-[var(--text-muted)]">{equipment.id}</p>
           </div>
         </div>
         <div
@@ -285,21 +285,21 @@ const EquipmentCard = ({ equipment, onClick, onEdit, onDelete }) => {
       </div>
 
       <div className="grid grid-cols-2 gap-2 mb-3 text-xs">
-        <div className="bg-gray-50 rounded-lg p-2">
-          <p className="text-gray-500">Category</p>
-          <p className="font-medium text-gray-900">{equipment.category}</p>
+        <div className="bg-[var(--bg-elevated)] rounded-lg p-2">
+          <p className="text-[var(--text-muted)]">Category</p>
+          <p className="font-medium text-[var(--text-primary)]">{equipment.category}</p>
         </div>
-        <div className="bg-gray-50 rounded-lg p-2">
-          <p className="text-gray-500">Condition</p>
+        <div className="bg-[var(--bg-elevated)] rounded-lg p-2">
+          <p className="text-[var(--text-muted)]">Condition</p>
           <p className="font-medium" style={{ color: conditionConfig.color }}>{conditionConfig.label}</p>
         </div>
-        <div className="bg-gray-50 rounded-lg p-2">
-          <p className="text-gray-500">Location</p>
-          <p className="font-medium text-gray-900 truncate">{equipment.location}</p>
+        <div className="bg-[var(--bg-elevated)] rounded-lg p-2">
+          <p className="text-[var(--text-muted)]">Location</p>
+          <p className="font-medium text-[var(--text-primary)] truncate">{equipment.location}</p>
         </div>
-        <div className="bg-gray-50 rounded-lg p-2">
-          <p className="text-gray-500">Value</p>
-          <p className="font-medium text-gray-900">{fmt(equipment.purchasePrice)}</p>
+        <div className="bg-[var(--bg-elevated)] rounded-lg p-2">
+          <p className="text-[var(--text-muted)]">Value</p>
+          <p className="font-medium text-[var(--text-primary)]">{fmt(equipment.purchasePrice)}</p>
         </div>
       </div>
 
@@ -310,15 +310,15 @@ const EquipmentCard = ({ equipment, onClick, onEdit, onDelete }) => {
         </div>
       )}
 
-      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-        <div className="flex items-center gap-1 text-xs text-gray-500">
+      <div className="flex items-center justify-between pt-3 border-t border-[var(--border-base)]">
+        <div className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
           <Calendar size={12} />
           <span>Next: {equipment.nextMaintenance}</span>
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(equipment); }}
-            className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] transition-colors"
           >
             <Edit3 size={14} />
           </button>
@@ -351,7 +351,7 @@ const EquipmentDetail = ({ equipment, onClose, onEdit, onDelete }) => {
           </div>
           <div>
             <p className="text-xs font-mono text-orange-600">{equipment.id}</p>
-            <h3 className="text-xl font-bold text-gray-900">{equipment.name}</h3>
+            <h3 className="text-xl font-bold text-[var(--text-primary)]">{equipment.name}</h3>
             <div className="flex items-center gap-2 mt-1">
               <span
                 className="px-2 py-0.5 rounded-full text-[10px] font-medium"
@@ -359,7 +359,7 @@ const EquipmentDetail = ({ equipment, onClose, onEdit, onDelete }) => {
               >
                 {statusConfig.label}
               </span>
-              <span className="text-xs text-gray-500">{equipment.category}</span>
+              <span className="text-xs text-[var(--text-muted)]">{equipment.category}</span>
             </div>
           </div>
         </div>
@@ -383,91 +383,91 @@ const EquipmentDetail = ({ equipment, onClose, onEdit, onDelete }) => {
 
       {/* Info Grid */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-gray-50 rounded-xl p-4">
-          <h4 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+        <div className="bg-[var(--bg-elevated)] rounded-xl p-4">
+          <h4 className="text-sm font-bold text-[var(--text-secondary)] mb-3 flex items-center gap-2">
             <Package size={16} className="text-orange-500" />
             Equipment Info
           </h4>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-500">Brand</span>
-              <span className="font-medium text-gray-900">{equipment.brand}</span>
+              <span className="text-[var(--text-muted)]">Brand</span>
+              <span className="font-medium text-[var(--text-primary)]">{equipment.brand}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Model</span>
-              <span className="font-medium text-gray-900">{equipment.model}</span>
+              <span className="text-[var(--text-muted)]">Model</span>
+              <span className="font-medium text-[var(--text-primary)]">{equipment.model}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Serial No</span>
-              <span className="font-medium text-gray-900">{equipment.serialNo}</span>
+              <span className="text-[var(--text-muted)]">Serial No</span>
+              <span className="font-medium text-[var(--text-primary)]">{equipment.serialNo}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Condition</span>
+              <span className="text-[var(--text-muted)]">Condition</span>
               <span className="font-medium" style={{ color: conditionConfig.color }}>{conditionConfig.label}</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-gray-50 rounded-xl p-4">
-          <h4 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+        <div className="bg-[var(--bg-elevated)] rounded-xl p-4">
+          <h4 className="text-sm font-bold text-[var(--text-secondary)] mb-3 flex items-center gap-2">
             <MapPin size={16} className="text-orange-500" />
             Location & Assignment
           </h4>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-500">Current Location</span>
-              <span className="font-medium text-gray-900">{equipment.location}</span>
+              <span className="text-[var(--text-muted)]">Current Location</span>
+              <span className="font-medium text-[var(--text-primary)]">{equipment.location}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Assigned To</span>
-              <span className="font-medium text-gray-900">{equipment.assignedTo || 'Unassigned'}</span>
+              <span className="text-[var(--text-muted)]">Assigned To</span>
+              <span className="font-medium text-[var(--text-primary)]">{equipment.assignedTo || 'Unassigned'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Purchase Date</span>
-              <span className="font-medium text-gray-900">{equipment.purchaseDate}</span>
+              <span className="text-[var(--text-muted)]">Purchase Date</span>
+              <span className="font-medium text-[var(--text-primary)]">{equipment.purchaseDate}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Purchase Price</span>
-              <span className="font-medium text-gray-900">{fmt(equipment.purchasePrice)}</span>
+              <span className="text-[var(--text-muted)]">Purchase Price</span>
+              <span className="font-medium text-[var(--text-primary)]">{fmt(equipment.purchasePrice)}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Specifications */}
-      <div className="bg-gray-50 rounded-xl p-4">
-        <h4 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+      <div className="bg-[var(--bg-elevated)] rounded-xl p-4">
+        <h4 className="text-sm font-bold text-[var(--text-secondary)] mb-3 flex items-center gap-2">
           <Settings size={16} className="text-orange-500" />
           Specifications
         </h4>
         <div className="grid grid-cols-3 gap-3">
           {Object.entries(equipment.specifications).map(([key, value]) => (
-            <div key={key} className="bg-white rounded-lg p-3">
-              <p className="text-xs text-gray-500 capitalize">{key}</p>
-              <p className="font-medium text-gray-900">{value}</p>
+            <div key={key} className="bg-[var(--bg-surface)] rounded-lg p-3">
+              <p className="text-xs text-[var(--text-muted)] capitalize">{key}</p>
+              <p className="font-medium text-[var(--text-primary)]">{value}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Maintenance Schedule */}
-      <div className="bg-gray-50 rounded-xl p-4">
-        <h4 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+      <div className="bg-[var(--bg-elevated)] rounded-xl p-4">
+        <h4 className="text-sm font-bold text-[var(--text-secondary)] mb-3 flex items-center gap-2">
           <Wrench size={16} className="text-orange-500" />
           Maintenance Schedule
         </h4>
         <div className="grid grid-cols-3 gap-3 text-sm">
-          <div className="bg-white rounded-lg p-3">
-            <p className="text-xs text-gray-500">Last Maintenance</p>
-            <p className="font-medium text-gray-900">{equipment.lastMaintenance}</p>
+          <div className="bg-[var(--bg-surface)] rounded-lg p-3">
+            <p className="text-xs text-[var(--text-muted)]">Last Maintenance</p>
+            <p className="font-medium text-[var(--text-primary)]">{equipment.lastMaintenance}</p>
           </div>
-          <div className="bg-white rounded-lg p-3">
-            <p className="text-xs text-gray-500">Next Maintenance</p>
-            <p className="font-medium text-gray-900">{equipment.nextMaintenance}</p>
+          <div className="bg-[var(--bg-surface)] rounded-lg p-3">
+            <p className="text-xs text-[var(--text-muted)]">Next Maintenance</p>
+            <p className="font-medium text-[var(--text-primary)]">{equipment.nextMaintenance}</p>
           </div>
-          <div className="bg-white rounded-lg p-3">
-            <p className="text-xs text-gray-500">Warranty Expiry</p>
-            <p className="font-medium text-gray-900">{equipment.warrantyExpiry}</p>
+          <div className="bg-[var(--bg-surface)] rounded-lg p-3">
+            <p className="text-xs text-[var(--text-muted)]">Warranty Expiry</p>
+            <p className="font-medium text-[var(--text-primary)]">{equipment.warrantyExpiry}</p>
           </div>
         </div>
       </div>
@@ -630,7 +630,7 @@ const EquipmentForm = ({ onSubmit, onCancel, initialData = null }) => {
         />
       </FormField>
 
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-[var(--border-base)]">
         <Button type="button" variant="secondary" onClick={onCancel}>
           Cancel
         </Button>
@@ -725,9 +725,9 @@ const EquipmentPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-[var(--bg-elevated)] pb-20">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
+      <div className="bg-[var(--bg-surface)] border-b border-[var(--border-base)] sticky top-0 z-40">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -735,8 +735,8 @@ const EquipmentPage = () => {
                 <Hammer size={24} className="text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Equipment</h1>
-                <p className="text-sm text-gray-500">Manage tools, machinery & vehicles</p>
+                <h1 className="text-2xl font-bold text-[var(--text-primary)]">Equipment</h1>
+                <p className="text-sm text-[var(--text-muted)]">Manage tools, machinery & vehicles</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -762,47 +762,47 @@ const EquipmentPage = () => {
       <div className="px-6 py-6 max-w-7xl mx-auto space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+          <div className="bg-[var(--bg-surface)] rounded-xl p-4 shadow-sm border border-[var(--border-base)]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-                <p className="text-xs text-gray-500">Total Equipment</p>
+                <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.total}</p>
+                <p className="text-xs text-[var(--text-muted)]">Total Equipment</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Package size={20} className="text-blue-600" />
+              <div className="w-10 h-10 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center">
+                <Package size={20} className="text-[var(--primary)]" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+          <div className="bg-[var(--bg-surface)] rounded-xl p-4 shadow-sm border border-[var(--border-base)]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-emerald-600">{stats.available}</p>
-                <p className="text-xs text-gray-500">Available</p>
+                <p className="text-2xl font-bold text-[var(--green)]">{stats.available}</p>
+                <p className="text-xs text-[var(--text-muted)]">Available</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-                <CheckCircle size={20} className="text-emerald-600" />
+              <div className="w-10 h-10 rounded-lg bg-[var(--green)]/10 flex items-center justify-center">
+                <CheckCircle size={20} className="text-[var(--green)]" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+          <div className="bg-[var(--bg-surface)] rounded-xl p-4 shadow-sm border border-[var(--border-base)]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-blue-600">{stats.inUse}</p>
-                <p className="text-xs text-gray-500">In Use</p>
+                <p className="text-2xl font-bold text-[var(--primary)]">{stats.inUse}</p>
+                <p className="text-xs text-[var(--text-muted)]">In Use</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Wrench size={20} className="text-blue-600" />
+              <div className="w-10 h-10 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center">
+                <Wrench size={20} className="text-[var(--primary)]" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+          <div className="bg-[var(--bg-surface)] rounded-xl p-4 shadow-sm border border-[var(--border-base)]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-2xl font-bold text-red-600">{stats.maintenanceDue}</p>
-                <p className="text-xs text-gray-500">Maintenance Due</p>
+                <p className="text-xs text-[var(--text-muted)]">Maintenance Due</p>
               </div>
               <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
                 <AlertTriangle size={20} className="text-red-600" />
@@ -812,22 +812,22 @@ const EquipmentPage = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+        <div className="bg-[var(--bg-surface)] rounded-xl p-4 shadow-sm border border-[var(--border-base)]">
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative flex-1 min-w-[200px]">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
                 type="text"
                 placeholder="Search equipment..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-orange-500"
+                className="w-full pl-10 pr-4 py-2 rounded-lg border border-[var(--border-base)] text-sm focus:outline-none focus:border-orange-500"
               />
             </div>
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-orange-500 min-w-[150px]"
+              className="px-3 py-2 rounded-lg border border-[var(--border-base)] text-sm focus:outline-none focus:border-orange-500 min-w-[150px]"
             >
               {dynamicCategories.map(cat => (
                 <option key={cat} value={cat}>
@@ -838,7 +838,7 @@ const EquipmentPage = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-orange-500 min-w-[150px]"
+              className="px-3 py-2 rounded-lg border border-[var(--border-base)] text-sm focus:outline-none focus:border-orange-500 min-w-[150px]"
             >
               {dynamicStatuses.map(status => (
                 <option key={status} value={status}>
@@ -849,7 +849,7 @@ const EquipmentPage = () => {
             {(searchQuery || categoryFilter !== 'all' || statusFilter !== 'all') && (
               <button
                 onClick={() => { setSearchQuery(''); setCategoryFilter('all'); setStatusFilter('all'); }}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] transition-colors"
               >
                 <X size={16} />
                 Clear
@@ -860,12 +860,12 @@ const EquipmentPage = () => {
 
         {/* Equipment Grid */}
         {filteredEquipment.length === 0 ? (
-          <div className="bg-white rounded-xl p-12 text-center shadow-sm border border-gray-200">
-            <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-              <Hammer size={32} className="text-gray-400" />
+          <div className="bg-[var(--bg-surface)] rounded-xl p-12 text-center shadow-sm border border-[var(--border-base)]">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--bg-elevated)] flex items-center justify-center mx-auto mb-4">
+              <Hammer size={32} className="text-[var(--text-muted)]" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-1">No equipment found</h3>
-            <p className="text-sm text-gray-500 mb-4">Add your first equipment to get started</p>
+            <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">No equipment found</h3>
+            <p className="text-sm text-[var(--text-muted)] mb-4">Add your first equipment to get started</p>
             <Button onClick={() => setIsCreateModalOpen(true)} className="bg-orange-500 hover:bg-orange-600">
               <Plus size={16} className="mr-1.5" />
               Add Equipment

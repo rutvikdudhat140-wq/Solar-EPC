@@ -689,7 +689,7 @@ const DataTable = ({
 
                                         a.danger
 
-                                            ? 'text-red-400 hover:bg-red-500/10'
+                                            ? 'text-[var(--red)] hover:bg-[var(--red)]/10'
 
                                             : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
 

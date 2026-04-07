@@ -10,7 +10,7 @@ export const Button = React.forwardRef(({
     primary: 'bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white shadow-sm shadow-[var(--primary-glow)] active:scale-[0.98]',
     secondary: 'bg-[var(--bg-elevated)] hover:bg-[var(--bg-overlay)] border border-[var(--border-muted)] text-[var(--text-primary)] hover:border-[var(--border-active)]',
     ghost: 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]',
-    danger: 'bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400',
+    danger: 'bg-[var(--red)]/10 hover:bg-[var(--red)]/20 border border-[var(--red)]/30 text-[var(--red)]',
     solar: 'bg-[var(--accent)] hover:bg-[var(--accent-light)] text-[var(--accent-inv)] shadow-sm shadow-[var(--accent-glow)] active:scale-[0.98]',
     outline: 'border border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)]/10',
   };

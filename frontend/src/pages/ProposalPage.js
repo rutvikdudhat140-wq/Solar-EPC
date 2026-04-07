@@ -9,7 +9,8 @@ import {
   TrendingDown, LayoutGrid, List, Kanban, ChevronRight, ChevronLeft, Save, Printer,
   Check, ArrowRight, FileSpreadsheet, RefreshCw, EyeIcon, CheckSquare,
   XSquare, FileSignature, ArrowLeftRight, BadgeCheck, FileCheck, MailOpen,
-  Sparkles, Shield, Leaf, Battery, Gauge, Settings, MoreVertical, X, MessageSquare, Bell
+  Sparkles, Shield, Leaf, Battery, Gauge, Settings, MoreVertical, X, MessageSquare, Bell,
+  Package
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
@@ -22,6 +23,7 @@ import PDFTemplateCustomizer from '../components/documents/PDFTemplateCustomizer
 import { settingsApi } from '../services/settingsApi';
 import { toast } from '../components/ui/Toast';
 import { documentsApi } from '../services/documentsApi';
+import { inventoryApi } from '../services/inventoryApi';
 import ProposalCanvasEditor from '../components/ProposalCanvasEditor';
 import CustomDocumentEditor from '../components/CustomDocumentEditor';
 
@@ -281,7 +283,7 @@ const DocumentHeader = ({
     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
       {/* Company Info */}
       <div className="flex items-start gap-4">
-        <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
+        <div className="w-16 h-16 bg-[var(--bg-surface)]/20 rounded-xl flex items-center justify-center shrink-0">
           <Sun size={32} className="text-white" />
         </div>
         <div>
@@ -297,7 +299,7 @@ const DocumentHeader = ({
 
       {/* Document Info */}
       <div className="text-right">
-        <div className="bg-white/20 rounded-lg px-4 py-2 inline-block">
+        <div className="bg-[var(--bg-surface)]/20 rounded-lg px-4 py-2 inline-block">
           <p className="text-xs text-white/70 uppercase tracking-wider">{documentType}</p>
           <p className="text-lg font-bold">{documentNumber}</p>
         </div>
@@ -907,47 +909,47 @@ const ProposalPage = () => {
     {
       key: 'proposalNumber',
       header: 'Proposal #',
-      render: v => <span className="text-xs font-medium text-red-500 hover:text-red-600 cursor-pointer">{v}</span>,
+      render: v => <span className="text-xs font-medium text-[var(--red)] hover:text-[var(--red)] cursor-pointer">{v}</span>,
     },
     {
       key: 'projectName',
       header: 'Subject',
-      render: v => <span className="text-xs text-gray-600">{v}</span>,
+      render: v => <span className="text-xs text-[var(--text-secondary)]">{v}</span>,
     },
     {
       key: 'customerName',
       header: 'To',
-      render: v => <span className="text-xs text-gray-600">{v}</span>,
+      render: v => <span className="text-xs text-[var(--text-secondary)]">{v}</span>,
     },
     {
       key: 'total',
       header: 'Total',
-      render: v => <span className="text-xs font-medium text-gray-800">{fmt(v)}</span>,
+      render: v => <span className="text-xs font-medium text-[var(--text-primary)]">{fmt(v)}</span>,
     },
     {
       key: 'createdAt',
       header: 'Date',
-      render: v => <span className="text-xs text-gray-600">{new Date(v).toISOString().split('T')[0]}</span>,
+      render: v => <span className="text-xs text-[var(--text-secondary)]">{new Date(v).toISOString().split('T')[0]}</span>,
     },
     {
       key: 'validUntil',
       header: 'Open Till',
-      render: v => <span className="text-xs text-gray-600">{v || '—'}</span>,
+      render: v => <span className="text-xs text-[var(--text-secondary)]">{v || '—'}</span>,
     },
     {
       key: 'projectLocation',
       header: 'Project',
-      render: v => <span className="text-xs text-gray-600">{v || '—'}</span>,
+      render: v => <span className="text-xs text-[var(--text-secondary)]">{v || '—'}</span>,
     },
     {
       key: 'tags',
       header: 'Tags',
-      render: v => <span className="text-xs text-gray-400">—</span>,
+      render: v => <span className="text-xs text-[var(--text-muted)]">—</span>,
     },
     {
       key: 'createdAt',
       header: 'Date Created',
-      render: v => <span className="text-xs text-gray-600">{new Date(v).toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\//g, '-')}</span>,
+      render: v => <span className="text-xs text-[var(--text-secondary)]">{new Date(v).toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\//g, '-')}</span>,
     },
     {
       key: 'status',
@@ -975,10 +977,10 @@ const ProposalPage = () => {
       header: '',
       render: (v, doc) => (
         <div className="flex items-center gap-1">
-          <button className="p-1 text-gray-400 hover:text-gray-600">
+          <button className="p-1 text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
             <Eye size={14} />
           </button>
-          <button className="p-1 text-gray-400 hover:text-blue-500">
+              <button className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)]">
             <Edit size={14} />
           </button>
           <button
@@ -1004,10 +1006,10 @@ const ProposalPage = () => {
     <div className="space-y-6 animate-fade-in">
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="glass-card p-4 border-l-4 border-blue-500">
+        <div className="glass-card p-4 border-l-4 border-[var(--primary)]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-              <FileText size={20} className="text-blue-500" />
+            <div className="w-10 h-10 rounded-lg bg-[var(--blue-bg)] flex items-center justify-center">
+              <FileText size={20} className="text-[var(--blue)]" />
             </div>
             <div>
               <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.total}</p>
@@ -1016,10 +1018,10 @@ const ProposalPage = () => {
           </div>
         </div>
 
-        <div className="glass-card p-4 border-l-4 border-emerald-500">
+        <div className="glass-card p-4 border-l-4 border-[var(--green)]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-              <DollarSign size={20} className="text-emerald-500" />
+            <div className="w-10 h-10 rounded-lg bg-[var(--green)]/10 flex items-center justify-center">
+              <DollarSign size={20} className="text-[var(--green)]" />
             </div>
             <div>
               <p className="text-2xl font-bold text-[var(--text-primary)]">{(stats.totalValue / 100000).toFixed(1)}L</p>
@@ -1036,7 +1038,7 @@ const ProposalPage = () => {
             <div>
               <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.accepted}</p>
               <p className="text-[10px] text-[var(--text-muted)] uppercase">Accepted</p>
-              <p className="text-[10px] text-emerald-500">{(stats.acceptedValue / 100000).toFixed(1)}L</p>
+              <p className="text-[10px] text-[var(--green)]">{(stats.acceptedValue / 100000).toFixed(1)}L</p>
             </div>
           </div>
         </div>
@@ -1055,23 +1057,23 @@ const ProposalPage = () => {
       </div>
 
       {/* Action Toolbar - Perfex Style */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-lg border border-gray-200">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-[var(--bg-surface)] p-3 rounded-lg border border-[var(--border-base)]">
         <div className="flex items-center gap-2">
           {/* + New Proposal Button */}
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--primary-inv)] text-sm font-medium transition-colors"
           >
             <Plus size={16} />
             New Proposal
           </button>
 
           {/* Layout Toggle */}
-          <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
-            <button className="p-2 bg-white text-gray-600 hover:bg-gray-50 border-r border-gray-200">
+          <div className="flex items-center border border-[var(--border-base)] rounded-lg overflow-hidden">
+            <button className="p-2 bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] border-r border-[var(--border-base)]">
               <LayoutGrid size={16} />
             </button>
-            <button className="p-2 bg-white text-gray-600 hover:bg-gray-50">
+            <button className="p-2 bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]">
               <List size={16} />
             </button>
           </div>
@@ -1079,7 +1081,7 @@ const ProposalPage = () => {
           {/* Canvas Editor Button */}
           <button
             onClick={() => setIsCanvasEditorOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--primary-inv)] text-sm font-medium transition-colors"
             title="Open Visual Canvas Editor"
           >
             <Sparkles size={16} />
@@ -1089,20 +1091,20 @@ const ProposalPage = () => {
 
         <div className="flex items-center gap-2">
           {/* Entries per page */}
-          <select className="px-3 py-2 rounded-lg bg-white border border-gray-200 text-sm text-gray-700 focus:outline-none">
+          <select className="px-3 py-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-base)] text-sm text-[var(--text-secondary)] focus:outline-none">
             <option value="25">25</option>
             <option value="50">50</option>
             <option value="100">100</option>
           </select>
 
           {/* Export */}
-          <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+          <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-base)] text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] transition-colors">
             <span>Export</span>
             <ChevronDown size={14} />
           </button>
 
           {/* Filters */}
-          <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+          <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-base)] text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] transition-colors">
             <Filter size={14} />
             <span>Filters</span>
           </button>
@@ -1116,10 +1118,11 @@ const ProposalPage = () => {
                 setShowDetailPanel(true);
               }
             }}
-            className={`p-2 rounded-lg border transition-colors ${showDetailPanel
-              ? 'bg-blue-50 border-blue-300 text-blue-600'
-              : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-              }`}
+            className={`p-2 rounded-lg border transition-colors ${
+              showDetailPanel 
+                ? 'bg-[var(--bg-hover)] border-[var(--border-active)] text-[var(--primary)]' 
+                : 'bg-[var(--bg-surface)] border-[var(--border-base)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
+            }`}
             title={showDetailPanel ? 'Close side panel' : 'Open side panel'}
           >
             {showDetailPanel ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -1127,13 +1130,13 @@ const ProposalPage = () => {
 
           {/* Search */}
           <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-[200px] pl-9 pr-4 py-2 rounded-lg bg-white border border-gray-200 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-gray-300"
+              className="w-[200px] pl-9 pr-4 py-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-base)] text-sm text-[var(--text-secondary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--border-base)]"
             />
           </div>
         </div>
@@ -1144,12 +1147,12 @@ const ProposalPage = () => {
         {/* Left Side - Table */}
         <div className={`${showDetailPanel ? 'w-[55%]' : 'w-full'} transition-all duration-300`}>
           {filteredProposals.length === 0 ? (
-            <div className="bg-white p-12 text-center rounded-lg border border-gray-200">
-              <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
-                <FileText size={32} className="text-gray-400" />
+            <div className="bg-[var(--bg-surface)] p-12 text-center rounded-lg border border-[var(--border-base)]">
+              <div className="w-16 h-16 rounded-2xl bg-[var(--bg-elevated)] flex items-center justify-center mx-auto mb-4">
+                <FileText size={32} className="text-[var(--text-muted)]" />
               </div>
-              <h3 className="text-lg font-bold text-gray-800 mb-1">No proposals found</h3>
-              <p className="text-sm text-gray-500 mb-4">Create your first proposal to get started</p>
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">No proposals found</h3>
+              <p className="text-sm text-[var(--text-muted)] mb-4">Create your first proposal to get started</p>
               <button
                 onClick={() => setIsCreateModalOpen(true)}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors mx-auto"
@@ -1178,23 +1181,23 @@ const ProposalPage = () => {
           ) : viewMode === 'kanban' ? (
             <KanbanView proposals={filteredProposals} onCardClick={handleProposalClick} />
           ) : (
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="bg-[var(--bg-surface)] rounded-lg border border-[var(--border-base)] overflow-hidden">
               {/* Table */}
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
+                  <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border-base)]">
                     <tr>
-                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-600">Proposal #</th>
-                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-600">Subject</th>
-                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-600">To</th>
-                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-600">Total</th>
-                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-600">Date</th>
-                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-600">Open Till</th>
-                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-600">Project</th>
-                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-600">Tags</th>
-                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-600">Date Created</th>
-                      <th className="text-left py-3 px-4 text-xs font-medium text-gray-600">Status</th>
-                      <th className="text-center py-3 px-4 text-xs font-medium text-gray-600 w-20"></th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-[var(--text-secondary)]">Proposal #</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-[var(--text-secondary)]">Subject</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-[var(--text-secondary)]">To</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-[var(--text-secondary)]">Total</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-[var(--text-secondary)]">Date</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-[var(--text-secondary)]">Open Till</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-[var(--text-secondary)]">Project</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-[var(--text-secondary)]">Tags</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-[var(--text-secondary)]">Date Created</th>
+                      <th className="text-left py-3 px-4 text-xs font-medium text-[var(--text-secondary)]">Status</th>
+                      <th className="text-center py-3 px-4 text-xs font-medium text-[var(--text-secondary)] w-20"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1213,7 +1216,7 @@ const ProposalPage = () => {
                             <div className="absolute left-0 top-full mt-0.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto">
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleOpenCanvasEditor(proposal); }}
-                                className="text-[10px] text-gray-500 hover:text-purple-500 hover:underline"
+                                className="text-[10px] text-[var(--text-muted)] hover:text-[var(--primary)] hover:underline"
                                 title="Open in Canvas Editor"
                               >
                                 Canvas
@@ -1221,14 +1224,14 @@ const ProposalPage = () => {
                               <span className="text-[10px] text-gray-400">|</span>
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleProposalClick(proposal); }}
-                                className="text-[10px] text-gray-500 hover:text-blue-500 hover:underline"
+                                className="text-[10px] text-[var(--text-muted)] hover:text-[var(--primary)] hover:underline"
                               >
                                 View
                               </button>
                               <span className="text-[10px] text-gray-400">|</span>
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleProposalClick(proposal); setIsEditMode(true); }}
-                                className="text-[10px] text-gray-500 hover:text-blue-500 hover:underline"
+                                className="text-[10px] text-[var(--text-muted)] hover:text-[var(--primary)] hover:underline"
                               >
                                 Edit
                               </button>
@@ -1239,31 +1242,31 @@ const ProposalPage = () => {
                           className="py-3 px-4"
                           onClick={() => { setSelectedProposal(proposal); setIsEditMode(true); }}
                         >
-                          <span className="text-xs text-gray-700 hover:text-blue-600 cursor-pointer">{proposal.projectName}</span>
+                          <span className="text-xs text-[var(--text-secondary)] hover:text-[var(--primary)] cursor-pointer">{proposal.projectName}</span>
                         </td>
                         <td
                           className="py-3 px-4"
                           onClick={() => { setSelectedProposal(proposal); setIsEditMode(true); }}
                         >
-                          <span className="text-xs text-gray-600 hover:text-blue-600 cursor-pointer">{proposal.customerName}</span>
+                          <span className="text-xs text-[var(--text-secondary)] hover:text-[var(--primary)] cursor-pointer">{proposal.customerName}</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-xs font-medium text-gray-800">{fmt(proposal.total)}</span>
+                          <span className="text-xs font-medium text-[var(--text-primary)]">{fmt(proposal.total)}</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-xs text-gray-600">{new Date(proposal.createdAt).toISOString().split('T')[0]}</span>
+                          <span className="text-xs text-[var(--text-secondary)]">{new Date(proposal.createdAt).toISOString().split('T')[0]}</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-xs text-gray-600">{proposal.validUntil || '—'}</span>
+                          <span className="text-xs text-[var(--text-secondary)]">{proposal.validUntil || '—'}</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-xs text-gray-600">{proposal.projectLocation || '—'}</span>
+                          <span className="text-xs text-[var(--text-secondary)]">{proposal.projectLocation || '—'}</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-xs text-gray-400">—</span>
+                          <span className="text-xs text-[var(--text-muted)]">—</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-xs text-gray-600">{new Date(proposal.createdAt).toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).replace(/\//g, '-')}</span>
+                          <span className="text-xs text-[var(--text-secondary)]">{new Date(proposal.createdAt).toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).replace(/\//g, '-')}</span>
                         </td>
                         <td className="py-3 px-4">
                           {(() => {
@@ -1304,18 +1307,18 @@ const ProposalPage = () => {
               </div>
 
               {/* Pagination Footer */}
-              <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200">
-                <div className="text-xs text-gray-500">
+              <div className="flex items-center justify-between px-4 py-3 bg-[var(--bg-surface)] border-t border-[var(--border-base)]">
+                <div className="text-xs text-[var(--text-muted)]">
                   Showing 1 to {filteredProposals.length} of {filteredProposals.length} entries
                 </div>
                 <div className="flex items-center gap-1">
-                  <button className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700 disabled:opacity-50" disabled>
+                  <button className="px-3 py-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] disabled:opacity-50" disabled>
                     Previous
                   </button>
-                  <button className="px-3 py-1 text-xs font-medium text-white bg-gray-400 rounded">
+                  <button className="px-3 py-1 text-xs font-medium text-[var(--primary-inv)] bg-[var(--text-muted)] rounded">
                     1
                   </button>
-                  <button className="px-3 py-1 text-xs text-gray-500 hover:text-gray-700 disabled:opacity-50" disabled>
+                  <button className="px-3 py-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] disabled:opacity-50" disabled>
                     Next
                   </button>
                 </div>
@@ -1416,13 +1419,13 @@ const ProposalPage = () => {
         <div className="space-y-4">
           {/* Date to be notified */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <span className="text-red-500">*</span> Date to be notified
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+              <span className="text-[var(--red)]">*</span> Date to be notified
             </label>
             <div className="relative">
               <input
                 type="datetime-local"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 border border-[var(--border-base)] rounded-lg text-sm focus:outline-none focus:border-[var(--primary)]"
                 defaultValue={new Date().toISOString().slice(0, 16)}
               />
             </div>
@@ -1430,11 +1433,11 @@ const ProposalPage = () => {
 
           {/* Note */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Note</label>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Note</label>
             <textarea
               placeholder="Enter reminder note..."
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm resize-y focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 border border-[var(--border-base)] rounded-lg text-sm resize-y focus:outline-none focus:border-[var(--primary)]"
             />
           </div>
 
@@ -1442,7 +1445,7 @@ const ProposalPage = () => {
           <div className="flex justify-end gap-2 pt-2">
             <button
               onClick={() => setIsReminderModalOpen(false)}
-              className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded hover:bg-gray-50"
+              className="px-4 py-2 text-sm text-[var(--text-secondary)] border border-[var(--border-base)] rounded hover:bg-[var(--bg-elevated)]"
             >
               Close
             </button>
@@ -1451,7 +1454,7 @@ const ProposalPage = () => {
                 setIsReminderModalOpen(false);
                 toast.success('Reminder set successfully');
               }}
-              className="px-4 py-2 text-sm text-white bg-gray-800 hover:bg-gray-900 rounded"
+              className="px-4 py-2 text-sm text-white bg-[var(--primary)] hover:bg-[var(--primary-hover)] rounded"
             >
               Save
             </button>
@@ -1588,7 +1591,7 @@ const ProposalCard = ({ proposal, onView, onEdit, onDuplicate, onDelete, onDownl
         </div>
         <div className="glass-card p-2 text-center">
           <p className="text-[10px] text-[var(--text-muted)]">Total</p>
-          <p className="text-sm font-bold text-emerald-500">{(proposal.total / 100000).toFixed(1)}L</p>
+          <p className="text-sm font-bold text-[var(--green)]">{(proposal.total / 100000).toFixed(1)}L</p>
         </div>
       </div>
 
@@ -1600,7 +1603,7 @@ const ProposalCard = ({ proposal, onView, onEdit, onDuplicate, onDelete, onDownl
             {proposal.benefits.co2Reduction} Tons CO₂
           </span>
           <span className="flex items-center gap-1">
-            <Gauge size={10} className="text-blue-500" />
+            <Gauge size={10} className="text-[var(--primary)]" />
             {proposal.benefits.yearlySavings >= 100000
               ? `${(proposal.benefits.yearlySavings / 100000).toFixed(1)}L/yr`
               : `${proposal.benefits.yearlySavings.toLocaleString()}/yr`
@@ -1662,7 +1665,7 @@ const ProposalCard = ({ proposal, onView, onEdit, onDuplicate, onDelete, onDownl
                 Accepted
               </span>
             ) : (
-              <span className="flex items-center justify-center gap-1 text-red-400">
+              <span className="flex items-center justify-center gap-1 text-[var(--red)]">
                 <XSquare size={14} />
                 Rejected
               </span>
@@ -1690,7 +1693,7 @@ const ProposalCard = ({ proposal, onView, onEdit, onDuplicate, onDelete, onDownl
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          className="flex items-center justify-center p-1.5 rounded-lg bg-[var(--bg-elevated)] text-red-400 hover:bg-red-400/10 transition-colors"
+            className="flex items-center justify-center p-1.5 rounded-lg bg-[var(--bg-elevated)] text-[var(--red)] hover:bg-[var(--bg-hover)] transition-colors"
         >
           <Trash2 size={14} />
         </button>
@@ -1728,7 +1731,7 @@ const ConvertFromEstimate = ({ estimates, onConvert, onCancel }) => {
                 <p className="text-sm text-[var(--text-muted)]">{estimate.customerName}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-emerald-500">{fmt(estimate.total)}</p>
+                <p className="text-sm font-bold text-[var(--green)]">{fmt(estimate.total)}</p>
                 <p className="text-xs text-[var(--text-muted)]">{estimate.systemCapacity} kW</p>
               </div>
             </div>
@@ -1864,6 +1867,41 @@ const CreateProposalWizard = ({
 
   const [showQtyAs, setShowQtyAs] = useState('qty'); // 'qty' | 'hours' | 'qty/hours'
   const [editingItem, setEditingItem] = useState(null);
+  
+  // Inventory items state for dropdown
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedInventoryItem, setSelectedInventoryItem] = useState('');
+  const [isLoadingInventory, setIsLoadingInventory] = useState(false);
+
+  // Fetch inventory items and categories
+  const fetchInventoryData = async () => {
+    setIsLoadingInventory(true);
+    try {
+      const [itemsRes, catsRes] = await Promise.all([
+        inventoryApi.getAll(),
+        inventoryApi.getCategories()
+      ]);
+      
+      const items = itemsRes?.data ?? itemsRes ?? [];
+      const cats = catsRes?.data ?? catsRes ?? [];
+      
+      setInventoryItems(Array.isArray(items) ? items : []);
+      setCategories(Array.isArray(cats) ? cats : []);
+    } catch (err) {
+      console.error('Failed to fetch inventory data:', err);
+    } finally {
+      setIsLoadingInventory(false);
+    }
+  };
+
+  // Fetch on mount and set up polling every 30 seconds
+  useEffect(() => {
+    fetchInventoryData();
+    const interval = setInterval(fetchInventoryData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const [newItem, setNewItem] = useState({
     description: '',
     longDescription: '',
@@ -1871,7 +1909,8 @@ const CreateProposalWizard = ({
     unit: '',
     rate: 0,
     tax: 'No Tax',
-    isOptional: false
+    isOptional: false,
+    inventoryItemId: null
   });
 
   const calculateTotals = () => {
@@ -1906,8 +1945,10 @@ const CreateProposalWizard = ({
       unit: '',
       rate: 0,
       tax: 'No Tax',
-      isOptional: false
+      isOptional: false,
+      inventoryItemId: null
     });
+    setSelectedInventoryItem('');
     setEditingItem(null);
   };
 
@@ -1972,8 +2013,8 @@ const CreateProposalWizard = ({
     : "w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-blue-500";
 
   const selectBaseClass = readOnly
-    ? "w-full px-3 py-2 border border-gray-200 rounded text-sm bg-gray-50 text-gray-700 cursor-default appearance-none"
-    : "w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-blue-500 bg-white";
+    ? "w-full px-3 py-2 border border-[var(--border-base)] rounded text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)] cursor-default appearance-none"
+    : "w-full px-3 py-2 border border-[var(--border-base)] rounded text-sm focus:outline-none focus:border-[var(--primary)] bg-[var(--bg-elevated)] text-[var(--text-primary)]";
 
   const { subtotal, discountAmount, total } = calculateTotals();
 
@@ -1995,14 +2036,14 @@ const CreateProposalWizard = ({
 
       {/* Header - Only show in readOnly mode */}
       {readOnly && initialData && (
-        <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+        <div className="flex items-center justify-between pb-4 border-b border-[var(--border-base)]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <FileText size={20} className="text-blue-600" />
+              <div className="w-10 h-10 rounded-lg bg-[var(--blue-bg)] flex items-center justify-center">
+                <FileText size={20} className="text-[var(--blue)]" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-800">{initialData.proposalNumber}</h2>
-              <p className="text-xs text-gray-500">Proposal Details</p>
+              <h2 className="text-lg font-bold text-[var(--text-primary)]">{initialData.proposalNumber}</h2>
+              <p className="text-xs text-[var(--text-muted)]">Proposal Details</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -2023,8 +2064,8 @@ const CreateProposalWizard = ({
         <div className="space-y-4">
           {/* Subject */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <span className="text-red-500">*</span> Subject
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+              <span className="text-[var(--red)]">*</span> Subject
             </label>
             <input
               type="text"
@@ -2038,7 +2079,7 @@ const CreateProposalWizard = ({
 
           {/* Related */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Related</label>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Related</label>
             <select
               value={formData.related}
               onChange={(e) => !readOnly && setFormData({ ...formData, related: e.target.value })}
@@ -2055,7 +2096,7 @@ const CreateProposalWizard = ({
           {/* Date Row */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Date</label>
               <input
                 type="date"
                 value={formData.date}
@@ -2065,7 +2106,7 @@ const CreateProposalWizard = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Open Till</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Open Till</label>
               <input
                 type="date"
                 value={formData.openTill}
@@ -2079,7 +2120,7 @@ const CreateProposalWizard = ({
           {/* Currency & Discount Type */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Currency</label>
               <select
                 value={formData.currency}
                 onChange={(e) => !readOnly && setFormData({ ...formData, currency: e.target.value })}
@@ -2092,7 +2133,7 @@ const CreateProposalWizard = ({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Discount Type</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Discount Type</label>
               <select
                 value={formData.discountType}
                 onChange={(e) => !readOnly && setFormData({ ...formData, discountType: e.target.value })}
@@ -2108,8 +2149,8 @@ const CreateProposalWizard = ({
 
           {/* Tags */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <span className="text-gray-400">#</span> Tags
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+              <span className="text-[var(--text-muted)]">#</span> Tags
             </label>
             <input
               type="text"
@@ -2123,7 +2164,7 @@ const CreateProposalWizard = ({
 
           {/* Allow Comments Toggle */}
           <div className="flex items-center gap-3">
-            <label className="text-sm font-medium text-gray-700">Allow Comments</label>
+            <label className="text-sm font-medium text-[var(--text-secondary)]">Allow Comments</label>
             <button
               type="button"
               onClick={() => !readOnly && setFormData({ ...formData, allowComments: !formData.allowComments })}
@@ -2143,8 +2184,8 @@ const CreateProposalWizard = ({
           {/* Status & Assigned */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <span className="text-red-500">*</span> Status
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                <span className="text-[var(--red)]">*</span> Status
               </label>
               <select
                 value={formData.status}
@@ -2159,7 +2200,7 @@ const CreateProposalWizard = ({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Assigned</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Assigned</label>
               <select
                 value={formData.assignedTo}
                 onChange={(e) => !readOnly && setFormData({ ...formData, assignedTo: e.target.value })}
@@ -2175,8 +2216,8 @@ const CreateProposalWizard = ({
 
           {/* To */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              <span className="text-red-500">*</span> To (Customer Name)
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+              <span className="text-[var(--red)]">*</span> To (Customer Name)
             </label>
             <input
               type="text"
@@ -2190,7 +2231,7 @@ const CreateProposalWizard = ({
 
           {/* Address */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Address</label>
             <textarea
               value={formData.address}
               onChange={(e) => !readOnly && setFormData({ ...formData, address: e.target.value })}
@@ -2204,7 +2245,7 @@ const CreateProposalWizard = ({
           {/* City, State, Country, Zip */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">City</label>
               <input
                 type="text"
                 value={formData.city}
@@ -2214,7 +2255,7 @@ const CreateProposalWizard = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">State</label>
               <input
                 type="text"
                 value={formData.state}
@@ -2227,7 +2268,7 @@ const CreateProposalWizard = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Country</label>
               <select
                 value={formData.country}
                 onChange={(e) => !readOnly && setFormData({ ...formData, country: e.target.value })}
@@ -2241,7 +2282,7 @@ const CreateProposalWizard = ({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Zip Code</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Zip Code</label>
               <input
                 type="text"
                 value={formData.zipCode}
@@ -2255,8 +2296,8 @@ const CreateProposalWizard = ({
           {/* Email & Phone */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <span className="text-red-500">*</span> Email
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                <span className="text-[var(--red)]">*</span> Email
               </label>
               <input
                 type="email"
@@ -2267,7 +2308,7 @@ const CreateProposalWizard = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Phone</label>
               <input
                 type="tel"
                 value={formData.phone}
@@ -2281,7 +2322,7 @@ const CreateProposalWizard = ({
       </div>
 
       {/* Items Section */}
-      <div className="border-t border-gray-200 pt-6">
+      <div className="border-t border-[var(--border-base)] pt-6">
         {!readOnly && (
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -2292,21 +2333,70 @@ const CreateProposalWizard = ({
                     setEditingItem(Date.now());
                   }
                 }}
-                className="px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-blue-500 bg-white"
+                className="px-3 py-2 border border-[var(--border-base)] rounded text-sm focus:outline-none focus:border-[var(--primary)] bg-[var(--bg-elevated)] text-[var(--text-primary)]"
               >
                 <option>Add Item</option>
                 <option value="custom">Custom Item</option>
               </select>
+              
+              {/* Inventory Item Selection */}
+              <select
+                value={selectedInventoryItem}
+                onChange={(e) => {
+                  const selectedId = e.target.value;
+                  setSelectedInventoryItem(selectedId);
+                  if (selectedId) {
+                    const item = inventoryItems.find(i => (i.itemId || i._id || i.id) === selectedId);
+                    if (item) {
+                      setNewItem({
+                        description: item.description || item.name || '',
+                        longDescription: item.longDescription || '',
+                        quantity: 1,
+                        unit: item.unit || '',
+                        rate: item.rate || 0,
+                        tax: 'No Tax',
+                        isOptional: false,
+                        inventoryItemId: item.itemId || item._id || item.id,
+                        category: item.category || ''
+                      });
+                      setEditingItem(Date.now());
+                    }
+                  }
+                }}
+                className="px-3 py-2 border border-[var(--border-base)] rounded text-sm focus:outline-none focus:border-[var(--primary)] bg-[var(--bg-elevated)] text-[var(--text-primary)]"
+              >
+                <option value="">📦 From Inventory</option>
+                {inventoryItems.map(item => {
+                  const itemId = item.itemId || item._id || item.id;
+                  const itemName = item.description || item.name || 'Unnamed Item';
+                  const stock = item.available ?? item.stock ?? 0;
+                  const isOutOfStock = stock <= 0;
+                  return (
+                      <option key={itemId} value={itemId} className={isOutOfStock ? 'text-[var(--red)]' : ''}>
+                      {itemName} {isOutOfStock ? '⚠️ Out of Stock' : ''}
+                    </option>
+                  );
+                })}
+              </select>
+              
+              <button
+                onClick={fetchInventoryData}
+                className="w-8 h-8 flex items-center justify-center border border-[var(--border-base)] rounded text-[var(--primary)] hover:bg-[var(--bg-hover)]"
+                title="Refresh inventory"
+              >
+                <RefreshCw size={14} className={isLoadingInventory ? 'animate-spin' : ''} />
+              </button>
+              
               <button
                 onClick={() => setEditingItem(Date.now())}
-                className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded text-gray-600 hover:bg-gray-50"
+                className="w-8 h-8 flex items-center justify-center border border-[var(--border-base)] rounded text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]"
               >
                 +
               </button>
             </div>
 
             <div className="flex items-center gap-2 text-xs">
-              <span className="text-gray-500">Show quantity as:</span>
+              <span className="text-[var(--text-muted)]">Show quantity as:</span>
               <label className="flex items-center gap-1">
                 <input
                   type="radio"
@@ -2342,37 +2432,37 @@ const CreateProposalWizard = ({
         )}
 
         {/* Items Table */}
-        <div className="border border-gray-200 rounded overflow-hidden">
+        <div className="border border-[var(--border-base)] rounded overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-[var(--bg-elevated)]">
               <tr>
-                <th className="text-left py-2 px-3 text-xs font-medium text-gray-600 w-8"></th>
-                <th className="text-left py-2 px-3 text-xs font-medium text-gray-600">Item</th>
-                <th className="text-left py-2 px-3 text-xs font-medium text-gray-600">Description</th>
-                <th className="text-center py-2 px-3 text-xs font-medium text-gray-600 w-16">Qty</th>
-                <th className="text-left py-2 px-3 text-xs font-medium text-gray-600 w-20">Rate</th>
-                <th className="text-left py-2 px-3 text-xs font-medium text-gray-600 w-24">Tax</th>
-                <th className="text-right py-2 px-3 text-xs font-medium text-gray-600 w-24">Amount</th>
-                {!readOnly && <th className="text-center py-2 px-3 text-xs font-medium text-gray-600 w-10"></th>}
+                <th className="text-left py-2 px-3 text-xs font-medium text-[var(--text-secondary)] w-8"></th>
+                <th className="text-left py-2 px-3 text-xs font-medium text-[var(--text-secondary)]">Item</th>
+                <th className="text-left py-2 px-3 text-xs font-medium text-[var(--text-secondary)]">Description</th>
+                <th className="text-center py-2 px-3 text-xs font-medium text-[var(--text-secondary)] w-16">Qty</th>
+                <th className="text-left py-2 px-3 text-xs font-medium text-[var(--text-secondary)] w-20">Rate</th>
+                <th className="text-left py-2 px-3 text-xs font-medium text-[var(--text-secondary)] w-24">Tax</th>
+                <th className="text-right py-2 px-3 text-xs font-medium text-[var(--text-secondary)] w-24">Amount</th>
+                {!readOnly && <th className="text-center py-2 px-3 text-xs font-medium text-[var(--text-secondary)] w-10"></th>}
               </tr>
             </thead>
             <tbody>
               {formData.items.length === 0 && editingItem === null && (
                 <tr>
-                  <td colSpan={8} className="py-8 text-center text-gray-400 text-sm">
+                  <td colSpan={8} className="py-8 text-center text-[var(--text-muted)] text-sm">
                     No items added. Click + to add an item.
                   </td>
                 </tr>
               )}
 
               {formData.items.map((item, index) => (
-                <tr key={item.id} className="border-t border-gray-100">
+                <tr key={item.id} className="border-t border-[var(--border-base)]">
                   <td className="py-2 px-3">
-                    <span className="text-xs text-gray-500">{index + 1}</span>
+                    <span className="text-xs text-[var(--text-muted)]">{index + 1}</span>
                   </td>
                   <td className="py-2 px-3">
                     {readOnly ? (
-                      <span className="text-sm text-gray-700">{item.description}</span>
+                      <span className="text-sm text-[var(--text-primary)]">{item.description}</span>
                     ) : (
                       <input
                         type="text"
@@ -2382,14 +2472,14 @@ const CreateProposalWizard = ({
                           newItems[index].description = e.target.value;
                           setFormData({ ...formData, items: newItems });
                         }}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                        className="w-full px-2 py-1 border border-[var(--border-base)] rounded text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                         placeholder="Description"
                       />
                     )}
                   </td>
                   <td className="py-2 px-3">
                     {readOnly ? (
-                      <span className="text-sm text-gray-500">{item.longDescription}</span>
+                      <span className="text-sm text-[var(--text-muted)]">{item.longDescription}</span>
                     ) : (
                       <input
                         type="text"
@@ -2399,28 +2489,28 @@ const CreateProposalWizard = ({
                           newItems[index].longDescription = e.target.value;
                           setFormData({ ...formData, items: newItems });
                         }}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                        className="w-full px-2 py-1 border border-[var(--border-base)] rounded text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                         placeholder="Long description"
                       />
                     )}
                   </td>
-                  <td className="py-2 px-3 text-center text-sm text-gray-700">
+                  <td className="py-2 px-3 text-center text-sm text-[var(--text-secondary)]">
                     {item.quantity}
                   </td>
-                  <td className="py-2 px-3 text-sm text-gray-700">
+                  <td className="py-2 px-3 text-sm text-[var(--text-secondary)]">
                     {item.rate?.toFixed(2)}
                   </td>
-                  <td className="py-2 px-3 text-sm text-gray-700">
+                  <td className="py-2 px-3 text-sm text-[var(--text-secondary)]">
                     {item.tax}
                   </td>
-                  <td className="py-2 px-3 text-right text-sm font-medium text-gray-800">
+                  <td className="py-2 px-3 text-right text-sm font-medium text-[var(--text-primary)]">
                     ${item.amount?.toFixed(2) || '0.00'}
                   </td>
                   {!readOnly && (
                     <td className="py-2 px-3 text-center">
                       <button
                         onClick={() => handleRemoveItem(item.id)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-[var(--red)] hover:text-[var(--red)]"
                       >
                         ×
                       </button>
@@ -2431,16 +2521,16 @@ const CreateProposalWizard = ({
 
               {/* New Item Row - Only show when not readOnly */}
               {!readOnly && editingItem !== null && (
-                <tr className="border-t border-gray-100 bg-blue-50/50">
+                  <tr className="border-t border-[var(--border-base)] bg-[var(--bg-hover)]/50">
                   <td className="py-2 px-3">
-                    <span className="text-xs text-gray-500">{formData.items.length + 1}</span>
+                    <span className="text-xs text-[var(--text-muted)]">{formData.items.length + 1}</span>
                   </td>
                   <td className="py-2 px-3">
                     <input
                       type="text"
                       value={newItem.description}
                       onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                      className="w-full px-2 py-1 border border-[var(--border-base)] rounded text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                       placeholder="Description"
                     />
                   </td>
@@ -2449,7 +2539,7 @@ const CreateProposalWizard = ({
                       type="text"
                       value={newItem.longDescription}
                       onChange={(e) => setNewItem({ ...newItem, longDescription: e.target.value })}
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                      className="w-full px-2 py-1 border border-[var(--border-base)] rounded text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                       placeholder="Long description"
                     />
                   </td>
@@ -2458,7 +2548,7 @@ const CreateProposalWizard = ({
                       type="number"
                       value={newItem.quantity}
                       onChange={(e) => setNewItem({ ...newItem, quantity: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-sm text-center"
+                      className="w-full px-2 py-1 border border-[var(--border-base)] rounded text-sm text-center bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                     />
                   </td>
                   <td className="py-2 px-3">
@@ -2466,14 +2556,14 @@ const CreateProposalWizard = ({
                       type="number"
                       value={newItem.rate}
                       onChange={(e) => setNewItem({ ...newItem, rate: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                      className="w-full px-2 py-1 border border-[var(--border-base)] rounded text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                     />
                   </td>
                   <td className="py-2 px-3">
                     <select
                       value={newItem.tax}
                       onChange={(e) => setNewItem({ ...newItem, tax: e.target.value })}
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-sm bg-white"
+                      className="w-full px-2 py-1 border border-[var(--border-base)] rounded text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                     >
                       <option>No Tax</option>
                       <option>GST 5%</option>
@@ -2508,7 +2598,7 @@ const CreateProposalWizard = ({
             onChange={(e) => setNewItem({ ...newItem, isOptional: e.target.checked })}
             className="w-4 h-4"
           />
-          <label htmlFor="optionalItem" className="text-sm text-gray-600">
+          <label htmlFor="optionalItem" className="text-sm text-[var(--text-secondary)]">
             This item is optional
           </label>
         </div>
@@ -2518,32 +2608,32 @@ const CreateProposalWizard = ({
       <div className="flex justify-end">
         <div className="w-full max-w-md space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Sub Total:</span>
+            <span className="text-[var(--text-secondary)]">Sub Total:</span>
             <span className="font-medium">${subtotal.toFixed(2)}</span>
           </div>
 
           {formData.discountType !== 'no_discount' && (
             <div className="flex justify-between text-sm items-center">
-              <span className="text-gray-600">Discount {formData.discountType === 'percentage' ? '%' : ''}:</span>
+              <span className="text-[var(--text-secondary)]">Discount {formData.discountType === 'percentage' ? '%' : ''}:</span>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
                   value={formData.discount}
                   onChange={(e) => setFormData({ ...formData, discount: parseFloat(e.target.value) || 0 })}
-                  className="w-20 px-2 py-1 border border-gray-300 rounded text-sm text-right"
+                  className="w-20 px-2 py-1 border border-[var(--border-base)] rounded text-sm text-right"
                 />
-                <span className="text-gray-600 w-16 text-right">-${discountAmount.toFixed(2)}</span>
+                <span className="text-[var(--text-secondary)] w-16 text-right">-${discountAmount.toFixed(2)}</span>
               </div>
             </div>
           )}
 
           <div className="flex justify-between text-sm items-center">
-            <span className="text-gray-600">Adjustment:</span>
+            <span className="text-[var(--text-secondary)]">Adjustment:</span>
             <input
               type="number"
               value={formData.adjustment}
               onChange={(e) => setFormData({ ...formData, adjustment: parseFloat(e.target.value) || 0 })}
-              className="w-20 px-2 py-1 border border-gray-300 rounded text-sm text-right"
+              className="w-20 px-2 py-1 border border-[var(--border-base)] rounded text-sm text-right"
             />
           </div>
 
@@ -2555,8 +2645,8 @@ const CreateProposalWizard = ({
       </div>
 
       {/* Terms & Footer */}
-      <div className="border-t border-gray-200 pt-4">
-        <p className="text-xs text-gray-500 mb-4">
+      <div className="border-t border-[var(--border-base)] pt-4">
+        <p className="text-xs text-[var(--text-muted)] mb-4">
           Include proposal items with merge field anywhere in proposal content by using: {'{proposal_items}'}
         </p>
 
@@ -2565,7 +2655,7 @@ const CreateProposalWizard = ({
             <>
               <button
                 onClick={onCancel}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded"
+                className="px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-base)] rounded"
               >
                 Close
               </button>
@@ -2581,7 +2671,7 @@ const CreateProposalWizard = ({
               <button
                 type="button"
                 onClick={onCancel}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                className="px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               >
                 Cancel
               </button>
@@ -2652,7 +2742,7 @@ const ProposalDetail = ({ proposal, onEdit, onDelete, onDownload, onCustomizePDF
           <span className="text-xs text-[var(--text-muted)]">{statusConfig.description}</span>
         </div>
         <div className="text-right">
-          <p className="text-3xl font-black text-emerald-500">{fmt(proposal.total)}</p>
+          <p className="text-3xl font-black text-[var(--green)]">{fmt(proposal.total)}</p>
           <p className="text-xs text-[var(--text-muted)]">Total Project Value</p>
         </div>
       </div>
@@ -2793,8 +2883,8 @@ const ProposalDetail = ({ proposal, onEdit, onDelete, onDownload, onCustomizePDF
               <span>{fmt(proposal.gstAmount)}</span>
             </div>
             <div className="flex justify-between text-lg font-bold pt-2 border-t-2 border-[var(--border-base)]">
-              <span className="text-emerald-500">Grand Total</span>
-              <span className="text-emerald-500">{fmt(proposal.total)}</span>
+              <span className="text-[var(--green)]">Grand Total</span>
+              <span className="text-[var(--green)]">{fmt(proposal.total)}</span>
             </div>
           </div>
         </div>
@@ -2813,9 +2903,9 @@ const ProposalDetail = ({ proposal, onEdit, onDelete, onDownload, onCustomizePDF
               <p className="text-lg font-bold text-green-600">{proposal.benefits.co2Reduction}</p>
               <p className="text-xs text-[var(--text-muted)]">Tons CO₂/yr</p>
             </div>
-            <div className="text-center p-3 rounded-lg bg-emerald-500/10">
-              <DollarSign size={20} className="text-emerald-500 mx-auto mb-1" />
-              <p className="text-lg font-bold text-emerald-600">
+            <div className="text-center p-3 rounded-lg bg-[var(--green)]/10">
+              <DollarSign size={20} className="text-[var(--green)] mx-auto mb-1" />
+              <p className="text-lg font-bold text-[var(--green)]">
                 {proposal.benefits.yearlySavings >= 100000
                   ? `${(proposal.benefits.yearlySavings / 100000).toFixed(1)}L`
                   : (proposal.benefits.yearlySavings / 1000).toFixed(1) + 'K'
@@ -2823,9 +2913,9 @@ const ProposalDetail = ({ proposal, onEdit, onDelete, onDownload, onCustomizePDF
               </p>
               <p className="text-xs text-[var(--text-muted)]">Savings/yr</p>
             </div>
-            <div className="text-center p-3 rounded-lg bg-blue-500/10">
-              <Clock size={20} className="text-blue-500 mx-auto mb-1" />
-              <p className="text-lg font-bold text-blue-600">{proposal.benefits.paybackPeriod}</p>
+              <div className="text-center p-3 rounded-lg bg-[var(--blue-bg)]">
+                <Clock size={20} className="text-[var(--blue)] mx-auto mb-1" />
+              <p className="text-lg font-bold text-[var(--blue)]">{proposal.benefits.paybackPeriod}</p>
               <p className="text-xs text-[var(--text-muted)]">Years Payback</p>
             </div>
             <div className="text-center p-3 rounded-lg bg-amber-500/10">
@@ -2856,8 +2946,8 @@ const ProposalDetail = ({ proposal, onEdit, onDelete, onDownload, onCustomizePDF
         <h4 className="text-sm font-bold text-[var(--text-primary)] mb-3">Proposal Timeline</h4>
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center">
-              <FileText size={14} className="text-blue-500" />
+              <div className="w-8 h-8 rounded-full bg-[var(--blue-bg)] flex items-center justify-center">
+                <FileText size={14} className="text-[var(--blue)]" />
             </div>
             <div>
               <p className="font-medium">Created</p>
@@ -2868,8 +2958,8 @@ const ProposalDetail = ({ proposal, onEdit, onDelete, onDownload, onCustomizePDF
             <>
               <ArrowRight size={16} className="text-[var(--text-muted)]" />
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center">
-                  <Send size={14} className="text-purple-500" />
+                <div className="w-8 h-8 rounded-full bg-[var(--primary)]/10 flex items-center justify-center">
+                  <Send size={14} className="text-[var(--primary)]" />
                 </div>
                 <div>
                   <p className="font-medium">Sent</p>
@@ -2961,7 +3051,7 @@ const ProposalDetail = ({ proposal, onEdit, onDelete, onDownload, onCustomizePDF
         </button>
         <button
           onClick={onDelete}
-          className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-red-400/10 text-red-400 text-sm font-medium hover:bg-red-400/20 transition-colors"
+              className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--red-bg)] text-[var(--red)] text-sm font-medium hover:bg-[var(--red-bg)]/50 transition-colors"
         >
           <Trash2 size={16} />
           Delete
@@ -2987,7 +3077,7 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
   return (
     <div className="h-full flex flex-col">
       {/* Header Tabs */}
-      <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-2">
+      <div className="flex items-center justify-between border-b border-[var(--border-base)] bg-[var(--bg-elevated)] px-2">
         <div className="flex items-center overflow-x-auto">
           {tabs.map(tab => (
             <button
@@ -3003,18 +3093,18 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
           ))}
         </div>
         <div className="flex items-center gap-1 px-2">
-          <button className="p-2 text-gray-400 hover:text-gray-600">
+          <button className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
             <Printer size={16} />
           </button>
-          <button className="p-2 text-gray-400 hover:text-gray-600">
+          <button className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
             <Eye size={16} />
           </button>
-          <button className="p-2 text-gray-400 hover:text-gray-600">
+          <button className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
             <MoreVertical size={16} />
           </button>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600"
+            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
           >
             <X size={16} />
           </button>
@@ -3022,12 +3112,12 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
       </div>
 
       {/* Status Bar */}
-      <div className="bg-blue-50 border-l-4 border-blue-400 p-3 m-4 rounded">
+      <div className="bg-[var(--bg-hover)] border-l-4 border-[var(--primary)] p-3 m-4 rounded">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-blue-800">
+          <span className="text-sm text-[var(--text-primary)]">
             This proposal is {proposal.status} by {proposal.customerName} on {new Date(proposal.createdAt).toISOString().split('T')[0]} from IP address 49.200.152.110
           </span>
-          <button className="text-blue-400 hover:text-blue-600">
+          <button className="text-[var(--text-muted)] hover:text-[var(--primary)]">
             <X size={14} />
           </button>
         </div>
@@ -3044,16 +3134,16 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
 
               {/* Action Buttons */}
               <div className="flex items-center gap-2 mb-4">
-                <button className="p-2 text-gray-500 hover:text-gray-700 border border-gray-300 rounded">
+                <button className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] border border-[var(--border-base)] rounded">
                   <Edit size={16} />
                 </button>
-                <button className="p-2 text-gray-500 hover:text-gray-700 border border-gray-300 rounded">
+                <button className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] border border-[var(--border-base)] rounded">
                   <Send size={16} />
                 </button>
-                <button className="p-2 text-gray-500 hover:text-gray-700 border border-gray-300 rounded">
+                <button className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] border border-[var(--border-base)] rounded">
                   <FileText size={16} />
                 </button>
-                <button className="p-2 text-gray-500 hover:text-gray-700 border border-gray-300 rounded">
+                <button className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] border border-[var(--border-base)] rounded">
                   <MoreVertical size={16} />
                 </button>
                 <button
@@ -3081,44 +3171,41 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
             <div className="grid grid-cols-2 gap-6">
               {/* Company Info */}
               <div>
-                <h4 className="text-sm font-bold text-gray-800 mb-2">{COMPANY_DATA.name}</h4>
-                <p className="text-xs text-gray-600 mb-1">{COMPANY_DATA.address}</p>
-                <p className="text-xs text-gray-600 mb-1">{COMPANY_DATA.city}</p>
-                <p className="text-xs text-gray-600">{COMPANY_DATA.country}</p>
-                <p className="text-xs text-blue-600 mt-2">{COMPANY_DATA.phone}</p>
-                <p className="text-xs text-blue-600">{COMPANY_DATA.email}</p>
+                <h4 className="text-sm font-bold text-[var(--text-primary)] mb-2">{COMPANY_DATA.name}</h4>
+                <p className="text-xs text-[var(--text-secondary)] mb-1">{COMPANY_DATA.address}</p>
+                <p className="text-xs text-[var(--text-secondary)] mb-1">{COMPANY_DATA.city}</p>
+                <p className="text-xs text-[var(--text-secondary)]">{COMPANY_DATA.country}</p>
+                  <p className="text-xs text-[var(--primary)] mt-2">{COMPANY_DATA.phone}</p>
+                  <p className="text-xs text-[var(--primary)]">{COMPANY_DATA.email}</p>
               </div>
 
               {/* Customer Info */}
               <div className="text-right">
-                <p className="text-xs text-gray-500 mb-1">To:</p>
-                <h4 className="text-sm font-bold text-blue-600 mb-1">{proposal.customerName}</h4>
-                <p className="text-xs text-gray-600 mb-1">{proposal.customerAddress || '46756 Hermiston Square Apt. 314'}</p>
-                <p className="text-xs text-gray-600 mb-1">{proposal.projectLocation || 'New Ezequielville Wisconsin'}</p>
-                <p className="text-xs text-gray-600 mb-1">US 28250</p>
-                <p className="text-xs text-blue-600 mt-2">{proposal.customerPhone || '207-858-2043 x6555'}</p>
-                <p className="text-xs text-blue-600">{proposal.customerEmail || 'pulinch@example.net'}</p>
+                <p className="text-xs text-[var(--text-muted)] mb-1">To:</p>
+                  <h4 className="text-sm font-bold text-[var(--primary)] mb-1">{proposal.customerName}</h4>
+                  <p className="text-xs text-[var(--primary)] mt-2">{proposal.customerPhone || '207-858-2043 x6555'}</p>
+                  <p className="text-xs text-[var(--primary)]">{proposal.customerEmail || 'pulinch@example.net'}</p>
               </div>
             </div>
 
             {/* Available merge fields link */}
             <div className="text-right">
-              <button className="text-xs text-blue-500 hover:underline">
+              <button className="text-xs text-[var(--primary)] hover:underline">
                 Available merge fields
               </button>
             </div>
 
             {/* Content Area */}
-            <div className="border border-gray-200 rounded p-4 min-h-[150px]">
-              <p className="text-sm text-gray-700">
+            <div className="border border-[var(--border-base)] rounded p-4 min-h-[150px]">
+              <p className="text-sm text-[var(--text-secondary)]">
                 {proposal.projectDescription || 'vdsegretreykjsjhhuji'}
               </p>
             </div>
 
             {/* Signature Section */}
-            <div className="border-t border-gray-200 pt-4">
+            <div className="border-t border-[var(--border-base)] pt-4">
               <div className="flex items-start justify-between">
-                <div className="text-xs text-gray-600 space-y-1">
+                <div className="text-xs text-[var(--text-secondary)] space-y-1">
                   <p>Signer Name: {proposal.customerName}</p>
                   <p>Signed Date: {new Date(proposal.createdAt).toISOString().split('T')[0]} 07:52:52</p>
                   <p>IP Address: 49.200.152.110</p>
@@ -3140,10 +3227,10 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
           <div className="p-4">
             <textarea
               placeholder="Add a comment..."
-              className="w-full h-[100px] p-3 border border-gray-300 rounded-lg resize-y text-sm focus:outline-none focus:border-blue-500"
+              className="w-full h-[100px] p-3 border border-[var(--border-base)] rounded-lg resize-y text-sm focus:outline-none focus:border-[var(--primary)]"
             />
             <div className="flex justify-end mt-3">
-              <button className="px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded">
+              <button className="px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--primary-inv)] text-sm font-medium rounded">
                 Add Comment
               </button>
             </div>
@@ -3156,7 +3243,7 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
             <div>
               <button
                 onClick={onReminderClick}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded"
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--primary-inv)] text-sm font-medium rounded"
               >
                 <Bell size={16} />
                 Set Proposal Reminder
@@ -3164,26 +3251,26 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
             </div>
 
             {/* Toolbar */}
-            <div className="flex items-center justify-between py-3 border-t border-b border-gray-200">
+            <div className="flex items-center justify-between py-3 border-t border-b border-[var(--border-base)]">
               <div className="flex items-center gap-2">
-                <select className="px-2 py-1 text-sm border border-gray-300 rounded bg-white">
+                <select className="px-2 py-1 text-sm border border-[var(--border-base)] rounded bg-[var(--bg-surface)]">
                   <option value="25">25</option>
                   <option value="50">50</option>
                   <option value="100">100</option>
                 </select>
-                <button className="px-3 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                <button className="px-3 py-1 text-sm text-[var(--text-secondary)] border border-[var(--border-base)] rounded hover:bg-[var(--bg-elevated)]">
                   Export
                 </button>
-                <button className="p-1 text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+                <button className="p-1 text-[var(--text-secondary)] border border-[var(--border-base)] rounded hover:bg-[var(--bg-elevated)]">
                   <RefreshCw size={14} />
                 </button>
               </div>
               <div className="relative">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="w-[180px] pl-9 pr-3 py-1 text-sm border border-gray-300 rounded focus:outline-none"
+                  className="w-[180px] pl-9 pr-3 py-1 text-sm border border-[var(--border-base)] rounded focus:outline-none"
                 />
               </div>
             </div>
@@ -3191,16 +3278,16 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
             {/* Table */}
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-2 text-sm font-medium text-gray-600">Description</th>
-                  <th className="text-left py-2 text-sm font-medium text-gray-600">Date</th>
-                  <th className="text-left py-2 text-sm font-medium text-gray-600">Remind</th>
-                  <th className="text-left py-2 text-sm font-medium text-gray-600">Is notified?</th>
+                <tr className="border-b border-[var(--border-base)]">
+                  <th className="text-left py-2 text-sm font-medium text-[var(--text-secondary)]">Description</th>
+                  <th className="text-left py-2 text-sm font-medium text-[var(--text-secondary)]">Date</th>
+                  <th className="text-left py-2 text-sm font-medium text-[var(--text-secondary)]">Remind</th>
+                  <th className="text-left py-2 text-sm font-medium text-[var(--text-secondary)]">Is notified?</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td colSpan="4" className="py-8 text-center text-gray-500 text-sm">
+                  <td colSpan="4" className="py-8 text-center text-[var(--text-muted)] text-sm">
                     No entries found
                   </td>
                 </tr>
@@ -3210,22 +3297,22 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
         )}
 
         {activeTab === 'tasks' && (
-          <div className="p-4 text-center text-gray-500">
-            <CheckSquare size={48} className="mx-auto mb-2 text-gray-300" />
+          <div className="p-4 text-center text-[var(--text-muted)]">
+            <CheckSquare size={48} className="mx-auto mb-2 text-[var(--text-muted)]" />
             <p>No tasks yet</p>
           </div>
         )}
 
         {activeTab === 'notes' && (
-          <div className="p-4 text-center text-gray-500">
-            <FileText size={48} className="mx-auto mb-2 text-gray-300" />
+          <div className="p-4 text-center text-[var(--text-muted)]">
+            <FileText size={48} className="mx-auto mb-2 text-[var(--text-muted)]" />
             <p>No notes added</p>
           </div>
         )}
 
         {activeTab === 'templates' && (
-          <div className="p-4 text-center text-gray-500">
-            <LayoutGrid size={48} className="mx-auto mb-2 text-gray-300" />
+          <div className="p-4 text-center text-[var(--text-muted)]">
+            <LayoutGrid size={48} className="mx-auto mb-2 text-[var(--text-muted)]" />
             <p>No templates available</p>
           </div>
         )}
@@ -3270,7 +3357,7 @@ const KanbanView = ({ proposals, onCardClick }) => {
                 <p className="text-xs font-medium text-[var(--text-primary)] line-clamp-1">{proposal.projectName}</p>
                 <p className="text-[10px] text-[var(--text-muted)]">{proposal.customerName}</p>
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs font-bold text-emerald-500">{(proposal.total / 100000).toFixed(1)}L</span>
+                  <span className="text-xs font-bold text-[var(--green)]">{(proposal.total / 100000).toFixed(1)}L</span>
                   <span className="text-[10px] text-[var(--text-muted)]">{proposal.systemCapacity} kW</span>
                 </div>
               </div>

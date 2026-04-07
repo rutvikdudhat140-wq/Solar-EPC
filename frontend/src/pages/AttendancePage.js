@@ -319,7 +319,7 @@ const AttendancePage = () => {
       key: 'checkIn',
       header: 'Check In',
       render: (val) => val ? (
-        <div className="flex items-center gap-2 text-emerald-600">
+        <div className="flex items-center gap-2 text-[var(--green)]">
           <LogIn size={14} />
           <span className="text-sm font-medium">{format(new Date(val), 'hh:mm a')}</span>
         </div>
@@ -331,7 +331,7 @@ const AttendancePage = () => {
       key: 'checkOut',
       header: 'Check Out',
       render: (val) => val ? (
-        <div className="flex items-center gap-2 text-blue-600">
+        <div className="flex items-center gap-2 text-[var(--primary)]">
           <LogOut size={14} />
           <span className="text-sm font-medium">{format(new Date(val), 'hh:mm a')}</span>
         </div>
@@ -397,7 +397,7 @@ const AttendancePage = () => {
                 setAttendanceForm({ ...attendanceForm, employeeId: record.employeeId?._id });
                 setShowCheckInModal(true);
               }}
-              className="text-xs text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+              className="text-xs text-[var(--green)] border-[var(--border-base)] hover:bg-[var(--bg-hover)]"
             >
               <LogIn size={12} className="mr-1" /> Check In
             </Button>
@@ -407,7 +407,7 @@ const AttendancePage = () => {
               variant="outline"
               size="sm"
               onClick={() => handleCheckOut(record.employeeId?._id)}
-              className="text-xs text-blue-600 border-blue-200 hover:bg-blue-50"
+              className="text-xs text-[var(--primary)] border-[var(--border-base)] hover:bg-[var(--bg-hover)]"
             >
               <LogOut size={12} className="mr-1" /> Check Out
             </Button>
@@ -502,7 +502,7 @@ const AttendancePage = () => {
           </h3>
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-emerald-500" />
+              <div className="w-3 h-3 rounded-full bg-[var(--green)]" />
               <span>Present: {analytics.trends.present}</span>
             </div>
             <div className="flex items-center gap-2">
@@ -519,7 +519,7 @@ const AttendancePage = () => {
         {/* Progress Bar */}
         <div className="h-4 bg-[var(--bg-elevated)] rounded-full overflow-hidden flex">
           <div
-            className="h-full bg-emerald-500 transition-all duration-500"
+            className="h-full bg-[var(--green)] transition-all duration-500"
             style={{ width: `${analytics.totalEmployees > 0 ? (analytics.presentToday / analytics.totalEmployees) * 100 : 0}%` }}
           />
           <div
