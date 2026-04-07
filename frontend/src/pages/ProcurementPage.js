@@ -61,7 +61,7 @@ const POCard = ({ po, onDragStart, onClick }) => {
         <span>Expected: {po.expectedDate}</span>
       </div>
       {po.deliveredDate && (
-        <div className="flex items-center gap-1 mt-1 text-[10px] text-emerald-400">
+        <div className="flex items-center gap-1 mt-1 text-[10px] text-[var(--green)]">
           <CheckCircle size={9} />
           <span>Delivered: {po.deliveredDate}</span>
         </div>
@@ -421,7 +421,7 @@ const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
         <div className="glass-card p-4">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2">
-              <IndianRupee size={14} className="text-emerald-400" />
+              <IndianRupee size={14} className="text-[var(--green)]" />
               Monthly Spend (₹ Lakhs)
             </h4>
             <div className="flex items-center gap-1">
@@ -500,14 +500,14 @@ const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
                         day === null 
                           ? 'invisible' 
                           : hasData 
-                            ? 'bg-emerald-500/20 hover:bg-emerald-500/30' 
+                            ? 'bg-[var(--green)]/20 hover:bg-[var(--green)]/30' 
                             : 'bg-[var(--bg-elevated)] hover:bg-[var(--border-base)]'
                       } ${isToday ? 'ring-1 ring-[var(--accent-light)]' : ''}`}
                       title={hasData ? `₹${dayData.amount.toFixed(1)}L - ${dayData.count} POs` : 'No data'}
                     >
-                      <span className={`font-medium ${hasData ? 'text-emerald-400' : 'text-[var(--text-muted)]'}`}>{day}</span>
+                      <span className={`font-medium ${hasData ? 'text-[var(--green)]' : 'text-[var(--text-muted)]'}`}>{day}</span>
                       {hasData && (
-                        <span className="text-[8px] text-emerald-500">₹{dayData.amount.toFixed(0)}</span>
+                        <span className="text-[8px] text-[var(--green)]">₹{dayData.amount.toFixed(0)}</span>
                       )}
                     </div>
                   );
@@ -519,7 +519,7 @@ const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
                 <span className="text-[10px] text-[var(--text-muted)]">
                   {calendarData.reduce((sum, d) => sum + d.count, 0)} POs this month
                 </span>
-                <span className="text-sm font-bold text-emerald-400">
+                <span className="text-sm font-bold text-[var(--green)]">
                   ₹{(calendarData.reduce((sum, d) => sum + d.amount, 0)).toFixed(1)}L
                 </span>
               </div>
@@ -571,7 +571,7 @@ const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
           {!showCalendarView && (
             <div className="mt-2 pt-2 border-t border-[var(--border-base)] flex justify-between items-center">
               <span className="text-[10px] text-[var(--text-muted)]">Total Spend</span>
-              <span className="text-sm font-bold text-emerald-400">₹{(totalAmount / 100000).toFixed(1)}L</span>
+              <span className="text-sm font-bold text-[var(--green)]">₹{(totalAmount / 100000).toFixed(1)}L</span>
             </div>
           )}
         </div>
@@ -618,9 +618,9 @@ const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
           
           {/* Summary stats */}
           <div className="mt-4 pt-3 border-t border-[var(--border-base)] grid grid-cols-3 gap-2">
-            <div className="text-center p-2 rounded-lg bg-emerald-500/10">
-              <span className="text-[9px] text-emerald-400 block">Done</span>
-              <p className="text-lg font-bold text-emerald-400">{statusCounts.Delivered}</p>
+            <div className="text-center p-2 rounded-lg bg-[var(--green)]/10">
+              <span className="text-[9px] text-[var(--green)] block">Done</span>
+              <p className="text-lg font-bold text-[var(--green)]">{statusCounts.Delivered}</p>
             </div>
             <div className="text-center p-2 rounded-lg bg-blue-500/10">
               <span className="text-[9px] text-blue-400 block">Active</span>
@@ -1877,7 +1877,7 @@ const ProcurementPage = () => {
               <div className="space-y-2 mt-3">
                 <div className="glass-card p-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    <div className="w-2 h-2 rounded-full bg-[var(--green)]"></div>
                     <div className="text-xs font-semibold">Vendor Created</div>
                     <div className="text-xs text-[var(--text-muted)] ml-auto">{new Date(selectedVendor?.createdAt || Date.now()).toLocaleDateString()}</div>
                   </div>

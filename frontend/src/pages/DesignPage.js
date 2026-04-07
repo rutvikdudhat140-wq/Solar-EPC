@@ -140,7 +140,7 @@ const COLUMNS = [
   {
     key: 'boqGenerated', header: 'BOQ',
     render: v => v
-      ? <span className="text-[11px] font-semibold text-emerald-400">✓ Generated</span>
+      ? <span className="text-[11px] font-semibold text-[var(--green)]">✓ Generated</span>
       : <span className="text-[11px] font-semibold text-amber-400">⏳ Pending</span>
   },
   {
@@ -272,13 +272,13 @@ const FinancialSummary = ({ cfg, systemSizeKw }) => {
     { l: `Subsidy (${cfg.subsidyPct}%)`, v: fin.subsidyAmt > 0 ? `− ${fmt(fin.subsidyAmt)}` : '—', color: 'text-amber-400', show: true },
     { l: 'Net CAPEX', v: fmt(fin.netCapex), color: 'text-[var(--text-primary)]', show: true },
     { l: 'Annual Energy', v: `${(fin.annualGen / 1000).toFixed(0)}k kWh`, color: 'text-[var(--primary-light)]', show: true },
-    { l: 'Annual Savings', v: fmt(fin.annualSave), color: 'text-emerald-400', show: true },
+    { l: 'Annual Savings', v: fmt(fin.annualSave), color: 'text-[var(--green)]', show: true },
     { l: 'Simple Payback', v: `${fin.payback} yrs`, color: 'text-amber-400', show: ['payback', 'roi', 'irr'].includes(mode) },
-    { l: 'Year-1 ROI', v: `${fin.roi1}%`, color: 'text-emerald-400', show: ['roi', 'irr'].includes(mode) },
-    { l: '25-Year IRR', v: fin.irr25 ? `${fin.irr25}%` : '—', color: 'text-emerald-400', show: mode === 'irr' },
+    { l: 'Year-1 ROI', v: `${fin.roi1}%`, color: 'text-[var(--green)]', show: ['roi', 'irr'].includes(mode) },
+    { l: '25-Year IRR', v: fin.irr25 ? `${fin.irr25}%` : '—', color: 'text-[var(--green)]', show: mode === 'irr' },
     { l: 'Depreciation Benefit (Y1)', v: fin.depBenefit > 0 ? fmt(fin.depBenefit) : '—', color: 'text-purple-400', show: ['roi', 'irr'].includes(mode) },
     { l: 'Monthly EMI', v: fin.emi > 0 ? fmt(fin.emi) : '—', color: 'text-[var(--primary-light)]', show: true },
-    { l: 'CO₂ Offset/yr', v: `${fin.co2Saved} t`, color: 'text-teal-400', show: true },
+    { l: 'CO₂ Offset/yr', v: `${fin.co2Saved} t`, color: 'text-[var(--blue)]', show: true },
   ].filter(r => r.show);
 
   return (
@@ -331,7 +331,7 @@ const DesignCard = ({ design, cfg, onDragStart, onClick }) => {
         </div>
         <div className="glass-card p-1 text-center">
           <p className="text-[var(--text-muted)]">Cost</p>
-          <p className="font-bold text-emerald-400">{fmt(design.estimatedCost)}</p>
+          <p className="font-bold text-[var(--green)]">{fmt(design.estimatedCost)}</p>
         </div>
       </div>
       {aiRec && (
@@ -607,7 +607,7 @@ const DesignPage = () => {
           <p className="text-xs text-[var(--text-muted)] leading-relaxed">
             <strong className="text-amber-400">Residential (D001)</strong> — cost mode: PM-KUSUM saves ₹2.5L, payback &lt;5 yrs.&nbsp;
             <strong className="text-[var(--primary-light)]">Commercial (D002)</strong> — ROI mode: tilt +8% yield, depreciation ₹3.2L Y1 benefit.&nbsp;
-            <strong className="text-emerald-400">Industrial (D003)</strong> — efficiency mode: wide row-spacing eliminates shadow loss, IRR 14.8%.
+            <strong className="text-[var(--green)]">Industrial (D003)</strong> — efficiency mode: wide row-spacing eliminates shadow loss, IRR 14.8%.
           </p>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { LayoutDashboard, Users, TrendingUp, DollarSign, Activity, Zap } from 'l
 // DashboardNew - Main Dashboard Component (Recreated after merge cleanup)
 const DashboardNew = () => {
   const stats = [
-    { label: 'Total Leads', value: '45', change: '+12%', icon: Users, color: 'bg-blue-500' },
+    { label: 'Total Leads', value: '45', change: '+12%', icon: Users, color: 'bg-[var(--primary)]' },
     { label: 'Active Projects', value: '18', change: '+5%', icon: Zap, color: 'bg-amber-500' },
     { label: 'Revenue', value: '₹21L', change: '+8%', icon: DollarSign, color: 'bg-green-500' },
     { label: 'Conversion', value: '24%', change: '+2%', icon: TrendingUp, color: 'bg-purple-500' },
@@ -34,7 +34,7 @@ const DashboardNew = () => {
                 <div>
                   <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide">{stat.label}</p>
                   <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{stat.value}</p>
-                  <span className="text-xs text-emerald-500 font-medium">{stat.change}</span>
+                  <span className="text-xs text-[var(--green)] font-medium">{stat.change}</span>
                 </div>
                 <div className={`w-10 h-10 rounded-lg ${stat.color}/20 flex items-center justify-center`}>
                   <Icon size={20} className={`${stat.color.replace('bg-', 'text-')}`} />

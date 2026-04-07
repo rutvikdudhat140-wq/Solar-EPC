@@ -35,7 +35,7 @@ const DepartmentViewModal = ({ department, employees, onClose, onEdit }) => {
             <h2 className="text-xl font-bold text-[var(--text-primary)]">{department.name}</h2>
             {department.code && <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-[var(--bg-elevated)] text-[var(--text-muted)] border border-[var(--border-muted)] mt-1 inline-block">{department.code}</span>}
             <div className="flex items-center gap-2 mt-2">
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${department.isActive !== false ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}`}>{department.isActive !== false ? 'Active' : 'Inactive'}</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${department.isActive !== false ? 'bg-[var(--green)]/10 text-[var(--green)]' : 'bg-red-500/10 text-red-500'}`}>{department.isActive !== false ? 'Active' : 'Inactive'}</span>
             </div>
           </div>
           <div className="text-right">
@@ -48,7 +48,7 @@ const DepartmentViewModal = ({ department, employees, onClose, onEdit }) => {
       <div className="grid grid-cols-3 gap-3 mb-4">
         {[
           { label: 'Total',    value: deptEmployees.length, color: 'bg-blue-500/10 border-blue-500/20 text-blue-500'    },
-          { label: 'Active',   value: active,               color: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' },
+          { label: 'Active',   value: active,               color: 'bg-[var(--green)]/10 border-[var(--green)]/20 text-[var(--green)]' },
           { label: 'Inactive', value: deptEmployees.length - active, color: 'bg-red-500/10 border-red-500/20 text-red-500' },
         ].map(s => (
           <div key={s.label} className={`p-3 rounded-xl border text-center ${s.color}`}>
@@ -89,7 +89,7 @@ const DepartmentViewModal = ({ department, employees, onClose, onEdit }) => {
                   <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{emp.firstName} {emp.lastName}</p>
                   <p className="text-[10px] text-[var(--text-muted)]">{emp.roleId || 'Employee'}</p>
                 </div>
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${emp.status === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}`}>{emp.status}</span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${emp.status === 'active' ? 'bg-[var(--green)]/10 text-[var(--green)]' : 'bg-red-500/10 text-red-500'}`}>{emp.status}</span>
               </div>
             ))}
           </div>
@@ -362,7 +362,7 @@ const DepartmentsPage = () => {
       key: 'isActive',
       header: 'Status',
       render: (val) => (
-        <span className={`px-2 py-1 rounded-full text-xs ${val !== false ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'
+        <span className={`px-2 py-1 rounded-full text-xs ${val !== false ? 'bg-[var(--green)]/10 text-[var(--green)]' : 'bg-red-500/10 text-red-500'
           }`}>
           {val !== false ? 'Active' : 'Inactive'}
         </span>

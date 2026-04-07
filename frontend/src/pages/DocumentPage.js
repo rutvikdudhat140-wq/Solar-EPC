@@ -75,7 +75,7 @@ const StatusCell = ({ status, doc, isProcessing, onUpdateStatus }) => {
       </button>
       
       {statusMenuOpen && (
-        <div className="absolute left-0 mt-1 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1">
+        <div className="absolute left-0 mt-1 w-32 bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg shadow-lg z-50 py-1">
           {Object.entries(DOCUMENT_STATUS).map(([statusKey, statusConfig]) => (
             <button
               key={statusKey}
@@ -85,7 +85,7 @@ const StatusCell = ({ status, doc, isProcessing, onUpdateStatus }) => {
                 setStatusMenuOpen(false);
               }}
               disabled={isProcessing || status === statusKey}
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
             >
               <span 
                 className="w-2 h-2 rounded-full" 
@@ -117,7 +117,7 @@ const DashboardKPI = ({ title, value, change, icon: Icon, color, subtitle }) => 
       <p className="text-xl font-black text-[var(--text-primary)]">{value}</p>
       {subtitle && <p className="text-[9px] text-[var(--text-muted)]">{subtitle}</p>}
       {change !== undefined && (
-        <p className={`text-[10px] font-bold ${change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+        <p className={`text-[10px] font-bold ${change >= 0 ? 'text-[var(--green)]' : 'text-red-500'}`}>
           {change >= 0 ? '↑' : '↓'} {Math.abs(change)}%
         </p>
       )}
@@ -605,7 +605,7 @@ const DocumentPage = () => {
               setActionMenuOpen(actionMenuOpen === doc.id ? null : doc.id);
             }}
             disabled={isProcessing}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
           >
             <MoreVertical size={16} />
           </button>
@@ -621,7 +621,7 @@ const DocumentPage = () => {
                 }}
               />
               <div 
-                className="action-menu-container fixed z-[9999] w-56 bg-white border border-gray-200 rounded-lg shadow-2xl py-2"
+                className="action-menu-container fixed z-[9999] w-56 bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg shadow-2xl py-2"
                 style={{
                   right: '20px',
                   top: '50%',
@@ -629,7 +629,7 @@ const DocumentPage = () => {
                 }}
               >
                 {/* Status Update Submenu */}
-                <div className="px-3 py-2 text-[11px] font-bold text-gray-600 uppercase tracking-wider border-b border-gray-100">
+                <div className="px-3 py-2 text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider border-b border-[var(--border-base)]">
                   Change Status
                 </div>
                 <div className="py-1">
@@ -641,7 +641,7 @@ const DocumentPage = () => {
                         handleUpdateStatus(doc, statusKey);
                       }}
                       disabled={isProcessing || doc.status === statusKey}
-                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
                     >
                       <span 
                         className="w-3 h-3 rounded-full flex-shrink-0" 
@@ -649,13 +649,13 @@ const DocumentPage = () => {
                       />
                       <span className="flex-1">{statusConfig.label}</span>
                       {doc.status === statusKey && (
-                        <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded">Current</span>
+                        <span className="text-[10px] text-[var(--text-muted)] bg-[var(--bg-elevated)] px-2 py-0.5 rounded">Current</span>
                       )}
                     </button>
                   ))}
                 </div>
               
-              <div className="border-t border-gray-200 my-1" />
+              <div className="border-t border-[var(--border-base)] my-1" />
               
               <button
                 onClick={(e) => {
@@ -663,9 +663,9 @@ const DocumentPage = () => {
                   handleApproveDocument(doc);
                 }}
                 disabled={isProcessing || doc.status === 'accepted'}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
               >
-                <CheckCircle size={14} className="text-emerald-500" />
+                <CheckCircle size={14} className="text-[var(--green)]" />
                 <span>Approve & Create Project</span>
               </button>
               
@@ -675,9 +675,9 @@ const DocumentPage = () => {
                   handleSendEmailAndComplete(doc);
                 }}
                 disabled={isProcessing || !doc.customerEmail}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
               >
-                <Mail size={14} className="text-blue-500" />
+                <Mail size={14} className="text-[var(--primary)]" />
                 <span>Send Email & Complete</span>
               </button>
               
@@ -687,13 +687,13 @@ const DocumentPage = () => {
                   handleMarkAsCompleted(doc);
                 }}
                 disabled={isProcessing}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
               >
                 <FileCheck size={14} className="text-purple-500" />
                 <span>Mark as Completed</span>
               </button>
               
-              <div className="border-t border-gray-200 my-1" />
+              <div className="border-t border-[var(--border-base)] my-1" />
               
               <button
                 onClick={(e) => {
@@ -828,8 +828,8 @@ const DocumentPage = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="glass-card p-3">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <FolderOpen size={16} className="text-blue-500" />
+              <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center">
+                <FolderOpen size={16} className="text-[var(--primary)]" />
               </div>
               <div>
                 <p className="text-lg font-bold text-[var(--text-primary)]">{dashboardStats?.totalDocuments ?? stats.total.documents}</p>
@@ -837,8 +837,8 @@ const DocumentPage = () => {
               </div>
             </div>
             <div className="flex items-center gap-1 mt-2">
-              <TrendingUp size={10} className="text-emerald-500" />
-              <span className="text-[10px] text-emerald-500">{`${dashboardStats?.documentsMoMPercent ?? 0}%`}</span>
+              <TrendingUp size={10} className="text-[var(--green)]" />
+              <span className="text-[10px] text-[var(--green)]">{`${dashboardStats?.documentsMoMPercent ?? 0}%`}</span>
               <span className="text-[10px] text-[var(--text-muted)]">vs last month</span>
             </div>
           </div>
@@ -887,14 +887,14 @@ const DocumentPage = () => {
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-bold text-[var(--text-primary)]">Monthly Document Flow</h3>
               <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1 text-[10px] text-blue-500">
+                <span className="flex items-center gap-1 text-[10px] text-[var(--primary)]">
                   <div className="w-2 h-2 rounded-full bg-blue-500" /> Estimates
                 </span>
                 <span className="flex items-center gap-1 text-[10px] text-purple-500">
                   <div className="w-2 h-2 rounded-full bg-purple-500" /> Proposals
                 </span>
-                <span className="flex items-center gap-1 text-[10px] text-emerald-500">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500" /> Quotations
+                <span className="flex items-center gap-1 text-[10px] text-[var(--green)]">
+                  <div className="w-2 h-2 rounded-full bg-[var(--green)]" /> Quotations
                 </span>
               </div>
             </div>
@@ -1007,7 +1007,7 @@ const DocumentPage = () => {
                 {topCustomers.map((customer, index) => (
                   <tr key={customer.name} className="border-b border-[var(--border-base)]/50">
                     <td className="py-2">
-                      <span className="w-5 h-5 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-bold flex items-center justify-center">
+                      <span className="w-5 h-5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-[10px] font-bold flex items-center justify-center">
                         {index + 1}
                       </span>
                     </td>
@@ -1015,7 +1015,7 @@ const DocumentPage = () => {
                       <p className="text-xs font-medium text-[var(--text-primary)] truncate max-w-[150px]">{customer.name}</p>
                     </td>
                     <td className="py-2 text-right text-xs text-[var(--text-muted)]">{customer.count}</td>
-                    <td className="py-2 text-right text-xs font-bold text-emerald-500">{(customer.value / 100000).toFixed(1)}L</td>
+                    <td className="py-2 text-right text-xs font-bold text-[var(--green)]">{(customer.value / 100000).toFixed(1)}L</td>
                   </tr>
                 ))}
               </tbody>
@@ -1041,7 +1041,7 @@ const DocumentPage = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-bold text-emerald-500">{(doc.total / 100000).toFixed(1)}L</p>
+                    <p className="text-xs font-bold text-[var(--green)]">{(doc.total / 100000).toFixed(1)}L</p>
                     <p className="text-[9px] text-[var(--text-muted)]">
                       {i === 0 ? 'Just now' : i === 1 ? '2m' : i === 2 ? '5m' : i === 3 ? '15m' : i === 4 ? '1h' : '2h'}
                     </p>
@@ -1109,7 +1109,7 @@ const DocumentPage = () => {
                 setSelectedDocForView(doc);
               }}
               disabled={isProcessing}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
               title="View Document"
             >
               <Eye size={16} />
@@ -1122,7 +1122,7 @@ const DocumentPage = () => {
                 handleSendEmailAndComplete(doc);
               }}
               disabled={isProcessing || !doc.customerEmail}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors disabled:opacity-40"
+              className="p-1.5 rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors disabled:opacity-40"
               title={doc.customerEmail ? `Send PDF to ${doc.customerEmail}` : 'No email available'}
             >
               <Mail size={16} />
@@ -1136,22 +1136,22 @@ const DocumentPage = () => {
                   setActionMenuOpen(actionMenuOpen === doc.id ? null : doc.id);
                 }}
                 disabled={isProcessing}
-                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
               >
                 <MoreVertical size={16} />
               </button>
               
               {actionMenuOpen === doc.id && (
-                <div className="action-menu-container absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1">
+                <div className="action-menu-container absolute right-0 mt-1 w-48 bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg shadow-lg z-50 py-1">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleApproveDocument(doc);
                     }}
                     disabled={isProcessing || doc.status === 'approved'}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
                   >
-                    <CheckCircle size={14} className="text-emerald-500" />
+                    <CheckCircle size={14} className="text-[var(--green)]" />
                     <span>Approve & Create Project</span>
                   </button>
                   
@@ -1161,9 +1161,9 @@ const DocumentPage = () => {
                       handleSendEmailAndComplete(doc);
                     }}
                     disabled={isProcessing || !doc.customerEmail}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
                   >
-                    <Mail size={14} className="text-blue-500" />
+                    <Mail size={14} className="text-[var(--primary)]" />
                     <span>Send Email & Complete</span>
                   </button>
                   
@@ -1173,7 +1173,7 @@ const DocumentPage = () => {
                       handleMarkAsCompleted(doc);
                     }}
                     disabled={isProcessing}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
                   >
                     <FileCheck size={14} className="text-purple-500" />
                     <span>Mark as Completed</span>
@@ -1206,17 +1206,17 @@ const DocumentPage = () => {
     return (
       <div className="space-y-4 animate-fade-in">
         {/* Clean Toolbar - Matching Proposal Page */}
-        <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-lg border border-gray-200">
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-[var(--bg-surface)] p-3 rounded-lg border border-[var(--border-base)]">
           <div className="flex items-center gap-3">
             {/* Search */}
             <div className="relative">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
                 type="text"
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-[200px] pl-10 pr-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-gray-300"
+                className="w-[200px] pl-10 pr-4 py-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-base)] text-sm text-[var(--text-secondary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--border-base)]"
               />
             </div>
 
@@ -1224,7 +1224,7 @@ const DocumentPage = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700 focus:outline-none focus:border-gray-300"
+              className="px-4 py-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-base)] text-sm text-[var(--text-secondary)] focus:outline-none focus:border-[var(--border-base)]"
             >
               <option value="all">All Status</option>
               <option value="draft">Draft</option>
@@ -1236,12 +1236,12 @@ const DocumentPage = () => {
 
           <div className="flex items-center gap-2">
             {/* View Toggle */}
-            <div className="flex items-center p-1 rounded-lg bg-gray-100 border border-gray-200">
+            <div className="flex items-center p-1 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-base)]">
               <button
                 onClick={() => setViewMode('list')}
                 className={cn(
                   'p-1.5 rounded-md transition-colors',
-                  viewMode === 'list' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  viewMode === 'list' ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
                 )}
               >
                 <List size={16} />
@@ -1250,7 +1250,7 @@ const DocumentPage = () => {
                 onClick={() => setViewMode('grid')}
                 className={cn(
                   'p-1.5 rounded-md transition-colors',
-                  viewMode === 'grid' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  viewMode === 'grid' ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
                 )}
               >
                 <LayoutGrid size={16} />
@@ -1266,7 +1266,7 @@ const DocumentPage = () => {
                   setIsCreateModalOpen(true);
                 }
               }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-sm font-medium transition-colors"
             >
               <span>Convert from Estimate</span>
             </button>
@@ -1284,12 +1284,12 @@ const DocumentPage = () => {
 
         {/* Documents Display */}
         {filteredByStatus.length === 0 ? (
-          <div className="bg-white p-12 text-center rounded-lg border border-gray-200">
-            <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
-              <FileText size={32} className="text-gray-400" />
+          <div className="bg-[var(--bg-surface)] p-12 text-center rounded-lg border border-[var(--border-base)]">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--bg-elevated)] flex items-center justify-center mx-auto mb-4">
+              <FileText size={32} className="text-[var(--text-muted)]" />
             </div>
-            <h3 className="text-lg font-bold text-gray-800 mb-1">No proposals found</h3>
-            <p className="text-sm text-gray-500 mb-4">Create your first proposal to get started</p>
+            <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">No proposals found</h3>
+            <p className="text-sm text-[var(--text-muted)] mb-4">Create your first proposal to get started</p>
             <button
               onClick={() => setIsCreateModalOpen(true)}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors mx-auto"
@@ -1312,7 +1312,7 @@ const DocumentPage = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="bg-[var(--bg-surface)] rounded-lg border border-[var(--border-base)] overflow-hidden">
             <DataTable 
               columns={tableColumns} 
               data={filteredByStatus} 
@@ -1686,7 +1686,7 @@ const DocumentDetail = ({ document, onClose, onSend, onDuplicate, onDelete }) =>
           {document.type === 'quotation' && (
             <button
               onClick={() => downloadQuotationPDF(document)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--green)] text-white text-sm font-medium hover:bg-[var(--green)] transition-colors"
             >
               <FileSpreadsheet size={14} />
               Download PDF
@@ -1787,7 +1787,7 @@ const DocumentDetail = ({ document, onClose, onSend, onDuplicate, onDelete }) =>
           )}
           {document.acceptedAt && (
             <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <div className="w-2 h-2 rounded-full bg-[var(--green)]" />
               <span className="text-sm text-[var(--text-primary)]">Accepted on {new Date(document.acceptedAt).toLocaleDateString()}</span>
             </div>
           )}

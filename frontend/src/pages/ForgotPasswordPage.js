@@ -200,7 +200,7 @@ const ForgotPasswordPage = () => {
             s === step
               ? 'bg-[var(--primary)]'
               : s < step
-              ? 'bg-emerald-500'
+              ? 'bg-[var(--green)]'
               : 'bg-[var(--border-base)]'
           }`}
         />
@@ -228,8 +228,8 @@ const ForgotPasswordPage = () => {
           {resetSuccess ? (
             <>
               <div className="flex flex-col items-center mb-6">
-                <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-4">
-                  <CheckCircle size={32} className="text-emerald-500" />
+                <div className="w-16 h-16 rounded-full bg-[var(--green)]/10 flex items-center justify-center mb-4">
+                  <CheckCircle size={32} className="text-[var(--green)]" />
                 </div>
                 <h3 className="text-base font-bold text-[var(--text-primary)] mb-1 text-center">Password Reset!</h3>
                 <p className="text-[11px] text-[var(--text-muted)] text-center">
@@ -262,8 +262,8 @@ const ForgotPasswordPage = () => {
           ) : step === 2 ? (
             <>
               <div className="flex flex-col items-center mb-4">
-                <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3">
-                  <KeyRound size={24} className="text-emerald-500" />
+                <div className="w-12 h-12 rounded-full bg-[var(--green)]/10 flex items-center justify-center mb-3">
+                  <KeyRound size={24} className="text-[var(--green)]" />
                 </div>
                 <h3 className="text-base font-bold text-[var(--text-primary)] mb-1 text-center">Verify OTP</h3>
                 <p className="text-[11px] text-[var(--text-muted)] text-center">Enter the 6-digit OTP sent to<br /><span className="text-[var(--text-primary)] font-medium">{email}</span></p>
@@ -293,8 +293,8 @@ const ForgotPasswordPage = () => {
           ) : (
             <>
               <div className="flex flex-col items-center mb-4">
-                <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3">
-                  <Lock size={24} className="text-emerald-500" />
+                <div className="w-12 h-12 rounded-full bg-[var(--green)]/10 flex items-center justify-center mb-3">
+                  <Lock size={24} className="text-[var(--green)]" />
                 </div>
                 <h3 className="text-base font-bold text-[var(--text-primary)] mb-1 text-center">Reset Password</h3>
                 <p className="text-[11px] text-[var(--text-muted)] text-center">Create a new password for<br /><span className="text-[var(--text-primary)] font-medium">{email}</span></p>

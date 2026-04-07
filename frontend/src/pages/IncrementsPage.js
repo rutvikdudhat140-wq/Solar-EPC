@@ -32,11 +32,11 @@ const IncrementViewModal = ({ increment, onClose }) => {
             <h2 className="text-lg font-bold text-[var(--text-primary)]">{emp.firstName} {emp.lastName}</h2>
             <p className="text-xs text-[var(--text-muted)]">{emp.employeeId} · {emp.department}</p>
             <div className="flex items-center gap-2 mt-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-500 flex items-center gap-1"><ArrowUp size={11} />{increment.incrementPercentage}% Increment</span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[var(--green)]/10 text-[var(--green)] flex items-center gap-1"><ArrowUp size={11} />{increment.incrementPercentage}% Increment</span>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold text-emerald-500">+₹{amount.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-[var(--green)]">+₹{amount.toLocaleString()}</p>
             <p className="text-xs text-[var(--text-faint)]">Increase Amount</p>
           </div>
         </div>
@@ -44,9 +44,9 @@ const IncrementViewModal = ({ increment, onClose }) => {
       {/* Salary Comparison */}
       <div className="grid grid-cols-3 gap-3 mb-4">
         {[
-          { label: 'Previous Salary', value: `₹${Number(increment.previousSalary||0).toLocaleString()}`, color: 'bg-red-500/10 border-red-500/20 text-red-500' },
-          { label: 'Increment %',     value: `${increment.incrementPercentage}%`,                        color: 'bg-amber-500/10 border-amber-500/20 text-amber-500' },
-          { label: 'New Salary',      value: `₹${Number(increment.newSalary||0).toLocaleString()}`,      color: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' },
+{ label: 'Previous Salary', value: `₹${Number(increment.previousSalary||0).toLocaleString()}`,      color: 'bg-[var(--red)]/10 border-[var(--red)]/20 text-[var(--red)]' },
+          { label: 'Increment %',     value: `${increment.incrementPercentage}%`,                        color: 'bg-[var(--amber)]/10 border-[var(--amber)]/20 text-[var(--amber)]' },
+          { label: 'New Salary',      value: `₹${Number(increment.newSalary||0).toLocaleString()}`,      color: 'bg-[var(--green)]/10 border-[var(--green)]/20 text-[var(--green)]' },
         ].map(item => (
           <div key={item.label} className={`p-3 rounded-xl border text-center ${item.color}`}>
             <p className="text-[10px] uppercase tracking-wide opacity-70 font-medium">{item.label}</p>
@@ -293,19 +293,19 @@ const IncrementsPage = () => {
     columns?.increasePercent && {
       key: 'incrementPercentage',
       header: 'Increase %',
-      render: (val) => <span className="font-bold text-emerald-600">{val}%</span>,
+      render: (val) => <span className="font-bold text-[var(--green)]">{val}%</span>,
     },
     columns?.newSalary && {
       key: 'newSalary',
       header: 'New Salary',
-      render: (val) => <span className="font-bold text-blue-600">₹{val?.toLocaleString() || 0}</span>,
+      render: (val) => <span className="font-bold text-[var(--primary)]">₹{val?.toLocaleString() || 0}</span>,
     },
     columns?.increaseAmount && {
       key: 'incrementAmount',
       header: 'Increase Amount',
       render: (_, row) => {
         const amount = row.newSalary - row.previousSalary;
-        return <span className="font-medium text-emerald-600">₹{amount.toLocaleString()}</span>;
+        return <span className="font-medium text-[var(--green)]">₹{amount.toLocaleString()}</span>;
       },
     },
     columns?.effectiveFrom && {
@@ -341,7 +341,7 @@ const IncrementsPage = () => {
                 });
                 setShowEditModal(true);
               }}
-              className="p-1.5 rounded-lg hover:bg-blue-500/10 text-[var(--text-muted)] hover:text-blue-500 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[var(--primary)]/10 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
               title="Edit"
             >
               <RefreshCw size={14} />

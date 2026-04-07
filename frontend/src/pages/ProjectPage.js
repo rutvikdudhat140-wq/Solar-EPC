@@ -1284,8 +1284,8 @@ const ProjectPage = () => {
                   <Layers size={16} className="text-violet-700" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-gray-800">{projectStats?.totalProjects ?? projects.length}</div>
-              <div className="text-xs text-gray-500 mt-1">All projects</div>
+              <div className="text-2xl font-bold text-[var(--text-primary)]">{projectStats?.totalProjects ?? projects.length}</div>
+              <div className="text-xs text-[var(--text-muted)] mt-1">All projects</div>
             </div>
 
             <div 
@@ -1302,12 +1302,12 @@ const ProjectPage = () => {
                   <FolderOpen size={16} className="text-blue-700" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-gray-800">{projectStats?.active ?? active}</div>
-              <div className="text-xs text-gray-500 mt-1">Currently executing</div>
+              <div className="text-2xl font-bold text-[var(--text-primary)]">{projectStats?.active ?? active}</div>
+              <div className="text-xs text-[var(--text-muted)] mt-1">Currently executing</div>
             </div>
 
             <div 
-              className="p-4 rounded-xl bg-gradient-to-br from-cyan-100 to-teal-200 border border-cyan-200 cursor-pointer hover:shadow-md transition-all"
+              className="p-4 rounded-xl bg-gradient-to-br from-cyan-100 to-teal-200 border border-[var(--blue)]/20 cursor-pointer hover:shadow-md transition-all"
               onClick={() => { 
                 setView('table'); 
                 setFilter('Commissioned');
@@ -1315,13 +1315,13 @@ const ProjectPage = () => {
               }}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] uppercase tracking-wider text-cyan-700 font-semibold">COMPLETED</span>
-                <div className="w-8 h-8 rounded-lg bg-cyan-200 flex items-center justify-center">
-                  <CheckCircle size={16} className="text-cyan-700" />
+                <span className="text-[10px] uppercase tracking-wider text-[var(--blue)] font-semibold">COMPLETED</span>
+                <div className="w-8 h-8 rounded-lg bg-[var(--blue)]/20 flex items-center justify-center">
+                  <CheckCircle size={16} className="text-[var(--blue)]" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-gray-800">{projectStats?.commissioned ?? commissioned}</div>
-              <div className="text-xs text-gray-500 mt-1">Finished projects</div>
+              <div className="text-2xl font-bold text-[var(--text-primary)]">{projectStats?.commissioned ?? commissioned}</div>
+              <div className="text-xs text-[var(--text-muted)] mt-1">Finished projects</div>
             </div>
 
             <div className="p-4 rounded-xl bg-gradient-to-br from-amber-100 to-orange-200 border border-amber-200">
@@ -1331,19 +1331,19 @@ const ProjectPage = () => {
                   <Zap size={16} className="text-amber-700" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-gray-800">{Math.round(projectStats?.totalCapacity ?? totalKW)} <span className="text-sm font-normal text-gray-600">kW</span></div>
-              <div className="text-xs text-gray-500 mt-1">Pipeline capacity</div>
+              <div className="text-2xl font-bold text-[var(--text-primary)]">{Math.round(projectStats?.totalCapacity ?? totalKW)} <span className="text-sm font-normal text-[var(--text-secondary)]">kW</span></div>
+              <div className="text-xs text-[var(--text-muted)] mt-1">Pipeline capacity</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-100 to-green-200 border border-emerald-200">
+            <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-100 to-green-200 border border-[var(--green)]/20">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] uppercase tracking-wider text-emerald-700 font-semibold">CURRENT PROGRESS</span>
-                <div className="w-8 h-8 rounded-lg bg-emerald-200 flex items-center justify-center">
-                  <TrendingUp size={16} className="text-emerald-700" />
+                <span className="text-[10px] uppercase tracking-wider text-[var(--green)] font-semibold">CURRENT PROGRESS</span>
+                <div className="w-8 h-8 rounded-lg bg-[var(--green)]/20 flex items-center justify-center">
+                  <TrendingUp size={16} className="text-[var(--green)]" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-gray-800">{Math.round(projectStats?.avgProgress ?? avgProgress)}%</div>
-              <div className="text-xs text-gray-500 mt-1">Across all projects</div>
+              <div className="text-2xl font-bold text-[var(--text-primary)]">{Math.round(projectStats?.avgProgress ?? avgProgress)}%</div>
+              <div className="text-xs text-[var(--text-muted)] mt-1">Across all projects</div>
             </div>
           </div>
         </>
@@ -1579,8 +1579,8 @@ const ProjectPage = () => {
                         </div>
                         <div className="w-16 text-[10px] text-right">
                           <span className="text-blue-600 font-semibold">{active}</span>
-                          <span className="text-gray-400 mx-1">|</span>
-                          <span className="text-emerald-600 font-semibold">{completed}</span>
+                          <span className="text-[var(--text-muted)] mx-1">|</span>
+                          <span className="text-[var(--green)] font-semibold">{completed}</span>
                         </div>
                       </div>
                     );
@@ -2207,7 +2207,7 @@ const ProjectPage = () => {
                   <div className={`w-2 h-2 rounded-full mt-1 ${log.type === 'create' ? 'bg-green-500' :
                     log.type === 'update' ? 'bg-blue-500' :
                       log.type === 'milestone' ? 'bg-purple-500' :
-                        'bg-gray-500'
+                        'bg-[var(--primary)]'
                     }`} />
                   <div className="flex-1">
                     <div className="text-xs font-medium text-[var(--text-primary)]">{log.action}</div>

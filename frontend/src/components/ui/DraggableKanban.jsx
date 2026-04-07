@@ -45,10 +45,10 @@ const KanbanCard = ({ item, onClick }) => {
         </div>
         <div className="flex flex-col items-end gap-1">
           {item.pr && item.pr < (item.expectedPR || 78) && (
-            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" title="PR Below Target" />
+            <div className="w-2 h-2 rounded-full bg-[var(--red)] animate-pulse" title="PR Below Target" />
           )}
           {item.notes && (
-            <Sparkles size={10} className="text-amber-500" title="Has notes" />
+            <Sparkles size={10} className="text-[var(--amber)]" title="Has notes" />
           )}
         </div>
       </div>
@@ -59,7 +59,7 @@ const KanbanCard = ({ item, onClick }) => {
           <span className="text-xs font-bold text-[var(--accent)]">{item.systemSize} kW</span>
           <div className="flex items-center gap-1">
             <Zap size={8} className="text-[var(--text-muted)]" />
-            <span className={`text-[9px] font-black ${prGood ? 'text-emerald-500' : 'text-amber-500'}`}>
+            <span className={`text-[9px] font-black ${prGood ? 'text-[var(--green)]' : 'text-[var(--amber)]'}`}>
               {item.pr || 0}%
             </span>
           </div>
@@ -83,7 +83,7 @@ const KanbanCard = ({ item, onClick }) => {
         {/* Warranty Tags */}
         <div className="flex flex-wrap gap-1">
           {item.warrantyPanel && (
-            <span className="px-1.5 py-0.5 rounded text-[8px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+            <span className="px-1.5 py-0.5 rounded text-[8px] bg-[var(--green)]/10 text-[var(--green)] border border-[var(--green)]/20">
               Panel
             </span>
           )}
@@ -93,7 +93,7 @@ const KanbanCard = ({ item, onClick }) => {
             </span>
           )}
           {item.warrantyInstall && (
-            <span className="px-1.5 py-0.5 rounded text-[8px] bg-amber-500/10 text-amber-500 border border-amber-500/20">
+            <span className="px-1.5 py-0.5 rounded text-[8px] bg-[var(--amber)]/10 text-[var(--amber)] border border-[var(--amber)]/20">
               Install
             </span>
           )}
@@ -178,7 +178,7 @@ export const DraggableKanban = ({ data, onStatusChange, onCardClick }) => {
         </div>
 
         {/* Kanban Board - White container with fixed height */}
-        <div className="bg-white rounded-xl border border-[var(--border-base)] p-4 shadow-sm">
+        <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-4 shadow-sm">
           <div className="overflow-x-auto pb-3 max-h-[calc(100vh-220px)]">
             <div className="flex gap-3 min-w-max">
               {columns.map((status) => (

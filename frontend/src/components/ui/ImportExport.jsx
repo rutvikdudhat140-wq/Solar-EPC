@@ -283,10 +283,10 @@ const ImportExport = ({
 
                     {step === 3 && (
                         <div className="space-y-4">
-                            <div className="glass-card p-4 border-amber-500/30 bg-amber-500/5 flex items-start gap-3">
-                                <AlertCircle size={18} className="text-amber-500 shrink-0 mt-0.5" />
+                            <div className="glass-card p-4 border-[var(--amber)]/30 bg-[var(--amber)]/5 flex items-start gap-3">
+                                <AlertCircle size={18} className="text-[var(--amber)] shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="text-sm font-bold text-amber-500">Validation Results</p>
+                                    <p className="text-sm font-bold text-[var(--amber)]">Validation Results</p>
                                     <p className="text-xs text-[var(--text-muted)] mt-1">
                                         We found {validationResults.valid} valid rows {validationResults.errors.length > 0 && `and ${validationResults.errors.length} rows with errors`}. You can proceed with import.
                                     </p>
@@ -304,14 +304,14 @@ const ImportExport = ({
                                     </thead>
                                     <tbody className="divide-y divide-[var(--border-base)]">
                                         {validationResults.valid > 0 && (
-                                            <tr className="text-emerald-400">
+                                            <tr className="text-[var(--green)]">
                                                 <td className="p-3">1-{validationResults.valid}</td>
                                                 <td className="p-3 font-bold">Valid</td>
                                                 <td className="p-3">Ready for import</td>
                                             </tr>
                                         )}
                                         {validationResults.errors.map((error, idx) => (
-                                            <tr key={idx} className="text-red-400 bg-red-500/5">
+                                            <tr key={idx} className="text-[var(--red)] bg-[var(--red)]/5">
                                                 <td className="p-3">{error.row}</td>
                                                 <td className="p-3 font-bold">Error</td>
                                                 <td className="p-3">{error.message}</td>
@@ -375,9 +375,9 @@ const ImportExport = ({
 
                                     {/* Custom Fields Info */}
                                     {docData.customFieldSupport && (
-                                        <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                                        <div className="p-4 bg-[var(--green)]/10 border border-[var(--green)]/20 rounded-lg">
                                             <div className="flex items-start gap-3">
-                                                <Check className="text-emerald-500 mt-0.5" size={20} />
+                                                <Check className="text-[var(--green)] mt-0.5" size={20} />
                                                 <div className="flex-1">
                                                     <h4 className="font-bold text-[var(--text-primary)] mb-1">Custom Fields Support</h4>
                                                     <p className="text-xs text-[var(--text-muted)] mb-2">
@@ -422,7 +422,7 @@ const ImportExport = ({
                                 </div>
                             </>
                         ) : (
-                            <div className="text-center py-8 text-red-400">
+                            <div className="text-center py-8 text-[var(--red)]">
                                 Failed to load documentation
                             </div>
                         )}

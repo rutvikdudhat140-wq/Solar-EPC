@@ -155,7 +155,7 @@ const FilterSystem = ({ fields = [], onApply, onSavePreset, presets = [], classN
 
                                 <button
                                     onClick={() => removeCondition(c.id)}
-                                    className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                                    className="p-2 text-[var(--red)] hover:bg-[var(--red)]/10 rounded-lg transition-colors"
                                 >
                                     <Trash2 size={14} />
                                 </button>

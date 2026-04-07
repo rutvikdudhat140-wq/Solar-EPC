@@ -1928,7 +1928,7 @@ const AMC_MAP = {
 
 
 
-  Active: { label: 'Active', color: 'bg-emerald-1000/15 text-emerald-400 border-emerald-500/30' },
+  Active: { label: 'Active', color: 'bg-[var(--green)]/100/15 text-[var(--green)] border-[var(--green)]500/30' },
 
 
 
@@ -6625,7 +6625,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-    { key: 'nextVisit', header: 'Next Visit', render: v => <span className="text-xs text-cyan-400">{v}</span> },
+    { key: 'nextVisit', header: 'Next Visit', render: v => <span className="text-xs text-[var(--blue)]">{v}</span> },
 
 
 
@@ -28361,7 +28361,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-blue-200/70 rounded-xl p-4 border border-blue-200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setButtonView('table'); setActiveTab('tickets'); setTicketStatus('All'); }}>
+            <div className="bg-[var(--primary)]/20 rounded-xl p-4 border border-[var(--primary)]/20 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setButtonView('table'); setActiveTab('tickets'); setTicketStatus('All'); }}>
 
 
 
@@ -28385,7 +28385,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs font-medium text-blue-600 mb-1">TOTAL TICKETS</p>
+                  <p className="text-xs font-medium text-[var(--primary)] mb-1">TOTAL TICKETS</p>
 
 
 
@@ -28393,7 +28393,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{tickets.length}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{tickets.length}</h3>
 
 
 
@@ -28401,7 +28401,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-[10px] text-blue-500 mt-1">6 total tickets</p>
+                  <p className="text-[10px] text-[var(--primary)] mt-1">6 total tickets</p>
 
 
 
@@ -28417,7 +28417,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <div className="bg-blue-100 p-2 rounded-lg">
+                <div className="bg-[var(--primary)]/10 p-2 rounded-lg">
 
 
 
@@ -28425,7 +28425,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <Headphones size={18} className="text-blue-600" />
+                  <Headphones size={18} className="text-[var(--primary)]" />
 
 
 
@@ -28497,7 +28497,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.openTickets}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.openTickets}</h3>
 
 
 
@@ -28601,7 +28601,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.scheduled}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.scheduled}</h3>
 
 
 
@@ -28705,7 +28705,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.inProgress}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.inProgress}</h3>
 
 
 
@@ -28785,7 +28785,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-emerald-200/70 rounded-xl p-4 border border-emerald-200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setButtonView('table'); setActiveTab('tickets'); setTicketStatus('Resolved'); }}>
+            <div className="bg-[var(--green)]/20/70 rounded-xl p-4 border border-[var(--green)]200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setButtonView('table'); setActiveTab('tickets'); setTicketStatus('Resolved'); }}>
 
 
 
@@ -28809,7 +28809,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs font-medium text-emerald-600 mb-1">RESOLVED</p>
+                  <p className="text-xs font-medium text-[var(--green)] mb-1">RESOLVED</p>
 
 
 
@@ -28817,7 +28817,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.resolved}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.resolved}</h3>
 
 
 
@@ -28825,7 +28825,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-[10px] text-emerald-500 mt-1">This month</p>
+                  <p className="text-[10px] text-[var(--green)] mt-1">This month</p>
 
 
 
@@ -28841,7 +28841,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <div className="bg-emerald-100 p-2 rounded-lg">
+                <div className="bg-[var(--green)]/10 p-2 rounded-lg">
 
 
 
@@ -28849,7 +28849,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <CheckCircle size={18} className="text-emerald-600" />
+                  <CheckCircle size={18} className="text-[var(--green)]" />
 
 
 
@@ -28889,7 +28889,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-gray-200/70 rounded-xl p-4 border border-gray-200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setButtonView('table'); setActiveTab('tickets'); setTicketStatus('Closed'); }}>
+            <div className="bg-[var(--bg-hover)]/70 rounded-xl p-4 border border-[var(--border-base)] cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setButtonView('table'); setActiveTab('tickets'); setTicketStatus('Closed'); }}>
 
 
 
@@ -28913,7 +28913,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs font-medium text-gray-600 mb-1">CLOSED</p>
+                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">CLOSED</p>
 
 
 
@@ -28921,7 +28921,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.closed}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.closed}</h3>
 
 
 
@@ -28929,7 +28929,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-[10px] text-gray-500 mt-1">Completed</p>
+                  <p className="text-[10px] text-[var(--text-muted)] mt-1">Completed</p>
 
 
 
@@ -28945,7 +28945,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <div className="bg-gray-200 p-2 rounded-lg">
+                <div className="bg-[var(--bg-hover)] p-2 rounded-lg">
 
 
 
@@ -28953,7 +28953,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <XCircle size={18} className="text-gray-600" />
+                  <XCircle size={18} className="text-[var(--text-secondary)]" />
 
 
 
@@ -29025,7 +29025,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicAmcStats.activeContracts}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicAmcStats.activeContracts}</h3>
 
 
 
@@ -29097,7 +29097,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-cyan-200/70 rounded-xl p-4 border border-cyan-200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setButtonView('table'); setActiveTab('schedule-visit'); }}>
+            <div className="bg-[var(--blue)]/20/70 rounded-xl p-4 border border-[var(--blue)]/20 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setButtonView('table'); setActiveTab('schedule-visit'); }}>
 
 
 
@@ -29121,7 +29121,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs font-medium text-cyan-600 mb-1">TOTAL VISITS</p>
+                  <p className="text-xs font-medium text-[var(--blue)] mb-1">TOTAL VISITS</p>
 
 
 
@@ -29129,7 +29129,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicVisitStats.total}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicVisitStats.total}</h3>
 
 
 
@@ -29137,7 +29137,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-[10px] text-cyan-500 mt-1">4 scheduled</p>
+                  <p className="text-[10px] text-[var(--blue)] mt-1">4 scheduled</p>
 
 
 
@@ -29153,7 +29153,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <div className="bg-cyan-100 p-2 rounded-lg">
+                <div className="bg-[var(--blue)]/10 p-2 rounded-lg">
 
 
 
@@ -29161,7 +29161,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <Stethoscope size={18} className="text-cyan-600" />
+                  <Stethoscope size={18} className="text-[var(--blue)]" />
 
 
 
@@ -29233,7 +29233,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+            <div className="bg-[var(--bg-surface)] rounded-xl p-5 border border-[var(--border-base)] shadow-sm">
 
 
 
@@ -29257,7 +29257,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <h3 className="text-sm font-semibold text-gray-700">Ticket Status Breakdown</h3>
+                <h3 className="text-sm font-semibold text-[var(--text-secondary)]">Ticket Status Breakdown</h3>
 
 
 
@@ -29265,7 +29265,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <span className="ml-auto text-xs text-gray-400">Total: {dynamicTicketStats.total}</span>
+                <span className="ml-auto text-xs text-[var(--text-muted)]">Total: {dynamicTicketStats.total}</span>
 
 
 
@@ -29297,7 +29297,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs text-gray-500 w-20">Open</span>
+                  <span className="text-xs text-[var(--text-muted)] w-20">Open</span>
 
 
 
@@ -29305,7 +29305,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
 
 
 
@@ -29329,7 +29329,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs font-medium text-gray-700 w-6 text-right">{dynamicTicketStats.openTickets}</span>
+                  <span className="text-xs font-medium text-[var(--text-secondary)] w-6 text-right">{dynamicTicketStats.openTickets}</span>
 
 
 
@@ -29353,7 +29353,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs text-gray-500 w-20">Scheduled</span>
+                  <span className="text-xs text-[var(--text-muted)] w-20">Scheduled</span>
 
 
 
@@ -29361,7 +29361,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
 
 
 
@@ -29369,7 +29369,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${tickets.length > 0 ? (dynamicTicketStats.scheduled / tickets.length) * 100 : 0}%` }} />
+                    <div className="h-full bg-[var(--primary)] rounded-full" style={{ width: `${tickets.length > 0 ? (dynamicTicketStats.scheduled / tickets.length) * 100 : 0}%` }} />
 
 
 
@@ -29385,7 +29385,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs font-medium text-gray-700 w-6 text-right">{dynamicTicketStats.scheduled}</span>
+                  <span className="text-xs font-medium text-[var(--text-secondary)] w-6 text-right">{dynamicTicketStats.scheduled}</span>
 
 
 
@@ -29409,7 +29409,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs text-gray-500 w-20">In Progress</span>
+                  <span className="text-xs text-[var(--text-muted)] w-20">In Progress</span>
 
 
 
@@ -29417,7 +29417,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
 
 
 
@@ -29441,7 +29441,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs font-medium text-gray-700 w-6 text-right">{dynamicTicketStats.inProgress}</span>
+                  <span className="text-xs font-medium text-[var(--text-secondary)] w-6 text-right">{dynamicTicketStats.inProgress}</span>
 
 
 
@@ -29465,7 +29465,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs text-gray-500 w-20">Resolved</span>
+                  <span className="text-xs text-[var(--text-muted)] w-20">Resolved</span>
 
 
 
@@ -29473,7 +29473,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
 
 
 
@@ -29481,7 +29481,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${tickets.length > 0 ? (dynamicTicketStats.resolved / tickets.length) * 100 : 0}%` }} />
+                    <div className="h-full bg-[var(--green)] rounded-full" style={{ width: `${tickets.length > 0 ? (dynamicTicketStats.resolved / tickets.length) * 100 : 0}%` }} />
 
 
 
@@ -29497,7 +29497,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs font-medium text-gray-700 w-6 text-right">{dynamicTicketStats.resolved}</span>
+                  <span className="text-xs font-medium text-[var(--text-secondary)] w-6 text-right">{dynamicTicketStats.resolved}</span>
 
 
 
@@ -29521,7 +29521,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs text-gray-500 w-20">Closed</span>
+                  <span className="text-xs text-[var(--text-muted)] w-20">Closed</span>
 
 
 
@@ -29529,7 +29529,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
 
 
 
@@ -29537,7 +29537,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <div className="h-full bg-gray-600 rounded-full" style={{ width: `${tickets.length > 0 ? (dynamicTicketStats.closed / tickets.length) * 100 : 0}%` }} />
+                    <div className="h-full bg-[var(--primary)] rounded-full" style={{ width: `${tickets.length > 0 ? (dynamicTicketStats.closed / tickets.length) * 100 : 0}%` }} />
 
 
 
@@ -29553,7 +29553,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs font-medium text-gray-700 w-6 text-right">{dynamicTicketStats.closed}</span>
+                  <span className="text-xs font-medium text-[var(--text-secondary)] w-6 text-right">{dynamicTicketStats.closed}</span>
 
 
 
@@ -29601,7 +29601,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+            <div className="bg-[var(--bg-surface)] rounded-xl p-5 border border-[var(--border-base)] shadow-sm">
 
 
 
@@ -29625,7 +29625,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <h3 className="text-sm font-semibold text-gray-700">Visit Statistics</h3>
+                <h3 className="text-sm font-semibold text-[var(--text-secondary)]">Visit Statistics</h3>
 
 
 
@@ -29633,7 +29633,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <span className="ml-auto text-xs text-gray-400">Total: {dynamicVisitStats.total}</span>
+                <span className="ml-auto text-xs text-[var(--text-muted)]">Total: {dynamicVisitStats.total}</span>
 
 
 
@@ -29665,7 +29665,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs text-gray-500 w-20">Scheduled</span>
+                  <span className="text-xs text-[var(--text-muted)] w-20">Scheduled</span>
 
 
 
@@ -29673,7 +29673,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
 
 
 
@@ -29681,7 +29681,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${dynamicVisitStats.total > 0 ? (dynamicVisitStats.scheduled / dynamicVisitStats.total) * 100 : 0}%` }} />
+                    <div className="h-full bg-[var(--primary)] rounded-full" style={{ width: `${dynamicVisitStats.total > 0 ? (dynamicVisitStats.scheduled / dynamicVisitStats.total) * 100 : 0}%` }} />
 
 
 
@@ -29697,7 +29697,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs font-medium text-gray-700 w-6 text-right">{dynamicVisitStats.scheduled}</span>
+                  <span className="text-xs font-medium text-[var(--text-secondary)] w-6 text-right">{dynamicVisitStats.scheduled}</span>
 
 
 
@@ -29721,7 +29721,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs text-gray-500 w-20">Completed</span>
+                  <span className="text-xs text-[var(--text-muted)] w-20">Completed</span>
 
 
 
@@ -29729,7 +29729,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
 
 
 
@@ -29737,7 +29737,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${dynamicVisitStats.total > 0 ? (dynamicVisitStats.completed / dynamicVisitStats.total) * 100 : 0}%` }} />
+                    <div className="h-full bg-[var(--green)] rounded-full" style={{ width: `${dynamicVisitStats.total > 0 ? (dynamicVisitStats.completed / dynamicVisitStats.total) * 100 : 0}%` }} />
 
 
 
@@ -29753,7 +29753,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs font-medium text-gray-700 w-6 text-right">{dynamicVisitStats.completed}</span>
+                  <span className="text-xs font-medium text-[var(--text-secondary)] w-6 text-right">{dynamicVisitStats.completed}</span>
 
 
 
@@ -29777,7 +29777,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs text-gray-500 w-20">Cancelled</span>
+                  <span className="text-xs text-[var(--text-muted)] w-20">Cancelled</span>
 
 
 
@@ -29785,7 +29785,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
 
 
 
@@ -29809,7 +29809,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <span className="text-xs font-medium text-gray-700 w-6 text-right">{dynamicVisitStats.cancelled}</span>
+                  <span className="text-xs font-medium text-[var(--text-secondary)] w-6 text-right">{dynamicVisitStats.cancelled}</span>
 
 
 
@@ -29881,7 +29881,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <div className="bg-[var(--bg-surface)] rounded-xl p-4 border border-[var(--border-base)] shadow-sm">
 
 
 
@@ -29897,7 +29897,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2">
 
 
 
@@ -29929,7 +29929,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <button className="text-xs text-gray-400 hover:text-gray-600" onClick={() => { setButtonView('kanban'); }}>View All</button>
+                <button className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)]" onClick={() => { setButtonView('kanban'); }}>View All</button>
 
 
 
@@ -29961,7 +29961,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div key={ticket.id || idx} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+                  <div key={ticket.id || idx} className="flex items-center justify-between py-2 border-b border-[var(--border-base)] last:border-0">
 
 
 
@@ -29977,7 +29977,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                      <p className="text-xs font-medium text-gray-700">{ticket.id}</p>
+                      <p className="text-xs font-medium text-[var(--text-secondary)]">{ticket.id}</p>
 
 
 
@@ -29985,7 +29985,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                      <p className="text-[10px] text-gray-400">{ticket.customerName || ticket.customer}</p>
+                      <p className="text-[10px] text-[var(--text-muted)]">{ticket.customerName || ticket.customer}</p>
 
 
 
@@ -30017,7 +30017,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                      ticket.status === 'Scheduled' ? 'bg-blue-100 text-blue-600' :
+                      ticket.status === 'Scheduled' ? 'bg-[var(--primary)]/10 text-[var(--primary)]' :
 
 
 
@@ -30033,7 +30033,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                      ticket.status === 'Resolved' ? 'bg-emerald-100 text-emerald-600' :
+                      ticket.status === 'Resolved' ? 'bg-[var(--green)]/10 text-[var(--green)]' :
 
 
 
@@ -30041,7 +30041,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                      'bg-gray-100 text-gray-600'
+                      'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
 
 
 
@@ -30081,7 +30081,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs text-gray-400 text-center py-4">No tickets available</p>
+                  <p className="text-xs text-[var(--text-muted)] text-center py-4">No tickets available</p>
 
 
 
@@ -30129,7 +30129,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <div className="bg-[var(--bg-surface)] rounded-xl p-4 border border-[var(--border-base)] shadow-sm">
 
 
 
@@ -30145,7 +30145,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2">
 
 
 
@@ -30177,7 +30177,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <button className="text-xs text-gray-400 hover:text-gray-600" onClick={() => { setButtonView('table'); setActiveTab('schedule-visit'); }}>View All</button>
+                <button className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)]" onClick={() => { setButtonView('table'); setActiveTab('schedule-visit'); }}>View All</button>
 
 
 
@@ -30209,7 +30209,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div key={visit.id || idx} className="py-2 border-b border-gray-50 last:border-0">
+                  <div key={visit.id || idx} className="py-2 border-b border-[var(--border-base)] last:border-0">
 
 
 
@@ -30225,7 +30225,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                      <p className="text-xs font-medium text-gray-700">{visit.id || `V${String(idx + 1).padStart(3, '0')}`}</p>
+                      <p className="text-xs font-medium text-[var(--text-secondary)]">{visit.id || `V${String(idx + 1).padStart(3, '0')}`}</p>
 
 
 
@@ -30241,7 +30241,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                        visit.status === 'Completed' ? 'bg-emerald-100 text-emerald-600' :
+                        visit.status === 'Completed' ? 'bg-[var(--green)]/10 text-[var(--green)]' :
 
 
 
@@ -30249,7 +30249,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                        visit.status === 'Scheduled' ? 'bg-blue-100 text-blue-600' :
+                        visit.status === 'Scheduled' ? 'bg-[var(--primary)]/10 text-[var(--primary)]' :
 
 
 
@@ -30281,7 +30281,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <p className="text-[10px] text-gray-400 mt-1">{visit.customer || '—'}</p>
+                    <p className="text-[10px] text-[var(--text-muted)] mt-1">{visit.customer || '—'}</p>
 
 
 
@@ -30289,7 +30289,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <p className="text-[10px] text-gray-400">{visit.scheduled_date || visit.scheduledDate || '—'}</p>
+                    <p className="text-[10px] text-[var(--text-muted)]">{visit.scheduled_date || visit.scheduledDate || '—'}</p>
 
 
 
@@ -30321,7 +30321,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs text-gray-400 text-center py-4">No visits scheduled</p>
+                  <p className="text-xs text-[var(--text-muted)] text-center py-4">No visits scheduled</p>
 
 
 
@@ -30369,7 +30369,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <div className="bg-[var(--bg-surface)] rounded-xl p-4 border border-[var(--border-base)] shadow-sm">
 
 
 
@@ -30385,7 +30385,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2">
 
 
 
@@ -30417,7 +30417,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <button className="text-xs text-gray-400 hover:text-gray-600" onClick={() => { setButtonView('table'); setActiveTab('amc'); }}>View All</button>
+                <button className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)]" onClick={() => { setButtonView('table'); setActiveTab('amc'); }}>View All</button>
 
 
 
@@ -30449,7 +30449,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div key={contract.id || idx} className="py-2 border-b border-gray-50 last:border-0">
+                  <div key={contract.id || idx} className="py-2 border-b border-[var(--border-base)] last:border-0">
 
 
 
@@ -30465,7 +30465,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                      <p className="text-xs font-medium text-gray-700">{contract.id || `AMC${String(idx + 1).padStart(3, '0')}`}</p>
+                      <p className="text-xs font-medium text-[var(--text-secondary)]">{contract.id || `AMC${String(idx + 1).padStart(3, '0')}`}</p>
 
 
 
@@ -30481,7 +30481,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                        contract.status === 'Active' ? 'bg-emerald-100 text-emerald-600' :
+                        contract.status === 'Active' ? 'bg-[var(--green)]/10 text-[var(--green)]' :
 
 
 
@@ -30521,7 +30521,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <p className="text-[10px] text-gray-400 mt-1">{contract.customer || '—'}</p>
+                    <p className="text-[10px] text-[var(--text-muted)] mt-1">{contract.customer || '—'}</p>
 
 
 
@@ -30529,7 +30529,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <p className="text-[10px] text-gray-400">{contract.site || '—'}</p>
+                    <p className="text-[10px] text-[var(--text-muted)]">{contract.site || '—'}</p>
 
 
 
@@ -30561,7 +30561,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs text-gray-400 text-center py-4">No AMC contracts available</p>
+                  <p className="text-xs text-[var(--text-muted)] text-center py-4">No AMC contracts available</p>
 
 
 
@@ -30609,7 +30609,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+            <div className="bg-[var(--bg-surface)] rounded-xl p-4 border border-[var(--border-base)] shadow-sm">
 
 
 
@@ -30625,7 +30625,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-[var(--text-secondary)] flex items-center gap-2">
 
 
 
@@ -30657,7 +30657,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <span className="text-xs text-gray-400">{engineers.length} Engineers</span>
+                <span className="text-xs text-[var(--text-muted)]">{engineers.length} Engineers</span>
 
 
 
@@ -30689,7 +30689,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div key={engineer.id || idx} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
+                  <div key={engineer.id || idx} className="flex items-center gap-3 py-2 border-b border-[var(--border-base)] last:border-0">
 
 
 
@@ -30729,7 +30729,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                      <p className="text-xs font-medium text-gray-700 truncate">{engineer.name || engineer.email}</p>
+                      <p className="text-xs font-medium text-[var(--text-secondary)] truncate">{engineer.name || engineer.email}</p>
 
 
 
@@ -30737,7 +30737,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                      <p className="text-[10px] text-gray-400 truncate">{engineer.email || 'No email'}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] truncate">{engineer.email || 'No email'}</p>
 
 
 
@@ -30753,7 +30753,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <span className="text-[10px] text-emerald-500">●</span>
+                    <span className="text-[10px] text-[var(--green)]">●</span>
 
 
 
@@ -30785,7 +30785,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs text-gray-400 text-center py-4">0 tickets</p>
+                  <p className="text-xs text-[var(--text-muted)] text-center py-4">0 tickets</p>
 
 
 
@@ -30989,7 +30989,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.openTickets}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.openTickets}</h3>
 
 
 
@@ -31045,7 +31045,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-blue-100 rounded-xl p-4 border border-blue-200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setTicketStatus('Scheduled'); }}>
+            <div className="bg-[var(--primary)]/10 rounded-xl p-4 border border-[var(--primary)]/20 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setTicketStatus('Scheduled'); }}>
 
 
 
@@ -31069,7 +31069,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs font-medium text-blue-600 mb-1">SCHEDULED</p>
+                  <p className="text-xs font-medium text-[var(--primary)] mb-1">SCHEDULED</p>
 
 
 
@@ -31077,7 +31077,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.scheduled}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.scheduled}</h3>
 
 
 
@@ -31093,7 +31093,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <div className="bg-blue-200 p-2 rounded-lg">
+                <div className="bg-[var(--primary)]/20 p-2 rounded-lg">
 
 
 
@@ -31101,7 +31101,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <Calendar size={18} className="text-blue-600" />
+                  <Calendar size={18} className="text-[var(--primary)]" />
 
 
 
@@ -31165,7 +31165,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.inProgress}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.inProgress}</h3>
 
 
 
@@ -31221,7 +31221,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-emerald-100 rounded-xl p-4 border border-emerald-200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setTicketStatus('Resolved'); }}>
+            <div className="bg-[var(--green)]/10 rounded-xl p-4 border border-[var(--green)]200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setTicketStatus('Resolved'); }}>
 
 
 
@@ -31245,7 +31245,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs font-medium text-emerald-600 mb-1">RESOLVED</p>
+                  <p className="text-xs font-medium text-[var(--green)] mb-1">RESOLVED</p>
 
 
 
@@ -31253,7 +31253,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.resolved}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.resolved}</h3>
 
 
 
@@ -31269,7 +31269,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <div className="bg-emerald-200 p-2 rounded-lg">
+                <div className="bg-[var(--green)]/20 p-2 rounded-lg">
 
 
 
@@ -31277,7 +31277,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <CheckCircle size={18} className="text-emerald-600" />
+                  <CheckCircle size={18} className="text-[var(--green)]" />
 
 
 
@@ -31309,7 +31309,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-gray-100 rounded-xl p-4 border border-gray-200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setTicketStatus('Closed'); }}>
+            <div className="bg-[var(--bg-elevated)] rounded-xl p-4 border border-[var(--border-base)] cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setTicketStatus('Closed'); }}>
 
 
 
@@ -31333,7 +31333,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs font-medium text-gray-600 mb-1">CLOSED</p>
+                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">CLOSED</p>
 
 
 
@@ -31341,7 +31341,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.closed}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.closed}</h3>
 
 
 
@@ -31357,7 +31357,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <div className="bg-gray-200 p-2 rounded-lg">
+                <div className="bg-[var(--bg-hover)] p-2 rounded-lg">
 
 
 
@@ -31365,7 +31365,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <XCircle size={18} className="text-gray-600" />
+                  <XCircle size={18} className="text-[var(--text-secondary)]" />
 
 
 
@@ -31429,7 +31429,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicAmcStats.activeContracts}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicAmcStats.activeContracts}</h3>
 
 
 
@@ -31485,7 +31485,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-cyan-100 rounded-xl p-4 border border-cyan-200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setButtonView('table'); setActiveTab('schedule-visit'); }}>
+            <div className="bg-[var(--blue)]/10 rounded-xl p-4 border border-[var(--blue)]/20 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setButtonView('table'); setActiveTab('schedule-visit'); }}>
 
 
 
@@ -31509,7 +31509,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs font-medium text-cyan-600 mb-1">SCHEDULE VISIT</p>
+                  <p className="text-xs font-medium text-[var(--blue)] mb-1">SCHEDULE VISIT</p>
 
 
 
@@ -31517,7 +31517,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicVisitStats.total}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicVisitStats.total}</h3>
 
 
 
@@ -31533,7 +31533,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <div className="bg-cyan-200 p-2 rounded-lg">
+                <div className="bg-[var(--blue)]/20 p-2 rounded-lg">
 
 
 
@@ -31541,7 +31541,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <Calendar size={18} className="text-cyan-600" />
+                  <Calendar size={18} className="text-[var(--blue)]" />
 
 
 
@@ -31817,7 +31817,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.openTickets}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.openTickets}</h3>
 
 
 
@@ -31873,7 +31873,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-blue-100 rounded-xl p-4 border border-blue-200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setActiveTab('tickets'); setTicketStatus('Scheduled'); }}>
+            <div className="bg-[var(--primary)]/10 rounded-xl p-4 border border-[var(--primary)]/20 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setActiveTab('tickets'); setTicketStatus('Scheduled'); }}>
 
 
 
@@ -31897,7 +31897,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs font-medium text-blue-600 mb-1">SCHEDULED</p>
+                  <p className="text-xs font-medium text-[var(--primary)] mb-1">SCHEDULED</p>
 
 
 
@@ -31905,7 +31905,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.scheduled}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.scheduled}</h3>
 
 
 
@@ -31921,7 +31921,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <div className="bg-blue-200 p-2 rounded-lg">
+                <div className="bg-[var(--primary)]/20 p-2 rounded-lg">
 
 
 
@@ -31929,7 +31929,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <Calendar size={18} className="text-blue-600" />
+                  <Calendar size={18} className="text-[var(--primary)]" />
 
 
 
@@ -31993,7 +31993,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.inProgress}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.inProgress}</h3>
 
 
 
@@ -32049,7 +32049,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-emerald-100 rounded-xl p-4 border border-emerald-200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setActiveTab('tickets'); setTicketStatus('Resolved'); }}>
+            <div className="bg-[var(--green)]/10 rounded-xl p-4 border border-[var(--green)]200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setActiveTab('tickets'); setTicketStatus('Resolved'); }}>
 
 
 
@@ -32073,7 +32073,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs font-medium text-emerald-600 mb-1">RESOLVED</p>
+                  <p className="text-xs font-medium text-[var(--green)] mb-1">RESOLVED</p>
 
 
 
@@ -32081,7 +32081,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.resolved}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.resolved}</h3>
 
 
 
@@ -32097,7 +32097,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <div className="bg-emerald-200 p-2 rounded-lg">
+                <div className="bg-[var(--green)]/20 p-2 rounded-lg">
 
 
 
@@ -32105,7 +32105,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <CheckCircle size={18} className="text-emerald-600" />
+                  <CheckCircle size={18} className="text-[var(--green)]" />
 
 
 
@@ -32137,7 +32137,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-gray-100 rounded-xl p-4 border border-gray-200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setActiveTab('tickets'); setTicketStatus('Closed'); }}>
+            <div className="bg-[var(--bg-elevated)] rounded-xl p-4 border border-[var(--border-base)] cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setActiveTab('tickets'); setTicketStatus('Closed'); }}>
 
 
 
@@ -32161,7 +32161,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs font-medium text-gray-600 mb-1">CLOSED</p>
+                  <p className="text-xs font-medium text-[var(--text-secondary)] mb-1">CLOSED</p>
 
 
 
@@ -32169,7 +32169,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicTicketStats.closed}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicTicketStats.closed}</h3>
 
 
 
@@ -32185,7 +32185,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <div className="bg-gray-200 p-2 rounded-lg">
+                <div className="bg-[var(--bg-hover)] p-2 rounded-lg">
 
 
 
@@ -32193,7 +32193,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <XCircle size={18} className="text-gray-600" />
+                  <XCircle size={18} className="text-[var(--text-secondary)]" />
 
 
 
@@ -32257,7 +32257,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicAmcStats.activeContracts}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicAmcStats.activeContracts}</h3>
 
 
 
@@ -32313,7 +32313,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            <div className="bg-cyan-100 rounded-xl p-4 border border-cyan-200 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setActiveTab('schedule-visit'); }}>
+            <div className="bg-[var(--blue)]/10 rounded-xl p-4 border border-[var(--blue)]/20 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setActiveTab('schedule-visit'); }}>
 
 
 
@@ -32337,7 +32337,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <p className="text-xs font-medium text-cyan-600 mb-1">SCHEDULE VISIT</p>
+                  <p className="text-xs font-medium text-[var(--blue)] mb-1">SCHEDULE VISIT</p>
 
 
 
@@ -32345,7 +32345,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <h3 className="text-2xl font-bold text-gray-800">{dynamicVisitStats.total}</h3>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">{dynamicVisitStats.total}</h3>
 
 
 
@@ -32361,7 +32361,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <div className="bg-cyan-200 p-2 rounded-lg">
+                <div className="bg-[var(--blue)]/20 p-2 rounded-lg">
 
 
 
@@ -32369,7 +32369,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <Calendar size={18} className="text-cyan-600" />
+                  <Calendar size={18} className="text-[var(--blue)]" />
 
 
 
@@ -35018,7 +35018,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                                : 'bg-blue-1000/20 text-blue-400'
+                                : 'bg-[var(--primary)]/100/20 text-[var(--primary)]'
 
 
 
@@ -35242,7 +35242,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                              ? 'bg-emerald-1000/20 text-emerald-400'
+                              ? 'bg-[var(--green)]/100/20 text-[var(--green)]'
 
 
 
@@ -35306,7 +35306,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                                ? 'bg-blue-1000/20 text-blue-400'
+                                ? 'bg-[var(--primary)]/100/20 text-[var(--primary)]'
 
 
 
@@ -49597,7 +49597,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
                 <p className="text-sm font-medium text-[var(--text-primary)]">
 
-                  <span className={`px-2 py-1 rounded-full text-[10px] ${(selectedVisit.priority || '').toLowerCase() === 'high' ? 'bg-red-500/20 text-red-400' : (selectedVisit.priority || '').toLowerCase() === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-1000/20 text-blue-400'}`}>
+                  <span className={`px-2 py-1 rounded-full text-[10px] ${(selectedVisit.priority || '').toLowerCase() === 'high' ? 'bg-red-500/20 text-red-400' : (selectedVisit.priority || '').toLowerCase() === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-[var(--primary)]/100/20 text-[var(--primary)]'}`}>
 
                     {selectedVisit.priority || 'Low'}
 
@@ -49613,7 +49613,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
                 <p className="text-sm font-medium text-[var(--text-primary)]">
 
-                  <span className={`px-2 py-1 rounded-full text-[10px] ${(selectedVisit.status || '').toLowerCase() === 'completed' ? 'bg-emerald-1000/20 text-emerald-400' : (selectedVisit.status || '').toLowerCase() === 'scheduled' ? 'bg-blue-1000/20 text-blue-400' : 'bg-red-500/20 text-red-400'}`}>
+                  <span className={`px-2 py-1 rounded-full text-[10px] ${(selectedVisit.status || '').toLowerCase() === 'completed' ? 'bg-[var(--green)]/100/20 text-[var(--green)]' : (selectedVisit.status || '').toLowerCase() === 'scheduled' ? 'bg-[var(--primary)]/100/20 text-[var(--primary)]' : 'bg-red-500/20 text-red-400'}`}>
 
                     {selectedVisit.status || 'Scheduled'}
 

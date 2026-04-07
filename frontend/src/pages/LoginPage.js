@@ -102,8 +102,8 @@ const LoginPage = () => {
         <div className="relative">
           <div className="glass-card p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-                <Shield size={18} className="text-emerald-400" />
+              <div className="w-10 h-10 rounded-full bg-[var(--green)]/10 border border-[var(--green)]/30 flex items-center justify-center">
+                <Shield size={18} className="text-[var(--green)]" />
               </div>
               <div>
                 <p className="text-sm font-bold text-[var(--text-primary)]">Admin Access Only</p>

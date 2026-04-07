@@ -40,7 +40,7 @@ const PriorityBadge = ({ value }) => {
 
 /* ── AMC badge ──────────────────────────────────────────────────────────────── */
 const AMC_MAP = {
-  Active: { label: 'Active', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+  Active: { label: 'Active', color: 'bg-[var(--green)]/15 text-[var(--green)] border-[var(--green)]/30' },
   Expired: { label: 'Expired', color: 'bg-red-500/15    text-red-400    border-red-500/30' },
   Expiring: { label: 'Expiring', color: 'bg-amber-500/15  text-amber-400  border-amber-500/30' },
 };
@@ -54,7 +54,7 @@ const TICKET_STATUS_MAP = {
   Open: { label: 'Open', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
   Scheduled: { label: 'Scheduled', color: 'bg-blue-500/15 text-blue-400 border-blue-500/30' },
   'In Progress': { label: 'In Progress', color: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
-  Resolved: { label: 'Resolved', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+  Resolved: { label: 'Resolved', color: 'bg-[var(--green)]/15 text-[var(--green)] border-[var(--green)]/30' },
   Closed: { label: 'Closed', color: 'bg-slate-500/15 text-slate-400 border-slate-500/30' },
 };
 const TicketStatusBadge = ({ value }) => {
@@ -65,7 +65,7 @@ const TicketStatusBadge = ({ value }) => {
 /* ── Visit Status Badge ─────────────────────────────────────────────────────── */
 const VISIT_STATUS_MAP = {
   Scheduled: { label: 'Scheduled', color: 'bg-blue-500/15 text-blue-400 border-blue-500/30' },
-  Completed: { label: 'Completed', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+  Completed: { label: 'Completed', color: 'bg-[var(--green)]/15 text-[var(--green)] border-[var(--green)]/30' },
   Cancelled: { label: 'Cancelled', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
 };
 const VisitStatusBadge = ({ value }) => {
@@ -444,7 +444,7 @@ const ServiceDashboardPage = ({ onNavigate }) => {
               { label: 'Open', count: dynamicTicketStats.openTickets, color: 'bg-red-500', text: 'text-red-400' },
               { label: 'Scheduled', count: dynamicTicketStats.scheduled, color: 'bg-blue-500', text: 'text-blue-400' },
               { label: 'In Progress', count: dynamicTicketStats.inProgress, color: 'bg-amber-500', text: 'text-amber-400' },
-              { label: 'Resolved', count: dynamicTicketStats.resolved, color: 'bg-emerald-500', text: 'text-emerald-400' },
+              { label: 'Resolved', count: dynamicTicketStats.resolved, color: 'bg-[var(--green)]', text: 'text-[var(--green)]' },
               { label: 'Closed', count: dynamicTicketStats.closed, color: 'bg-slate-500', text: 'text-slate-400' },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-3">
@@ -473,7 +473,7 @@ const ServiceDashboardPage = ({ onNavigate }) => {
           <div className="space-y-3">
             {[
               { label: 'Scheduled', count: dynamicVisitStats.scheduled, color: 'bg-blue-500', text: 'text-blue-400' },
-              { label: 'Completed', count: dynamicVisitStats.completed, color: 'bg-emerald-500', text: 'text-emerald-400' },
+              { label: 'Completed', count: dynamicVisitStats.completed, color: 'bg-[var(--green)]', text: 'text-[var(--green)]' },
               { label: 'Cancelled', count: dynamicVisitStats.cancelled, color: 'bg-red-500', text: 'text-red-400' },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-3">

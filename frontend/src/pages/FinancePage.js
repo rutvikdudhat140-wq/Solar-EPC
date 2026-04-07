@@ -59,7 +59,7 @@ const InvCard = ({ inv, onDragStart, onClick }) => {
         </div>
         <div className="glass-card p-1.5 text-center">
           <p className="text-[var(--text-muted)]">Balance</p>
-          <p className={`font-bold ${inv.balance > 0 ? 'text-red-400' : 'text-emerald-400'}`}>{fmt(inv.balance)}</p>
+          <p className={`font-bold ${inv.balance > 0 ? 'text-red-400' : 'text-[var(--green)]'}`}>{fmt(inv.balance)}</p>
         </div>
       </div>
       <div>
@@ -67,7 +67,7 @@ const InvCard = ({ inv, onDragStart, onClick }) => {
           <span>Collected</span><span>{balancePct}%</span>
         </div>
         <div className="h-1 rounded-full bg-[var(--bg-elevated)] overflow-hidden">
-          <div className={`h-full rounded-full ${balancePct === 100 ? 'bg-emerald-400' : 'bg-[var(--accent)]'}`}
+          <div className={`h-full rounded-full ${balancePct === 100 ? 'bg-[var(--green)]' : 'bg-[var(--accent)]'}`}
             style={{ width: `${balancePct}%` }} />
         </div>
       </div>
@@ -194,7 +194,7 @@ const PurchaseOrderDetails = ({ vendorId, allPurchaseOrders }) => {
                 key={po._id || po.id || idx}
                 className={`grid grid-cols-7 gap-2 text-[10px] px-3 py-1.5 rounded transition-colors ${
                   isFullyPaid 
-                    ? 'bg-emerald-500/10 border border-emerald-500/30' 
+                    ? 'bg-[var(--green)]/10 border border-[var(--green)]500/30' 
                     : idx % 2 === 0 
                       ? 'bg-[var(--bg-surface)]' 
                       : 'bg-[var(--bg-elevated)]'
@@ -204,7 +204,7 @@ const PurchaseOrderDetails = ({ vendorId, allPurchaseOrders }) => {
                 <div className="flex items-center pl-2">
                   <div className="font-mono text-xs text-[var(--accent-light)] truncate">{po.id || 'N/A'}</div>
                   {isFullyPaid && (
-                    <span className="inline-flex items-center gap-1 px-1 py-0.5 rounded text-[9px] font-medium bg-emerald-500/20 text-emerald-400 ml-1">
+                    <span className="inline-flex items-center gap-1 px-1 py-0.5 rounded text-[9px] font-medium bg-[var(--green)]/20 text-[var(--green)] ml-1">
                       <CheckCircle size={8} /> Paid
                     </span>
                   )}
@@ -220,10 +220,10 @@ const PurchaseOrderDetails = ({ vendorId, allPurchaseOrders }) => {
                 <div className="text-right text-xs font-medium text-[var(--accent)] pr-2">{formatDate(po.expectedDate)}</div>
                 
                 {/* Column 5: Delivered Date - aligns under Paid */}
-                <div className="text-right text-xs text-emerald-500 pr-2">{formatDate(po.deliveredDate)}</div>
+                <div className="text-right text-xs text-[var(--green)] pr-2">{formatDate(po.deliveredDate)}</div>
                 
                 {/* Column 6: Paid Amount - aligns under Outstanding */}
-                <div className="text-right text-xs text-emerald-400 font-medium pr-2">{fmt(poPaidAmount)}</div>
+                <div className="text-right text-xs text-[var(--green)] font-medium pr-2">{fmt(poPaidAmount)}</div>
                 
                 {/* Column 7: Outstanding Amount - aligns under Last Payment */}
                 <div className="text-right text-xs font-bold text-amber-400 pr-2">{fmt(poOutstanding)}</div>
@@ -243,8 +243,8 @@ const INVOICE_COLUMNS = [
   { key: 'phone', header: 'Phone', render: v => <span className="text-xs text-[var(--text-muted)]">{v || '-'}</span> },
   { key: 'paymentTerms', header: 'Payment Terms', render: v => <span className="text-xs text-[var(--text-muted)]">{v || '-'}</span> },
   { key: 'amount', header: 'Invoice Amt', sortable: true, render: v => <span className="text-xs font-bold text-[var(--text-primary)]">{fmt(v)}</span> },
-  { key: 'paid', header: 'Paid', render: v => <span className="text-xs text-emerald-400 font-bold">{fmt(v)}</span> },
-  { key: 'balance', header: 'Balance', render: v => <span className={`text-xs font-bold ${v > 0 ? 'text-red-400' : 'text-emerald-400'}`}>{fmt(v)}</span> },
+  { key: 'paid', header: 'Paid', render: v => <span className="text-xs text-[var(--green)] font-bold">{fmt(v)}</span> },
+  { key: 'balance', header: 'Balance', render: v => <span className={`text-xs font-bold ${v > 0 ? 'text-red-400' : 'text-[var(--green)]'}`}>{fmt(v)}</span> },
   { key: 'status', header: 'Status', render: v => <StatusBadge domain="invoice" value={v} /> },
   { key: 'invoiceDate', header: 'Date', render: v => <span className="text-xs text-[var(--text-muted)]">{v ? new Date(v).toLocaleDateString() : '-'}</span> },
   { key: 'dueDate', header: 'Due Date', render: v => <span className="text-xs text-[var(--text-muted)]">{v ? new Date(v).toLocaleDateString() : '-'}</span> },
@@ -2581,8 +2581,8 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
           {calendarFilterYear !== 'all' && filteredInvoicesByYear.length === 0 && filteredJournalEntriesByYear.length === 0 && filteredManualAdjustmentsByYear.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 px-4">
               <div className="text-6xl mb-4">📅</div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">No data available for the selected period</h3>
-              <p className="text-sm text-gray-500 text-center max-w-md mb-4">
+              <h3 className="text-lg font-semibold text-[var(--text-secondary)] mb-2">No data available for the selected period</h3>
+              <p className="text-sm text-[var(--text-muted)] text-center max-w-md mb-4">
                 {calendarFilterMonth !== undefined
                   ? `There are no invoices, journal entries, or transactions recorded for ${new Date(parseInt(calendarFilterYear), calendarFilterMonth, 1).toLocaleString('default', { month: 'long' })} ${calendarFilterYear}.`
                   : `There are no invoices, journal entries, or transactions recorded for ${calendarFilterYear}.`
@@ -2590,7 +2590,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
               </p>
               <button
                 onClick={() => { setCalendarFilterYear('all'); setCalendarFilterMonth(undefined); setCalendarFilterDay(undefined); }}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="px-4 py-2 bg-[var(--primary)] text-[var(--primary-inv)] rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
               >
                 Show All Data
               </button>
@@ -2682,21 +2682,21 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
           {showSummaryCards && (
             <>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <KPICard className="glass-card bg-white" label="Total Revenue" value={fmt(revenueCurrent)} sub="From invoices" icon={TrendingUp} variant="emerald" />
-                <KPICard className="glass-card bg-white" label="Cash Position" value={fmt(cashPosition)} sub="Collected - Payables" icon={IndianRupee} variant="blue" />
-                <KPICard className="glass-card bg-white" label="Receivables" value={fmt(receivables)} sub="Outstanding" icon={Clock} variant="amber" />
-                <KPICard className="glass-card bg-white" label="Payables" value={fmt(payablesTotal)} sub="Due" icon={TrendingDown} variant="red" />
+                <KPICard className="glass-card bg-[var(--bg-surface)]" label="Total Revenue" value={fmt(revenueCurrent)} sub="From invoices" icon={TrendingUp} variant="emerald" />
+                <KPICard className="glass-card bg-[var(--bg-surface)]" label="Cash Position" value={fmt(cashPosition)} sub="Collected - Payables" icon={IndianRupee} variant="blue" />
+                <KPICard className="glass-card bg-[var(--bg-surface)]" label="Receivables" value={fmt(receivables)} sub="Outstanding" icon={Clock} variant="amber" />
+                <KPICard className="glass-card bg-[var(--bg-surface)]" label="Payables" value={fmt(payablesTotal)} sub="Due" icon={TrendingDown} variant="red" />
               </div>
               <div className="space-y-2">
                 <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Cashflow Summary</p>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                   {[
                     { label: 'Total Invoiced', value: fmt(revenueCurrent), color: 'text-[var(--text-primary)]' },
-                    { label: 'Collected', value: fmt(totalCollected), color: 'text-emerald-400' },
+                    { label: 'Collected', value: fmt(totalCollected), color: 'text-[var(--green)]' },
                     { label: 'Outstanding', value: fmt(receivables), color: 'text-amber-400' },
-                    { label: 'Collection Rate', value: `${Math.round((totalCollected / (revenueCurrent || 1)) * 100)}%`, color: 'text-cyan-400' },
+                    { label: 'Collection Rate', value: `${Math.round((totalCollected / (revenueCurrent || 1)) * 100)}%`, color: 'text-[var(--blue)]' },
                   ].map(stat => (
-                    <div key={stat.label} className="glass-card p-3 text-center bg-white">
+                    <div key={stat.label} className="glass-card p-3 text-center bg-[var(--bg-surface)]">
                       <p className="text-[11px] text-[var(--text-muted)] mb-1">{stat.label}</p>
                       <p className={`text-base font-black ${stat.color}`}>{stat.value}</p>
                     </div>
@@ -2789,12 +2789,12 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
                       return (
                         <div key={p.vendorObjectId || p.vendorId}>
                           <div
-                            className={`grid grid-cols-7 gap-2 items-center p-3 rounded-lg border ${isFullyPaid ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-[var(--bg-elevated)] border-[var(--border-muted)]'}`}
+                            className={`grid grid-cols-7 gap-2 items-center p-3 rounded-lg border ${isFullyPaid ? 'bg-[var(--green)]/10 border-[var(--green)]500/30' : 'bg-[var(--bg-elevated)] border-[var(--border-muted)]'}`}
                           >
                             <div className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
                               {p.vendorName}
                               {isFullyPaid && (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/20 text-emerald-400">
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-[var(--green)]/20 text-[var(--green)]">
                                   <CheckCircle size={10} /> Paid
                                 </span>
                               )}
@@ -2803,7 +2803,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
                             <div className="text-xs text-right text-[var(--text-primary)]">{vendorPOs.length || p.totalPurchaseOrders}</div>
                             <div className="text-xs text-right text-[var(--text-primary)]">{fmt(p.totalPayableAmount)}</div>
                             <div className="text-xs text-right text-[var(--text-primary)]">{fmt(p.amountPaid)}</div>
-                            <div className={`text-xs text-right font-bold ${isFullyPaid ? 'text-emerald-400' : 'text-amber-400'}`}>{fmt(p.outstandingAmount)}</div>
+                            <div className={`text-xs text-right font-bold ${isFullyPaid ? 'text-[var(--green)]' : 'text-amber-400'}`}>{fmt(p.outstandingAmount)}</div>
                             <div className="text-xs text-right text-[var(--text-muted)]">{p.lastPurchaseOrderDate || '-'}</div>
                           </div>
                           {/* Purchase Order Details */}
@@ -3141,13 +3141,13 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
                     Advance Information
                   </h3>
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="glass-card p-3 bg-blue-500/5 border-blue-500/20">
-                      <div className="text-[10px] text-blue-400 mb-1">Advance Required ({percentage}%)</div>
-                      <div className="text-base font-bold text-blue-400">{fmt(advanceRequired)}</div>
+                    <div className="glass-card p-3 bg-[var(--primary)]/5 border-[var(--primary)]/20">
+                      <div className="text-[10px] text-[var(--primary)] mb-1">Advance Required ({percentage}%)</div>
+                      <div className="text-base font-bold text-[var(--primary)]">{fmt(advanceRequired)}</div>
                     </div>
-                    <div className="glass-card p-3 bg-emerald-500/5 border-emerald-500/20">
-                      <div className="text-[10px] text-emerald-400 mb-1">Advance Received</div>
-                      <div className="text-base font-bold text-emerald-400">{fmt(advanceReceived)}</div>
+                    <div className="glass-card p-3 bg-[var(--green)]/5 border-[var(--green)]500/20">
+                      <div className="text-[10px] text-[var(--green)] mb-1">Advance Received</div>
+                      <div className="text-base font-bold text-[var(--green)]">{fmt(advanceReceived)}</div>
                     </div>
                     <div className="glass-card p-3 bg-amber-500/5 border-amber-500/20">
                       <div className="text-[10px] text-amber-400 mb-1">Advance Pending</div>
@@ -3339,7 +3339,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
           </div>
         </Modal>
       )}
-      {showStatusChangeConfirm && pendingStageChange && (<Modal open={showStatusChangeConfirm} onClose={() => { setShowStatusChangeConfirm(false); setPendingStageChange(null); }} title="Confirm Status Change" footer={<div className="flex gap-2 justify-end"><Button variant="ghost" onClick={() => { setShowStatusChangeConfirm(false); setPendingStageChange(null); }}>Cancel</Button><Button onClick={() => { setShowStatusChangeConfirm(false); handleStageChange(pendingStageChange.id, pendingStageChange.newStage, true); setPendingStageChange(null); }}>OK</Button></div>}><div className="space-y-3"><p className="text-sm text-gray-600">Are you sure you want to change this invoice status from {pendingStageChange.previousStatus} to {pendingStageChange.newStage}?</p></div></Modal>)}
+      {showStatusChangeConfirm && pendingStageChange && (<Modal open={showStatusChangeConfirm} onClose={() => { setShowStatusChangeConfirm(false); setPendingStageChange(null); }} title="Confirm Status Change" footer={<div className="flex gap-2 justify-end"><Button variant="ghost" onClick={() => { setShowStatusChangeConfirm(false); setPendingStageChange(null); }}>Cancel</Button><Button onClick={() => { setShowStatusChangeConfirm(false); handleStageChange(pendingStageChange.id, pendingStageChange.newStage, true); setPendingStageChange(null); }}>OK</Button></div>}><div className="space-y-3"><p className="text-sm text-[var(--text-secondary)]">Are you sure you want to change this invoice status from {pendingStageChange.previousStatus} to {pendingStageChange.newStage}?</p></div></Modal>)}
       {/* Assign Invoice Modal */}
       {showAssignInvoice && assignInvoiceTarget && (
         <Modal
@@ -3426,7 +3426,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
               </div>
             )}
             {reminderSuccess && (
-              <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm">
+              <div className="p-3 rounded-lg bg-[var(--green)]/10 border border-[var(--green)]500/30 text-[var(--green)] text-sm">
                 Reminder sent successfully.
               </div>
             )}
@@ -3520,10 +3520,10 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
                     <div key={activity.id} className="flex gap-3">
                       <div className="flex flex-col items-center">
                         <div className="w-8 h-8 rounded-full bg-[var(--bg-elevated)] border border-[var(--border-base)] flex items-center justify-center">
-                          {activity.action === 'INVOICE_CREATED' && <FileText size={14} className="text-blue-400" />}
+                          {activity.action === 'INVOICE_CREATED' && <FileText size={14} className="text-[var(--primary)]" />}
                           {activity.action === 'INVOICE_UPDATED' && <Edit size={14} className="text-amber-400" />}
                           {activity.action === 'STATUS_CHANGED' && <RefreshCw size={14} className="text-purple-400" />}
-                          {activity.action === 'PAYMENT_ADDED' && <CheckCircle size={14} className="text-emerald-400" />}
+                          {activity.action === 'PAYMENT_ADDED' && <CheckCircle size={14} className="text-[var(--green)]" />}
                           {activity.action === 'REMINDER_SENT' && <Clock size={14} className="text-orange-400" />}
                         </div>
                         {index < timelineData.length - 1 && (
@@ -3927,7 +3927,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
                           <div>Total Amount: {fmt(inv.amount)}</div>
                           <div>Paid: {fmt(inv.paid || 0)}</div>
                           <div className="font-semibold text-amber-400">Outstanding: {fmt(outstanding)}</div>
-                          <div className="text-[10px] text-gray-500 mt-1">ID: {inv._id || inv.id}</div>
+                          <div className="text-[10px] text-[var(--text-muted)] mt-1">ID: {inv._id || inv.id}</div>
                         </div>
                       );
                     })()}
@@ -4054,7 +4054,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
                             <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-[var(--border-base)]">
                               <div className="text-center">
                                 <div className="text-[9px] uppercase text-[var(--text-muted)]">Paid Amount</div>
-                                <div className="text-xs font-semibold text-emerald-400">{fmt(poPaidAmount)}</div>
+                                <div className="text-xs font-semibold text-[var(--green)]">{fmt(poPaidAmount)}</div>
                               </div>
                               <div className="text-center">
                                 <div className="text-[9px] uppercase text-[var(--text-muted)]">Outstanding</div>
@@ -4072,7 +4072,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
                             {selectedPO.deliveredDate && (
                               <div className="flex justify-between">
                                 <span>Delivered Date:</span>
-                                <span className="text-emerald-500">{selectedPO.deliveredDate}</span>
+                                <span className="text-[var(--green)]">{selectedPO.deliveredDate}</span>
                               </div>
                             )}
                           </div>
@@ -4294,7 +4294,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
               </div>
               <div className="glass-card p-2">
                 <div className="text-[var(--text-muted)] mb-0.5">Type</div>
-                <div className={`font-semibold ${selectedJournalEntry.type === 'credit' ? 'text-emerald-400' : 'text-red-400'}`}>
+                <div className={`font-semibold ${selectedJournalEntry.type === 'credit' ? 'text-[var(--green)]' : 'text-red-400'}`}>
                   {selectedJournalEntry.type === 'credit' ? 'Credit (+)' : 'Debit (-)'}
                 </div>
               </div>

@@ -71,8 +71,8 @@ const DocumentsPage = () => {
 
       {/* Coming Soon Message */}
       <div className="glass-card p-8 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-blue-500/20 flex items-center justify-center mx-auto mb-4">
-          <FileText size={32} className="text-blue-500" />
+        <div className="w-16 h-16 rounded-2xl bg-[var(--primary)]/20 flex items-center justify-center mx-auto mb-4">
+          <FileText size={32} className="text-[var(--primary)]" />
         </div>
         <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">Document Management</h2>
         <p className="text-[var(--text-muted)]">Advanced document management features coming soon...</p>

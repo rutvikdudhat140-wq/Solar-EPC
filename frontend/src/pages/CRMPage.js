@@ -239,7 +239,7 @@ const TrendCharts = ({ months }) => {
     <div className="glass-card p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-[var(--text-primary)]">Leads & Pipeline Trend (Last 12 months)</h3>
-        <TrendingUp size={16} className="text-emerald-500" />
+        <TrendingUp size={16} className="text-[var(--green)]" />
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <ComposedChart data={data}>
@@ -355,7 +355,7 @@ const SalesPipelineChart = () => {
     <div className="glass-card p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-[var(--text-primary)]">Sales Pipeline Trend</h3>
-        <TrendingUp size={16} className="text-emerald-500" />
+        <TrendingUp size={16} className="text-[var(--green)]" />
       </div>
       <ResponsiveContainer width="100%" height={200}>
         <AreaChart data={data}>
@@ -510,7 +510,7 @@ const PerformanceReport = () => {
                     (item.metric.includes('Rate') ? `${item.current}%` : fmt(item.current)) :
                     item.current}
                 </span>
-                <span className={`text-[10px] font-bold ${item.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                <span className={`text-[10px] font-bold ${item.change >= 0 ? 'text-[var(--green)]' : 'text-red-500'}`}>
                   {item.change >= 0 ? '↑' : '↓'} {Math.abs(item.change)}%
                 </span>
               </div>
@@ -526,7 +526,7 @@ const PerformanceReport = () => {
             <div className="ml-3">
               <div className="w-12 h-2 bg-[var(--border-subtle)] rounded-full overflow-hidden">
                 <div
-                  className={`h-full rounded-full transition-all duration-500 ${(item.current / item.target) >= 0.9 ? 'bg-emerald-500' :
+                  className={`h-full rounded-full transition-all duration-500 ${(item.current / item.target) >= 0.9 ? 'bg-[var(--green)]' :
                     (item.current / item.target) >= 0.7 ? 'bg-amber-500' : 'bg-red-500'
                     }`}
                   style={{ width: `${Math.min((item.current / item.target) * 100, 100)}%` }}
@@ -555,7 +555,7 @@ const MonthlyLeadsChart = () => (
 );
 
 const SLADot = ({ breached }) => (
-  <div className={`w-2 h-2 rounded-full ${breached ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'}`} title={breached ? 'SLA Breached' : 'On Time'} />
+  <div className={`w-2 h-2 rounded-full ${breached ? 'bg-red-500 animate-pulse' : 'bg-[var(--green)]'}`} title={breached ? 'SLA Breached' : 'On Time'} />
 );
 
 const StagePill = ({ stageId, stageMap }) => {
@@ -568,7 +568,7 @@ const SourceBadge = ({ source }) => (
 );
 
 const ScoreBadge = ({ score }) => (
-  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${score >= 75 ? 'text-emerald-500 bg-emerald-500/10' : score >= 50 ? 'text-amber-500 bg-amber-500/10' : 'text-red-500 bg-red-500/10'}`}>{score ?? 0}pts</span>
+  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${score >= 75 ? 'text-[var(--green)] bg-[var(--green)]/10' : score >= 50 ? 'text-amber-500 bg-amber-500/10' : 'text-red-500 bg-red-500/10'}`}>{score ?? 0}pts</span>
 );
 
 const LeadTrendReport = () => {
@@ -593,7 +593,7 @@ const LeadTrendReport = () => {
     <div className="glass-card p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-[var(--text-primary)]">Lead Generation Trends</h3>
-        <TrendingUp size={16} className="text-emerald-500" />
+        <TrendingUp size={16} className="text-[var(--green)]" />
       </div>
       <ResponsiveContainer width="100%" height={250}>
         <ComposedChart data={monthlyData}>
@@ -648,7 +648,7 @@ const SourcePerformanceReport = () => {
           <div key={item.source} className="p-3 rounded-lg bg-[var(--bg-elevated)]">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold text-[var(--text-primary)]">{item.source}</span>
-              <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${item.roi > 1000 ? 'bg-emerald-500/10 text-emerald-500' :
+              <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${item.roi > 1000 ? 'bg-[var(--green)]/10 text-[var(--green)]' :
                 item.roi > 500 ? 'bg-amber-500/10 text-amber-500' :
                   'bg-red-500/10 text-red-500'
                 }`}>
@@ -662,7 +662,7 @@ const SourcePerformanceReport = () => {
               </div>
               <div>
                 <p className="text-[10px] text-[var(--text-muted)]">Conv.</p>
-                <p className="text-xs font-bold text-emerald-500">{item.conversion}%</p>
+                <p className="text-xs font-bold text-[var(--green)]">{item.conversion}%</p>
               </div>
               <div>
                 <p className="text-[10px] text-[var(--text-muted)]">Cost</p>
@@ -670,7 +670,7 @@ const SourcePerformanceReport = () => {
               </div>
               <div>
                 <p className="text-[10px] text-[var(--text-muted)]">Revenue</p>
-                <p className="text-xs font-bold text-emerald-500">{fmt(item.cost * item.roi / 100)}</p>
+                <p className="text-xs font-bold text-[var(--green)]">{fmt(item.cost * item.roi / 100)}</p>
               </div>
             </div>
           </div>
@@ -719,12 +719,12 @@ const SalesTeamReport = () => {
               <p className="text-xs font-bold text-[var(--accent)]">{fmt(member.value)}</p>
               <div className="flex items-center gap-1 justify-end">
                 <Brain size={8} className="text-[var(--text-muted)]" />
-                <span className="text-[9px] font-bold text-emerald-500">{member.score}pts</span>
+                <span className="text-[9px] font-bold text-[var(--green)]">{member.score}pts</span>
               </div>
             </div>
             <div className="text-center">
               <p className="text-[9px] text-[var(--text-muted)]">Rank</p>
-              <p className="text-xs font-black text-emerald-500">#{index + 1}</p>
+              <p className="text-xs font-black text-[var(--green)]">#{index + 1}</p>
             </div>
           </div>
         ))}
@@ -2416,7 +2416,7 @@ const CRMPage = ({ onNavigate }) => {
         render: (val) => {
           const clampedScore = Math.min(100, Math.max(0, val || 0));
           return (
-            <span className={`text-[11px] font-bold ${clampedScore >= 75 ? 'text-emerald-500' :
+            <span className={`text-[11px] font-bold ${clampedScore >= 75 ? 'text-[var(--green)]' :
               clampedScore >= 50 ? 'text-amber-500' : 'text-red-500'
               }`}>{clampedScore}pts</span>
           );
@@ -2833,7 +2833,7 @@ const CRMPage = ({ onNavigate }) => {
                         <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">{customer.phone || '—'}</td>
                         <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">{customer.city || '—'}</td>
                         <td className="px-4 py-3">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20">
                             {customer.source || '—'}
                           </span>
                         </td>
@@ -3049,14 +3049,14 @@ const CRMPage = ({ onNavigate }) => {
                     }}
                   >
                     {/* Column Header */}
-                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-200">
+                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-[var(--border-base)]">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full" style={{ background: stage.color }} />
-                        <span className="text-[13px] font-semibold text-gray-700">{stage.label}</span>
+                        <span className="text-[13px] font-semibold text-[var(--text-secondary)]">{stage.label}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] text-gray-500 font-medium">{fmt(totalValue)}</span>
-                        <span className="w-6 h-6 rounded-full bg-white border border-gray-200 text-[11px] font-semibold text-gray-600 flex items-center justify-center">{stageLeads.length}</span>
+                        <span className="text-[11px] text-[var(--text-muted)] font-medium">{fmt(totalValue)}</span>
+                        <span className="w-6 h-6 rounded-full bg-[var(--bg-surface)] border border-[var(--border-base)] text-[11px] font-semibold text-[var(--text-secondary)] flex items-center justify-center">{stageLeads.length}</span>
                       </div>
                     </div>
                     <div
@@ -3117,7 +3117,7 @@ const CRMPage = ({ onNavigate }) => {
                             dragRef.current.destStageKey = stage.key;
                             dragRef.current.destIndex = insertAfter ? (idx + 1) : idx;
                           }}
-                          className="rounded-xl bg-white border border-gray-200 p-4 cursor-grab active:cursor-grabbing transition-all hover:shadow-lg hover:border-gray-300"
+                          className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-base)] p-4 cursor-grab active:cursor-grabbing transition-all hover:shadow-lg hover:border-[var(--border-base)]"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -3127,15 +3127,15 @@ const CRMPage = ({ onNavigate }) => {
                         >
                           {/* Lead ID & kW */}
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-[11px] text-gray-500 font-medium">{lead.leadId || `P${lead._id?.slice(-4) || Math.floor(Math.random() * 1000)}`}</span>
+                            <span className="text-[11px] text-[var(--text-muted)] font-medium">{lead.leadId || `P${lead._id?.slice(-4) || Math.floor(Math.random() * 1000)}`}</span>
                             <span className="text-[13px] font-bold text-orange-500">{lead.kw || lead.systemSize || '0'} kW</span>
                           </div>
 
                           {/* Lead Name */}
-                          <h4 className="text-[15px] font-bold text-gray-900 mb-1 leading-tight">{lead.name}</h4>
+                          <h4 className="text-[15px] font-bold text-[var(--text-primary)] mb-1 leading-tight">{lead.name}</h4>
 
                           {/* Company */}
-                          <p className="text-[12px] text-gray-500 mb-3">{lead.company || 'Individual'}</p>
+                          <p className="text-[12px] text-[var(--text-muted)] mb-3">{lead.company || 'Individual'}</p>
 
                           {/* Custom Fields - Show up to 2 important ones */}
                           {lead.customFields && Object.keys(lead.customFields).length > 0 && (
@@ -3143,14 +3143,14 @@ const CRMPage = ({ onNavigate }) => {
                               {Object.entries(lead.customFields).slice(0, 2).map(([key, value]) => (
                                 <span
                                   key={key}
-                                  className="text-[10px] px-2 py-1 rounded-md bg-gray-100 text-gray-600 font-medium truncate max-w-[120px]"
+                                  className="text-[10px] px-2 py-1 rounded-md bg-[var(--bg-elevated)] text-[var(--text-secondary)] font-medium truncate max-w-[120px]"
                                   title={`${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}: ${value}`}
                                 >
                                   {key.replace(/_/g, ' ').substring(0, 10)}{value ? `: ${String(value).substring(0, 15)}` : ''}
                                 </span>
                               ))}
                               {Object.keys(lead.customFields).length > 2 && (
-                                <span className="text-[10px] px-2 py-1 rounded-md bg-gray-100 text-gray-500">
+                                <span className="text-[10px] px-2 py-1 rounded-md bg-[var(--bg-elevated)] text-[var(--text-muted)]">
                                   +{Object.keys(lead.customFields).length - 2} more
                                 </span>
                               )}
@@ -3160,10 +3160,10 @@ const CRMPage = ({ onNavigate }) => {
                           {/* Progress Bar */}
                           <div className="mb-3">
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-[10px] text-gray-400">{lead.assignedTo?.name || lead.assignedTo || 'Unassigned'}</span>
-                              <span className="text-[10px] text-gray-500">{lead.progress || 0}%</span>
+                              <span className="text-[10px] text-[var(--text-muted)]">{lead.assignedTo?.name || lead.assignedTo || 'Unassigned'}</span>
+                              <span className="text-[10px] text-[var(--text-muted)]">{lead.progress || 0}%</span>
                             </div>
-                            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="h-1.5 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
                               <div
                                 className="h-full rounded-full"
                                 style={{
@@ -3175,12 +3175,12 @@ const CRMPage = ({ onNavigate }) => {
                           </div>
 
                           {/* Footer: Assigned & Date */}
-                          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                          <div className="flex items-center justify-between pt-2 border-t border-[var(--border-base)]">
                             <div className="flex items-center gap-1.5">
-                              <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-medium text-gray-600">
+                              <div className="w-5 h-5 rounded-full bg-[var(--bg-hover)] flex items-center justify-center text-[10px] font-medium text-[var(--text-secondary)]">
                                 {(lead.assignedTo?.name || lead.assignedTo || 'U')[0].toUpperCase()}
                               </div>
-                              <span className="text-[10px] text-gray-400">
+                              <span className="text-[10px] text-[var(--text-muted)]">
                                 {lead.nextFollowUp || lead.createdAt ? new Date(lead.nextFollowUp || lead.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : '—'}
                               </span>
                             </div>
@@ -3192,7 +3192,7 @@ const CRMPage = ({ onNavigate }) => {
                       ))}
                       {stageLeads.length === 0 && (
                         <div className="flex-1 flex items-center justify-center min-h-[100px]">
-                          <p className="text-[12px] text-gray-300">Drop here</p>
+                          <p className="text-[12px] text-[var(--text-muted)]">Drop here</p>
                         </div>
                       )}
                     </div>
@@ -3239,7 +3239,7 @@ const CRMPage = ({ onNavigate }) => {
                       <button
                         type="button"
                         onClick={() => setShowDateRangeInfo(v => !v)}
-                        className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-600 hover:bg-blue-500/15 transition-colors flex items-center justify-center"
+                        className="h-8 w-8 rounded-lg bg-[var(--primary)]/10 border border-[var(--primary)]/20 text-[var(--primary)] hover:bg-[var(--primary)]/15 transition-colors flex items-center justify-center"
                         title="Info"
                       >
                         <Info size={14} />
@@ -3365,7 +3365,7 @@ const CRMPage = ({ onNavigate }) => {
           </div>
 
           {leadsDateRangeFilter.type === 'custom' && leadsDateRangeFilter.startDate && leadsDateRangeFilter.endDate && (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-600">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--green)]/10 border border-[var(--green)]/20 text-xs text-[var(--green)]">
               <CheckCircle2 size={14} />
               <span>
                 Showing leads from <strong>{format(new Date(leadsDateRangeFilter.startDate), 'MMM dd')} - {format(new Date(leadsDateRangeFilter.endDate), 'MMM dd')}</strong>
@@ -3416,7 +3416,7 @@ const CRMPage = ({ onNavigate }) => {
                   {filterSources.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {filterSources.map(source => (
-                        <span key={source} className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 text-[10px] flex items-center gap-1">
+                        <span key={source} className="px-2 py-0.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-[10px] flex items-center gap-1">
                           {source}
                           <button onClick={() => removeSourceFilter(source)} className="hover:text-red-500"><X size={8} /></button>
                         </span>
@@ -3458,7 +3458,7 @@ const CRMPage = ({ onNavigate }) => {
                   {filterValueRanges.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {filterValueRanges.map(range => (
-                        <span key={range.id} className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] flex items-center gap-1">
+                        <span key={range.id} className="px-2 py-0.5 rounded-full bg-[var(--green)]/10 text-[var(--green)] text-[10px] flex items-center gap-1">
                           {range.min}-{range.max}
                           <button onClick={() => removeValueRange(range.id)} className="hover:text-red-500"><X size={8} /></button>
                         </span>
@@ -3753,12 +3753,12 @@ const CRMPage = ({ onNavigate }) => {
                       return uniqueActivities.slice(0, 4).map((act, idx) => (
                         <div key={act._id || act._uniqueKey || `activity-${idx}`} className="flex gap-2.5 text-xs">
                           <div className="w-6 h-6 rounded-full bg-[var(--bg-elevated)] border border-[var(--border-base)] flex items-center justify-center shrink-0 mt-0.5">
-                            {act.type === 'call' && <Phone size={10} className="text-emerald-400" />}
-                            {act.type === 'email' && <Mail size={10} className="text-blue-400" />}
-                            {act.type === 'whatsapp' && <MessageSquare size={10} className="text-emerald-400" />}
+                            {act.type === 'call' && <Phone size={10} className="text-[var(--green)]" />}
+                            {act.type === 'email' && <Mail size={10} className="text-[var(--primary)]" />}
+                            {act.type === 'whatsapp' && <MessageSquare size={10} className="text-[var(--green)]" />}
                             {act.type === 'note' && <Activity size={10} className="text-amber-400" />}
                             {act.type === 'stage_change' && <GitCommit size={10} className="text-purple-400" />}
-                            {act.type === 'import' && <Download size={10} className="text-cyan-400" />}
+                            {act.type === 'import' && <Download size={10} className="text-[var(--blue)]" />}
                             {act.type === 'created' && <Plus size={10} className="text-green-400" />}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -3923,7 +3923,7 @@ const CRMPage = ({ onNavigate }) => {
             onClick={() => { setShowActivityModal(false); setNewActivityNote(''); setActivityLeadId(null); }}
           />
           {/* Sidebar Drawer */}
-          <div className="fixed right-0 top-[36.5px] bottom-0 w-[450px] bg-white border-l border-[var(--border-base)] z-50 shadow-2xl flex flex-col" style={{ transform: 'translateX(0)', transition: 'transform 0.3s ease-out' }}>
+          <div className="fixed right-0 top-[36.5px] bottom-0 w-[450px] bg-[var(--bg-surface)] border-l border-[var(--border-base)] z-50 shadow-2xl flex flex-col" style={{ transform: 'translateX(0)', transition: 'transform 0.3s ease-out' }}>
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-[var(--border-base)]">
               <h3 className="text-lg font-bold text-[var(--text-primary)]">Activity Log</h3>
@@ -3944,8 +3944,8 @@ const CRMPage = ({ onNavigate }) => {
                   activityData.map((event, idx) => (
                     <div key={idx} className="flex gap-3 text-sm border-l-2 border-[var(--border-subtle)] pl-3 py-1">
                       <div className="w-6 h-6 rounded-full bg-[var(--bg-elevated)] flex items-center justify-center shrink-0">
-                        {event.type === 'call' && <Phone size={12} className="text-emerald-400" />}
-                        {event.type === 'email' && <Mail size={12} className="text-blue-400" />}
+                        {event.type === 'call' && <Phone size={12} className="text-[var(--green)]" />}
+                        {event.type === 'email' && <Mail size={12} className="text-[var(--primary)]" />}
                         {event.type === 'stage_change' && <GitCommit size={12} className="text-purple-400" />}
                         {event.type === 'created' && <UserPlus size={12} className="text-green-400" />}
                         {event.type === 'note' && <FileText size={12} className="text-amber-400" />}
@@ -4001,7 +4001,7 @@ const CRMPage = ({ onNavigate }) => {
             onClick={() => { setShowTrackerDrawer(false); setTrackerLeadId(null); }}
           />
           {/* Sidebar Drawer */}
-          <div className="fixed right-0 top-[36.5px] bottom-0 w-[450px] bg-white border-l border-[var(--border-base)] z-50 shadow-2xl flex flex-col" style={{ transform: 'translateX(0)', transition: 'transform 0.3s ease-out' }}>
+          <div className="fixed right-0 top-[36.5px] bottom-0 w-[450px] bg-[var(--bg-surface)] border-l border-[var(--border-base)] z-50 shadow-2xl flex flex-col" style={{ transform: 'translateX(0)', transition: 'transform 0.3s ease-out' }}>
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-[var(--border-base)]">
               <h3 className="text-lg font-bold text-[var(--text-primary)]">Lead Tracker</h3>
@@ -4194,7 +4194,7 @@ const CRMPage = ({ onNavigate }) => {
               <Button
                 onClick={handleCreateProject}
                 disabled={projectCreateLoading || !projectForm.name}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-[var(--green)] hover:bg-[var(--green)] text-white"
               >
                 {projectCreateLoading ? 'Creating...' : <><Package size={14} /> Create Project</>}
               </Button>
@@ -4203,13 +4203,13 @@ const CRMPage = ({ onNavigate }) => {
         >
           <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
             {/* Customer Info */}
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-100">
-              <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-lg">
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-[var(--green)]/10 border border-[var(--green)]/20">
+              <div className="w-10 h-10 rounded-full bg-[var(--green)] text-white flex items-center justify-center font-bold text-lg">
                 {selectedCustomerForProject.name[0]}
               </div>
               <div>
-                <p className="font-semibold text-emerald-900">{selectedCustomerForProject.name}</p>
-                <p className="text-xs text-emerald-600">{selectedCustomerForProject.email} · {selectedCustomerForProject.phone}</p>
+                <p className="font-semibold text-[var(--green)]">{selectedCustomerForProject.name}</p>
+                <p className="text-xs text-[var(--green)]">{selectedCustomerForProject.email} · {selectedCustomerForProject.phone}</p>
               </div>
             </div>
 

@@ -16,7 +16,7 @@ export const Stepper = ({ steps = [], compact = false }) => {
                     <React.Fragment key={s.name}>
                         <div className={cn(
                             'px-2.5 py-1 rounded-full text-[10px] font-semibold border',
-                            s.status === 'Done' && 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+                            s.status === 'Done' && 'bg-[var(--green)]/15 text-[var(--green)] border-[var(--green)]/30',
                             s.status === 'In Progress' && 'bg-[var(--bg-hover)] text-[var(--primary-light)] border-[var(--border-active)]',
                             s.status === 'Pending' && 'bg-[var(--bg-elevated)] text-[var(--text-faint)] border-[var(--border-base)]'
                         )}>
@@ -41,7 +41,7 @@ export const Stepper = ({ steps = [], compact = false }) => {
                         <div className="flex flex-col items-center">
                             <div className={cn(
                                 'w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 text-[10px] font-bold transition-all',
-                                isDone && 'border-emerald-500 bg-emerald-500 text-white',
+                                isDone && 'border-[var(--green)] bg-[var(--green)] text-white',
                                 isActive && 'border-[var(--primary)] bg-[var(--primary-glow)] text-[var(--primary)]',
                                 !isDone && !isActive && 'border-[var(--border-muted)] bg-[var(--bg-elevated)] text-[var(--text-faint)]'
                             )}>
@@ -55,7 +55,7 @@ export const Stepper = ({ steps = [], compact = false }) => {
                         <div className="pt-0.5 pb-4">
                             <p className={cn(
                                 'text-xs font-semibold',
-                                isDone && 'text-emerald-400',
+                                isDone && 'text-[var(--green)]',
                                 isActive && 'text-[var(--text-primary)]',
                                 !isDone && !isActive && 'text-[var(--text-faint)]'
                             )}>{s.name}</p>

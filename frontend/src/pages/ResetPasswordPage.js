@@ -183,8 +183,8 @@ const ResetPasswordPage = () => {
           ) : (
             <>
               <div className="flex flex-col items-center mb-6">
-                <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-4">
-                  <CheckCircle size={32} className="text-emerald-500" />
+                <div className="w-16 h-16 rounded-full bg-[var(--green)]/10 flex items-center justify-center mb-4">
+                  <CheckCircle size={32} className="text-[var(--green)]" />
                 </div>
                 <h3 className="text-base font-bold text-[var(--text-primary)] mb-1 text-center">
                   Password Reset!
