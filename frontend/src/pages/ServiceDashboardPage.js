@@ -721,9 +721,7 @@ const ServiceDashboardPage = ({ onNavigate }) => {
           icon={Headphones}
 
           sub={`${dynamicTicketStats.openTickets} open now`}
-
-          variant="blue"
-
+          variant="indigo"
         />
 
         <KPICard
@@ -743,21 +741,6 @@ const ServiceDashboardPage = ({ onNavigate }) => {
         />
 
         <KPICard
-
-          label="Scheduled"
-
-          value={dynamicVisitStats.scheduled}
-
-          icon={Calendar}
-
-          sub={`${dynamicVisitStats.total} total visits`}
-
-          variant="purple"
-
-        />
-
-        <KPICard
-
           label="In Progress"
 
           value={dynamicTicketStats.inProgress}
@@ -765,19 +748,8 @@ const ServiceDashboardPage = ({ onNavigate }) => {
           icon={Clock}
 
           sub="Being handled"
-
-          variant="indigo"
-
+          variant="blue"
         />
-
-      </div>
-
-
-
-      {/* Second Row Stats */}
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-
         <KPICard
 
           label="Resolved"
@@ -793,7 +765,10 @@ const ServiceDashboardPage = ({ onNavigate }) => {
           variant="emerald"
 
         />
+      </div>
 
+      {/* Second Row Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <KPICard
 
           label="Closed"
@@ -803,9 +778,7 @@ const ServiceDashboardPage = ({ onNavigate }) => {
           icon={XCircle}
 
           sub="Completed"
-
-          variant="indigo"
-
+          variant="emerald"
         />
 
         <KPICard
@@ -817,9 +790,7 @@ const ServiceDashboardPage = ({ onNavigate }) => {
           icon={Shield}
 
           sub={`${dynamicAmcStats.active} active contracts`}
-
-          variant="purple"
-
+          variant="indigo"
         />
 
         <KPICard
@@ -835,7 +806,13 @@ const ServiceDashboardPage = ({ onNavigate }) => {
           variant="blue"
 
         />
-
+        <KPICard
+          label="Scheduled"
+          value={dynamicVisitStats.scheduled}
+          icon={Calendar}
+          sub={`${dynamicVisitStats.total} total visits`}
+          variant="amber"
+        />
       </div>
 
 
