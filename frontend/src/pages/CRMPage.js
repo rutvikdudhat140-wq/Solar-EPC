@@ -41,6 +41,7 @@ import ImportExport from '../components/ui/ImportExport';
 import LeadTracker from '../components/LeadTracker';
 import { useAuditLog } from '../hooks/useAuditLog';
 import { usePermissions } from '../hooks/usePermissions';
+import { useDashboardFilters, useLeadFilters } from '../hooks/useDashboardFilters';
 import { useAuth } from '../context/AuthContext';
 import { CURRENCY } from '../config/app.config';
 import CanAccess, { CanCreate, CanEdit, CanDelete, CanView } from '../components/CanAccess';
@@ -239,7 +240,7 @@ const TrendCharts = ({ months }) => {
     <div className="glass-card p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-[var(--text-primary)]">Leads & Pipeline Trend (Last 12 months)</h3>
-        <TrendingUp size={16} className="text-emerald-500" />
+        <TrendingUp size={16} className="text-[var(--green)]" />
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <ComposedChart data={data}>
@@ -355,7 +356,7 @@ const SalesPipelineChart = () => {
     <div className="glass-card p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-[var(--text-primary)]">Sales Pipeline Trend</h3>
-        <TrendingUp size={16} className="text-emerald-500" />
+        <TrendingUp size={16} className="text-[var(--green)]" />
       </div>
       <ResponsiveContainer width="100%" height={200}>
         <AreaChart data={data}>
@@ -471,8 +472,10 @@ const PerformanceReport = () => {
       const res = await leadsApi.getDashboardOverview();
       return res?.data?.data || res?.data || res;
     },
-    refetchInterval: 30000,
-    staleTime: 10000,
+    staleTime: 30000, // 30 seconds - data is fresh for 30s
+    cacheTime: 300000, // 5 minutes - keep in cache for 5min
+    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchInterval: false, // Don't auto-refetch (use window focus instead)
   });
 
   const overview = overviewRaw;
@@ -510,7 +513,7 @@ const PerformanceReport = () => {
                     (item.metric.includes('Rate') ? `${item.current}%` : fmt(item.current)) :
                     item.current}
                 </span>
-                <span className={`text-[10px] font-bold ${item.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                <span className={`text-[10px] font-bold ${item.change >= 0 ? 'text-[var(--green)]' : 'text-red-500'}`}>
                   {item.change >= 0 ? '↑' : '↓'} {Math.abs(item.change)}%
                 </span>
               </div>
@@ -526,7 +529,7 @@ const PerformanceReport = () => {
             <div className="ml-3">
               <div className="w-12 h-2 bg-[var(--border-subtle)] rounded-full overflow-hidden">
                 <div
-                  className={`h-full rounded-full transition-all duration-500 ${(item.current / item.target) >= 0.9 ? 'bg-emerald-500' :
+                  className={`h-full rounded-full transition-all duration-500 ${(item.current / item.target) >= 0.9 ? 'bg-[var(--green)]' :
                     (item.current / item.target) >= 0.7 ? 'bg-amber-500' : 'bg-red-500'
                     }`}
                   style={{ width: `${Math.min((item.current / item.target) * 100, 100)}%` }}
@@ -555,7 +558,7 @@ const MonthlyLeadsChart = () => (
 );
 
 const SLADot = ({ breached }) => (
-  <div className={`w-2 h-2 rounded-full ${breached ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'}`} title={breached ? 'SLA Breached' : 'On Time'} />
+  <div className={`w-2 h-2 rounded-full ${breached ? 'bg-red-500 animate-pulse' : 'bg-[var(--green)]'}`} title={breached ? 'SLA Breached' : 'On Time'} />
 );
 
 const StagePill = ({ stageId, stageMap }) => {
@@ -568,7 +571,7 @@ const SourceBadge = ({ source }) => (
 );
 
 const ScoreBadge = ({ score }) => (
-  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${score >= 75 ? 'text-emerald-500 bg-emerald-500/10' : score >= 50 ? 'text-amber-500 bg-amber-500/10' : 'text-red-500 bg-red-500/10'}`}>{score ?? 0}pts</span>
+  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${score >= 75 ? 'text-[var(--green)] bg-[var(--green)]/10' : score >= 50 ? 'text-amber-500 bg-amber-500/10' : 'text-red-500 bg-red-500/10'}`}>{score ?? 0}pts</span>
 );
 
 const LeadTrendReport = () => {
@@ -578,8 +581,10 @@ const LeadTrendReport = () => {
       const res = await leadsApi.getDashboardTrend();
       return res?.data?.data || res?.data || res;
     },
-    refetchInterval: 30000,
-    staleTime: 10000,
+    staleTime: 30000, // 30 seconds
+    cacheTime: 300000, // 5 minutes
+    refetchOnWindowFocus: true,
+    refetchInterval: false,
   });
 
   const monthlyData = (trendRaw?.months || []).map((m) => ({
@@ -593,7 +598,7 @@ const LeadTrendReport = () => {
     <div className="glass-card p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-bold text-[var(--text-primary)]">Lead Generation Trends</h3>
-        <TrendingUp size={16} className="text-emerald-500" />
+        <TrendingUp size={16} className="text-[var(--green)]" />
       </div>
       <ResponsiveContainer width="100%" height={250}>
         <ComposedChart data={monthlyData}>
@@ -625,8 +630,10 @@ const SourcePerformanceReport = () => {
       const res = await leadsApi.getDashboardSource();
       return res?.data?.data || res?.data || res;
     },
-    refetchInterval: 30000,
-    staleTime: 10000,
+    staleTime: 30000, // 30 seconds
+    cacheTime: 300000, // 5 minutes
+    refetchOnWindowFocus: true,
+    refetchInterval: false,
   });
 
   const data = (sourceRaw?.sources || []).map((s) => ({
@@ -648,7 +655,7 @@ const SourcePerformanceReport = () => {
           <div key={item.source} className="p-3 rounded-lg bg-[var(--bg-elevated)]">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold text-[var(--text-primary)]">{item.source}</span>
-              <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${item.roi > 1000 ? 'bg-emerald-500/10 text-emerald-500' :
+              <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${item.roi > 1000 ? 'bg-[var(--green)]/10 text-[var(--green)]' :
                 item.roi > 500 ? 'bg-amber-500/10 text-amber-500' :
                   'bg-red-500/10 text-red-500'
                 }`}>
@@ -662,7 +669,7 @@ const SourcePerformanceReport = () => {
               </div>
               <div>
                 <p className="text-[10px] text-[var(--text-muted)]">Conv.</p>
-                <p className="text-xs font-bold text-emerald-500">{item.conversion}%</p>
+                <p className="text-xs font-bold text-[var(--green)]">{item.conversion}%</p>
               </div>
               <div>
                 <p className="text-[10px] text-[var(--text-muted)]">Cost</p>
@@ -670,7 +677,7 @@ const SourcePerformanceReport = () => {
               </div>
               <div>
                 <p className="text-[10px] text-[var(--text-muted)]">Revenue</p>
-                <p className="text-xs font-bold text-emerald-500">{fmt(item.cost * item.roi / 100)}</p>
+                <p className="text-xs font-bold text-[var(--green)]">{fmt(item.cost * item.roi / 100)}</p>
               </div>
             </div>
           </div>
@@ -719,12 +726,12 @@ const SalesTeamReport = () => {
               <p className="text-xs font-bold text-[var(--accent)]">{fmt(member.value)}</p>
               <div className="flex items-center gap-1 justify-end">
                 <Brain size={8} className="text-[var(--text-muted)]" />
-                <span className="text-[9px] font-bold text-emerald-500">{member.score}pts</span>
+                <span className="text-[9px] font-bold text-[var(--green)]">{member.score}pts</span>
               </div>
             </div>
             <div className="text-center">
               <p className="text-[9px] text-[var(--text-muted)]">Rank</p>
-              <p className="text-xs font-black text-emerald-500">#{index + 1}</p>
+              <p className="text-xs font-black text-[var(--green)]">#{index + 1}</p>
             </div>
           </div>
         ))}
@@ -906,19 +913,30 @@ const CRMPage = ({ onNavigate }) => {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [showColumnsDropdown, setShowColumnsDropdown] = useState(false);
   const [dateRange, setDateRange] = useState({
-    start: format(subMonths(new Date(), 6), 'yyyy-MM-dd'),
-    end: format(new Date(), 'yyyy-MM-dd')
+    start: '',
+    end: ''
   });
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [dashboardQuickFilter, setDashboardQuickFilter] = useState('all'); // 'all', 'today', 'thisWeek', 'thisMonth', 'custom' - FOR DASHBOARD ONLY
   const sortDropdownRef = useRef(null);
   const columnsDropdownRef = useRef(null);
-  // Date Range Filter State
-  const [dateRangeFilter, setDateRangeFilter] = useState({
-    type: 'last7days', // today, yesterday, last7days, last30days, thisMonth, lastMonth, custom
-    startDate: null,
-    endDate: null
-  });
+
+  // Initialize independent filter hooks - COMPLETE ISOLATION
+  const {
+    dateRangeFilter: dashboardDateRangeFilter,
+    setDateRangeFilter: setDashboardDateRangeFilter,
+    resetDateRangeFilter: resetDashboardDateRangeFilter
+  } = useDashboardFilters();
+
+  console.log('[CRM PAGE] Dashboard filter state:', dashboardDateRangeFilter);
+
+  const {
+    dateRangeFilter: leadsDateRangeFilter,
+    setDateRangeFilter: setLeadsDateRangeFilter,
+    resetDateRangeFilter: resetLeadsDateRangeFilter
+  } = useLeadFilters();
+
+  console.log('[CRM PAGE] Leads filter state:', leadsDateRangeFilter);
+
   const [showDateRangeDropdown, setShowDateRangeDropdown] = useState(false);
   const dateRangeRef = useRef(null);
   const [showDateRangeInfo, setShowDateRangeInfo] = useState(false);
@@ -947,7 +965,7 @@ const CRMPage = ({ onNavigate }) => {
   ]);
 
   const [activeFilters, setActiveFilters] = useState([]);
-  const [quickFilter, setQuickFilter] = useState(null);
+  const [quickFilter, setQuickFilter] = useState(null); // FOR LEADS TABLE FILTERING - separate from dashboardQuickFilter
 
   // Advanced filter states - arrays for multiple values
   const [filterStages, setFilterStages] = useState([]); // multiple stages
@@ -1009,6 +1027,20 @@ const CRMPage = ({ onNavigate }) => {
     document.addEventListener('mousedown', onDocClick);
     return () => document.removeEventListener('mousedown', onDocClick);
   }, [showDateRangeInfo]);
+
+  // CRITICAL FIX: Close date range dropdown when clicking outside
+  useEffect(() => {
+    if (!showDateRangeDropdown) return;
+    const onDocClick = (e) => {
+      const el = dateRangeRef.current;
+      if (!el) return;
+      if (!el.contains(e.target)) {
+        setShowDateRangeDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, [showDateRangeDropdown]);
 
   const isAdminLike = useMemo(() => {
     const role = String(user?.role || '').toLowerCase();
@@ -1109,7 +1141,7 @@ const CRMPage = ({ onNavigate }) => {
         break;
       case 'thisMonth':
         startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        endDate = new Date(today);
+        endDate = new Date(today.getFullYear(), today.getMonth(), 0); // Last day of current month
         endDate.setHours(23, 59, 59, 999);
         break;
       case 'lastMonth':
@@ -1118,11 +1150,14 @@ const CRMPage = ({ onNavigate }) => {
         endDate.setHours(23, 59, 59, 999);
         break;
       case 'custom':
-        if (dateRangeFilter.startDate && dateRangeFilter.endDate) {
-          startDate = new Date(dateRangeFilter.startDate);
+        if (leadsDateRangeFilter.startDate && leadsDateRangeFilter.endDate) {
+          startDate = new Date(leadsDateRangeFilter.startDate);
           startDate.setHours(0, 0, 0, 0);
-          endDate = new Date(dateRangeFilter.endDate);
+          endDate = new Date(leadsDateRangeFilter.endDate);
           endDate.setHours(23, 59, 59, 999);
+        } else {
+          // If custom selected but dates not set, return all (no date restriction)
+          return { startDate: null, endDate: null };
         }
         break;
       default:
@@ -1131,7 +1166,7 @@ const CRMPage = ({ onNavigate }) => {
     }
 
     return { startDate, endDate };
-  }, [dateRangeFilter.startDate, dateRangeFilter.endDate]);
+  }, [leadsDateRangeFilter.startDate, leadsDateRangeFilter.endDate]);
 
   // Fetch leads from API with filters
   const fetchLeads = useCallback(async () => {
@@ -1162,10 +1197,21 @@ const CRMPage = ({ onNavigate }) => {
       }
 
       // Add date range filter
-      const { startDate, endDate } = getDateRangeFromPreset(dateRangeFilter.type);
-      if (startDate && endDate) {
-        params.startDate = startDate.toISOString();
-        params.endDate = endDate.toISOString();
+      console.log('[FILTER DEBUG] leadsDateRangeFilter:', leadsDateRangeFilter);
+      const type = String(leadsDateRangeFilter.type || 'all');
+      if (type !== 'all') {
+        const presetRange = getDateRangeFromPreset(type);
+        const start = leadsDateRangeFilter.startDate || (presetRange?.startDate ? presetRange.startDate.toISOString() : null);
+        const end = leadsDateRangeFilter.endDate || (presetRange?.endDate ? presetRange.endDate.toISOString() : null);
+        if (start && end) {
+          params.startDate = start;
+          params.endDate = end;
+          console.log('[FILTER DEBUG] Sending dates to API:', { startDate: params.startDate, endDate: params.endDate });
+        } else {
+          console.log('[FILTER DEBUG] Date preset selected but range missing - fallback to all');
+        }
+      } else {
+        console.log('[FILTER DEBUG] All time selected - showing all leads');
       }
 
       // Only add sort params if sort key is valid
@@ -1200,7 +1246,7 @@ const CRMPage = ({ onNavigate }) => {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, debouncedSearch, sort.key, sort.dir, quickFilter, dateRangeFilter.type, getDateRangeFromPreset, filterStages, filterSources, filterScoreRanges, filterValueRanges]);
+  }, [page, pageSize, debouncedSearch, sort.key, sort.dir, quickFilter, leadsDateRangeFilter.type, leadsDateRangeFilter.startDate, leadsDateRangeFilter.endDate, filterStages, filterSources, filterScoreRanges, filterValueRanges]);
 
   // Fetch customers
   const fetchCustomers = useCallback(async () => {
@@ -2370,23 +2416,20 @@ const CRMPage = ({ onNavigate }) => {
 
   // Get formatted date range for display
   const getDateRangeLabel = useCallback(() => {
-    const option = dateRangeOptions.find(opt => opt.id === dateRangeFilter.type);
+    const option = dateRangeOptions.find(opt => opt.id === leadsDateRangeFilter.type);
     if (option) {
-      if (dateRangeFilter.type === 'custom' && dateRangeFilter.startDate && dateRangeFilter.endDate) {
-        return `${format(new Date(dateRangeFilter.startDate), 'MMM dd')} - ${format(new Date(dateRangeFilter.endDate), 'MMM dd')}`;
+      if (leadsDateRangeFilter.type === 'custom' && leadsDateRangeFilter.startDate && leadsDateRangeFilter.endDate) {
+        return `${format(new Date(leadsDateRangeFilter.startDate), 'MMM dd')} - ${format(new Date(leadsDateRangeFilter.endDate), 'MMM dd')}`;
       }
       return option.label;
     }
     return 'Last 7 Days';
-  }, [dateRangeFilter, dateRangeOptions]);
+  }, [leadsDateRangeFilter, dateRangeOptions]);
 
-  // Reset date range filter
+  // Reset date range filter (for leads view)
   const resetDateRangeFilter = () => {
-    setDateRangeFilter({
-      type: 'last7days',
-      startDate: null,
-      endDate: null
-    });
+    console.log('[LEADS RESET] Triggering leads reset');
+    resetLeadsDateRangeFilter();
     setPage(1);
   };
   const sortedLeads = useMemo(() => {
@@ -2439,7 +2482,7 @@ const CRMPage = ({ onNavigate }) => {
         render: (val) => {
           const clampedScore = Math.min(100, Math.max(0, val || 0));
           return (
-            <span className={`text-[11px] font-bold ${clampedScore >= 75 ? 'text-emerald-500' :
+            <span className={`text-[11px] font-bold ${clampedScore >= 75 ? 'text-[var(--green)]' :
               clampedScore >= 50 ? 'text-amber-500' : 'text-red-500'
               }`}>{clampedScore}pts</span>
           );
@@ -2644,90 +2687,98 @@ const CRMPage = ({ onNavigate }) => {
           <div className="flex flex-wrap gap-3 items-center">
             <div className="flex items-center gap-2">
               <Calendar size={14} className="text-[var(--text-muted)]" />
+              <span className="text-xs text-[var(--text-muted)]">Quick Filter:</span>
+              <Select
+                value={dashboardQuickFilter}
+                onChange={e => {
+                  const filterType = e.target.value;
+                  setDashboardQuickFilter(filterType);
+                  const now = new Date();
+                  
+                  // Calculate dates based on quick filter
+                  let startDate, endDate;
+                  
+                  if (filterType === 'all') {
+                    setDateRange({ start: '', end: '' });
+                    setDashboardDateRangeFilter({ type: 'all', startDate: null, endDate: null });
+                    return;
+                  }
+
+                  if (filterType === 'today') {
+                    // Today: 00:00:00 to 23:59:59
+                    startDate = format(now, 'yyyy-MM-dd');
+                    endDate = startDate;
+                    setDashboardDateRangeFilter({ type: filterType, startDate, endDate });
+                  } else if (filterType === 'thisWeek') {
+                    // This Week = Last 7 Days (rolling)
+                    // endDate = today (end of day)
+                    // startDate = today - 6 days (start of day)
+                    endDate = format(now, 'yyyy-MM-dd');
+                    const sevenDaysAgo = new Date(now);
+                    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+                    startDate = format(sevenDaysAgo, 'yyyy-MM-dd');
+                    setDashboardDateRangeFilter({ type: filterType, startDate, endDate });
+                  } else if (filterType === 'thisMonth') {
+                    // This Month: 1st to last day of current month
+                    startDate = format(new Date(now.getFullYear(), now.getMonth(), 1), 'yyyy-MM-dd');
+                    endDate = format(new Date(now.getFullYear(), now.getMonth() + 1, 0), 'yyyy-MM-dd');
+                    setDashboardDateRangeFilter({ type: filterType, startDate, endDate });
+                  }
+                }}
+                className="h-7 text-xs w-32"
+              >
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="thisWeek">This Week</option>
+                <option value="thisMonth">This Month</option>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
               <span className="text-xs text-[var(--text-muted)]">Date Range:</span>
               <Input
                 type="date"
-                value={dateRangeFilter.type === 'custom' ? dateRangeFilter.startDate || '' : dateRange.start}
+                value={dashboardDateRangeFilter.startDate || dateRange.start}
                 onChange={e => {
                   const newDate = e.target.value;
+                  const endDateVal = dashboardDateRangeFilter.endDate || dateRange.end || newDate;
+                  
                   setDateRange(prev => ({ ...prev, start: newDate }));
-                  setDateRangeFilter(prev => ({
+                  setDashboardDateRangeFilter({
                     type: 'custom',
                     startDate: newDate,
-                    endDate: prev.endDate || dateRange.end
-                  }));
+                    endDate: endDateVal
+                  });
+                  setDashboardQuickFilter(null); // Clear quick filter when manually selecting date
                 }}
                 className="h-7 text-xs w-32"
               />
               <span className="text-xs text-[var(--text-muted)]">to</span>
               <Input
                 type="date"
-                value={dateRangeFilter.type === 'custom' ? dateRangeFilter.endDate || '' : dateRange.end}
+                value={dashboardDateRangeFilter.endDate || dateRange.end}
                 onChange={e => {
                   const newDate = e.target.value;
+                  const startDateVal = dashboardDateRangeFilter.startDate || dateRange.start || newDate;
+                  
                   setDateRange(prev => ({ ...prev, end: newDate }));
-                  setDateRangeFilter(prev => ({
+                  setDashboardDateRangeFilter({
                     type: 'custom',
-                    startDate: prev.startDate || dateRange.start,
+                    startDate: startDateVal,
                     endDate: newDate
-                  }));
+                  });
+                  setDashboardQuickFilter(null); // Clear quick filter when manually selecting date
                 }}
                 className="h-7 text-xs w-32"
               />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-[var(--text-muted)]">Year:</span>
-              <Select
-                value={selectedYear}
-                onChange={e => setSelectedYear(Number(e.target.value))}
-                className="h-7 text-xs w-24"
-              >
-                {[2024, 2025, 2026].map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </Select>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-[var(--text-muted)]">Month:</span>
-              <Select
-                value={selectedMonth}
-                onChange={e => setSelectedMonth(Number(e.target.value))}
-                className="h-7 text-xs w-28"
-              >
-                {[
-                  { value: 1, label: 'January' },
-                  { value: 2, label: 'February' },
-                  { value: 3, label: 'March' },
-                  { value: 4, label: 'April' },
-                  { value: 5, label: 'May' },
-                  { value: 6, label: 'June' },
-                  { value: 7, label: 'July' },
-                  { value: 8, label: 'August' },
-                  { value: 9, label: 'September' },
-                  { value: 10, label: 'October' },
-                  { value: 11, label: 'November' },
-                  { value: 12, label: 'December' },
-                ].map(m => (
-                  <option key={m.value} value={m.value}>{m.label}</option>
-                ))}
-              </Select>
             </div>
             <div className="ml-auto flex gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  setDateRange({
-                    start: format(subMonths(new Date(), 6), 'yyyy-MM-dd'),
-                    end: format(new Date(), 'yyyy-MM-dd')
-                  });
-                  setDateRangeFilter({
-                    type: 'custom',
-                    startDate: format(subMonths(new Date(), 6), 'yyyy-MM-dd'),
-                    endDate: format(new Date(), 'yyyy-MM-dd')
-                  });
-                  setSelectedYear(new Date().getFullYear());
-                  setSelectedMonth(new Date().getMonth() + 1);
+                  setDashboardQuickFilter('all');
+                  setDateRange({ start: '', end: '' });
+                  setDashboardDateRangeFilter({ type: 'all', startDate: null, endDate: null });
                 }}
               >
                 <RefreshCw size={12} /> Reset
@@ -2740,8 +2791,16 @@ const CRMPage = ({ onNavigate }) => {
       {/* ── Advanced Dashboard ── */}
       {view === 'dashboard' && crmFeatures.analytics && (
         <LeadAnalyticsDashboard
-          onNavigate={(nextView) => setView(nextView)}
-          dateFilter={dateRangeFilter}
+          onNavigate={(nextView) => {
+            console.log('[DASHBOARD] Navigate to:', nextView);
+            setView(nextView);
+          }}
+          dateFilter={dashboardDateRangeFilter}
+          onFilterChange={(newFilter) => {
+            console.log('[DASHBOARD] Filter change received:', newFilter);
+            // Update dashboard filter only
+            setDashboardDateRangeFilter(newFilter);
+          }}
           onFilter={(filterType) => {
             if (!filterType) return;
             // Navigate to leads view
@@ -2749,21 +2808,34 @@ const CRMPage = ({ onNavigate }) => {
             // Reset pagination to first page
             setPage(1);
             // Apply appropriate filter based on KPI clicked
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
             switch (filterType) {
-              case 'today':
+              case 'today': {
                 // Clear all other filters first, then set date to today
                 setFilterStages([]);
                 setFilterSources([]);
                 setFilterScoreRanges([]);
                 setFilterValueRanges([]);
-                setDateRangeFilter({ type: 'today', startDate: null, endDate: null });
+                // Calculate today's dates
+                const startDate = new Date(today);
+                startDate.setHours(0, 0, 0, 0);
+                const endDate = new Date(today);
+                endDate.setHours(23, 59, 59, 999);
+                setLeadsDateRangeFilter({ 
+                  type: 'today', 
+                  startDate: startDate.toISOString(), 
+                  endDate: endDate.toISOString() 
+                });
                 break;
+              }
               case 'converted':
                 // Clear all other filters first, then set stage to converted
                 setFilterSources([]);
                 setFilterScoreRanges([]);
                 setFilterValueRanges([]);
-                setDateRangeFilter({ type: 'all', startDate: null, endDate: null });
+                setLeadsDateRangeFilter({ type: 'all', startDate: null, endDate: null });
                 setFilterStages(['won', 'customer', 'converted']);
                 break;
               case 'all':
@@ -2773,7 +2845,7 @@ const CRMPage = ({ onNavigate }) => {
                 setFilterSources([]);
                 setFilterScoreRanges([]);
                 setFilterValueRanges([]);
-                setDateRangeFilter({ type: 'all', startDate: null, endDate: null });
+                setLeadsDateRangeFilter({ type: 'all', startDate: null, endDate: null });
                 break;
             }
           }}
@@ -2852,7 +2924,7 @@ const CRMPage = ({ onNavigate }) => {
                         <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">{customer.phone || '—'}</td>
                         <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">{customer.city || '—'}</td>
                         <td className="px-4 py-3">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20">
                             {customer.source || '—'}
                           </span>
                         </td>
@@ -2938,14 +3010,6 @@ const CRMPage = ({ onNavigate }) => {
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-bold text-[var(--text-primary)]">Pipeline Kanban Board</h3>
               <span className="text-xs text-[var(--text-muted)]">{enhancedLeads.length} total leads</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button className="px-3 py-1 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-base)] text-[10px] font-medium text-[var(--text-muted)] hover:bg-[var(--bg-hovered)] transition-colors">
-                <FilterX size={10} className="inline mr-1" /> Clear Filters
-              </button>
-              <button className="px-3 py-1 rounded-lg bg-[var(--primary)] text-white text-[10px] font-medium hover:opacity-90 transition-opacity">
-                <Plus size={10} className="inline mr-1" /> Add Stage
-              </button>
             </div>
           </div>
 
@@ -3068,14 +3132,14 @@ const CRMPage = ({ onNavigate }) => {
                     }}
                   >
                     {/* Column Header */}
-                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-200">
+                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-[var(--border-base)]">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full" style={{ background: stage.color }} />
-                        <span className="text-[13px] font-semibold text-gray-700">{stage.label}</span>
+                        <span className="text-[13px] font-semibold text-[var(--text-secondary)]">{stage.label}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] text-gray-500 font-medium">{fmt(totalValue)}</span>
-                        <span className="w-6 h-6 rounded-full bg-white border border-gray-200 text-[11px] font-semibold text-gray-600 flex items-center justify-center">{stageLeads.length}</span>
+                        <span className="text-[11px] text-[var(--text-muted)] font-medium">{fmt(totalValue)}</span>
+                        <span className="w-6 h-6 rounded-full bg-[var(--bg-surface)] border border-[var(--border-base)] text-[11px] font-semibold text-[var(--text-secondary)] flex items-center justify-center">{stageLeads.length}</span>
                       </div>
                     </div>
                     <div
@@ -3136,7 +3200,7 @@ const CRMPage = ({ onNavigate }) => {
                             dragRef.current.destStageKey = stage.key;
                             dragRef.current.destIndex = insertAfter ? (idx + 1) : idx;
                           }}
-                          className="rounded-xl bg-white border border-gray-200 p-4 cursor-grab active:cursor-grabbing transition-all hover:shadow-lg hover:border-gray-300"
+                          className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-base)] p-4 cursor-grab active:cursor-grabbing transition-all hover:shadow-lg hover:border-[var(--border-base)]"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -3146,15 +3210,15 @@ const CRMPage = ({ onNavigate }) => {
                         >
                           {/* Lead ID & kW */}
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-[11px] text-gray-500 font-medium">{lead.leadId || `P${lead._id?.slice(-4) || Math.floor(Math.random() * 1000)}`}</span>
+                            <span className="text-[11px] text-[var(--text-muted)] font-medium">{lead.leadId || `P${lead._id?.slice(-4) || Math.floor(Math.random() * 1000)}`}</span>
                             <span className="text-[13px] font-bold text-orange-500">{lead.kw || lead.systemSize || '0'} kW</span>
                           </div>
 
                           {/* Lead Name */}
-                          <h4 className="text-[15px] font-bold text-gray-900 mb-1 leading-tight">{lead.name}</h4>
+                          <h4 className="text-[15px] font-bold text-[var(--text-primary)] mb-1 leading-tight">{lead.name}</h4>
 
                           {/* Company */}
-                          <p className="text-[12px] text-gray-500 mb-3">{lead.company || 'Individual'}</p>
+                          <p className="text-[12px] text-[var(--text-muted)] mb-3">{lead.company || 'Individual'}</p>
 
                           {/* Custom Fields - Show up to 2 important ones */}
                           {lead.customFields && Object.keys(lead.customFields).length > 0 && (
@@ -3162,14 +3226,14 @@ const CRMPage = ({ onNavigate }) => {
                               {Object.entries(lead.customFields).slice(0, 2).map(([key, value]) => (
                                 <span
                                   key={key}
-                                  className="text-[10px] px-2 py-1 rounded-md bg-gray-100 text-gray-600 font-medium truncate max-w-[120px]"
+                                  className="text-[10px] px-2 py-1 rounded-md bg-[var(--bg-elevated)] text-[var(--text-secondary)] font-medium truncate max-w-[120px]"
                                   title={`${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}: ${value}`}
                                 >
                                   {key.replace(/_/g, ' ').substring(0, 10)}{value ? `: ${String(value).substring(0, 15)}` : ''}
                                 </span>
                               ))}
                               {Object.keys(lead.customFields).length > 2 && (
-                                <span className="text-[10px] px-2 py-1 rounded-md bg-gray-100 text-gray-500">
+                                <span className="text-[10px] px-2 py-1 rounded-md bg-[var(--bg-elevated)] text-[var(--text-muted)]">
                                   +{Object.keys(lead.customFields).length - 2} more
                                 </span>
                               )}
@@ -3179,10 +3243,10 @@ const CRMPage = ({ onNavigate }) => {
                           {/* Progress Bar */}
                           <div className="mb-3">
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-[10px] text-gray-400">{lead.assignedTo?.name || lead.assignedTo || 'Unassigned'}</span>
-                              <span className="text-[10px] text-gray-500">{lead.progress || 0}%</span>
+                              <span className="text-[10px] text-[var(--text-muted)]">{lead.assignedTo?.name || lead.assignedTo || 'Unassigned'}</span>
+                              <span className="text-[10px] text-[var(--text-muted)]">{lead.progress || 0}%</span>
                             </div>
-                            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="h-1.5 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
                               <div
                                 className="h-full rounded-full"
                                 style={{
@@ -3194,12 +3258,12 @@ const CRMPage = ({ onNavigate }) => {
                           </div>
 
                           {/* Footer: Assigned & Date */}
-                          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                          <div className="flex items-center justify-between pt-2 border-t border-[var(--border-base)]">
                             <div className="flex items-center gap-1.5">
-                              <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-medium text-gray-600">
+                              <div className="w-5 h-5 rounded-full bg-[var(--bg-hover)] flex items-center justify-center text-[10px] font-medium text-[var(--text-secondary)]">
                                 {(lead.assignedTo?.name || lead.assignedTo || 'U')[0].toUpperCase()}
                               </div>
-                              <span className="text-[10px] text-gray-400">
+                              <span className="text-[10px] text-[var(--text-muted)]">
                                 {lead.nextFollowUp || lead.createdAt ? new Date(lead.nextFollowUp || lead.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : '—'}
                               </span>
                             </div>
@@ -3211,7 +3275,7 @@ const CRMPage = ({ onNavigate }) => {
                       ))}
                       {stageLeads.length === 0 && (
                         <div className="flex-1 flex items-center justify-center min-h-[100px]">
-                          <p className="text-[12px] text-gray-300">Drop here</p>
+                          <p className="text-[12px] text-[var(--text-muted)]">Drop here</p>
                         </div>
                       )}
                     </div>
@@ -3253,12 +3317,12 @@ const CRMPage = ({ onNavigate }) => {
                   </Button>
                   
                   {/* Info Icon - inline with date picker */}
-                  {dateRangeFilter.type !== 'custom' && (
+                  {leadsDateRangeFilter.type !== 'custom' && (
                     <div className="relative" ref={dateRangeInfoRef}>
                       <button
                         type="button"
                         onClick={() => setShowDateRangeInfo(v => !v)}
-                        className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-600 hover:bg-blue-500/15 transition-colors flex items-center justify-center"
+                        className="h-8 w-8 rounded-lg bg-[var(--primary)]/10 border border-[var(--primary)]/20 text-[var(--primary)] hover:bg-[var(--primary)]/15 transition-colors flex items-center justify-center"
                         title="Info"
                       >
                         <Info size={14} />
@@ -3283,29 +3347,81 @@ const CRMPage = ({ onNavigate }) => {
                         <button
                           key={option.id}
                           onClick={() => {
-                            setDateRangeFilter(prev => ({
-                              ...prev,
+                            // Calculate dates for the selected preset
+                            const now = new Date();
+                            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                            let startDate = null;
+                            let endDate = null;
+                            
+                            if (option.id !== 'custom' && option.id !== 'all') {
+                              switch (option.id) {
+                                case 'today':
+                                  startDate = new Date(today);
+                                  startDate.setHours(0, 0, 0, 0);
+                                  endDate = new Date(today);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  break;
+                                case 'yesterday':
+                                  startDate = new Date(today);
+                                  startDate.setDate(startDate.getDate() - 1);
+                                  startDate.setHours(0, 0, 0, 0);
+                                  endDate = new Date(startDate);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  break;
+                                case 'last7days':
+                                  endDate = new Date(today);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  startDate = new Date(today);
+                                  startDate.setDate(startDate.getDate() - 6);
+                                  startDate.setHours(0, 0, 0, 0);
+                                  break;
+                                case 'last30days':
+                                  endDate = new Date(today);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  startDate = new Date(today);
+                                  startDate.setDate(startDate.getDate() - 29);
+                                  startDate.setHours(0, 0, 0, 0);
+                                  break;
+                                case 'thisMonth':
+                                  startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                                  endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  break;
+                                case 'lastMonth':
+                                  startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                                  endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  break;
+                                default:
+                                  break;
+                              }
+                            }
+                            
+                            setLeadsDateRangeFilter({
                               type: option.id,
-                              ...(option.id !== 'custom' ? { startDate: null, endDate: null } : {})
-                            }));
+                              startDate: startDate ? startDate.toISOString() : null,
+                              endDate: endDate ? endDate.toISOString() : null
+                            });
+                            console.log('[FILTER DEBUG] Preset applied:', option.id, { startDate: startDate?.toISOString(), endDate: endDate?.toISOString() });
+                            
                             // Don't close dropdown for custom - show date inputs
                             if (option.id !== 'custom') {
                               setShowDateRangeDropdown(false);
                               setPage(1); // Reset pagination
                             }
                           }}
-                          className={`w-full text-left px-3 py-2 rounded text-xs flex items-center justify-between hover:bg-[var(--bg-hovered)] ${dateRangeFilter.type === option.id
+                          className={`w-full text-left px-3 py-2 rounded text-xs flex items-center justify-between hover:bg-[var(--bg-hovered)] ${leadsDateRangeFilter.type === option.id
                             ? 'text-[var(--primary)] font-bold bg-[var(--primary)]/10'
                             : 'text-[var(--text-secondary)]'
                             }`}
                         >
                           {option.label}
-                          {dateRangeFilter.type === option.id && <CheckCircle2 size={12} />}
+                          {leadsDateRangeFilter.type === option.id && <CheckCircle2 size={12} />}
                         </button>
                       ))}
 
                       {/* Custom Range Inputs */}
-                      {dateRangeFilter.type === 'custom' && (
+                      {leadsDateRangeFilter.type === 'custom' && (
                         <div className="mt-2 pt-2 border-t border-[var(--border-base)] px-2">
                           <p className="text-[10px] text-[var(--text-muted)] mb-2">Custom Range</p>
                           <div className="space-y-2">
@@ -3313,8 +3429,8 @@ const CRMPage = ({ onNavigate }) => {
                               <span className="text-[10px] text-[var(--text-muted)] w-10">From:</span>
                               <Input
                                 type="date"
-                                value={dateRangeFilter.startDate || ''}
-                                onChange={(e) => setDateRangeFilter(prev => ({ ...prev, startDate: e.target.value }))}
+                                value={leadsDateRangeFilter.startDate || ''}
+                                onChange={(e) => setLeadsDateRangeFilter(prev => ({ ...prev, startDate: e.target.value }))}
                                 className="h-7 text-xs flex-1"
                               />
                             </div>
@@ -3322,8 +3438,8 @@ const CRMPage = ({ onNavigate }) => {
                               <span className="text-[10px] text-[var(--text-muted)] w-10">To:</span>
                               <Input
                                 type="date"
-                                value={dateRangeFilter.endDate || ''}
-                                onChange={(e) => setDateRangeFilter(prev => ({ ...prev, endDate: e.target.value }))}
+                                value={leadsDateRangeFilter.endDate || ''}
+                                onChange={(e) => setLeadsDateRangeFilter(prev => ({ ...prev, endDate: e.target.value }))}
                                 className="h-7 text-xs flex-1"
                               />
                             </div>
@@ -3331,12 +3447,12 @@ const CRMPage = ({ onNavigate }) => {
                               size="sm"
                               className="w-full mt-1"
                               onClick={() => {
-                                if (dateRangeFilter.startDate && dateRangeFilter.endDate) {
+                                if (leadsDateRangeFilter.startDate && leadsDateRangeFilter.endDate) {
                                   setShowDateRangeDropdown(false);
                                   setPage(1);
                                 }
                               }}
-                              disabled={!dateRangeFilter.startDate || !dateRangeFilter.endDate}
+                              disabled={!leadsDateRangeFilter.startDate || !leadsDateRangeFilter.endDate}
                             >
                               Apply
                             </Button>
@@ -3349,7 +3465,7 @@ const CRMPage = ({ onNavigate }) => {
               </div>
 
               {/* Reset Filter Button */}
-              {dateRangeFilter.type !== 'last7days' && (
+              {leadsDateRangeFilter.type !== 'all' && (
                 <button
                   onClick={resetDateRangeFilter}
                   className="px-3 py-1.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-base)] text-xs text-[var(--text-muted)] hover:bg-[var(--bg-hovered)] transition-colors flex items-center gap-1"
@@ -3383,11 +3499,11 @@ const CRMPage = ({ onNavigate }) => {
             </div>
           </div>
 
-          {dateRangeFilter.type === 'custom' && dateRangeFilter.startDate && dateRangeFilter.endDate && (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-600">
+          {leadsDateRangeFilter.type === 'custom' && leadsDateRangeFilter.startDate && leadsDateRangeFilter.endDate && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--green)]/10 border border-[var(--green)]/20 text-xs text-[var(--green)]">
               <CheckCircle2 size={14} />
               <span>
-                Showing leads from <strong>{format(new Date(dateRangeFilter.startDate), 'MMM dd')} - {format(new Date(dateRangeFilter.endDate), 'MMM dd')}</strong>
+                Showing leads from <strong>{format(new Date(leadsDateRangeFilter.startDate), 'MMM dd')} - {format(new Date(leadsDateRangeFilter.endDate), 'MMM dd')}</strong>
               </span>
             </div>
           )}
@@ -3435,7 +3551,7 @@ const CRMPage = ({ onNavigate }) => {
                   {filterSources.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {filterSources.map(source => (
-                        <span key={source} className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 text-[10px] flex items-center gap-1">
+                        <span key={source} className="px-2 py-0.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-[10px] flex items-center gap-1">
                           {source}
                           <button onClick={() => removeSourceFilter(source)} className="hover:text-red-500"><X size={8} /></button>
                         </span>
@@ -3477,7 +3593,7 @@ const CRMPage = ({ onNavigate }) => {
                   {filterValueRanges.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {filterValueRanges.map(range => (
-                        <span key={range.id} className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] flex items-center gap-1">
+                        <span key={range.id} className="px-2 py-0.5 rounded-full bg-[var(--green)]/10 text-[var(--green)] text-[10px] flex items-center gap-1">
                           {range.min}-{range.max}
                           <button onClick={() => removeValueRange(range.id)} className="hover:text-red-500"><X size={8} /></button>
                         </span>
@@ -3772,12 +3888,12 @@ const CRMPage = ({ onNavigate }) => {
                       return uniqueActivities.slice(0, 4).map((act, idx) => (
                         <div key={act._id || act._uniqueKey || `activity-${idx}`} className="flex gap-2.5 text-xs">
                           <div className="w-6 h-6 rounded-full bg-[var(--bg-elevated)] border border-[var(--border-base)] flex items-center justify-center shrink-0 mt-0.5">
-                            {act.type === 'call' && <Phone size={10} className="text-emerald-400" />}
-                            {act.type === 'email' && <Mail size={10} className="text-blue-400" />}
-                            {act.type === 'whatsapp' && <MessageSquare size={10} className="text-emerald-400" />}
+                            {act.type === 'call' && <Phone size={10} className="text-[var(--green)]" />}
+                            {act.type === 'email' && <Mail size={10} className="text-[var(--primary)]" />}
+                            {act.type === 'whatsapp' && <MessageSquare size={10} className="text-[var(--green)]" />}
                             {act.type === 'note' && <Activity size={10} className="text-amber-400" />}
                             {act.type === 'stage_change' && <GitCommit size={10} className="text-purple-400" />}
-                            {act.type === 'import' && <Download size={10} className="text-cyan-400" />}
+                            {act.type === 'import' && <Download size={10} className="text-[var(--blue)]" />}
                             {act.type === 'created' && <Plus size={10} className="text-green-400" />}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -3942,7 +4058,7 @@ const CRMPage = ({ onNavigate }) => {
             onClick={() => { setShowActivityModal(false); setNewActivityNote(''); setActivityLeadId(null); }}
           />
           {/* Sidebar Drawer */}
-          <div className="fixed right-0 top-[36.5px] bottom-0 w-[450px] bg-white border-l border-[var(--border-base)] z-50 shadow-2xl flex flex-col" style={{ transform: 'translateX(0)', transition: 'transform 0.3s ease-out' }}>
+          <div className="fixed right-0 top-[36.5px] bottom-0 w-[450px] bg-[var(--bg-surface)] border-l border-[var(--border-base)] z-50 shadow-2xl flex flex-col" style={{ transform: 'translateX(0)', transition: 'transform 0.3s ease-out' }}>
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-[var(--border-base)]">
               <h3 className="text-lg font-bold text-[var(--text-primary)]">Activity Log</h3>
@@ -3963,8 +4079,8 @@ const CRMPage = ({ onNavigate }) => {
                   activityData.map((event, idx) => (
                     <div key={idx} className="flex gap-3 text-sm border-l-2 border-[var(--border-subtle)] pl-3 py-1">
                       <div className="w-6 h-6 rounded-full bg-[var(--bg-elevated)] flex items-center justify-center shrink-0">
-                        {event.type === 'call' && <Phone size={12} className="text-emerald-400" />}
-                        {event.type === 'email' && <Mail size={12} className="text-blue-400" />}
+                        {event.type === 'call' && <Phone size={12} className="text-[var(--green)]" />}
+                        {event.type === 'email' && <Mail size={12} className="text-[var(--primary)]" />}
                         {event.type === 'stage_change' && <GitCommit size={12} className="text-purple-400" />}
                         {event.type === 'created' && <UserPlus size={12} className="text-green-400" />}
                         {event.type === 'note' && <FileText size={12} className="text-amber-400" />}
@@ -4020,7 +4136,7 @@ const CRMPage = ({ onNavigate }) => {
             onClick={() => { setShowTrackerDrawer(false); setTrackerLeadId(null); }}
           />
           {/* Sidebar Drawer */}
-          <div className="fixed right-0 top-[36.5px] bottom-0 w-[450px] bg-white border-l border-[var(--border-base)] z-50 shadow-2xl flex flex-col" style={{ transform: 'translateX(0)', transition: 'transform 0.3s ease-out' }}>
+          <div className="fixed right-0 top-[36.5px] bottom-0 w-[450px] bg-[var(--bg-surface)] border-l border-[var(--border-base)] z-50 shadow-2xl flex flex-col" style={{ transform: 'translateX(0)', transition: 'transform 0.3s ease-out' }}>
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-[var(--border-base)]">
               <h3 className="text-lg font-bold text-[var(--text-primary)]">Lead Tracker</h3>
@@ -4213,7 +4329,7 @@ const CRMPage = ({ onNavigate }) => {
               <Button
                 onClick={handleCreateProject}
                 disabled={projectCreateLoading || !projectForm.name}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-[var(--green)] hover:bg-[var(--green)] text-white"
               >
                 {projectCreateLoading ? 'Creating...' : <><Package size={14} /> Create Project</>}
               </Button>
@@ -4222,13 +4338,13 @@ const CRMPage = ({ onNavigate }) => {
         >
           <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
             {/* Customer Info */}
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-100">
-              <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-lg">
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-[var(--green)]/10 border border-[var(--green)]/20">
+              <div className="w-10 h-10 rounded-full bg-[var(--green)] text-white flex items-center justify-center font-bold text-lg">
                 {selectedCustomerForProject.name[0]}
               </div>
               <div>
-                <p className="font-semibold text-emerald-900">{selectedCustomerForProject.name}</p>
-                <p className="text-xs text-emerald-600">{selectedCustomerForProject.email} · {selectedCustomerForProject.phone}</p>
+                <p className="font-semibold text-[var(--green)]">{selectedCustomerForProject.name}</p>
+                <p className="text-xs text-[var(--green)]">{selectedCustomerForProject.email} · {selectedCustomerForProject.phone}</p>
               </div>
             </div>
 

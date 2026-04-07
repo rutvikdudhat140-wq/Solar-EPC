@@ -51,7 +51,7 @@ const Toggle = ({ on, onChange, size = 'md', disabled = false }) => {
             disabled={disabled}
             className={`relative inline-flex items-center rounded-full transition-all duration-200 focus:outline-none ${w} ${on ? 'bg-[var(--accent)]' : 'bg-[var(--bg-overlay)]'} ${disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
         >
-            <span className={`inline-block ${k} rounded-full bg-white shadow transform transition-transform duration-200 ml-0.5 ${t}`} />
+            <span className={`inline-block ${k} rounded-full bg-[var(--bg-surface)] shadow transform transition-transform duration-200 ml-0.5 ${t}`} />
         </button>
     );
 };
@@ -1748,7 +1748,7 @@ const UserPermissionsPanel = () => {
                 <button onClick={() => cycleOverride(moduleId, actionId)}
                     title={`Base: ${base ? '✓' : '✗'} | Override: ${override === null ? 'none' : override ? 'grant' : 'revoke'}\nClick to cycle: default → grant → revoke → default`}
                     className={`relative w-7 h-7 rounded-md mx-auto flex items-center justify-center border transition-all
-                        ${isGrant ? 'border-emerald-500/50 bg-emerald-500/20 text-emerald-400' :
+                        ${isGrant ? 'border-[var(--green)]/50 bg-[var(--green)]/20 text-[var(--green)]' :
                             isRevoke ? 'border-red-500/50 bg-red-500/10 text-red-400' :
                                 effective ? 'border-[var(--accent)]/30 bg-[var(--accent)]/10 text-[var(--accent)]' :
                                     'border-[var(--border-base)] text-[var(--text-faint)] hover:border-[var(--accent)]/30'}`}>
@@ -1861,7 +1861,7 @@ const UserPermissionsPanel = () => {
                             <div className="flex flex-wrap gap-3 text-[10px] px-1">
                                 <div className="flex items-center gap-1.5"><div className="w-4 h-4 rounded border border-[var(--accent)]/30 bg-[var(--accent)]/10 flex items-center justify-center"><Check size={8} className="text-[var(--accent)] opacity-60" /></div><span className="text-[var(--text-faint)]">Role default (granted)</span></div>
                                 <div className="flex items-center gap-1.5"><div className="w-4 h-4 rounded border border-[var(--border-base)] flex items-center justify-center"><X size={8} className="text-[var(--text-faint)] opacity-30" /></div><span className="text-[var(--text-faint)]">Role default (denied)</span></div>
-                                <div className="flex items-center gap-1.5 relative"><div className="w-4 h-4 rounded border border-emerald-500/50 bg-emerald-500/20 flex items-center justify-center"><Check size={8} className="text-emerald-400" /></div><div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-emerald-400" /><span className="text-[var(--text-faint)] ml-2">Override: force grant</span></div>
+                                <div className="flex items-center gap-1.5 relative"><div className="w-4 h-4 rounded border border-[var(--green)]/50 bg-[var(--green)]/20 flex items-center justify-center"><Check size={8} className="text-[var(--green)]" /></div><div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[var(--green)]" /><span className="text-[var(--text-faint)] ml-2">Override: force grant</span></div>
                                 <div className="flex items-center gap-1.5 relative"><div className="w-4 h-4 rounded border border-red-500/50 bg-red-500/10 flex items-center justify-center"><X size={8} className="text-red-400" /></div><div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-red-400" /><span className="text-[var(--text-faint)] ml-2">Override: force revoke</span></div>
                                 <span className="text-[var(--text-faint)] ml-auto italic">Click cell to cycle: default → grant → revoke</span>
                             </div>
@@ -2419,6 +2419,84 @@ const AutomationPanel = () => {
     return <AutomationBuilder tenantId={tenantId} user={user} />;
 };
 
+// ─── PANEL K: MILESTONES BUILDER ─────────────────────────────────────────────
+const MilestonesPanel = () => {
+    const { milestones, updateMilestones, isLoading } = useSettings();
+    const { user } = useAuth();
+    const [items, setItems] = useState([]);
+    const [newName, setNewName] = useState('');
+
+    // Debug logging
+    console.log('[MilestonesPanel] milestones from context:', milestones);
+    console.log('[MilestonesPanel] isLoading:', isLoading);
+
+    // Update items when milestones load from API
+    useEffect(() => {
+        if (milestones && Array.isArray(milestones)) {
+            console.log('[MilestonesPanel] Setting items from milestones:', milestones);
+            setItems(milestones);
+        }
+    }, [milestones]);
+
+    const addItem = () => {
+        if (!newName.trim()) return;
+        setItems(prev => [...prev, { name: newName.trim(), order: prev.length + 1 }]);
+        setNewName('');
+    };
+    const save = () => {
+        updateMilestones(items, user?.name);
+    };
+    const move = (index, dir) => {
+        setItems(prev => {
+            const arr = [...prev];
+            const [item] = arr.splice(index, 1);
+            arr.splice(index + dir, 0, item);
+            // Update order property
+            return arr.map((m, i) => ({ ...m, order: i + 1 }));
+        });
+    };
+    const remove = (idx) => {
+        setItems(prev => prev.filter((_, i) => i !== idx).map((m, i) => ({ ...m, order: i + 1 })));
+    };
+
+    if (isLoading) {
+        return (
+            <div>
+                <SectionHeader icon={Flag} title="Project Milestones" subtitle="Define milestone stages for project tracking" badge={user?.role === 'Admin' ? 'Admin Only' : ''} />
+                <div className="flex items-center justify-center py-8">
+                    <div className="text-sm text-[var(--text-muted)]">Loading milestones...</div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div>
+            <SectionHeader icon={Flag} title="Project Milestones" subtitle="Define milestone stages for project tracking" badge={user?.role === 'Admin' ? 'Admin Only' : ''} />
+            <div className="space-y-4">
+                {items.map((m, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[var(--accent)]/15 flex items-center justify-center text-[var(--accent)] text-xs font-bold">
+                            {i + 1}
+                        </div>
+                        <input type="text" value={m.name} disabled className="flex-1 bg-[var(--bg-input)] rounded px-2 py-1 text-xs" />
+                        <button onClick={() => move(i, -1)} disabled={i === 0} className="text-[var(--text-muted)]"><ChevronUp size={12} /></button>
+                        <button onClick={() => move(i, 1)} disabled={i === items.length - 1} className="text-[var(--text-muted)]"><ChevronDown size={12} /></button>
+                        <button onClick={() => remove(i)} className="text-red-500"><X size={12} /></button>
+                    </div>
+                ))}
+                <div className="flex gap-2">
+                    <Input placeholder="New milestone name" value={newName} onChange={e => setNewName(e.target.value)} className="flex-1 text-xs" />
+                    <Button onClick={addItem}><Plus size={12} /></Button>
+                </div>
+                <div className="flex justify-end">
+                    <Button onClick={save}>Save Changes</Button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 // ─── MAIN SETTINGS PAGE ───────────────────────────────────────────────────────
 const TABS = [
     { id: 'modules', label: 'Modules', icon: Flag, panel: ModulesPanel },
@@ -2434,6 +2512,7 @@ const TABS = [
     { id: 'projecttypes', label: 'Project Types', icon: SunMedium, panel: ProjectTypeConfigPanel },
     { id: 'installationTasks', label: 'Install Tasks', icon: List, panel: InstallationTasksPanel },
     { id: 'commissioningTasks', label: 'Commissioning Tasks', icon: CheckCircle, panel: CommissioningTasksPanel },
+    { id: 'milestones', label: 'Milestones', icon: Flag, panel: MilestonesPanel },
 ];
 
 const SettingsPage = () => {

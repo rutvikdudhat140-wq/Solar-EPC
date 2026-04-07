@@ -97,6 +97,10 @@ const DataTable = ({
     expandedRowKey = null,      // key of the currently expanded row
 
     renderExpanded = null,      // (row) => ReactNode — content to show inside expanded row
+    
+    hiddenCols: controlledHiddenCols,  // Controlled hidden columns from parent
+    
+    onHiddenColsChange,        // Callback when columns are toggled
 
 }) => {
 
@@ -114,7 +118,12 @@ const DataTable = ({
 
     const [internalSort, setInternalSort] = useState({ key: null, dir: 'asc' });
 
-    const [hiddenCols, setHiddenCols] = useState(new Set());
+    const [internalHiddenCols, setInternalHiddenCols] = useState(new Set());
+    
+    // Use controlled hiddenCols if provided, otherwise internal state
+    const isControlledHiddenCols = controlledHiddenCols !== undefined;
+    const hiddenCols = isControlledHiddenCols ? controlledHiddenCols : internalHiddenCols;
+    const setHiddenCols = isControlledHiddenCols && onHiddenColsChange ? onHiddenColsChange : setInternalHiddenCols;
 
     const [openMenuIndex, setOpenMenuIndex] = useState(null);
 
@@ -223,17 +232,12 @@ const DataTable = ({
 
 
     const toggleCol = (key) => {
-
-        setHiddenCols(prev => {
-
-            const next = new Set(prev);
-
-            next.has(key) ? next.delete(key) : next.add(key);
-
-            return next;
-
-        });
-
+        // Create new Set based on current hiddenCols
+        const next = new Set(hiddenCols);
+        next.has(key) ? next.delete(key) : next.add(key);
+        
+        // Call the setter (either internal setState or parent callback)
+        setHiddenCols(next);
     };
 
 
@@ -685,7 +689,7 @@ const DataTable = ({
 
                                         a.danger
 
-                                            ? 'text-red-400 hover:bg-red-500/10'
+                                            ? 'text-[var(--red)] hover:bg-[var(--red)]/10'
 
                                             : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
 

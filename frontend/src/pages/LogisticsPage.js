@@ -18,8 +18,8 @@ const TENANT_ID = 'solarcorp';
 
 // Local status map only (no data)
 const DISPATCH_STATUS_MAP = {
-  Delivered: { label: 'Delivered', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
-  'In Transit': { label: 'In Transit', color: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30' },
+  Delivered: { label: 'Delivered', color: 'bg-[var(--green)]/15 text-[var(--green)] border-[var(--green)]/30' },
+  'In Transit': { label: 'In Transit', color: 'bg-[var(--blue)]/15 text-[var(--blue)] border-[var(--blue)]/30' },
   Scheduled: { label: 'Scheduled', color: 'bg-[var(--bg-hover)] text-[var(--primary-light)] border-[var(--border-active)]' },
   Cancelled: { label: 'Cancelled', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
 };
@@ -86,7 +86,7 @@ const DispatchCard = ({ d, onDragStart, onClick }) => {
       </div>
       <p className="text-xs font-semibold text-[var(--text-primary)] mb-0.5">{d.customer}</p>
       <p className="text-[10px] text-[var(--text-muted)] mb-2 line-clamp-2">{d.items}</p>
-      <div className="flex items-center gap-1 text-[10px] text-cyan-400 mb-1">
+      <div className="flex items-center gap-1 text-[10px] text-[var(--blue)] mb-1">
         <MapPin size={9} /> {d.from} → {d.to}
       </div>
       <div className="flex items-center justify-between text-[10px] text-[var(--text-faint)]">
@@ -352,11 +352,11 @@ const VendorVisualizationView = ({ vendors }) => {
           <div className="text-[10px] text-[var(--text-muted)]">Panel Vendors</div>
         </div>
         <div className="glass-card p-3 text-center">
-          <div className="text-2xl font-bold text-cyan-400">{categoryCounts.find(([c]) => c === 'Inverter')?.[1] || 0}</div>
+          <div className="text-2xl font-bold text-[var(--blue)]">{categoryCounts.find(([c]) => c === 'Inverter')?.[1] || 0}</div>
           <div className="text-[10px] text-[var(--text-muted)]">Inverter Vendors</div>
         </div>
         <div className="glass-card p-3 text-center">
-          <div className="text-2xl font-bold text-emerald-400">{totalOrders}</div>
+          <div className="text-2xl font-bold text-[var(--green)]">{totalOrders}</div>
           <div className="text-[10px] text-[var(--text-muted)]">Total Orders</div>
         </div>
       </div>
@@ -478,14 +478,14 @@ const VendorVisualizationView = ({ vendors }) => {
                       }}
                     />
                   </div>
-                  <span className="text-[10px] font-semibold text-cyan-400 w-6 text-right">{vendor.orders}</span>
+                  <span className="text-[10px] font-semibold text-[var(--blue)] w-6 text-right">{vendor.orders}</span>
                 </div>
               ))
             )}
           </div>
           <div className="mt-3 pt-2 border-t border-[var(--border-base)] flex justify-between items-center">
             <span className="text-[10px] text-[var(--text-muted)]">Total Orders</span>
-            <span className="text-sm font-bold text-cyan-400">{totalOrders}</span>
+            <span className="text-sm font-bold text-[var(--blue)]">{totalOrders}</span>
           </div>
         </div>
       </div>
@@ -697,11 +697,11 @@ const DispatchVisualizationView = ({ dispatches }) => {
           <div className="text-[10px] text-[var(--text-muted)]">Scheduled</div>
         </div>
         <div className="glass-card p-3 text-center">
-          <div className="text-2xl font-bold text-cyan-400">{statusCounts['In Transit']}</div>
+          <div className="text-2xl font-bold text-[var(--blue)]">{statusCounts['In Transit']}</div>
           <div className="text-[10px] text-[var(--text-muted)]">In Transit</div>
         </div>
         <div className="glass-card p-3 text-center">
-          <div className="text-2xl font-bold text-emerald-400">{statusCounts['Delivered']}</div>
+          <div className="text-2xl font-bold text-[var(--green)]">{statusCounts['Delivered']}</div>
           <div className="text-[10px] text-[var(--text-muted)]">Delivered</div>
         </div>
       </div>
@@ -731,14 +731,14 @@ const DispatchVisualizationView = ({ dispatches }) => {
                       }}
                     />
                   </div>
-                  <span className="text-[10px] font-semibold text-cyan-400 w-4 text-right">{count}</span>
+                  <span className="text-[10px] font-semibold text-[var(--blue)] w-4 text-right">{count}</span>
                 </div>
               ))
             )}
           </div>
           <div className="mt-3 pt-2 border-t border-[var(--border-base)] text-center">
             <span className="text-[10px] text-[var(--text-muted)]">Total Routes: </span>
-            <span className="text-sm font-bold text-cyan-400">{routeData.length}</span>
+            <span className="text-sm font-bold text-[var(--blue)]">{routeData.length}</span>
           </div>
         </div>
 
@@ -944,13 +944,13 @@ const DispatchVisualizationView = ({ dispatches }) => {
         <div className="glass-card p-4">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2">
-              <IndianRupee size={14} className="text-emerald-400" />
+              <IndianRupee size={14} className="text-[var(--green)]" />
               Monthly Freight (₹ Thousands)
             </h4>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowFreightCalendar(!showFreightCalendar)}
-                className={`p-1.5 rounded-md transition-colors ${showFreightCalendar ? 'bg-emerald-500/20 text-emerald-400' : 'bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
+                className={`p-1.5 rounded-md transition-colors ${showFreightCalendar ? 'bg-[var(--green)]/20 text-[var(--green)]' : 'bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
                 title="Toggle Calendar View"
               >
                 <Calendar size={12} />
@@ -1006,7 +1006,7 @@ const DispatchVisualizationView = ({ dispatches }) => {
                     className={`aspect-square flex flex-col items-center justify-center rounded-md text-[9px] ${
                       data.day 
                         ? data.amount > 0 
-                          ? 'bg-emerald-500/20 text-emerald-400 font-semibold' 
+                          ? 'bg-[var(--green)]/20 text-[var(--green)] font-semibold' 
                           : 'bg-[var(--bg-elevated)] text-[var(--text-muted)]'
                         : ''
                     }`}
@@ -1015,7 +1015,7 @@ const DispatchVisualizationView = ({ dispatches }) => {
                       <>
                         <span>{data.day}</span>
                         {data.amount > 0 && (
-                          <span className="text-[7px] text-emerald-400">₹{data.amount.toFixed(0)}K</span>
+                          <span className="text-[7px] text-[var(--green)]">₹{data.amount.toFixed(0)}K</span>
                         )}
                       </>
                     )}
@@ -1026,7 +1026,7 @@ const DispatchVisualizationView = ({ dispatches }) => {
                 <span className="text-[10px] text-[var(--text-muted)]">
                   Total for {monthNames[freightCalendarMonth]}
                 </span>
-                <span className="text-sm font-bold text-emerald-400">
+                <span className="text-sm font-bold text-[var(--green)]">
                   ₹{freightCalendarData.reduce((sum, d) => sum + d.amount, 0).toFixed(1)}K
                 </span>
               </div>
@@ -1075,7 +1075,7 @@ const DispatchVisualizationView = ({ dispatches }) => {
               </div>
               <div className="mt-2 pt-2 border-t border-[var(--border-base)] flex justify-between items-center">
                 <span className="text-[10px] text-[var(--text-muted)]">Total Freight</span>
-                <span className="text-sm font-bold text-emerald-400">₹{(totalFreight / 1000).toFixed(1)}K</span>
+                <span className="text-sm font-bold text-[var(--green)]">₹{(totalFreight / 1000).toFixed(1)}K</span>
               </div>
             </>
           )}
@@ -1872,14 +1872,14 @@ const LogisticsPage = () => {
           {view === 'kanban' && inTransit > 0 && (
             <div className="glass-card p-4">
               <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3 flex items-center gap-2">
-                <Truck size={14} className="text-cyan-400" /> Active Shipments ({inTransit})
+                <Truck size={14} className="text-[var(--blue)]" /> Active Shipments ({inTransit})
               </h3>
               <div className="space-y-2">
                 {dispatches.filter(d => d.status === 'In Transit').map(d => (
                   <div key={d.id} className="flex items-center justify-between p-3 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-muted)]">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                        <Truck size={14} className="text-cyan-400" />
+                      <div className="w-8 h-8 rounded-full bg-[var(--blue)]/20 flex items-center justify-center">
+                        <Truck size={14} className="text-[var(--blue)]" />
                       </div>
                       <div>
                         <p className="text-xs font-semibold text-[var(--text-primary)]">{d.id} — {d.customer}</p>
@@ -1887,7 +1887,7 @@ const LogisticsPage = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-cyan-400 font-medium">{d.from} → {d.to}</p>
+                      <p className="text-xs text-[var(--blue)] font-medium">{d.from} → {d.to}</p>
                       <p className="text-[11px] text-[var(--text-muted)]">Driver: {d.driver} · {d.vehicle}</p>
                     </div>
                   </div>

@@ -231,7 +231,7 @@ const CompactCalendarFilter = ({ onDateChange, initialYear, initialMonth }) => {
                     selectMonth(undefined);
                   }}
                   className={`w-full px-3 py-2 text-sm text-left hover:bg-slate-800 transition-colors font-medium border-b border-slate-700 ${
-                    selectedYear === viewYear && (selectedMonth === undefined || selectedMonth === null) ? 'bg-orange-500/20 text-orange-400' : 'text-slate-200'
+                    selectedYear === viewYear && (selectedMonth === undefined || selectedMonth === null) ? 'bg-[var(--primary)]/20 text-[var(--primary)]' : 'text-slate-200'
                   }`}
                 >
                   Full Year
@@ -244,7 +244,7 @@ const CompactCalendarFilter = ({ onDateChange, initialYear, initialMonth }) => {
                       setIsYearDropdownOpen(false);
                     }}
                     className={`w-full px-3 py-2 text-sm text-left hover:bg-slate-800 transition-colors ${
-                      year === viewYear ? 'bg-orange-500/20 text-orange-400 font-medium' : 'text-slate-200'
+                      year === viewYear ? 'bg-[var(--primary)]/20 text-[var(--primary)] font-medium' : 'text-slate-200'
                     }`}
                   >
                     {year}
@@ -270,9 +270,9 @@ const CompactCalendarFilter = ({ onDateChange, initialYear, initialMonth }) => {
                     className={`
                       py-2 px-1 text-sm font-medium rounded-lg transition-all
                       ${isSelected 
-                        ? 'bg-orange-500 text-white shadow-md' 
+                        ? 'bg-[var(--primary)] text-white shadow-md' 
                         : isCurrentMonth
-                          ? 'bg-orange-500/10 text-orange-400 border border-orange-500/30'
+                          ? 'bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/30'
                           : 'text-slate-300 hover:bg-slate-800'
                       }
                     `}
@@ -288,7 +288,7 @@ const CompactCalendarFilter = ({ onDateChange, initialYear, initialMonth }) => {
           <div className="flex items-center justify-between px-4 py-3 border-t border-slate-700 bg-slate-800 rounded-b-lg">
             <button
               onClick={goToToday}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-orange-400 hover:bg-orange-500/10 rounded-lg transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[var(--primary)] hover:bg-[var(--primary)]/10 rounded-lg transition-colors"
             >
               <Clock size={14} />
               Today

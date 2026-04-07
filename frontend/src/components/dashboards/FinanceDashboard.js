@@ -1,5 +1,5 @@
 // FinanceDashboard.js — Finance role dashboard (redesigned)
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
     AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line,
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -10,6 +10,7 @@ import {
     AlertTriangle, Clock, Shield, BarChart3, ArrowUpRight, Target,
     Calculator, Layers, Activity, PieChart as PieChartIcon, Zap
 } from 'lucide-react';
+import { getPaidAmount } from '../../lib/financeApi';
 import { useRoleDashboard } from './RoleDashboardProvider';
 import ReminderWidget from '../Reminder/ReminderWidget';
 import {
@@ -21,13 +22,79 @@ import {
 
 const C = ROLE_COLORS.finance;
 
-const FinanceDashboard = () => {
-    const { data, loading } = useRoleDashboard();
-    if (loading) return <DashboardLoading />;
-
-    const { invoices = {}, cashFlow = {}, payables = {}, receivables = {}, compliance = {} } = data || {};
-
-    const cashFlowData = (cashFlow?.monthly || []).map(m => ({ ...m }));
+const FinanceDashboard = ({ 
+    isOpen, 
+    onClose, 
+    dashboardStats,
+    payables = [],
+    invoices = [],
+    payments = [],
+    manualAdjustments = [],
+    monthlyRevenue = [],
+    cashFlow = [],
+    totalCollected = 0,
+    manualBalance = 0,
+    cashPosition = 0,
+    transactionAnalytics = null,
+    adjustmentTrend = [],
+    calendarFilterYear = new Date().getFullYear().toString(),
+    calendarFilterMonth,
+    calendarFilterDay
+}) => {
+    // Calculate cashFlow from filtered invoices - MUST match totalCollected exactly
+    const cashFlowData = useMemo(() => {
+        if (!invoices || !Array.isArray(invoices) || invoices.length === 0) return [];
+        
+        // Filter invoices by calendar (MUST match exactly what totalCollected uses)
+        const now = new Date();
+        const currentYear = now.getFullYear().toString();
+        const currentMonth = now.getMonth();
+        
+        const filteredInvoices = invoices.filter(inv => {
+            const invDate = new Date(inv.invoiceDate || inv.createdAt);
+            
+            if (calendarFilterYear === 'all') return true;
+            if (invDate.getFullYear().toString() !== calendarFilterYear) return false;
+            if (calendarFilterMonth !== undefined && invDate.getMonth() !== calendarFilterMonth) return false;
+            if (calendarFilterDay !== undefined && invDate.getDate() !== calendarFilterDay) return false;
+            
+            return true;
+        });
+        
+        console.log('📊 CashFlow Filter:', { 
+            calendarFilterYear, 
+            calendarFilterMonth, 
+            invoiceCount: filteredInvoices.length,
+            totalInvoices: invoices.length 
+        });
+        
+        // Group by month and calculate inflow
+        const monthlyMap = new Map();
+        let calculatedTotal = 0;
+        
+        filteredInvoices.forEach(inv => {
+            const invDate = new Date(inv.invoiceDate || inv.createdAt);
+            const monthKey = invDate.toLocaleString('default', { month: 'short' });
+            
+            if (!monthlyMap.has(monthKey)) {
+                monthlyMap.set(monthKey, { month: monthKey, inflow: 0, outflow: 0, net: 0 });
+            }
+            
+            const monthData = monthlyMap.get(monthKey);
+            const paidAmount = getPaidAmount(inv, manualAdjustments);
+            calculatedTotal += paidAmount;
+            monthData.inflow += paidAmount;
+            monthData.net = monthData.inflow - monthData.outflow;
+            
+            console.log('  Invoice:', inv.id || inv._id, '| Amount:', paidAmount, '| Month:', monthKey);
+        });
+        
+        console.log('💰 CashFlow Calculated Total:', calculatedTotal);
+        console.log('🎯 Expected Total (totalCollected prop):', totalCollected);
+        console.log('📊 Difference:', calculatedTotal - totalCollected);
+        
+        return Array.from(monthlyMap.values());
+    }, [invoices, manualAdjustments, calendarFilterYear, calendarFilterMonth, calendarFilterDay, totalCollected]);
 
     const invoiceStatusPie = [
         { name: 'Paid', value: invoices.paid || 0, color: '#10b981' },

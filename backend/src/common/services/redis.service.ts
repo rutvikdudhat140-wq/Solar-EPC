@@ -200,6 +200,91 @@ export class RedisService implements OnModuleDestroy {
     );
   }
 
+  /**
+   * Acquire a distributed lock with timeout
+   * @param key Lock key
+   * @param ttlSeconds Lock timeout in seconds
+   * @returns true if lock acquired, false otherwise
+   */
+  async acquireLock(key: string, ttlSeconds: number = 10): Promise<boolean> {
+    return this.safeExecute(
+      async () => {
+        // Use SETNX (set if not exists) with expiry for atomic lock
+        const result = await this.client!.set(key, '1', 'EX', ttlSeconds, 'NX');
+        return result === 'OK';
+      },
+      false
+    );
+  }
+
+  /**
+   * Release a distributed lock
+   * @param key Lock key
+   */
+  async releaseLock(key: string): Promise<void> {
+    return this.safeExecute(
+      () => this.client!.del(key).then(() => undefined),
+      undefined
+    );
+  }
+
+  /**
+   * Wait for lock to be released with timeout
+   * @param key Lock key
+   * @param maxWaitMs Maximum wait time in milliseconds
+   * @param checkIntervalMs Check interval in milliseconds
+   * @returns true if lock was released, false if timeout
+   */
+  async waitForLock(
+    key: string,
+    maxWaitMs: number = 5000,
+    checkIntervalMs: number = 100
+  ): Promise<boolean> {
+    const startTime = Date.now();
+    
+    while (Date.now() - startTime < maxWaitMs) {
+      const exists = await this.exists(key);
+      if (!exists) {
+        return true; // Lock released
+      }
+      await new Promise(resolve => setTimeout(resolve, checkIntervalMs));
+    }
+    
+    return false; // Timeout
+  }
+
+  /**
+   * Execute function with distributed lock (prevents cache stampede)
+   * @param lockKey Lock key prefix
+   * @param fn Function to execute
+   * @param ttlSeconds Lock TTL
+   * @param maxWaitMs Maximum wait time for lock
+   */
+  async withLock<T>(
+    lockKey: string,
+    fn: () => Promise<T>,
+    ttlSeconds: number = 10,
+    maxWaitMs: number = 5000
+  ): Promise<T> {
+    const lockAcquired = await this.acquireLock(lockKey, ttlSeconds);
+    
+    if (lockAcquired) {
+      try {
+        return await fn();
+      } finally {
+        await this.releaseLock(lockKey);
+      }
+    } else {
+      // Wait for lock to be released
+      const released = await this.waitForLock(lockKey, maxWaitMs);
+      if (released) {
+        // Lock was released, caller should retry or use cached data
+        throw new Error('LOCK_RELEASED');
+      }
+      throw new Error('LOCK_TIMEOUT');
+    }
+  }
+
   async subscribe(channel: string, handler: (message: string) => void): Promise<void> {
     if (!this.client) return;
     if (!this.subscriber) {

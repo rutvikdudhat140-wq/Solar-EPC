@@ -59,7 +59,7 @@ const InstallBadge = ({ value }) => {
     'Pending Assign': 'bg-indigo-100 text-indigo-600',
     'In Progress': 'bg-amber-100 text-amber-600',
     'Delayed': 'bg-red-100 text-red-600',
-    'Completed': 'bg-emerald-100 text-emerald-600',
+    'Completed': 'bg-[var(--green)]/10 text-[var(--green)]',
   };
   return <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${map[value]||''}`}>{value}</span>;
 };
@@ -836,7 +836,7 @@ const CommissioningDashboard = ({ logs }) => {
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="text-lg font-bold text-emerald-600">{stats.trendData.reduce((a, b) => a + b.completed, 0)}</p>
+                <p className="text-lg font-bold text-[var(--green)]">{stats.trendData.reduce((a, b) => a + b.completed, 0)}</p>
                 <p className="text-[9px] text-[var(--text-muted)] uppercase">Completed</p>
               </div>
               <div className="text-right">
@@ -922,7 +922,7 @@ const CommissioningDashboard = ({ logs }) => {
                     <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-600 font-medium">+{day.created}</span>
                   )}
                   {day.completed > 0 && (
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600 font-medium">✓{day.completed}</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--green)]/10 text-[var(--green)] font-medium">✓{day.completed}</span>
                   )}
                 </div>
               </div>
@@ -936,8 +936,8 @@ const CommissioningDashboard = ({ logs }) => {
         {/* Technician Performance - Horizontal Bar Chart */}
         <div className="lg:col-span-2 glass-card p-6 rounded-2xl border border-[var(--border-base)] animate-fade-in">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-              <BarChart3 size={20} className="text-blue-600" />
+            <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/20 flex items-center justify-center">
+              <BarChart3 size={20} className="text-[var(--primary)]" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-[var(--text-primary)]">Technician Performance</h3>
@@ -1020,7 +1020,7 @@ const CommissioningDashboard = ({ logs }) => {
                   <p className="text-[10px] text-[var(--text-muted)] mt-1">Active Techs</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-emerald-600">{stats.technicianStats.filter(t => t.completionRate === 100).length}</p>
+                  <p className="text-2xl font-bold text-[var(--green)]">{stats.technicianStats.filter(t => t.completionRate === 100).length}</p>
                   <p className="text-[10px] text-[var(--text-muted)] mt-1">100% Complete</p>
                 </div>
               </div>
@@ -2197,14 +2197,14 @@ const CommissioningPage = () => {
                           }}
                           className={`w-5 h-5 rounded border-2 flex items-center justify-center relative transition-all duration-200 ${
                             t.done 
-                              ? 'bg-emerald-500 border-emerald-500' 
-                              : 'border-[var(--border-base)] bg-white hover:border-[var(--primary)]'
+                              ? 'bg-[var(--green)] border-[var(--green)]' 
+                              : 'border-[var(--border-base)] bg-[var(--bg-surface)] hover:border-[var(--primary)]'
                           }`}
                         >
                           {t.done && <CheckCircle size={14} className="text-white" />}
                         </button>
                       ) : (
-                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${t.done?'bg-emerald-500 border-emerald-500':'border-[var(--border-base)] bg-white'}`}>
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${t.done?'bg-[var(--green)] border-[var(--green)]':'border-[var(--border-base)] bg-[var(--bg-surface)]'}`}>
                           {t.done && <CheckCircle size={14} className="text-white" />}
                         </div>
                       )}
@@ -2226,10 +2226,10 @@ const CommissioningPage = () => {
                         disabled={!canUpdateTask}
                         className={`p-1.5 rounded transition-colors ${
                           getTaskPhotoCount(t.name) > 0 
-                            ? 'text-emerald-500 hover:bg-emerald-500/10' 
+                            ? 'text-[var(--green)] hover:bg-[var(--green)]/10' 
                             : canUpdateTask 
                               ? 'text-amber-500 hover:bg-amber-500/10' 
-                              : 'text-gray-400 cursor-not-allowed'
+                              : 'text-[var(--text-muted)] cursor-not-allowed'
                         }`}
                         title={getTaskPhotoCount(t.name) > 0 
                           ? `${getTaskPhotoCount(t.name)} photo(s) uploaded` 
@@ -2244,7 +2244,7 @@ const CommissioningPage = () => {
                         <Camera size={16} />
                       </button>
                       <label className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
-                        <div className={`w-3 h-3 rounded border ${t.photoRequired?'bg-emerald-500 border-emerald-500':'border-[var(--border-base)]'}`} />
+                        <div className={`w-3 h-3 rounded border ${t.photoRequired?'bg-[var(--green)] border-[var(--green)]':'border-[var(--border-base)]'}`} />
                         Photo
                       </label>
                     </div>
@@ -2291,8 +2291,8 @@ const CommissioningPage = () => {
                       disabled={!allTasksDone || isCompleted || !canComplete}
                       className={`w-full mt-3 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
                         allTasksDone && !isCompleted && canComplete
-                          ? 'bg-emerald-500 hover:bg-emerald-600 text-white cursor-pointer'
-                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          ? 'bg-[var(--green)] hover:bg-[var(--green)] text-white cursor-pointer'
+                          : 'bg-[var(--bg-hover)] text-[var(--text-muted)] cursor-not-allowed'
                       }`}
                     >
                       {isCompleted && allTasksDone ? 'Marked as Completed ✓' : !canComplete ? 'Permission Denied' : allTasksDone ? 'Complete Project' : 'Complete All Tasks First'}
@@ -2346,7 +2346,7 @@ const CommissioningPage = () => {
                         <div className="text-[10px] text-white truncate">
                           {photo.taskName || 'General'}
                         </div>
-                        <div className="text-[9px] text-gray-300">
+                        <div className="text-[9px] text-[var(--text-muted)]">
                           {photo.uploadedAt ? new Date(photo.uploadedAt).toLocaleDateString() : ''}
                         </div>
                       </div>
@@ -2407,7 +2407,7 @@ const CommissioningPage = () => {
                         href={photoModal.photo.url} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-xs text-blue-500 hover:text-blue-600 mt-2 inline-block"
+                        className="text-xs text-blue-500 hover:text-[var(--primary)] mt-2 inline-block"
                       >
                         Open in new tab
                       </a>
@@ -2542,7 +2542,7 @@ const CommissioningPage = () => {
                           }
                           setEditForm(p=>({...p, tasks: newTasks}));
                         }}
-                        className={`w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer ${t.done?'bg-emerald-500 border-emerald-500':'border-[var(--border-base)]'}`}
+                        className={`w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer ${t.done?'bg-[var(--green)] border-[var(--green)]':'border-[var(--border-base)]'}`}
                       >
                         {t.done && <CheckCircle size={14} className="text-white" />}
                       </div>

@@ -508,6 +508,26 @@ export const settingsApi = {
 
 
 
+  // ── Milestones Config ─────────────────────────────────────────────────────
+
+  async updateMilestones(milestones) {
+
+    try {
+
+      return await apiClient.put('/settings/milestones', { milestones });
+
+    } catch (error) {
+
+      console.warn('Failed to update milestones:', error.message);
+
+      return { success: false };
+
+    }
+
+  },
+
+
+
   async updateProjectTypeConfig(typeId, config) {
 
     try {

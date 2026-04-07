@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
+import { toast } from '../ui/Toast';
 import { leadsApi } from '../../services/leadsApi';
 
 const fmt = (val) => {
@@ -676,10 +677,11 @@ const AgentLeaderboard = ({ data, loading, leads = [] }) => {
   );
 };
 
-// Calendar Component - Similar to Attendance Calendar
+// Calendar Component - With Quick Date Filter
 const LeadCalendar = ({ leads, loading }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
+  const [quickFilter, setQuickFilter] = useState('all'); // 'all', 'today', 'week', 'month'
 
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
@@ -692,6 +694,31 @@ const LeadCalendar = ({ leads, loading }) => {
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
 
+  // Calculate date range based on quick filter
+  const getDateRangeFromFilter = () => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    switch (quickFilter) {
+      case 'today':
+        return { start: today, end: new Date(today) };
+      case 'week':
+        const weekStart = new Date(today);
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        return { start: weekStart, end: weekEnd };
+      case 'month':
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        return { start: monthStart, end: monthEnd };
+      default:
+        return { start: null, end: null };
+    }
+  };
+
+  const { start: filterStart, end: filterEnd } = getDateRangeFromFilter();
+
   const leadsByDate = useMemo(() => {
     if (!leads || !Array.isArray(leads)) return {};
     const grouped = {};
@@ -699,13 +726,21 @@ const LeadCalendar = ({ leads, loading }) => {
       const date = lead.createdAt || lead.created_at || lead.date;
       if (date) {
         const dateObj = new Date(date);
+        
+        // Apply quick filter if set
+        if (filterStart && filterEnd) {
+          if (dateObj < filterStart || dateObj > filterEnd) {
+            return; // Skip leads outside filter range
+          }
+        }
+        
         const dateKey = `${dateObj.getFullYear()}-${dateObj.getMonth()}-${dateObj.getDate()}`;
         if (!grouped[dateKey]) grouped[dateKey] = [];
         grouped[dateKey].push(lead);
       }
     });
     return grouped;
-  }, [leads]);
+  }, [leads, filterStart, filterEnd]);
 
   const getLeadsForDate = (day) => {
     const dateKey = `${year}-${month}-${day}`;
@@ -714,6 +749,18 @@ const LeadCalendar = ({ leads, loading }) => {
 
   const prevMonth = () => setCurrentMonth(new Date(year, month - 1, 1));
   const nextMonth = () => setCurrentMonth(new Date(year, month + 1, 1));
+
+  // Handle quick filter change
+  const handleQuickFilterChange = (e) => {
+    const filterValue = e.target.value;
+    setQuickFilter(filterValue);
+    
+    // If filtering by month, update calendar to show that month
+    if (filterValue === 'month') {
+      const now = new Date();
+      setCurrentMonth(new Date(now.getFullYear(), now.getMonth(), 1));
+    }
+  };
 
   const totalLeadsThisMonth = useMemo(() => {
     return Object.values(leadsByDate).flat().filter(lead => {
@@ -801,24 +848,18 @@ const LeadCalendar = ({ leads, loading }) => {
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
+          {/* Quick Filter Dropdown */}
           <select
-            value={month}
-            onChange={(e) => setCurrentMonth(new Date(year, parseInt(e.target.value), 1))}
+            value={quickFilter}
+            onChange={handleQuickFilterChange}
             className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            {monthNames.map((m, i) => (
-              <option key={i} value={i}>{m}</option>
-            ))}
+            <option value="all">All Time</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
           </select>
-          <select
-            value={year}
-            onChange={(e) => setCurrentMonth(new Date(parseInt(e.target.value), month, 1))}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {[2024, 2025, 2026, 2027].map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
+          
           <span className="text-sm text-gray-500">
             {totalLeadsThisMonth} records this month
           </span>
@@ -828,6 +869,11 @@ const LeadCalendar = ({ leads, loading }) => {
           <h3 className="text-lg font-bold text-orange-500">
             {monthNames[month]} {year}
           </h3>
+          {quickFilter !== 'all' && (
+            <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
+              {quickFilter === 'today' ? 'Today' : quickFilter === 'week' ? 'This Week' : 'This Month'}
+            </span>
+          )}
           <div className="flex gap-1 ml-4">
             <button
               onClick={prevMonth}
@@ -965,18 +1011,22 @@ const SmartInsights = ({ insights, loading, finalKpis }) => {
 };
 
 // Main Dashboard Component with Live Data, Calendar and Individual Chart Filters
-const LeadAnalyticsDashboard = ({ onNavigate, onFilter, dateFilter }) => {
+const LeadAnalyticsDashboard = ({ onNavigate, onFilter, onFilterChange, dateFilter }) => {
+  console.log('[DASHBOARD COMPONENT] Render with dateFilter:', dateFilter);
+  
   const [isLive, setIsLive] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
   const [showCards, setShowCards] = useState(true);
+  const [exportLoading, setExportLoading] = useState(false);
 
   const queryOpts = {
     refetchInterval: false, // Disable auto-refresh
-    staleTime: 0, // Always consider data stale for immediate refetch on date change
-    cacheTime: 0, // Don't cache data
-    refetchOnWindowFocus: true,
-    refetchOnMount: true
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes (prevent constant refetches)
+    cacheTime: 10 * 60 * 1000, // Cache data for 10 minutes
+    refetchOnWindowFocus: true, // Refetch on window focus
+    refetchOnMount: true, // Refetch on mount
+    keepPreviousData: true, // CRITICAL: Prevent UI flicker during refetch
   };
 
   // Shared helper to convert dateFilter to start/end dates
@@ -999,6 +1049,13 @@ const LeadAnalyticsDashboard = ({ onNavigate, onFilter, dateFilter }) => {
         endDate = new Date(startDate);
         endDate.setHours(23, 59, 59, 999);
         break;
+      case 'thisWeek': // ROLLING 7 DAYS (today - 6 days to today)
+        endDate = new Date(today);
+        endDate.setHours(23, 59, 59, 999);
+        startDate = new Date(today);
+        startDate.setDate(startDate.getDate() - 6);
+        startDate.setHours(0, 0, 0, 0);
+        break;
       case 'last7days':
         endDate = new Date(today);
         endDate.setHours(23, 59, 59, 999);
@@ -1015,7 +1072,7 @@ const LeadAnalyticsDashboard = ({ onNavigate, onFilter, dateFilter }) => {
         break;
       case 'thisMonth':
         startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        endDate = new Date(today);
+        endDate = new Date(today.getFullYear(), today.getMonth(), 0);
         endDate.setHours(23, 59, 59, 999);
         break;
       case 'lastMonth':
@@ -1057,10 +1114,21 @@ const LeadAnalyticsDashboard = ({ onNavigate, onFilter, dateFilter }) => {
       const params = {};
       
       if (dateFilter) {
-        const { startDate, endDate } = getDateRangeFromPreset(dateFilter.type || dateFilter);
-        if (startDate && endDate) {
+        // If startDate and endDate are already provided, use them directly
+        if (dateFilter.startDate && dateFilter.endDate) {
+          const startDate = new Date(dateFilter.startDate);
+          startDate.setHours(0, 0, 0, 0);
+          const endDate = new Date(dateFilter.endDate);
+          endDate.setHours(23, 59, 59, 999);
           params.startDate = startDate.toISOString();
           params.endDate = endDate.toISOString();
+        } else {
+          // Otherwise, calculate from preset type
+          const { startDate, endDate } = getDateRangeFromPreset(dateFilter.type || dateFilter);
+          if (startDate && endDate) {
+            params.startDate = startDate.toISOString();
+            params.endDate = endDate.toISOString();
+          }
         }
       }
       
@@ -1091,10 +1159,21 @@ const LeadAnalyticsDashboard = ({ onNavigate, onFilter, dateFilter }) => {
       const params = { limit: 1000 };
 
       if (dateFilter) {
-        const { startDate, endDate } = getDateRangeFromPreset(dateFilter.type || dateFilter);
-        if (startDate && endDate) {
+        // If startDate and endDate are already provided, use them directly
+        if (dateFilter.startDate && dateFilter.endDate) {
+          const startDate = new Date(dateFilter.startDate);
+          startDate.setHours(0, 0, 0, 0);
+          const endDate = new Date(dateFilter.endDate);
+          endDate.setHours(23, 59, 59, 999);
           params.startDate = startDate.toISOString();
           params.endDate = endDate.toISOString();
+        } else {
+          // Otherwise, calculate from preset type
+          const { startDate, endDate } = getDateRangeFromPreset(dateFilter.type || dateFilter);
+          if (startDate && endDate) {
+            params.startDate = startDate.toISOString();
+            params.endDate = endDate.toISOString();
+          }
         }
       }
 
@@ -1149,6 +1228,84 @@ const LeadAnalyticsDashboard = ({ onNavigate, onFilter, dateFilter }) => {
     refetchDashboard();
     setLastUpdated(new Date());
   };
+
+  // Export functionality - ASYNC BACKGROUND JOB
+  const handleExport = useCallback(async () => {
+    try {
+      setExportLoading(true);
+      console.log('[EXPORT] Starting async background export');
+      
+      // Prepare filters to send to backend
+      const exportFilters = {};
+      
+      // Check if date filter is applied (not default)
+      const hasDateFilter = dateFilter && dateFilter.type !== 'last7days';
+      
+      if (hasDateFilter) {
+        const { startDate, endDate } = getDateRangeFromPreset(dateFilter.type || dateFilter);
+        if (startDate && endDate) {
+          exportFilters.startDate = startDate.toISOString();
+          exportFilters.endDate = endDate.toISOString();
+          console.log('[EXPORT] Applying date filter:', { startDate, endDate });
+        }
+      } else {
+        console.log('[EXPORT] No filters - exporting ALL data from backend');
+      }
+      
+      console.log('[EXPORT] Sending filters to backend:', exportFilters);
+      
+      // Create background export job
+      const response = await leadsApi.exportCSV([], exportFilters);
+      const { jobId } = response.data || response;
+      
+      if (!jobId) {
+        toast.error('Failed to create export job');
+        setExportLoading(false);
+        return;
+      }
+      
+      toast.info('Export started! We\'ll notify you when it\'s ready.', { id: 'export-start' });
+      
+      // Poll for job status
+      const pollInterval = setInterval(async () => {
+        try {
+          const statusResponse = await leadsApi.getExportStatus(jobId);
+          const { status, progress, filename, error } = statusResponse.data || statusResponse;
+          
+          console.log('[EXPORT POLL] Status:', status, 'Progress:', progress);
+          
+          if (status === 'completed') {
+            clearInterval(pollInterval);
+            
+            // Trigger download
+            const downloadUrl = `/api/v1/leads/export/${jobId}/download`;
+            window.open(downloadUrl, '_blank');
+            
+            toast.success('Export completed! Download started.', { id: 'export-complete' });
+            setExportLoading(false);
+          } else if (status === 'failed') {
+            clearInterval(pollInterval);
+            toast.error(`Export failed: ${error || 'Unknown error'}`, { id: 'export-failed' });
+            setExportLoading(false);
+          }
+        } catch (pollError) {
+          console.error('[EXPORT POLL] Error:', pollError);
+        }
+      }, 2000); // Poll every 2 seconds
+      
+      // Stop polling after 5 minutes (timeout)
+      setTimeout(() => {
+        clearInterval(pollInterval);
+        toast.error('Export timeout. Please try again.', { id: 'export-timeout' });
+        setExportLoading(false);
+      }, 300000);
+      
+    } catch (error) {
+      console.error('[EXPORT] Failed to create job:', error);
+      toast.error('Failed to start export');
+      setExportLoading(false);
+    }
+  }, [dateFilter, getDateRangeFromPreset]);
 
   // Prepare KPI data
   const kpiData = [
@@ -1247,13 +1404,13 @@ const LeadAnalyticsDashboard = ({ onNavigate, onFilter, dateFilter }) => {
             <CalendarIcon size={14} className="mr-2" />
             Calendar View
           </Button>
-          <Button variant="outline" size="sm" onClick={handleRefresh}>
+          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
             <RefreshCw size={14} className="mr-2" />
             Refresh
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExport} disabled={exportLoading || isLoading}>
             <Download size={14} className="mr-2" />
-            Export
+            {exportLoading ? 'Exporting...' : 'Export'}
           </Button>
         </div>
       </div>

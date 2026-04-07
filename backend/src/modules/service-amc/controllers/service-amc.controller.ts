@@ -236,15 +236,17 @@ export class ServiceAmcController {
   @UseGuards(JwtAuthGuard, TenantGuard, PermissionGuard)
   findAllVisits(@Query() query: QueryVisitDto, @Request() req: any) {
     const tenantId = req.tenant?.id;
-    return this.visitsService.findAll(query, tenantId);
+    const user = req.user;
+    return this.visitsService.findAll(query, tenantId, user);
   }
 
   @Get('visits/stats')
   @UseGuards(JwtAuthGuard, TenantGuard, PermissionGuard)
   getVisitStats(@Request() req: any) {
     const tenantId = req.tenant?.id;
+    const user = req.user;
     console.log('DEBUG - visits/stats endpoint, tenantId:', tenantId);
-    return this.visitsService.getStats(tenantId);
+    return this.visitsService.getStats(tenantId, user);
   }
 
   @Get('visits/:id')

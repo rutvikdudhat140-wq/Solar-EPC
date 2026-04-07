@@ -1,6 +1,82 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+// Default PDF Header Configuration - Can be overridden via API
+export const DEFAULT_PDF_HEADER_CONFIG = {
+  // Colors (RGB arrays)
+  colors: {
+    primary: [0, 128, 128],      // Teal - Header background
+    accent: [218, 165, 32],      // Gold - Accent line
+    text: [51, 51, 51],          // Dark text
+    lightText: [220, 220, 220],  // Light text for dark backgrounds
+    border: [200, 200, 200],     // Border color
+    white: [255, 255, 255]       // White
+  },
+
+  // Header Layout
+  header: {
+    height: 45,
+    accentLineHeight: 3,
+    showLogo: true,
+    logoPosition: { x: 15, y: 8, size: 12 }
+  },
+
+  // Document Box (right side)
+  documentBox: {
+    show: true,
+    width: 65,
+    height: 40,
+    position: { x: -80, y: 55 }, // x is offset from pageWidth
+    borderRadius: 3,
+    leftBorderWidth: 4
+  },
+
+  // Text Content - All customizable
+  text: {
+    documentType: 'ESTIMATE',     // Can be: PROPOSAL, QUOTATION, INVOICE, etc.
+    documentLabel: 'ESTIMATE',    // Label shown in document box
+    validDaysText: 'Valid: 30 days',
+    dateLabel: 'Date:',
+    documentNumberPrefix: '#'
+  },
+
+  // Fonts
+  fonts: {
+    companyName: { size: 20, style: 'bold', color: 'white' },
+    tagline: { size: 9, style: 'italic', color: 'light' },
+    contact: { size: 8, style: 'normal', color: 'light' },
+    documentType: { size: 14, style: 'bold', color: 'primary' },
+    documentNumber: { size: 9, style: 'normal', color: 'text' },
+    date: { size: 8, style: 'normal', color: 'gray' }
+  },
+
+  // Dynamic Fields - Can add/remove fields
+  // Format: { key: 'fieldName', label: 'Display Label', value: 'dataKey', position: 'header|documentBox|custom' }
+  dynamicFields: [
+    // Header fields (shown in teal header bar)
+    { key: 'phone', label: '', value: 'phone', position: 'header', format: '{{phone}} | {{tollfree}}' },
+    { key: 'email', label: '', value: 'email', position: 'header' },
+    { key: 'website', label: '', value: 'website', position: 'header' },
+    { key: 'gstin', label: 'GSTIN:', value: 'gstin', position: 'header' },
+
+    // Document box fields
+    { key: 'documentNumber', label: '', value: 'documentNumber', position: 'documentBox', prefix: '#' },
+    { key: 'date', label: 'Date:', value: 'date', position: 'documentBox' },
+    { key: 'validity', label: 'Valid:', value: 'validDays', position: 'documentBox', suffix: ' days' }
+  ],
+
+  // Positions (relative coordinates)
+  positions: {
+    companyName: { x: 32, y: 18 },
+    tagline: { x: 32, y: 26 },
+    contactInfo: {
+      x: -15, // Negative = from right edge
+      y: 15,
+      lineHeight: 7
+    }
+  }
+};
+
 // Sunvora Energy - Company Data
 const SUNVORA_COMPANY = {
   name: 'Sunvora Energy Pvt. Ltd.',
@@ -27,81 +103,145 @@ const SUNVORA_COMPANY = {
  * Generate a professional PDF estimate
  * @param {Object} estimate - The estimate data
  * @param {Object} company - Company details (optional)
+ * @param {Object} headerConfig - Custom header configuration (optional)
  * @returns {Blob} PDF blob
  */
-export const generateEstimatePDF = (estimate, company = SUNVORA_COMPANY) => {
+export const generateEstimatePDF = (estimate, company = SUNVORA_COMPANY, headerConfig = {}) => {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
 
-  // Colors - Professional Teal/Gold palette
-  const primaryColor = [0, 128, 128]; // Teal
-  const accentColor = [218, 165, 32]; // Gold
-  const textColor = [51, 51, 51];
+  // Merge default config with custom config
+  const config = {
+    ...DEFAULT_PDF_HEADER_CONFIG,
+    ...headerConfig,
+    colors: { ...DEFAULT_PDF_HEADER_CONFIG.colors, ...(headerConfig.colors || {}) },
+    text: { ...DEFAULT_PDF_HEADER_CONFIG.text, ...(headerConfig.text || {}) },
+    fonts: { ...DEFAULT_PDF_HEADER_CONFIG.fonts, ...(headerConfig.fonts || {}) },
+    header: { ...DEFAULT_PDF_HEADER_CONFIG.header, ...(headerConfig.header || {}) },
+    documentBox: { ...DEFAULT_PDF_HEADER_CONFIG.documentBox, ...(headerConfig.documentBox || {}) }
+  };
+
+  // Extract colors for easier access
+  const primaryColor = config.colors.primary;
+  const accentColor = config.colors.accent;
+  const textColor = config.colors.text;
   const lightGray = [248, 249, 250];
-  const borderColor = [200, 200, 200];
+  const borderColor = config.colors.border;
 
   let y = 10;
 
-  // === PROFESSIONAL HEADER ===
+  // === CUSTOMIZABLE HEADER ===
   // Header background bar
   doc.setFillColor(...primaryColor);
-  doc.rect(0, 0, pageWidth, 45, 'F');
+  doc.rect(0, 0, pageWidth, config.header.height, 'F');
 
-  // Gold accent line
+  // Accent line
   doc.setFillColor(...accentColor);
-  doc.rect(0, 45, pageWidth, 3, 'F');
+  doc.rect(0, config.header.height, pageWidth, config.header.accentLineHeight, 'F');
 
-  // Company Logo Area (left side on dark background)
-  doc.setFillColor(255, 255, 255);
-  doc.roundedRect(15, 8, 12, 12, 2, 2, 'F');
-  doc.setFillColor(...primaryColor);
-  doc.circle(21, 14, 4, 'F');
+  // Logo Area (if enabled)
+  if (config.header.showLogo) {
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(
+      config.header.logoPosition.x,
+      config.header.logoPosition.y,
+      config.header.logoPosition.size,
+      config.header.logoPosition.size,
+      2, 2, 'F'
+    );
+    doc.setFillColor(...primaryColor);
+    doc.circle(
+      config.header.logoPosition.x + config.header.logoPosition.size / 2,
+      config.header.logoPosition.y + config.header.logoPosition.size / 2,
+      config.header.logoPosition.size / 3, 'F'
+    );
+  }
 
-  // Company Name on header
-  doc.setFontSize(20);
-  doc.setFont('helvetica', 'bold');
+  // Company Name
+  doc.setFontSize(config.fonts.companyName.size);
+  doc.setFont('helvetica', config.fonts.companyName.style);
   doc.setTextColor(255, 255, 255);
-  doc.text(company.name, 32, 18);
+  doc.text(company.name, config.positions.companyName.x, config.positions.companyName.y);
 
   // Tagline
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(config.fonts.tagline.size);
+  doc.setFont('helvetica', config.fonts.tagline.style);
   doc.setTextColor(220, 220, 220);
-  doc.text(company.tagline || 'Best Value & Quality Solar Solution', 32, 26);
+  doc.text(company.tagline || '', config.positions.tagline.x, config.positions.tagline.y);
 
   // Contact info on right side of header
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(config.fonts.contact.size);
+  doc.setFont('helvetica', config.fonts.contact.style);
   doc.setTextColor(230, 230, 230);
-  doc.text(`${company.phone} | ${company.tollfree}`, pageWidth - 15, 15, { align: 'right' });
-  doc.text(`${company.email}`, pageWidth - 15, 22, { align: 'right' });
-  doc.text(`${company.website}`, pageWidth - 15, 29, { align: 'right' });
-  doc.text(`GSTIN: ${company.gstin}`, pageWidth - 15, 36, { align: 'right' });
 
-  // Document Title Box (overlapping header and content)
-  doc.setFillColor(255, 255, 255);
-  doc.setDrawColor(...borderColor);
-  doc.roundedRect(pageWidth - 80, 55, 65, 40, 3, 3, 'FD');
+  // Dynamic contact fields
+  let contactY = config.positions.contactInfo.y;
+  const contactX = pageWidth + config.positions.contactInfo.x;
 
-  // Teal left border on estimate box
-  doc.setFillColor(...primaryColor);
-  doc.roundedRect(pageWidth - 80, 55, 4, 40, 2, 2, 'F');
+  config.dynamicFields
+    .filter(field => field.position === 'header')
+    .forEach(field => {
+      let text = '';
+      if (field.format) {
+        text = field.format
+          .replace('{{phone}}', company.phone || '')
+          .replace('{{tollfree}}', company.tollfree || '');
+      } else {
+        text = `${field.label} ${company[field.value] || ''}`.trim();
+      }
+      if (text) {
+        doc.text(text, contactX, contactY, { align: 'right' });
+        contactY += config.positions.contactInfo.lineHeight;
+      }
+    });
 
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(...primaryColor);
-  doc.text('ESTIMATE', pageWidth - 70, 65);
+  // Document Title Box (if enabled)
+  if (config.documentBox.show) {
+    const boxX = pageWidth + config.documentBox.position.x;
+    const boxY = config.documentBox.position.y;
 
-  doc.setFontSize(9);
-  doc.setTextColor(...textColor);
-  doc.text(`#${estimate.estimateNumber}`, pageWidth - 70, 73);
-  
-  doc.setFontSize(8);
-  doc.setTextColor(100, 100, 100);
-  const today = new Date(estimate.createdAt || Date.now()).toLocaleDateString('en-IN');
-  doc.text(`Date: ${today}`, pageWidth - 70, 80);
-  doc.text(`Valid: 30 days`, pageWidth - 70, 87);
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(...borderColor);
+    doc.roundedRect(boxX, boxY, config.documentBox.width, config.documentBox.height,
+      config.documentBox.borderRadius, config.documentBox.borderRadius, 'FD');
+
+    // Left border on document box
+    doc.setFillColor(...primaryColor);
+    doc.roundedRect(boxX, boxY, config.documentBox.leftBorderWidth,
+      config.documentBox.height, 2, 2, 'F');
+
+    // Document type label
+    doc.setFontSize(config.fonts.documentType.size);
+    doc.setFont('helvetica', config.fonts.documentType.style);
+    doc.setTextColor(...primaryColor);
+    doc.text(config.text.documentLabel, boxX + 10, boxY + 10);
+
+    // Dynamic document box fields
+    let docBoxY = boxY + 18;
+    config.dynamicFields
+      .filter(field => field.position === 'documentBox')
+      .forEach(field => {
+        doc.setFontSize(config.fonts.documentNumber.size);
+        doc.setTextColor(...textColor);
+
+        let value = '';
+        if (field.value === 'documentNumber') {
+          value = estimate.estimateNumber || '';
+        } else if (field.value === 'date') {
+          value = new Date(estimate.createdAt || Date.now()).toLocaleDateString('en-IN');
+        } else if (field.value === 'validDays') {
+          value = '30';
+        }
+
+        const prefix = field.prefix || '';
+        const suffix = field.suffix || '';
+        const text = `${field.label} ${prefix}${value}${suffix}`.trim();
+
+        doc.text(text, boxX + 10, docBoxY);
+        docBoxY += 7;
+      });
+  }
 
   y = 100;
 
@@ -250,7 +390,7 @@ export const generateEstimatePDF = (estimate, company = SUNVORA_COMPANY) => {
     },
     margin: { left: 15, right: 95 },
     alternateRowStyles: { fillColor: [250, 250, 250] },
-    didParseCell: function(data) {
+    didParseCell: function (data) {
       // Add text wrapping for description column
       if (data.section === 'body' && data.column.index === 1) {
         const text = data.cell.raw;
@@ -258,7 +398,7 @@ export const generateEstimatePDF = (estimate, company = SUNVORA_COMPANY) => {
         data.cell.styles.minCellHeight = splitText.length * 4 + 6;
       }
     },
-    didDrawCell: function(data) {
+    didDrawCell: function (data) {
       // Ensure proper text alignment in cells
       if (data.section === 'head') {
         data.cell.styles.halign = 'center';
@@ -880,7 +1020,7 @@ export const downloadSurveyReportPDF = (survey) => {
 
   surveyReportDownloadQueue = surveyReportDownloadQueue
     .then(task)
-    .catch(() => {});
+    .catch(() => { });
 
   return surveyReportDownloadQueue;
 };

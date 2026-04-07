@@ -28,7 +28,7 @@ const fullPerms = () =>
 
 export const SettingsProvider = ({ children }) => {
 
-    const { permissions, dataScope } = useAuth();
+    const { permissions, dataScope, user } = useAuth();
 
     // ── Core state ────────────────────────────────────────────────────────────
     const [flags, setFlagsState] = useState(buildDefaultFlags());
@@ -41,6 +41,7 @@ export const SettingsProvider = ({ children }) => {
     const [projectTypeConfig, setProjectTypeConfig] = useState({});
     const [installationTasks, setInstallationTasks] = useState([]);
     const [commissioningTasks, setCommissioningTasks] = useState([]);
+    const [milestones, setMilestones] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     // ── Load data from API on mount (only if user is logged in) ─────────────────
@@ -59,6 +60,11 @@ export const SettingsProvider = ({ children }) => {
 
                 // Handle wrapped response format {success: true, data: {...}}
                 const settings = response.data || response;
+
+                // Debug logging for full response
+                console.log('[SETTINGS] Full API response:', response);
+                console.log('[SETTINGS] Extracted settings:', settings);
+                console.log('[SETTINGS] Milestones from API:', settings?.milestones);
 
                 // Transform flags from API format (object with moduleId keys)
                 if (settings?.flags && Object.keys(settings.flags).length > 0) {
@@ -179,6 +185,12 @@ export const SettingsProvider = ({ children }) => {
                 } else {
                     setCommissioningTasks([]);
                 }
+
+                if (settings?.milestones) {
+                    setMilestones(Array.isArray(settings.milestones) ? settings.milestones : []);
+                } else {
+                    setMilestones([]);
+                }
             } catch (error) {
                 console.error('Failed to load settings from API:', error);
                 // Fall back to defaults on API failure - permissions now from AuthContext
@@ -188,6 +200,7 @@ export const SettingsProvider = ({ children }) => {
                 setAuditLogsState([]);
                 setCustomRoles({});
                 setProjectTypeConfig({});
+                setMilestones([]);
             } finally {
                 setIsLoading(false);
             }
@@ -737,6 +750,19 @@ export const SettingsProvider = ({ children }) => {
 
     const getCommissioningTasksState = useCallback(() => commissioningTasks, [commissioningTasks]);
 
+    // ── Milestones Config APIs ────────────────────────────────────────────────
+    const updateMilestonesState = useCallback(async (milestonesData, user) => {
+        setMilestones(milestonesData);
+        await addAudit('MILESTONES_UPDATED', 'milestones.config', '[prev]', '[new]', user);
+        try {
+            await settingsApi.updateMilestones(milestonesData);
+        } catch (e) {
+            console.error('Failed to persist milestones:', e);
+        }
+    }, [addAudit]);
+
+    const getMilestonesState = useCallback(() => milestones, [milestones]);
+
     const resetAllProjectTypes = useCallback(async (user) => {
         await addAudit('PROJECT_TYPE_RESET_ALL', 'ALL', 'custom', 'defaults', user);
         // Note: Would need backend endpoint for full reset
@@ -860,9 +886,23 @@ export const SettingsProvider = ({ children }) => {
      * resolvePermission(userId, roleId, moduleId, actionId)
      * SINGLE SOURCE OF TRUTH: Only checks user.permissions from localStorage
      * NO fallback, NO dual permission system
+     * Supports projects/project alias for backward compatibility
+     * Admin bypass: Admin users get all permissions automatically
      */
     const resolvePermission = useCallback((moduleId, actionId) => {
         if (!moduleId) return false;
+
+        // Admin bypass - admins get all permissions
+        const userRole = (user?.role || '')?.toLowerCase();
+        if (userRole === 'admin' || userRole === 'superadmin' || user?.isSuperAdmin) return true;
+
+        // DEBUG logging
+        const isDebug = moduleId === 'project' || moduleId === 'projects';
+        if (isDebug) {
+            console.log(`[resolvePermission] Checking ${moduleId}:${actionId}`, permissions);
+            console.log(`[resolvePermission] permissions.project:`, permissions?.project);
+            console.log(`[resolvePermission] permissions.projects:`, permissions?.projects);
+        }
 
         if (typeof moduleId === 'string' && moduleId.startsWith('hrm-')) {
             if (permissions?.[moduleId]?.[actionId] === true) return true;
@@ -870,7 +910,13 @@ export const SettingsProvider = ({ children }) => {
             return permissions?.[stripped]?.[actionId] === true;
         }
 
-        return permissions?.[moduleId]?.[actionId] === true;
+        if (permissions?.[moduleId]?.[actionId] === true) return true;
+
+        if (moduleId === 'project' && permissions?.['projects']?.[actionId] === true) return true;
+        if (moduleId === 'projects' && permissions?.['project']?.[actionId] === true) return true;
+
+        if (isDebug) console.log(`[resolvePermission] Result: false`);
+        return false;
     }, [permissions]);
 
     /**
@@ -936,6 +982,10 @@ export const SettingsProvider = ({ children }) => {
         commissioningTasks,
         updateCommissioningTasks: updateCommissioningTasksState,
         getCommissioningTasks: getCommissioningTasksState,
+        // Milestones config
+        milestones,
+        updateMilestones: updateMilestonesState,
+        getMilestones: getMilestonesState,
         // Feature flag APIs
         toggleModule, toggleFeature, toggleAction, resetFlags,
         // Base RBAC APIs
@@ -963,8 +1013,9 @@ export const SettingsProvider = ({ children }) => {
     }), [
         flags, rbac, workflows, auditLogs,
         customRoles, userOverrides, viewAsUserId,
-        allRoles, isLoading,
+        allRoles, isLoading, user,
         projectTypeConfig,
+        installationTasks, commissioningTasks, milestones,
         toggleModule, toggleFeature, toggleAction, resetFlags,
         toggleRBAC, setRolePreset, resetRBAC,
         createCustomRole, cloneRole, updateCustomRole,

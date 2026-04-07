@@ -123,7 +123,7 @@ export class InvoiceService {
     return this.projectModel.find({
       tenantId: tid,
       ...this.notDeletedMatch(),
-    }).select('_id name customerName email mobileNumber status value').sort({ name: 1 }).lean();
+    }).select('_id name customerName email mobileNumber status value paymentTerms').sort({ name: 1 }).lean();
   }
 
   async getProjectById(tenantId: string, id: string): Promise<Project> {
@@ -132,13 +132,13 @@ export class InvoiceService {
       _id: new Types.ObjectId(id),
       tenantId: tid,
       ...this.notDeletedMatch(),
-    }).select('_id name customerName email mobileNumber status value').lean();
+    }).select('_id name customerName email mobileNumber status value paymentTerms').lean();
 
     if (!project) {
       throw new NotFoundException('Project not found');
     }
 
-    // Fetch payment terms from quotation if project has quotationId
+    // Fetch payment terms from quotation if project has quotationId (fallback)
     let paymentTerms: number | undefined;
     const projectWithQuotation = project as any;
     if (projectWithQuotation.quotationId) {
@@ -153,8 +153,12 @@ export class InvoiceService {
       }
     }
 
+    // Use project's own paymentTerms if available, otherwise use from quotation
+    const projectAny = project as any;
+    const finalPaymentTerms = typeof projectAny.paymentTerms === 'number' ? projectAny.paymentTerms : paymentTerms;
+
     // Add paymentTerms to project response
-    return { ...project, paymentTerms } as Project;
+    return { ...project, paymentTerms: finalPaymentTerms } as Project;
   }
 
   async findAll(tenantId: string, status?: string, user?: UserWithVisibility): Promise<any[]> {
@@ -267,11 +271,6 @@ export class InvoiceService {
   }
 
   async create(tenantId: string, dto: CreateInvoiceDto): Promise<Invoice> {
-    // Validate payment term against project status
-    if (dto.paymentTerms && dto.projectStatus) {
-      this.validatePaymentTerm(dto.paymentTerms, dto.projectStatus);
-    }
-
     const tenantObjectId = await this.resolveTenantObjectId(tenantId);
 
     // Generate milestones based on payment terms

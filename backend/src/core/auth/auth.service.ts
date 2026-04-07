@@ -170,6 +170,10 @@ export class AuthService {
         isSuperAdmin: false,
         roleId: employee.roleId || null,
         isEmployee: true,
+        dataScope: 'ASSIGNED',
+        email: employee.email,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
       };
 
       const accessToken = await this.jwtService.signAsync(payload);

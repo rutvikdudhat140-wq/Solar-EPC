@@ -26,6 +26,8 @@ import ImportExport from '../components/ui/ImportExport';
 import CompactCalendarFilter from '../components/ui/CompactCalendarFilter';
 import { leadsApi } from '../services/leadsApi';
 import { employeeApi, departmentApi } from '../services/hrmApi';
+import { useAuth } from '../context/AuthContext';
+import { useSettings } from '../context/SettingsContext';
 
 const fmt = CURRENCY.format;
 
@@ -171,6 +173,7 @@ const KanbanBoard = ({ projects, onStageChange, onCardClick }) => {
 
 /* ── Main Page ── */
 const ProjectPage = () => {
+  const { user: authUser } = useAuth();
   const perm = usePermissions('project');
   const canView = perm.canView();
   const canCreate = perm.canCreate();
@@ -245,11 +248,32 @@ const ProjectPage = () => {
   const [employeesByDept, setEmployeesByDept] = useState([]);
   const [employeesLoading, setEmployeesLoading] = useState(false);
   const [hiddenCols, setHiddenCols] = useState(new Set());
+  const { milestones: settingsMilestones, getMilestones } = useSettings();
   const [colToggleOpen, setColToggleOpen] = useState(false);
   const [projectStats, setProjectStats] = useState(null);
   const [projectsByStage, setProjectsByStage] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [customersLoading, setCustomersLoading] = useState(false);
+
+  // Use dynamic milestones from settings, fallback to hardcoded if not available
+  const DEFAULT_MILESTONES = useMemo(() => {
+    const dynamicMilestones = settingsMilestones || getMilestones?.() || [];
+    if (dynamicMilestones.length > 0) {
+      return dynamicMilestones.map(m => ({
+        name: m.name,
+        status: 'Pending',
+        date: null
+      }));
+    }
+    // Fallback default milestones
+    return [
+      { name: 'Material Ready', status: 'Pending', date: null },
+      { name: 'Installation', status: 'Pending', date: null },
+      { name: 'Commission', status: 'Pending', date: null },
+      { name: 'Billing', status: 'Pending', date: null },
+      { name: 'Closure', status: 'Pending', date: null },
+    ];
+  }, [settingsMilestones, getMilestones]);
 
   // Month filter state
   const [monthFilter, setMonthFilter] = useState('all');
@@ -672,13 +696,7 @@ const ProjectPage = () => {
           mobileNumber: row.mobileNumber || row.phone || '',
           estEndDate: row.estEndDate || '',
           startDate: row.startDate || new Date().toISOString().split('T')[0],
-          milestones: [
-            { name: 'Material Ready', status: 'Pending', date: null },
-            { name: 'Installation', status: 'Pending', date: null },
-            { name: 'Commission', status: 'Pending', date: null },
-            { name: 'Billing', status: 'Pending', date: null },
-            { name: 'Closure', status: 'Pending', date: null }
-          ],
+          milestones: DEFAULT_MILESTONES,
           materials: []
         };
 
@@ -755,34 +773,33 @@ const ProjectPage = () => {
     }
     
     // Sync milestones based on new status
-    let updatedMilestones = project?.milestones || [
-      { name: 'Material Ready', status: 'Pending', date: null },
-      { name: 'Installation', status: 'Pending', date: null },
-      { name: 'Commission', status: 'Pending', date: null },
-      { name: 'Billing', status: 'Pending', date: null },
-      { name: 'Closure', status: 'Pending', date: null }
-    ];
+    let updatedMilestones = project?.milestones || DEFAULT_MILESTONES;
     
     const today = new Date().toISOString().split('T')[0];
     
     // Update milestones based on status
+    const milestoneNames = updatedMilestones.map(m => m.name);
+    const firstMilestone = milestoneNames[0];
+    const secondMilestone = milestoneNames[1];
+    const thirdMilestone = milestoneNames[2];
+    
     if (newStage === 'Logistics') {
-      // Material logistics stage
+      // First milestone in progress
       updatedMilestones = updatedMilestones.map(m => 
-        m.name === 'Material Ready' ? { ...m, status: 'In Progress', date: null } :
+        m.name === firstMilestone ? { ...m, status: 'In Progress', date: null } :
         { ...m, status: 'Pending', date: null }
       );
     } else if (newStage === 'Installation') {
-      // Installation stage - Material Ready done, Installation in progress
+      // First milestone done, second in progress
       updatedMilestones = updatedMilestones.map(m => 
-        m.name === 'Material Ready' ? { ...m, status: 'Done', date: m.date || today } :
-        m.name === 'Installation' ? { ...m, status: 'In Progress', date: null } :
+        m.name === firstMilestone ? { ...m, status: 'Done', date: m.date || today } :
+        m.name === secondMilestone ? { ...m, status: 'In Progress', date: null } :
         { ...m, status: 'Pending', date: null }
       );
     } else if (newStage === 'Commissioned') {
-      // Commissioned - all main milestones done
+      // First 3 milestones done
       updatedMilestones = updatedMilestones.map(m => 
-        m.name === 'Material Ready' || m.name === 'Installation' || m.name === 'Commission' 
+        m.name === firstMilestone || m.name === secondMilestone || m.name === thirdMilestone
           ? { ...m, status: 'Done', date: m.date || today } :
         { ...m, status: 'Pending', date: null }
       );
@@ -898,7 +915,44 @@ const ProjectPage = () => {
     ...(canDelete ? [{ label: 'Delete', icon: Trash2, onClick: row => handleDeleteProject(row.id), danger: true }] : []),
   ];
 
-  const STEPPER_STEPS = selected?.milestones?.map(m => ({ name: m.name, status: m.status, date: m.date })) ?? [];
+  // Use dynamic milestone names from settings, but map status from stored project milestones
+  const effectiveMilestones = useMemo(() => {
+    const dynamicMilestones = settingsMilestones || getMilestones?.() || [];
+    const storedMilestones = selected?.milestones || [];
+    
+    // DEBUG: Log all values for diagnosis
+    console.log('[DEBUG effectiveMilestones] settingsMilestones:', settingsMilestones);
+    console.log('[DEBUG effectiveMilestones] dynamicMilestones:', dynamicMilestones);
+    console.log('[DEBUG effectiveMilestones] storedMilestones:', storedMilestones);
+    console.log('[DEBUG effectiveMilestones] dynamicMilestones.length:', dynamicMilestones.length);
+    
+    if (dynamicMilestones.length > 0) {
+      // Map dynamic names with stored status (by index)
+      const result = dynamicMilestones.map((m, idx) => {
+        const stored = storedMilestones[idx];
+        return {
+          name: m.name,
+          status: stored?.status || 'Pending',
+          date: stored?.date || null
+        };
+      });
+      console.log('[DEBUG effectiveMilestones] Using dynamic milestones:', result);
+      return result;
+    }
+    
+    // Fallback: use stored milestones or defaults
+    const fallback = storedMilestones.length > 0 ? storedMilestones : [
+      { name: 'Material Ready', status: 'Pending', date: null },
+      { name: 'Installation', status: 'Pending', date: null },
+      { name: 'Commission', status: 'Pending', date: null },
+      { name: 'Billing', status: 'Pending', date: null },
+      { name: 'Closure', status: 'Pending', date: null }
+    ];
+    console.log('[DEBUG effectiveMilestones] Using fallback milestones:', fallback);
+    return fallback;
+  }, [settingsMilestones, getMilestones, selected?.milestones]);
+  
+  const STEPPER_STEPS = effectiveMilestones.map(m => ({ name: m.name, status: m.status, date: m.date }));
 
   // Debug logging
   console.log('[DEBUG Mark Stage] selected:', selected);
@@ -906,20 +960,55 @@ const ProjectPage = () => {
   console.log('[DEBUG Mark Stage] selected?.pm:', selected?.pm);
   console.log('[DEBUG Mark Stage] selected?.assignedTo:', selected?.assignedTo);
 
-  // Find first pending milestone index
   const firstPendingIndex = STEPPER_STEPS.findIndex(s => s.status === 'Pending' || s.status === 'In Progress');
   const canMarkComplete = firstPendingIndex !== -1;
+
+  const isAdminLike = (() => {
+    const r = String(authUser?.role || '').toLowerCase();
+    return authUser?.isSuperAdmin === true || r === 'admin' || r === 'superadmin' || r === 'super admin';
+  })();
+
+  const isAssignedToMe = (() => {
+    if (!authUser) return false;
+    if (isAdminLike) return true;
+    const myId = String(authUser?.id || authUser?._id || '');
+    const assignedToRaw = selected?.assignedTo?._id || selected?.assignedTo;
+    const assignedToStr = assignedToRaw ? String(assignedToRaw) : '';
+    if (myId && assignedToStr && myId === assignedToStr) return true;
+    const email = String(authUser?.email || '');
+    const emailPrefix = email.includes('@') ? email.split('@')[0] : '';
+    const firstName = String(authUser?.firstName || '');
+    const lastName = String(authUser?.lastName || '');
+    const fullName = `${firstName} ${lastName}`.trim().toLowerCase();
+    const pm = String(selected?.pm || '').toLowerCase();
+    if (emailPrefix && pm.includes(emailPrefix.toLowerCase())) return true;
+    if (firstName && pm.includes(firstName.toLowerCase())) return true;
+    if (fullName && pm.includes(fullName)) return true;
+    return false;
+  })();
+
+  // Check if any employee is assigned to the project
+  const hasEmployeeAssigned = (() => {
+    const pm = String(selected?.pm || '').trim();
+    const assignedTo = selected?.assignedTo;
+    // Check if PM exists and is not TBD/Unassigned/empty
+    const hasPM = pm && pm !== 'TBD' && pm !== 'Unassigned' && pm !== '';
+    // Check if assignedTo exists (ObjectId or string)
+    const hasAssignedTo = assignedTo && (assignedTo._id || assignedTo);
+    return hasPM || hasAssignedTo;
+  })();
 
   console.log('[DEBUG Mark Stage] firstPendingIndex:', firstPendingIndex, 'canMarkComplete:', canMarkComplete);
 
   const handleMarkStageComplete = async () => {
     if (!selected || !canMarkComplete) return;
+    if (!isAssignedToMe) return;
 
     const milestoneName = STEPPER_STEPS[firstPendingIndex].name;
 
     try {
       // Update the milestone status in backend
-      const updatedMilestones = selected.milestones.map((m, idx) =>
+      const updatedMilestones = effectiveMilestones.map((m, idx) =>
         idx === firstPendingIndex
           ? { ...m, status: 'Done', date: new Date().toISOString().split('T')[0] }
           : m
@@ -929,11 +1018,27 @@ const ProjectPage = () => {
       const completedCount = updatedMilestones.filter(m => m.status === 'Done').length;
       const newProgress = Math.round((completedCount / updatedMilestones.length) * 100);
 
-      // Determine new project status based on milestones
+      // Determine new project status based on milestone position
       let newStatus = selected.status;
-      if (milestoneName === 'Material Ready') newStatus = 'Procurement';
-      else if (milestoneName === 'Installation') newStatus = 'Installation';
-      else if (milestoneName === 'Commission') newStatus = 'Commissioned';
+      const totalMilestones = updatedMilestones.length;
+      
+      // If all milestones complete, project is Commissioned
+      if (completedCount === totalMilestones) {
+        newStatus = 'Commissioned';
+      } else {
+        // Map milestone position to project status
+        // First 1/3 of milestones -> Logistics
+        // Middle 1/3 of milestones -> Installation  
+        // Last 1/3 of milestones -> Commissioned
+        const milestonePosition = firstPendingIndex + 1; // 1-based position after completing this milestone
+        if (milestonePosition <= Math.ceil(totalMilestones / 3)) {
+          newStatus = 'Logistics';
+        } else if (milestonePosition <= Math.ceil((2 * totalMilestones) / 3)) {
+          newStatus = 'Installation';
+        } else {
+          newStatus = 'Commissioned';
+        }
+      }
 
       await api.patch(`/projects/${selected.id}/status?tenantId=${TENANT_ID}`, {
         status: newStatus,
@@ -993,13 +1098,7 @@ const ProjectPage = () => {
         startDate: new Date().toISOString().split('T')[0],
         status: 'Logistics',
         progress: 0,
-        milestones: [
-          { name: 'Material Ready', status: 'Pending', date: null },
-          { name: 'Installation', status: 'Pending', date: null },
-          { name: 'Commission', status: 'Pending', date: null },
-          { name: 'Billing', status: 'Pending', date: null },
-          { name: 'Closure', status: 'Pending', date: null }
-        ],
+        milestones: DEFAULT_MILESTONES,
         materials: form.materials.map(m => ({
           itemId: m.itemId,
           itemName: m.itemName,
@@ -1233,82 +1332,107 @@ const ProjectPage = () => {
 
       {(view === 'dashboard' || showCardsInViews) && (
         <>
-          {/* Summary Cards with Light Colors */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          {/* Summary Cards with Modern Attractive Design */}
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             <div 
-              className="p-4 rounded-xl bg-gradient-to-br from-violet-100 to-purple-200 border border-violet-200 cursor-pointer hover:shadow-md transition-all"
+              className="group relative overflow-hidden p-5 rounded-2xl bg-gradient-to-br from-violet-100 to-purple-200 border border-violet-200 cursor-pointer hover:shadow-xl hover:shadow-violet-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
               onClick={() => { 
                 setView('table'); 
                 setFilter('All');
                 setShowNonCompletedOnly(false);
               }}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] uppercase tracking-wider text-violet-700 font-semibold">TOTAL PROJECTS</span>
-                <div className="w-8 h-8 rounded-lg bg-violet-200 flex items-center justify-center">
-                  <Layers size={16} className="text-violet-700" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative flex items-start justify-between">
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-violet-700 font-bold">TOTAL PROJECTS</span>
+                  <div className="text-3xl font-bold text-gray-800 mt-2">{projectStats?.totalProjects ?? projects.length}</div>
+                  <div className="text-xs text-gray-600 mt-1 flex items-center gap-1">
+                    <TrendingUp size={10} className="text-violet-600" /> All projects
+                  </div>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-violet-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Layers size={24} className="text-violet-700" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-gray-800">{projectStats?.totalProjects ?? projects.length}</div>
-              <div className="text-xs text-gray-500 mt-1">All projects</div>
             </div>
 
             <div 
-              className="p-4 rounded-xl bg-gradient-to-br from-blue-100 to-sky-200 border border-blue-200 cursor-pointer hover:shadow-md transition-all"
+              className="group relative overflow-hidden p-5 rounded-2xl bg-gradient-to-br from-blue-100 to-sky-200 border border-blue-200 cursor-pointer hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
               onClick={() => { 
                 setView('table'); 
                 setFilter('All');
                 setShowNonCompletedOnly(true);
               }}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] uppercase tracking-wider text-blue-700 font-semibold">ACTIVE PROJECTS</span>
-                <div className="w-8 h-8 rounded-lg bg-blue-200 flex items-center justify-center">
-                  <FolderOpen size={16} className="text-blue-700" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative flex items-start justify-between">
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-blue-700 font-bold">ACTIVE PROJECTS</span>
+                  <div className="text-3xl font-bold text-gray-800 mt-2">{projectStats?.active ?? active}</div>
+                  <div className="text-xs text-gray-600 mt-1 flex items-center gap-1">
+                    <Zap size={10} className="text-blue-600" /> Currently executing
+                  </div>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-blue-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <FolderOpen size={24} className="text-blue-700" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-gray-800">{projectStats?.active ?? active}</div>
-              <div className="text-xs text-gray-500 mt-1">Currently executing</div>
             </div>
 
             <div 
-              className="p-4 rounded-xl bg-gradient-to-br from-cyan-100 to-teal-200 border border-cyan-200 cursor-pointer hover:shadow-md transition-all"
+              className="group relative overflow-hidden p-5 rounded-2xl bg-gradient-to-br from-emerald-100 to-green-200 border border-emerald-200 cursor-pointer hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
               onClick={() => { 
                 setView('table'); 
                 setFilter('Commissioned');
                 setShowNonCompletedOnly(false);
               }}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] uppercase tracking-wider text-cyan-700 font-semibold">COMPLETED</span>
-                <div className="w-8 h-8 rounded-lg bg-cyan-200 flex items-center justify-center">
-                  <CheckCircle size={16} className="text-cyan-700" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative flex items-start justify-between">
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-emerald-700 font-bold">COMPLETED</span>
+                  <div className="text-3xl font-bold text-gray-800 mt-2">{projectStats?.commissioned ?? commissioned}</div>
+                  <div className="text-xs text-gray-600 mt-1 flex items-center gap-1">
+                    <CheckCircle size={10} className="text-emerald-600" /> Finished projects
+                  </div>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-emerald-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <CheckCircle size={24} className="text-emerald-700" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-gray-800">{projectStats?.commissioned ?? commissioned}</div>
-              <div className="text-xs text-gray-500 mt-1">Finished projects</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-gradient-to-br from-amber-100 to-orange-200 border border-amber-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] uppercase tracking-wider text-amber-700 font-semibold">TOTAL CAPACITY</span>
-                <div className="w-8 h-8 rounded-lg bg-amber-200 flex items-center justify-center">
-                  <Zap size={16} className="text-amber-700" />
+            <div className="group relative overflow-hidden p-5 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-200 border border-amber-200 hover:shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative flex items-start justify-between">
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-amber-700 font-bold">TOTAL CAPACITY</span>
+                  <div className="text-3xl font-bold text-gray-800 mt-2">{Math.round(projectStats?.totalCapacity ?? totalKW)} <span className="text-lg font-normal text-gray-600">kW</span></div>
+                  <div className="text-xs text-gray-600 mt-1 flex items-center gap-1">
+                    <Zap size={10} className="text-amber-600" /> Pipeline capacity
+                  </div>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-amber-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Zap size={24} className="text-amber-700" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-gray-800">{Math.round(projectStats?.totalCapacity ?? totalKW)} <span className="text-sm font-normal text-gray-600">kW</span></div>
-              <div className="text-xs text-gray-500 mt-1">Pipeline capacity</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-100 to-green-200 border border-emerald-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] uppercase tracking-wider text-emerald-700 font-semibold">CURRENT PROGRESS</span>
-                <div className="w-8 h-8 rounded-lg bg-emerald-200 flex items-center justify-center">
-                  <TrendingUp size={16} className="text-emerald-700" />
+            <div className="group relative overflow-hidden p-5 rounded-2xl bg-gradient-to-br from-rose-100 to-pink-200 border border-rose-200 hover:shadow-xl hover:shadow-rose-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative flex items-start justify-between">
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-rose-700 font-bold">AVG PROGRESS</span>
+                  <div className="text-3xl font-bold text-gray-800 mt-2">{Math.round(projectStats?.avgProgress ?? avgProgress)}%</div>
+                  <div className="text-xs text-gray-600 mt-1 flex items-center gap-1">
+                    <BarChart2 size={10} className="text-rose-600" /> Across all projects
+                  </div>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-rose-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <TrendingUp size={24} className="text-rose-700" />
                 </div>
               </div>
-              <div className="text-2xl font-bold text-gray-800">{Math.round(projectStats?.avgProgress ?? avgProgress)}%</div>
-              <div className="text-xs text-gray-500 mt-1">Across all projects</div>
             </div>
           </div>
         </>
@@ -1544,8 +1668,8 @@ const ProjectPage = () => {
                         </div>
                         <div className="w-16 text-[10px] text-right">
                           <span className="text-blue-600 font-semibold">{active}</span>
-                          <span className="text-gray-400 mx-1">|</span>
-                          <span className="text-emerald-600 font-semibold">{completed}</span>
+                          <span className="text-[var(--text-muted)] mx-1">|</span>
+                          <span className="text-[var(--green)] font-semibold">{completed}</span>
                         </div>
                       </div>
                     );
@@ -1968,7 +2092,7 @@ const ProjectPage = () => {
         <Modal open={!!selected} onClose={() => setSelected(null)} title={`Project — ${selected.id}`}
           footer={<div className="flex gap-2 justify-end">
             <Button variant="ghost" onClick={() => setSelected(null)}>Close</Button>
-            {canMarkComplete && (selected?.pm || selected?.assignedTo) && (
+            {canMarkComplete && isAssignedToMe && hasEmployeeAssigned && (
               <Button onClick={handleMarkStageComplete}>
                 <CheckCircle size={13} /> Mark Stage Complete
               </Button>
@@ -2172,7 +2296,7 @@ const ProjectPage = () => {
                   <div className={`w-2 h-2 rounded-full mt-1 ${log.type === 'create' ? 'bg-green-500' :
                     log.type === 'update' ? 'bg-blue-500' :
                       log.type === 'milestone' ? 'bg-purple-500' :
-                        'bg-gray-500'
+                        'bg-[var(--primary)]'
                     }`} />
                   <div className="flex-1">
                     <div className="text-xs font-medium text-[var(--text-primary)]">{log.action}</div>

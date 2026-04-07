@@ -3,191 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quotation {{quotationId}}</title>
+  <title>{{quotationId}}</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-size: 12px;
-      line-height: 1.4;
-      color: #333;
-      padding: 20px;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 3px solid #f97316;
-    }
-    .header h1 {
-      color: #f97316;
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-    .header p {
-      color: #666;
-      font-size: 14px;
-    }
-    .quotation-info {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 30px;
-      background: #f9fafb;
-      padding: 15px;
-      border-radius: 8px;
-    }
-    .quotation-info .left,
-    .quotation-info .right {
-      flex: 1;
-    }
-    .quotation-info .right {
-      text-align: right;
-    }
-    .quotation-info p {
-      margin: 5px 0;
-    }
-    .quotation-info strong {
-      color: #374151;
-    }
-    .customer-section {
-      margin-bottom: 30px;
-    }
-    .customer-section h2 {
-      color: #f97316;
-      font-size: 16px;
-      margin-bottom: 10px;
-      padding-bottom: 5px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .customer-info p {
-      margin: 5px 0;
-    }
-    .system-config {
-      margin-bottom: 30px;
-      background: #fef3c7;
-      padding: 15px;
-      border-radius: 8px;
-    }
-    .system-config h2 {
-      color: #d97706;
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-    .config-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-    .config-item {
-      display: flex;
-      justify-content: space-between;
-    }
-    .config-item strong {
-      color: #92400e;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    th {
-      background: #f97316;
-      color: white;
-      padding: 10px;
-      text-align: left;
-      font-weight: 600;
-    }
-    td {
-      padding: 10px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    tr:nth-child(even) {
-      background: #f9fafb;
-    }
-    .total-section {
-      background: #f3f4f6;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
-    .total-row {
-      display: flex;
-      justify-content: space-between;
-      margin: 8px 0;
-    }
-    .total-row.total {
-      font-size: 18px;
-      font-weight: bold;
-      color: #f97316;
-      border-top: 2px solid #f97316;
-      padding-top: 10px;
-      margin-top: 10px;
-    }
-    .footer {
-      margin-top: 40px;
-      text-align: center;
-      padding-top: 20px;
-      border-top: 1px solid #e5e7eb;
-      color: #6b7280;
-      font-size: 11px;
-    }
-    .terms {
-      margin-top: 30px;
-      padding: 15px;
-      background: #eff6ff;
-      border-radius: 8px;
-    }
-    .terms h3 {
-      color: #1e40af;
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-    .terms ul {
-      list-style: disc;
-      padding-left: 20px;
-    }
-    .terms li {
-      margin: 5px 0;
-    }
-    .status-badge {
-      display: inline-block;
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 12px;
-      text-transform: uppercase;
-    }
-    .status-draft { background: #e5e7eb; color: #374151; }
-    .status-sent { background: #dbeafe; color: #1e40af; }
-    .status-approved { background: #d1fae5; color: #065f46; }
-    .status-rejected { background: #fee2e2; color: #991b1b; }
-    .status-expired { background: #fef3c7; color: #92400e; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; line-height: 1.4; color: #333; padding: 20px; }
+    .header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 3px solid #f97316; }
+    .header h1 { color: #f97316; font-size: 24px; margin-bottom: 5px; }
+    .header p { color: #666; font-size: 12px; }
+    
+    .info-grid { display: flex; justify-content: space-between; margin-bottom: 20px; gap: 20px; }
+    .info-box { flex: 1; background: #f9fafb; padding: 12px; border-radius: 8px; }
+    .info-box h3 { color: #f97316; font-size: 13px; margin-bottom: 8px; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px; }
+    .info-box p { margin: 3px 0; font-size: 11px; }
+    .info-box strong { color: #374151; }
+    
+    .project-info { background: #fef3c7; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .project-info h3 { color: #d97706; font-size: 14px; margin-bottom: 10px; }
+    .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .project-item { display: flex; justify-content: space-between; }
+    .project-item strong { color: #92400e; }
+    
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; }
+    th { background: #f97316; color: white; padding: 8px 6px; text-align: left; font-weight: 600; font-size: 10px; }
+    td { padding: 8px 6px; border-bottom: 1px solid #e5e7eb; }
+    tr:nth-child(even) { background: #f9fafb; }
+    tr:hover { background: #fef3c7; }
+    
+    .cost-section { background: #f3f4f6; padding: 15px; border-radius: 8px; margin-top: 15px; }
+    .cost-row { display: flex; justify-content: space-between; margin: 6px 0; padding: 4px 0; }
+    .cost-row.subtotal { border-top: 1px dashed #9ca3af; padding-top: 10px; margin-top: 10px; }
+    .cost-row.gst { color: #d97706; }
+    .cost-row.total { font-size: 16px; font-weight: bold; color: #f97316; border-top: 2px solid #f97316; padding-top: 10px; margin-top: 10px; background: #fff; padding: 10px; border-radius: 6px; }
+    
+    .validity-badge { background: #d1fae5; color: #065f46; padding: 5px 12px; border-radius: 15px; font-size: 10px; font-weight: bold; }
+    
+    .notes-section { background: #eff6ff; padding: 12px; border-radius: 8px; margin-top: 15px; }
+    .notes-section h4 { color: #1e40af; font-size: 12px; margin-bottom: 5px; }
+    
+    .terms-section { background: #f9fafb; padding: 12px; border-radius: 8px; margin-top: 15px; border-left: 3px solid #f97316; }
+    .terms-section h4 { color: #374151; font-size: 12px; margin-bottom: 8px; }
+    .terms-section ul { padding-left: 15px; font-size: 10px; }
+    .terms-section li { margin: 3px 0; color: #6b7280; }
+    
+    .footer { margin-top: 30px; text-align: center; padding-top: 15px; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 10px; }
   </style>
 </head>
 <body>
   <div class="header">
-    <h1>SOLAR SYSTEM QUOTATION</h1>
-    <p>Professional Solar Solutions for Your Home & Business</p>
+    <h1>SOLAR ESTIMATE</h1>
+    <p>Professional Solar EPC Solutions</p>
   </div>
 
-  <div class="quotation-info">
-    <div class="left">
-      <p><strong>Quotation ID:</strong> {{quotationId}}</p>
+  <div class="info-grid">
+    <div class="info-box">
+      <h3>Estimate Details</h3>
+      <p><strong>ID:</strong> {{quotationId}}</p>
       <p><strong>Date:</strong> {{date}}</p>
-      <p><strong>Valid Until:</strong> {{validUntil}}</p>
+      <p><strong>Valid Until:</strong> {{validUntil}} <span class="validity-badge">30 DAYS</span></p>
+      <p><strong>Status:</strong> {{status}}</p>
     </div>
-    <div class="right">
-      <span class="status-badge status-{{status.toLowerCase}}">{{status}}</span>
-    </div>
-  </div>
-
-  <div class="customer-section">
-    <h2>Customer Information</h2>
-    <div class="customer-info">
+    <div class="info-box">
+      <h3>Customer Information</h3>
       <p><strong>Name:</strong> {{customerName}}</p>
       {{#if customerEmail}}
       <p><strong>Email:</strong> {{customerEmail}}</p>
@@ -201,115 +77,125 @@
     </div>
   </div>
 
-  {{#if systemConfig}}
-  <div class="system-config">
-    <h2>System Configuration</h2>
-    <div class="config-grid">
-      <div class="config-item">
-        <span>System Size:</span>
-        <strong>{{systemConfig.systemSize}} kW</strong>
-      </div>
-      <div class="config-item">
-        <span>Panel Count:</span>
-        <strong>{{systemConfig.panelCount}} panels</strong>
-      </div>
-      <div class="config-item">
-        <span>Inverter Type:</span>
-        <strong>{{systemConfig.inverterType}}</strong>
-      </div>
-      <div class="config-item">
-        <span>Battery Option:</span>
-        <strong>{{systemConfig.batteryOption}}</strong>
-      </div>
-      <div class="config-item">
-        <span>Mounting Structure:</span>
-        <strong>{{systemConfig.mountingStructure}}</strong>
-      </div>
+  {{#if projectName}}
+  <div class="project-info">
+    <h3>Project Details: {{projectName}}</h3>
+    <div class="project-grid">
+      {{#if systemCapacity}}
+      <div class="project-item"><span>System Size:</span><strong>{{systemCapacity}} kW</strong></div>
+      {{/if}}
+      {{#if projectType}}
+      <div class="project-item"><span>Project Type:</span><strong>{{projectType}}</strong></div>
+      {{/if}}
+      {{#if installationType}}
+      <div class="project-item"><span>Installation:</span><strong>{{installationType}}</strong></div>
+      {{/if}}
+      {{#if projectLocation}}
+      <div class="project-item"><span>Location:</span><strong>{{projectLocation}}</strong></div>
+      {{/if}}
     </div>
   </div>
   {{/if}}
 
-  <h2 style="color: #f97316; font-size: 16px; margin: 20px 0 10px; padding-bottom: 5px; border-bottom: 1px solid #e5e7eb;">
+  <h2 style="color: #f97316; font-size: 14px; margin: 15px 0 10px; padding-bottom: 5px; border-bottom: 1px solid #e5e7eb;">
     Materials & Equipment
   </h2>
 
   <table>
     <thead>
       <tr>
-        <th style="width: 40%;">Item</th>
-        <th>Category</th>
-        <th>Qty</th>
-        <th>Unit Price</th>
+        <th style="width: 35%;">Item Description</th>
+        <th>Brand/Model</th>
+        <th style="text-align: center;">Qty</th>
+        <th style="text-align: right;">Unit Price</th>
         <th style="text-align: right;">Total</th>
       </tr>
     </thead>
     <tbody>
       {{#each materials}}
       <tr>
-        <td>
-          <strong>{{name}}</strong>
-        </td>
-        <td>{{category}}</td>
-        <td>{{quantity}} {{unit}}</td>
-        <td>₹{{unitPrice}}</td>
-        <td style="text-align: right;">₹{{totalPrice}}</td>
+        <td><strong>{{name}}</strong>{{#if description}}<br><span style="color:#6b7280;font-size:9px;">{{description}}</span>{{/if}}</td>
+        <td>{{brand}}{{#if model}} - {{model}}{{/if}}</td>
+        <td style="text-align: center;">{{quantity}} {{unit}}</td>
+        <td style="text-align: right;">₹{{formatNumber unitPrice}}</td>
+        <td style="text-align: right;">₹{{formatNumber totalPrice}}</td>
       </tr>
       {{/each}}
     </tbody>
   </table>
 
-  <div class="total-section">
-    <div class="total-row">
-      <span>Material Total:</span>
-      <span>₹{{materialTotal}}</span>
+  <div class="cost-section">
+    <div class="cost-row">
+      <span>Equipment Cost:</span>
+      <span>₹{{formatNumber materialTotal}}</span>
     </div>
     {{#if installationCost}}
-    <div class="total-row">
+    <div class="cost-row">
       <span>Installation Cost:</span>
-      <span>₹{{installationCost}}</span>
+      <span>₹{{formatNumber installationCost}}</span>
+    </div>
+    {{/if}}
+    {{#if engineeringCost}}
+    <div class="cost-row">
+      <span>Engineering Cost:</span>
+      <span>₹{{formatNumber engineeringCost}}</span>
     </div>
     {{/if}}
     {{#if transportCost}}
-    <div class="total-row">
-      <span>Transport Cost:</span>
-      <span>₹{{transportCost}}</span>
+    <div class="cost-row">
+      <span>Transportation Cost:</span>
+      <span>₹{{formatNumber transportCost}}</span>
     </div>
     {{/if}}
-    {{#if tax}}
-    <div class="total-row">
+    {{#if miscellaneousCost}}
+    <div class="cost-row">
+      <span>Miscellaneous Cost:</span>
+      <span>₹{{formatNumber miscellaneousCost}}</span>
+    </div>
+    {{/if}}
+    <div class="cost-row subtotal">
+      <span>Subtotal:</span>
+      <span>₹{{formatNumber subtotal}}</span>
+    </div>
+    <div class="cost-row gst">
       <span>GST ({{gstPercentage}}%):</span>
-      <span>₹{{tax}}</span>
+      <span>₹{{formatNumber tax}}</span>
     </div>
-    {{/if}}
-    <div class="total-row total">
-      <span>Final Quotation Price:</span>
-      <span>₹{{finalQuotationPrice}}</span>
+    <div class="cost-row total">
+      <span>GRAND TOTAL:</span>
+      <span>₹{{formatNumber finalQuotationPrice}}</span>
     </div>
   </div>
 
   {{#if notes}}
-  <div style="margin-top: 20px; padding: 15px; background: #f3f4f6; border-radius: 8px;">
-    <h3 style="color: #374151; font-size: 14px; margin-bottom: 10px;">Notes</h3>
-    <p style="color: #6b7280;">{{notes}}</p>
+  <div class="notes-section">
+    <h4>Notes</h4>
+    <p>{{notes}}</p>
   </div>
   {{/if}}
 
-  <div class="terms">
-    <h3>Terms & Conditions</h3>
+  {{#if terms}}
+  <div class="terms-section">
+    <h4>Terms & Conditions</h4>
     <ul>
-      <li>This quotation is valid until the date mentioned above.</li>
-      <li>Prices are subject to change after the validity period.</li>
+      <li>{{terms}}</li>
       <li>50% advance payment required to confirm the order.</li>
-      <li>Installation will be completed within 15-30 days of order confirmation.</li>
-      <li>Warranty: 25 years for panels, 5 years for inverter.</li>
+      <li>Prices are subject to change after the validity period.</li>
       <li>GST will be charged as per government regulations.</li>
     </ul>
   </div>
+  {{/if}}
 
   <div class="footer">
     <p><strong>Thank you for choosing our solar solutions!</strong></p>
-    <p>For any queries, please contact us at support@solarcompany.com</p>
-    <p style="margin-top: 10px; font-size: 10px;">This is a computer-generated quotation and does not require signature.</p>
+    <p>This is a computer-generated estimate and does not require signature.</p>
   </div>
+
+  <script>
+    // Helper function to format numbers with commas
+    function formatNumber(num) {
+      return Number(num || 0).toLocaleString('en-IN');
+    }
+  </script>
 </body>
 </html>

@@ -7,9 +7,10 @@ import { Payment, PaymentDocument } from '../schemas/payment.schema';
 import { Expense, ExpenseDocument } from '../schemas/expense.schema';
 import { Invoice, InvoiceDocument } from '../schemas/invoice.schema';
 import { CreateManualAdjustmentDto } from '../dto/manual-adjustment.dto';
-import { PurchaseOrder, PurchaseOrderDocument } from '../../procurement/schemas/purchase-order.schema';
+import { FinancePurchaseOrder, FinancePurchaseOrderDocument } from '../../finance/schemas/finance-purchase-order.schema';
 import { Tenant, TenantDocument } from '../../../core/tenant/schemas/tenant.schema';
 import { FinanceVendorService } from './finance-vendor.service';
+import { FinanceVendor, FinanceVendorDocument } from '../schemas/finance-vendor.schema';
 
 @Injectable()
 export class ManualAdjustmentService {
@@ -20,7 +21,8 @@ export class ManualAdjustmentService {
     @InjectModel(Expense.name) private readonly expenseModel: Model<ExpenseDocument>,
     @InjectModel(Invoice.name) private readonly invoiceModel: Model<InvoiceDocument>,
     @InjectModel(Tenant.name) private readonly tenantModel: Model<TenantDocument>,
-    @InjectModel(PurchaseOrder.name) private readonly purchaseOrderModel: Model<PurchaseOrderDocument>,
+    @InjectModel(FinancePurchaseOrder.name) private readonly purchaseOrderModel: Model<FinancePurchaseOrderDocument>,
+    @InjectModel(FinanceVendor.name) private readonly financeVendorModel: Model<FinanceVendorDocument>,
     private readonly financeVendorService: FinanceVendorService,
   ) {}
 
@@ -262,7 +264,7 @@ export class ManualAdjustmentService {
             if (remainingPayment <= 0) break;
             
             const poTotal = Number(po.totalAmount || 0);
-            const poPaid = Number((po as any).amountPaid || 0);
+            const poPaid = Number(po.paidAmount || 0);
             const poOutstanding = poTotal - poPaid;
             
             if (poOutstanding > 0) {
@@ -271,7 +273,7 @@ export class ManualAdjustmentService {
               
               await this.purchaseOrderModel.findOneAndUpdate(
                 { _id: po._id },
-                { $set: { amountPaid: newPoPaid } }
+                { $set: { paidAmount: newPoPaid } }
               );
               
               if (!firstPONumber) {
@@ -286,22 +288,25 @@ export class ManualAdjustmentService {
           
           console.log('[Vendor Payment] Purchase Orders updated successfully');
           
-          // Also record in financeVendors collection
+          // Update finance vendor's totalPaid to reflect the payment
           try {
-            console.log('[Vendor Payment] Recording in financeVendors for vendor:', vendorId);
-            await this.financeVendorService.recordVendorPayment(tenantId, vendorId, {
-              amount: amount,
-              date: dto.date,
-              poId: firstPOId,
-              poNumber: firstPONumber,
-              notes: dto.reason || `Vendor payment - ${dto.category}`,
-            });
-            console.log('[Vendor Payment] Recorded in financeVendors successfully');
+            console.log('[Vendor Payment] Updating finance vendor totalPaid for vendor:', vendorId);
+            
+            // Update finance vendor's totalPaid directly using injected model
+            await this.financeVendorModel.updateOne(
+              { vendorId: vendorObjectId },
+              { 
+                $inc: { totalPaid: amount }  // Increment totalPaid by payment amount
+              }
+            );
+            
+            console.log('[Vendor Payment] Updated finance vendor totalPaid - incremented by:', amount);
           } catch (fvErr) {
-            console.error('[Vendor Payment] Failed to record in financeVendors:', fvErr);
-            // Re-throw so the error is visible
-            throw new Error(`Failed to record vendor payment: ${fvErr instanceof Error ? fvErr.message : String(fvErr)}`);
+            console.error('[Vendor Payment] Failed to update finance vendor:', fvErr);
+            // Don't fail the adjustment if finance vendor update fails
           }
+          
+          console.log('[Vendor Payment] All updates completed successfully');
         }
       } catch (poErr) {
         console.error('[Vendor Payment] Failed to update Purchase Orders:', poErr);

@@ -1263,85 +1263,52 @@ Solar EPC Team
 
 
     if (user?.dataScope === 'ASSIGNED') {
-
-
-
-
-
-
-
       const userId = user._id || user.id;
-
-
-
-
-
-
-
+      const userEmail = (user as any).email || '';
+      const firstName = (user as any).firstName || '';
+      const lastName = (user as any).lastName || '';
+      const emailPrefix = userEmail ? String(userEmail).split('@')[0] : '';
+      const fullName = `${firstName} ${lastName}`.trim();
+      const assignedToIds: Types.ObjectId[] = [];
       if (userId) {
-
-
-
-
-
-
-
         const objectId = typeof userId === 'string' && Types.ObjectId.isValid(userId)
-
-
-
-
-
-
-
           ? new Types.ObjectId(userId)
-
-
-
-
-
-
-
           : userId;
-
-
-
-
-
-
-
-        // STRICT: Only show tickets explicitly assigned to this user
-
-
-
-
-
-
-
-        filter.assignedTo = objectId;
-
-
-
-
-
-
-
-        console.log(`[TICKETS VISIBILITY] Applied STRICT assignedTo filter:`, objectId);
-
-
-
-
-
-
-
+        if (objectId instanceof Types.ObjectId) {
+          assignedToIds.push(objectId);
+        }
       }
-
-
-
-
-
-
-
+      if (userEmail) {
+        const linkedAuthUser = await this.userModel.findOne({ email: userEmail }).select({ _id: 1 }).lean();
+        const linkedId = linkedAuthUser?._id;
+        if (linkedId) {
+          const linkedObjectId = typeof linkedId === 'string' && Types.ObjectId.isValid(linkedId)
+            ? new Types.ObjectId(linkedId)
+            : linkedId;
+          if (linkedObjectId instanceof Types.ObjectId) {
+            assignedToIds.push(linkedObjectId);
+          }
+        }
+      }
+      const uniqueAssignedToIds = Array.from(new Set(assignedToIds.map((id) => id.toString()))).map((s) => new Types.ObjectId(s));
+      const visibilityOr: any[] = [];
+      if (uniqueAssignedToIds.length > 0) {
+        visibilityOr.push({ assignedTo: { $in: uniqueAssignedToIds } });
+      }
+      // Also match if assignedTo is stored as a string name (engineer name)
+      if (userId) {
+        visibilityOr.push({ assignedTo: String(userId) });
+      }
+      if (fullName) {
+        visibilityOr.push({ assignedTo: { $regex: fullName, $options: 'i' } });
+      }
+      if (firstName) {
+        visibilityOr.push({ assignedTo: { $regex: firstName, $options: 'i' } });
+      }
+      if (visibilityOr.length > 0) {
+        filter.$and = [...(filter.$and || []), { $or: visibilityOr }];
+        console.log(`[TICKETS VISIBILITY] Applied ASSIGNED visibility $or filter count=${visibilityOr.length}`);
+      }
     }
 
 
@@ -2751,85 +2718,42 @@ Solar EPC Team
 
 
     if (user?.dataScope === 'ASSIGNED') {
-
-
-
-
-
-
-
       const userId = user._id || user.id;
-
-
-
-
-
-
-
+      const userEmail = (user as any).email || '';
+      const firstName = (user as any).firstName || '';
+      const lastName = (user as any).lastName || '';
+      const emailPrefix = userEmail ? String(userEmail).split('@')[0] : '';
+      const fullName = `${firstName} ${lastName}`.trim();
+      const assignedToIds: Types.ObjectId[] = [];
       if (userId) {
-
-
-
-
-
-
-
         const objectId = typeof userId === 'string' && Types.ObjectId.isValid(userId)
-
-
-
-
-
-
-
           ? new Types.ObjectId(userId)
-
-
-
-
-
-
-
           : userId;
-
-
-
-
-
-
-
-        // STRICT: Only show tickets explicitly assigned to this user
-
-
-
-
-
-
-
-        filter.assignedTo = objectId;
-
-
-
-
-
-
-
-        console.log(`[TICKETS STATS VISIBILITY] Applied assignedTo filter:`, objectId);
-
-
-
-
-
-
-
+        if (objectId instanceof Types.ObjectId) {
+          assignedToIds.push(objectId);
+        }
       }
-
-
-
-
-
-
-
+      if (userEmail) {
+        const linkedAuthUser = await this.userModel.findOne({ email: userEmail }).select({ _id: 1 }).lean();
+        const linkedId = linkedAuthUser?._id;
+        if (linkedId) {
+          const linkedObjectId = typeof linkedId === 'string' && Types.ObjectId.isValid(linkedId)
+            ? new Types.ObjectId(linkedId)
+            : linkedId;
+          if (linkedObjectId instanceof Types.ObjectId) {
+            assignedToIds.push(linkedObjectId);
+          }
+        }
+      }
+      const uniqueAssignedToIds = Array.from(new Set(assignedToIds.map((id) => id.toString()))).map((s) => new Types.ObjectId(s));
+      const visibilityOr: any[] = [];
+      if (uniqueAssignedToIds.length > 0) {
+        visibilityOr.push({ assignedTo: { $in: uniqueAssignedToIds } });
+      }
+      if (visibilityOr.length > 0) {
+        filter.$and = [...(filter.$and || []), { $or: visibilityOr }];
+        console.log(`[TICKETS STATS VISIBILITY] Applied ASSIGNED visibility $or filter count=${visibilityOr.length}`);
+      }
     }
 
 

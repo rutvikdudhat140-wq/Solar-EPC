@@ -116,6 +116,7 @@ export class EmployeeController {
         tenantId: effectiveTenantId,
         department: employee.department,
         isEmployee: true,
+        dataScope: 'ASSIGNED', // Employees can only see projects assigned to them
       },
       jwtSecret,
       { expiresIn: '24h' }

@@ -596,7 +596,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
 
   if (readOnly) {
     return (
-      <div className="border border-gray-300 bg-white overflow-hidden rounded">
+      <div className="border border-[var(--border-base)] bg-[var(--bg-surface)] overflow-hidden rounded">
         <canvas ref={canvasRef} width={W} height={H} className="cursor-default block w-full" />
       </div>
     );
@@ -607,16 +607,16 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
   return (
     <div className="space-y-1.5">
       {/* ── Toolbar ── */}
-      <div className="flex flex-wrap items-center gap-1.5 p-2 bg-gray-50 border border-gray-200 rounded-lg">
+      <div className="flex flex-wrap items-center gap-1.5 p-2 bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-lg">
         {/* Tools */}
-        <div className="flex items-center gap-0.5 bg-white border border-gray-200 rounded-lg p-0.5">
+        <div className="flex items-center gap-0.5 bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg p-0.5">
           {TOOLS.map(t => (
             <button
               key={t.id}
               title={t.label}
               onClick={() => { setTool(t.id); setSelected(null); }}
               className={`w-7 h-7 rounded text-sm font-medium transition-all flex items-center justify-center
-                ${tool === t.id ? 'bg-blue-500 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'}`}
+                ${tool === t.id ? 'bg-[var(--primary)] text-white shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'}`}
             >
               {t.icon}
             </button>
@@ -624,40 +624,40 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
         </div>
 
         {/* Divider */}
-        <div className="w-px h-6 bg-gray-200" />
+        <div className="w-px h-6 bg-[var(--bg-hover)]" />
 
         {/* Color */}
         <div className="flex items-center gap-1">
-          <span className="text-[10px] text-gray-500">Color</span>
-          <input type="color" value={color} onChange={e => setColor(e.target.value)} className="w-7 h-7 rounded cursor-pointer border border-gray-200 p-0.5" title="Color" />
+          <span className="text-[10px] text-[var(--text-muted)]">Color</span>
+          <input type="color" value={color} onChange={e => setColor(e.target.value)} className="w-7 h-7 rounded cursor-pointer border border-[var(--border-base)] p-0.5" title="Color" />
         </div>
 
         {/* Stroke width */}
         <div className="flex items-center gap-1">
-          <span className="text-[10px] text-gray-500">Size</span>
-          <select value={strokeWidth} onChange={e => setStrokeWidth(Number(e.target.value))} className="h-7 text-xs border border-gray-200 rounded px-1 bg-white">
+          <span className="text-[10px] text-[var(--text-muted)]">Size</span>
+          <select value={strokeWidth} onChange={e => setStrokeWidth(Number(e.target.value))} className="h-7 text-xs border border-[var(--border-base)] rounded px-1 bg-[var(--bg-surface)]">
             {[1, 2, 3, 4, 6].map(v => <option key={v} value={v}>{v}px</option>)}
           </select>
         </div>
 
         {/* Divider */}
-        <div className="w-px h-6 bg-gray-200" />
+        <div className="w-px h-6 bg-[var(--bg-hover)]" />
 
         {/* Snap grid */}
-        <label className="flex items-center gap-1 cursor-pointer text-[10px] text-gray-600">
+        <label className="flex items-center gap-1 cursor-pointer text-[10px] text-[var(--text-secondary)]">
           <input type="checkbox" checked={snapGrid} onChange={e => setSnapGrid(e.target.checked)} className="w-3 h-3" />
           Snap
         </label>
 
         {/* Divider */}
-        <div className="w-px h-6 bg-gray-200" />
+        <div className="w-px h-6 bg-[var(--bg-hover)]" />
 
         {/* Undo / Redo */}
-        <button onClick={undo} disabled={!history.length} title="Undo" className="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded disabled:opacity-30 text-sm">↩</button>
-        <button onClick={redo} disabled={!redoStack.length} title="Redo" className="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded disabled:opacity-30 text-sm">↪</button>
+        <button onClick={undo} disabled={!history.length} title="Undo" className="w-7 h-7 flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30 text-sm">↩</button>
+        <button onClick={redo} disabled={!redoStack.length} title="Redo" className="w-7 h-7 flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30 text-sm">↪</button>
 
         {/* Clear */}
-        <button onClick={clearAll} className="ml-auto px-2.5 py-1 text-xs text-red-500 border border-red-200 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1">
+        <button onClick={clearAll} className="ml-auto px-2.5 py-1 text-xs text-[var(--red-bg)]0 border border-red-200 hover:bg-[var(--red-bg)] rounded-lg transition-colors flex items-center gap-1">
           <X size={11} /> Clear All
         </button>
       </div>
@@ -671,7 +671,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
           </span>
 
           {/* Rotate controls */}
-          <div className="flex items-center gap-0.5 bg-white border border-amber-200 rounded px-1 py-0.5">
+          <div className="flex items-center gap-0.5 bg-[var(--bg-surface)] border border-amber-200 rounded px-1 py-0.5">
             <span className="text-[10px] text-amber-500 mr-1">↻ Rotate:</span>
             {[
               { label: '−90°', deg: -90 },
@@ -716,7 +716,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
             {selected.type === 'textLabels' && (
               <button
                 onClick={() => setEditingLabel({ index: selected.index, text: elements.textLabels[selected.index].text })}
-                className="flex items-center gap-1 px-2 py-0.5 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                className="flex items-center gap-1 px-2 py-0.5 bg-[var(--primary)] text-white rounded hover:bg-[var(--primary)] transition-colors"
               >
                 <Edit2 size={10} /> Edit Text
               </button>
@@ -727,7 +727,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
             >
               <Trash2 size={10} /> Delete
             </button>
-            <button onClick={() => setSelected(null)} className="px-2 py-0.5 border border-gray-300 text-gray-600 rounded hover:bg-gray-100">
+            <button onClick={() => setSelected(null)} className="px-2 py-0.5 border border-[var(--border-base)] text-[var(--text-secondary)] rounded hover:bg-[var(--bg-elevated)]">
               <X size={10} />
             </button>
           </div>
@@ -737,7 +737,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
       {/* ── Edit label inline ── */}
       {editingLabel && (
         <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
-          <span className="text-xs text-blue-600 font-medium">Edit text:</span>
+          <span className="text-xs text-[var(--primary)] font-medium">Edit text:</span>
           <input
             autoFocus
             value={editingLabel.text}
@@ -745,23 +745,23 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
             onKeyDown={e => { if (e.key === 'Enter') saveEditLabel(); if (e.key === 'Escape') setEditingLabel(null); }}
             className="flex-1 px-2 py-0.5 border border-blue-300 rounded text-sm focus:outline-none"
           />
-          <button onClick={saveEditLabel} className="px-2 py-0.5 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">Save</button>
-          <button onClick={() => setEditingLabel(null)} className="px-2 py-0.5 text-gray-500 text-xs">Cancel</button>
+          <button onClick={saveEditLabel} className="px-2 py-0.5 bg-[var(--primary)] text-white text-xs rounded hover:bg-[var(--primary)]">Save</button>
+          <button onClick={() => setEditingLabel(null)} className="px-2 py-0.5 text-[var(--text-muted)] text-xs">Cancel</button>
         </div>
       )}
 
       {/* ── Text input on canvas click ── */}
       {inputPos && (
-        <form onSubmit={handleTextSubmit} className="flex items-center gap-2 px-2 py-1.5 bg-gray-50 border border-gray-200 rounded-lg">
-          <span className="text-xs text-gray-500">Text at ({inputPos.x}, {inputPos.y}):</span>
-          <input autoFocus type="text" value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Enter text..." className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:border-blue-500" />
-          <button type="submit" className="px-2.5 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">Add</button>
-          <button type="button" onClick={() => { setInputPos(null); setInputText(''); }} className="px-2.5 py-1 text-gray-600 text-xs border border-gray-300 rounded hover:bg-gray-100">✕</button>
+        <form onSubmit={handleTextSubmit} className="flex items-center gap-2 px-2 py-1.5 bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-lg">
+          <span className="text-xs text-[var(--text-muted)]">Text at ({inputPos.x}, {inputPos.y}):</span>
+          <input autoFocus type="text" value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Enter text..." className="flex-1 px-2 py-1 border border-[var(--border-base)] rounded text-sm focus:outline-none focus:border-[var(--primary)]" />
+          <button type="submit" className="px-2.5 py-1 bg-[var(--primary)] text-white rounded text-xs hover:bg-blue-700">Add</button>
+          <button type="button" onClick={() => { setInputPos(null); setInputText(''); }} className="px-2.5 py-1 text-[var(--text-secondary)] text-xs border border-[var(--border-base)] rounded hover:bg-[var(--bg-elevated)]">✕</button>
         </form>
       )}
 
       {/* ── Canvas ── */}
-      <div className="border-2 border-gray-700 rounded bg-white overflow-hidden relative">
+      <div className="border-2 border-[var(--border-muted)] rounded bg-[var(--bg-surface)] overflow-hidden relative">
         <canvas
           ref={canvasRef}
           width={W}
@@ -779,7 +779,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
           style={{ aspectRatio: `${W}/${H}` }}
         />
         {/* Tool hint */}
-        <div className="absolute bottom-1 right-2 text-[10px] text-gray-400 pointer-events-none">
+        <div className="absolute bottom-1 right-2 text-[10px] text-[var(--text-muted)] pointer-events-none">
           {tool === 'select' ? 'Click to select · Delete key to remove' :
            tool === 'eraser' ? 'Click on element to erase' :
            tool === 'text'   ? 'Click on canvas to place text' :
@@ -789,7 +789,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
       </div>
 
       {/* ── Status bar ── */}
-      <div className="flex items-center gap-3 text-[10px] text-gray-400 px-1">
+      <div className="flex items-center gap-3 text-[10px] text-[var(--text-muted)] px-1">
         <span>Lines: {elements.lines.length}</span>
         <span>Shapes: {elements.rects.length + elements.circles.length}</span>
         <span>Drawings: {elements.freehand.length}</span>
@@ -805,7 +805,7 @@ const SurveyStatusBadge = ({ status }) => {
   const map = {
     pending:  'bg-amber-100   text-amber-700   border-amber-300',
     active:   'bg-blue-100    text-blue-700    border-blue-300',
-    complete: 'bg-emerald-100 text-emerald-700 border-emerald-300',
+    complete: 'bg-[var(--green)]/10 text-[var(--green)] border-[var(--green)]/30',
   };
   const labels = { pending: 'Pending', active: 'Active', complete: 'Complete' };
   return (
@@ -887,7 +887,7 @@ const SurveyCard = ({ survey, onView, onStart, onComplete, onDelete }) => {
         {survey.status === 'active' && (
           <button
             onClick={(e) => { e.stopPropagation(); onComplete(survey); }}
-            className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-blue-500 text-white text-[10px] font-medium hover:opacity-90 transition-opacity"
+            className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-[var(--primary)] text-white text-[10px] font-medium hover:opacity-90 transition-opacity"
           >
             <FileText size={10} />
             Fill
@@ -895,7 +895,7 @@ const SurveyCard = ({ survey, onView, onStart, onComplete, onDelete }) => {
         )}
         {survey.status === 'complete' && (
           <div className="flex-1 text-center text-[10px] text-[var(--text-muted)] py-1.5">
-            <span className="flex items-center justify-center gap-1 text-emerald-500">
+            <span className="flex items-center justify-center gap-1 text-[var(--green)]">
               <CheckCircle size={14} />
               Completed
             </span>
@@ -1190,14 +1190,14 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
   // Reusable checkbox group for read-only view
   const CheckboxGroup = ({ label, value, options }) => (
     <div className="flex items-start gap-2 mb-2">
-      <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">{label}</span>
+      <span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">{label}</span>
       <div className="flex flex-wrap items-center gap-3">
         {options.map(opt => (
           <div key={opt.id} className="flex items-center gap-1">
-            <div className={`w-4 h-4 border border-gray-500 flex items-center justify-center ${value === opt.id ? 'bg-blue-600 border-blue-600' : 'bg-white'}`}>
+            <div className={`w-4 h-4 border border-[var(--border-base)] flex items-center justify-center ${value === opt.id ? 'bg-[var(--primary)] border-[var(--primary)]' : 'bg-[var(--bg-surface)]'}`}>
               {value === opt.id && <CheckCircle size={12} className="text-white" />}
             </div>
-            <span className="text-sm text-gray-700">{opt.label}</span>
+            <span className="text-sm text-[var(--text-secondary)]">{opt.label}</span>
           </div>
         ))}
       </div>
@@ -1207,17 +1207,17 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
   // Editable checkbox group
   const EditCheckboxGroup = ({ label, field, options }) => (
     <div className="flex items-start gap-2 mb-3">
-      <span className="text-sm font-semibold text-gray-700 whitespace-nowrap w-36">{label}</span>
+      <span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap w-36">{label}</span>
       <div className="flex flex-wrap items-center gap-3">
         {options.map(opt => (
           <label key={opt.id} className="flex items-center gap-1 cursor-pointer">
             <div
               onClick={() => setEdit(field, editForm[field] === opt.id ? '' : opt.id)}
-              className={`w-4 h-4 border-2 flex items-center justify-center cursor-pointer transition-colors ${editForm[field] === opt.id ? 'bg-blue-600 border-blue-600' : 'bg-white border-gray-400 hover:border-blue-400'}`}
+              className={`w-4 h-4 border-2 flex items-center justify-center cursor-pointer transition-colors ${editForm[field] === opt.id ? 'bg-[var(--primary)] border-[var(--primary)]' : 'bg-[var(--bg-surface)] border-[var(--border-base)] hover:border-[var(--primary)]'}`}
             >
               {editForm[field] === opt.id && <CheckCircle size={11} className="text-white" />}
             </div>
-            <span className="text-sm text-gray-700">{opt.label}</span>
+            <span className="text-sm text-[var(--text-secondary)]">{opt.label}</span>
           </label>
         ))}
       </div>
@@ -1233,7 +1233,7 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
             <Button
               onClick={() => onSubmit({ completeData: { ...formData, completionDate: new Date().toISOString() } })}
               disabled={uploading || !formData.engineerApproval}
-              className="bg-emerald-500 hover:bg-emerald-600"
+              className="bg-[var(--green)] hover:bg-[var(--green)]"
             >
               <CheckCircle size={16} className="mr-2" /> Complete Survey
             </Button>
@@ -1241,23 +1241,23 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
         </div>
       }
     >
-      <div className="bg-white p-6 max-h-[75vh] overflow-y-auto space-y-6">
+      <div className="bg-[var(--bg-surface)] p-6 max-h-[75vh] overflow-y-auto space-y-6">
 
         {/* ── PART 1: Pre-Sales Site Assessment Form ── */}
-        <div className={`border-2 p-4 bg-white transition-colors ${editMode ? 'border-blue-500' : 'border-gray-800'}`}>
+        <div className={`border-2 p-4 bg-[var(--bg-surface)] transition-colors ${editMode ? 'border-[var(--primary)]' : 'border-[var(--border-base)]'}`}>
           {/* Header */}
-          <div className="flex items-start justify-between border-b-2 border-gray-800 pb-3 mb-4">
-            <div className="text-center flex-1"><h2 className="text-lg font-bold text-gray-900 border-2 border-gray-800 inline-block px-4 py-1">Pre-Sales Site Assessment Form</h2></div>
+          <div className="flex items-start justify-between border-b-2 border-[var(--border-base)] pb-3 mb-4">
+            <div className="text-center flex-1"><h2 className="text-lg font-bold text-[var(--text-primary)] border-2 border-[var(--border-base)] inline-block px-4 py-1">Pre-Sales Site Assessment Form</h2></div>
             <div className="text-right">
-              <p className="text-sm text-gray-700">Date: <span className="border-b border-gray-600 px-2">{survey?.createdAt ? format(new Date(survey.createdAt), 'dd/MM/yy') : '—'}</span></p>
-              <p className="text-xs text-gray-500 mt-1">Survey ID: {survey?.surveyId}</p>
+              <p className="text-sm text-[var(--text-secondary)]">Date: <span className="border-b border-[var(--border-muted)] px-2">{survey?.createdAt ? format(new Date(survey.createdAt), 'dd/MM/yy') : '—'}</span></p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">Survey ID: {survey?.surveyId}</p>
               <div className="mt-2 flex items-center gap-2 justify-end">
                 <SurveyStatusBadge status={survey?.status} />
                 {/* Admin Edit Toggle */}
                 {isAdmin && !editMode && (
                   <button
                     onClick={() => setEditMode(true)}
-                    className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                    className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--primary)] transition-colors"
                   >
                     <Edit2 size={11} /> Edit
                   </button>
@@ -1267,13 +1267,13 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
                     <button
                       onClick={handleSaveEdit}
                       disabled={saving}
-                      className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors disabled:opacity-60"
+                      className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg bg-[var(--green)] text-white hover:bg-[var(--green)] transition-colors disabled:opacity-60"
                     >
                       <CheckCircle size={11} /> {saving ? 'Saving...' : 'Save'}
                     </button>
                     <button
                       onClick={() => { setEditMode(false); setEditForm({ clientName: survey?.clientName || '', city: survey?.city || '', projectCapacity: survey?.projectCapacity || '', roofType: survey?.roofType || '', structureType: survey?.structureType || '', structureHeight: survey?.structureHeight || '', customHeight: survey?.customHeight || '', moduleType: survey?.moduleType || '', solarConsultant: survey?.solarConsultant || '', floors: survey?.floors || '', notes: survey?.notes || '' }); }}
-                      className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg border border-gray-400 text-gray-600 hover:bg-gray-100 transition-colors"
+                      className="flex items-center gap-1 px-2.5 py-1 text-xs rounded-lg border border-[var(--border-base)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] transition-colors"
                     >
                       <X size={11} /> Cancel
                     </button>
@@ -1289,50 +1289,50 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
               {isAdmin && (
                 <div className="flex items-center gap-1.5 mb-3 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
                   <Edit2 size={13} className="text-blue-500" />
-                  <p className="text-xs text-blue-600 font-medium">Admin Edit Mode — Make changes and click Save</p>
+                  <p className="text-xs text-[var(--primary)] font-medium">Admin Edit Mode — Make changes and click Save</p>
                 </div>
               )}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 block mb-1">Client Name</label>
-                  <input value={editForm.clientName} onChange={e => setEdit('clientName', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500" />
+                  <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">Client Name</label>
+                  <input value={editForm.clientName} onChange={e => setEdit('clientName', e.target.value)} className="w-full border border-[var(--border-base)] rounded px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--primary)]" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 block mb-1">City</label>
-                  <input value={editForm.city} onChange={e => setEdit('city', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500" />
+                  <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">City</label>
+                  <input value={editForm.city} onChange={e => setEdit('city', e.target.value)} className="w-full border border-[var(--border-base)] rounded px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--primary)]" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 block mb-1">Project Capacity</label>
-                  <input value={editForm.projectCapacity} onChange={e => setEdit('projectCapacity', e.target.value)} placeholder="e.g. 10 kW" className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500" />
+                  <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">Project Capacity</label>
+                  <input value={editForm.projectCapacity} onChange={e => setEdit('projectCapacity', e.target.value)} placeholder="e.g. 10 kW" className="w-full border border-[var(--border-base)] rounded px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--primary)]" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 block mb-1">Floors</label>
-                  <input type="number" value={editForm.floors} onChange={e => setEdit('floors', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500" />
+                  <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">Floors</label>
+                  <input type="number" value={editForm.floors} onChange={e => setEdit('floors', e.target.value)} className="w-full border border-[var(--border-base)] rounded px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--primary)]" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 block mb-1">Solar Consultant</label>
-                  <input value={editForm.solarConsultant} onChange={e => setEdit('solarConsultant', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500" />
+                  <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">Solar Consultant</label>
+                  <input value={editForm.solarConsultant} onChange={e => setEdit('solarConsultant', e.target.value)} className="w-full border border-[var(--border-base)] rounded px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--primary)]" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 block mb-1">Custom Height</label>
-                  <input value={editForm.customHeight} onChange={e => setEdit('customHeight', e.target.value)} placeholder="e.g. 12 ft" className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500" />
+                  <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">Custom Height</label>
+                  <input value={editForm.customHeight} onChange={e => setEdit('customHeight', e.target.value)} placeholder="e.g. 12 ft" className="w-full border border-[var(--border-base)] rounded px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--primary)]" />
                 </div>
               </div>
-              <div className="border-t border-gray-200 pt-3">
+              <div className="border-t border-[var(--border-base)] pt-3">
                 <EditCheckboxGroup label="Roof Type:" field="roofType" options={ROOF_TYPES} />
                 <EditCheckboxGroup label="Structure Type:" field="structureType" options={STRUCTURE_TYPES} />
                 <EditCheckboxGroup label="Structure Height:" field="structureHeight" options={STRUCTURE_HEIGHTS} />
                 <EditCheckboxGroup label="Module:" field="moduleType" options={MODULE_TYPES} />
               </div>
               <div>
-                <label className="text-xs font-semibold text-gray-600 block mb-1">Notes</label>
-                <textarea value={editForm.notes} onChange={e => setEdit('notes', e.target.value)} rows={2} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500" placeholder="Additional notes..." />
+                <label className="text-xs font-semibold text-[var(--text-secondary)] block mb-1">Notes</label>
+                <textarea value={editForm.notes} onChange={e => setEdit('notes', e.target.value)} rows={2} className="w-full border border-[var(--border-base)] rounded px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--primary)]" placeholder="Additional notes..." />
               </div>
 
               {/* ── Dynamic Custom Fields ── */}
               <div className="border-t border-dashed border-blue-300 pt-3">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-bold text-blue-600 uppercase tracking-wide flex items-center gap-1">
+                  <p className="text-xs font-bold text-[var(--primary)] uppercase tracking-wide flex items-center gap-1">
                     <Plus size={12} /> Custom Fields
                   </p>
                   {!showAddField && (
@@ -1349,22 +1349,22 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
                 {showAddField && (
                   <div className="flex items-end gap-2 mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                     <div className="flex-1">
-                      <label className="text-[10px] font-semibold text-blue-600 block mb-1">Field Label *</label>
+                      <label className="text-[10px] font-semibold text-[var(--primary)] block mb-1">Field Label *</label>
                       <input
                         value={newFieldLabel}
                         onChange={e => setNewFieldLabel(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && addCustomField()}
                         placeholder="e.g. Inverter Brand, Panel Watt, Location..."
-                        className="w-full border border-blue-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500 bg-white"
+                        className="w-full border border-blue-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--primary)] bg-[var(--bg-surface)]"
                         autoFocus
                       />
                     </div>
                     <div className="w-28">
-                      <label className="text-[10px] font-semibold text-blue-600 block mb-1">Field Type</label>
+                      <label className="text-[10px] font-semibold text-[var(--primary)] block mb-1">Field Type</label>
                       <select
                         value={newFieldType}
                         onChange={e => setNewFieldType(e.target.value)}
-                        className="w-full border border-blue-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500 bg-white"
+                        className="w-full border border-blue-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--primary)] bg-[var(--bg-surface)]"
                       >
                         <option value="text">Text</option>
                         <option value="number">Number</option>
@@ -1372,10 +1372,10 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
                         <option value="date">Date</option>
                       </select>
                     </div>
-                    <button onClick={addCustomField} disabled={!newFieldLabel.trim()} className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-40 transition-colors whitespace-nowrap">
+                    <button onClick={addCustomField} disabled={!newFieldLabel.trim()} className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--primary)] disabled:opacity-40 transition-colors whitespace-nowrap">
                       <CheckCircle size={11} /> Add
                     </button>
-                    <button onClick={() => { setShowAddField(false); setNewFieldLabel(''); }} className="flex items-center gap-1 px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors">
+                    <button onClick={() => { setShowAddField(false); setNewFieldLabel(''); }} className="flex items-center gap-1 px-2.5 py-1.5 text-xs rounded-lg border border-[var(--border-base)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] transition-colors">
                       <X size={11} />
                     </button>
                   </div>
@@ -1383,28 +1383,28 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
 
                 {/* Existing custom fields */}
                 {customFields.length === 0 && !showAddField && (
-                  <p className="text-xs text-gray-400 italic py-2">No custom fields yet. Click "Add Field" to add one.</p>
+                  <p className="text-xs text-[var(--text-muted)] italic py-2">No custom fields yet. Click "Add Field" to add one.</p>
                 )}
                 <div className="space-y-2">
                   {customFields.map((field) => (
-                    <div key={field.id} className="flex items-start gap-2 p-2.5 bg-white border border-gray-200 rounded-lg group">
+                    <div key={field.id} className="flex items-start gap-2 p-2.5 bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg group">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <input
                             value={field.label}
                             onChange={e => updateCustomField(field.id, 'label', e.target.value)}
-                            className="text-xs font-semibold text-gray-700 bg-transparent border-b border-dashed border-gray-300 focus:outline-none focus:border-blue-400 w-full"
+                            className="text-xs font-semibold text-[var(--text-secondary)] bg-transparent border-b border-dashed border-[var(--border-base)] focus:outline-none focus:border-blue-400 w-full"
                             placeholder="Field label..."
                           />
-                          <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded whitespace-nowrap">{field.type}</span>
+                          <span className="text-[10px] text-[var(--text-muted)] bg-[var(--bg-elevated)] px-1.5 py-0.5 rounded whitespace-nowrap">{field.type}</span>
                         </div>
                         {field.type === 'textarea' ? (
-                          <textarea value={field.value} onChange={e => updateCustomField(field.id, 'value', e.target.value)} rows={2} className="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500" placeholder="Enter value..." />
+                          <textarea value={field.value} onChange={e => updateCustomField(field.id, 'value', e.target.value)} rows={2} className="w-full border border-[var(--border-base)] rounded px-2 py-1 text-sm focus:outline-none focus:border-[var(--primary)]" placeholder="Enter value..." />
                         ) : (
-                          <input type={field.type} value={field.value} onChange={e => updateCustomField(field.id, 'value', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500" placeholder="Enter value..." />
+                          <input type={field.type} value={field.value} onChange={e => updateCustomField(field.id, 'value', e.target.value)} className="w-full border border-[var(--border-base)] rounded px-2 py-1 text-sm focus:outline-none focus:border-[var(--primary)]" placeholder="Enter value..." />
                         )}
                       </div>
-                      <button onClick={() => removeCustomField(field.id)} className="p-1 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors mt-5">
+                      <button onClick={() => removeCustomField(field.id)} className="p-1 text-[var(--text-muted)] hover:text-[var(--red)] hover:bg-[var(--red-bg)] rounded transition-colors mt-5">
                         <X size={13} />
                       </button>
                     </div>
@@ -1416,41 +1416,41 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
             /* ── VIEW MODE ── */
             <>
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="flex items-center gap-2"><span className="text-sm font-semibold text-gray-700 whitespace-nowrap">Client Name/City:</span><span className="flex-1 border-b border-gray-400 px-2 py-1 text-sm">{survey?.clientName} / {survey?.city}</span></div>
-                <div className="flex items-center gap-2"><span className="text-sm font-semibold text-gray-700 whitespace-nowrap">Project Capacity:</span><span className="w-32 border-b border-gray-400 px-2 py-1 text-sm">{survey?.projectCapacity || '—'}</span></div>
+                <div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Client Name/City:</span><span className="flex-1 border-b border-[var(--border-base)] px-2 py-1 text-sm">{survey?.clientName} / {survey?.city}</span></div>
+                <div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Project Capacity:</span><span className="w-32 border-b border-[var(--border-base)] px-2 py-1 text-sm">{survey?.projectCapacity || '—'}</span></div>
               </div>
-              <div className="mb-3 border-b border-gray-300 pb-2"><CheckboxGroup label="Roof Type:" value={survey?.roofType} options={ROOF_TYPES} /></div>
-              <div className="mb-3 border-b border-gray-300 pb-2"><CheckboxGroup label="Structure Type:" value={survey?.structureType} options={STRUCTURE_TYPES} /></div>
-              <div className="mb-3 border-b border-gray-300 pb-2">
+              <div className="mb-3 border-b border-[var(--border-base)] pb-2"><CheckboxGroup label="Roof Type:" value={survey?.roofType} options={ROOF_TYPES} /></div>
+              <div className="mb-3 border-b border-[var(--border-base)] pb-2"><CheckboxGroup label="Structure Type:" value={survey?.structureType} options={STRUCTURE_TYPES} /></div>
+              <div className="mb-3 border-b border-[var(--border-base)] pb-2">
                 <CheckboxGroup label="Structure Height:" value={survey?.structureHeight} options={STRUCTURE_HEIGHTS} />
-                {survey?.customHeight && <div className="flex items-center gap-2 ml-20 mt-1"><span className="text-sm text-gray-500">Custom:</span><span className="border-b border-gray-400 px-2 py-0.5 text-sm">{survey.customHeight}</span></div>}
+                {survey?.customHeight && <div className="flex items-center gap-2 ml-20 mt-1"><span className="text-sm text-[var(--text-muted)]">Custom:</span><span className="border-b border-[var(--border-base)] px-2 py-0.5 text-sm">{survey.customHeight}</span></div>}
               </div>
-              <div className="mb-3 border-b border-gray-300 pb-2"><CheckboxGroup label="Module:" value={survey?.moduleType} options={MODULE_TYPES} /></div>
+              <div className="mb-3 border-b border-[var(--border-base)] pb-2"><CheckboxGroup label="Module:" value={survey?.moduleType} options={MODULE_TYPES} /></div>
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="flex items-center gap-2"><span className="text-sm font-semibold text-gray-700 whitespace-nowrap">Solar Consultant:</span><span className="flex-1 border-b border-gray-400 px-2 py-1 text-sm">{survey?.solarConsultant || '—'}</span></div>
-                <div className="flex items-center gap-2"><span className="text-sm font-semibold text-gray-700 whitespace-nowrap">Floors:</span><span className="w-16 border-b border-gray-400 px-2 py-1 text-sm text-center">{survey?.floors || '—'}</span></div>
+                <div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Solar Consultant:</span><span className="flex-1 border-b border-[var(--border-base)] px-2 py-1 text-sm">{survey?.solarConsultant || '—'}</span></div>
+                <div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Floors:</span><span className="w-16 border-b border-[var(--border-base)] px-2 py-1 text-sm text-center">{survey?.floors || '—'}</span></div>
               </div>
-              <div className="mb-4"><div className="flex items-center gap-2"><span className="text-sm font-semibold text-gray-700">Client Signature:</span><div className="flex-1 border-b-2 border-gray-800 h-8" /></div></div>
+              <div className="mb-4"><div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)]">Client Signature:</span><div className="flex-1 border-b-2 border-[var(--border-base)] h-8" /></div></div>
               {roofDrawing.lines?.length > 0 && (
-                <div className="mb-4"><p className="text-sm font-semibold text-gray-700 mb-2">Roof Layout Drawing:</p><GridDrawingCanvas drawingData={roofDrawing} readOnly /></div>
+                <div className="mb-4"><p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">Roof Layout Drawing:</p><GridDrawingCanvas drawingData={roofDrawing} readOnly /></div>
               )}
               {activeData.siteImages?.length > 0 && (
                 <div className="mb-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">Site Photos:</p>
-                  <div className="grid grid-cols-4 gap-2">{activeData.siteImages.map((img, idx) => <div key={idx} className="aspect-square border border-gray-300"><img src={img} alt={`Site ${idx + 1}`} className="w-full h-full object-cover" /></div>)}</div>
+                  <p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">Site Photos:</p>
+                  <div className="grid grid-cols-4 gap-2">{activeData.siteImages.map((img, idx) => <div key={idx} className="aspect-square border border-[var(--border-base)]"><img src={img} alt={`Site ${idx + 1}`} className="w-full h-full object-cover" /></div>)}</div>
                 </div>
               )}
-              {survey?.notes && <div className="mb-2"><p className="text-sm font-semibold text-gray-700 mb-2">Notes:</p><div className="border border-gray-400 p-2 text-sm bg-gray-50">{survey.notes}</div></div>}
+              {survey?.notes && <div className="mb-2"><p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">Notes:</p><div className="border border-[var(--border-base)] p-2 text-sm bg-[var(--bg-elevated)]">{survey.notes}</div></div>}
 
               {/* Custom Fields (view mode) */}
               {(survey?.customFields?.length > 0 || customFields.length > 0) && (
-                <div className="mt-3 pt-3 border-t border-dashed border-gray-300">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">Additional Fields:</p>
+                <div className="mt-3 pt-3 border-t border-dashed border-[var(--border-base)]">
+                  <p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">Additional Fields:</p>
                   <div className="grid grid-cols-2 gap-2">
                     {(survey?.customFields || customFields).filter(f => f.value).map((field, idx) => (
-                      <div key={field.id || idx} className="flex items-start gap-2 border-b border-gray-200 pb-1">
-                        <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">{field.label}:</span>
-                        <span className="flex-1 border-b border-gray-400 px-2 py-0.5 text-sm">{field.value}</span>
+                      <div key={field.id || idx} className="flex items-start gap-2 border-b border-[var(--border-base)] pb-1">
+                        <span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">{field.label}:</span>
+                        <span className="flex-1 border-b border-[var(--border-base)] px-2 py-0.5 text-sm">{field.value}</span>
                       </div>
                     ))}
                   </div>
@@ -1461,36 +1461,36 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
         </div>
 
         {/* ── PART 2: Survey Completion Form ── */}
-        <div className="border-2 border-gray-800 p-4 bg-white">
-          <div className="flex items-start justify-between border-b-2 border-gray-800 pb-3 mb-4">
-            <div className="text-center flex-1"><h2 className="text-lg font-bold text-gray-900 border-2 border-gray-800 inline-block px-4 py-1">Survey Completion Form</h2></div>
+        <div className="border-2 border-[var(--border-base)] p-4 bg-[var(--bg-surface)]">
+          <div className="flex items-start justify-between border-b-2 border-[var(--border-base)] pb-3 mb-4">
+            <div className="text-center flex-1"><h2 className="text-lg font-bold text-[var(--text-primary)] border-2 border-[var(--border-base)] inline-block px-4 py-1">Survey Completion Form</h2></div>
             <div className="text-right">
-              <p className="text-sm text-gray-700">Date: <span className="border-b border-gray-600 px-2">{format(new Date(), 'dd/MM/yy')}</span></p>
-              <p className="text-xs text-gray-500 mt-1">ID: {survey?.surveyId}</p>
+              <p className="text-sm text-[var(--text-secondary)]">Date: <span className="border-b border-[var(--border-muted)] px-2">{format(new Date(), 'dd/MM/yy')}</span></p>
+              <p className="text-xs text-[var(--text-muted)] mt-1">ID: {survey?.surveyId}</p>
             </div>
           </div>
-          <div className="mb-4 p-3 bg-gray-50 border border-gray-300">
+          <div className="mb-4 p-3 bg-[var(--bg-elevated)] border border-[var(--border-base)]">
             <p className="text-sm"><span className="font-semibold">Client:</span> {survey?.clientName} | <span className="font-semibold">City:</span> {survey?.city}</p>
             <p className="text-sm"><span className="font-semibold">Capacity:</span> {survey?.projectCapacity}</p>
           </div>
           <div className="mb-4">
-            <p className="text-sm font-semibold text-gray-700 mb-2">Final Roof Layout Drawing:</p>
+            <p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">Final Roof Layout Drawing:</p>
             <GridDrawingCanvas drawingData={formData.finalDrawing} onChange={d => set('finalDrawing', d)} />
           </div>
           <div className="mb-4">
-            <p className="text-sm font-semibold text-gray-700 mb-2">Panel Placement Details:</p>
-            <textarea value={formData.panelPlacementDetails} onChange={e => set('panelPlacementDetails', e.target.value)} className="w-full border border-gray-400 p-2 text-sm focus:outline-none focus:border-blue-500" rows={3} placeholder="Describe panel placement..." />
+            <p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">Panel Placement Details:</p>
+            <textarea value={formData.panelPlacementDetails} onChange={e => set('panelPlacementDetails', e.target.value)} className="w-full border border-[var(--border-base)] p-2 text-sm focus:outline-none focus:border-[var(--primary)]" rows={3} placeholder="Describe panel placement..." />
           </div>
           <div className="mb-4">
-            <p className="text-sm font-semibold text-gray-700 mb-2">Final Site Photos:</p>
-            <div className="border-2 border-dashed border-gray-400 p-4 text-center">
+            <p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">Final Site Photos:</p>
+            <div className="border-2 border-dashed border-[var(--border-base)] p-4 text-center">
               <input type="file" multiple accept="image/*" onChange={handleImageUpload} className="hidden" id="final-images-form" />
-              <label htmlFor="final-images-form" className="cursor-pointer"><Upload size={24} className="mx-auto mb-2 text-gray-400" /><p className="text-sm text-gray-600">Upload final site images</p></label>
+              <label htmlFor="final-images-form" className="cursor-pointer"><Upload size={24} className="mx-auto mb-2 text-[var(--text-muted)]" /><p className="text-sm text-[var(--text-secondary)]">Upload final site images</p></label>
             </div>
             {formData.finalImages.length > 0 && (
               <div className="grid grid-cols-4 gap-2 mt-3">
                 {formData.finalImages.map((img, idx) => (
-                  <div key={idx} className="relative aspect-square border border-gray-300">
+                  <div key={idx} className="relative aspect-square border border-[var(--border-base)]">
                     <img src={img} alt={`Final ${idx + 1}`} className="w-full h-full object-cover" />
                     <button onClick={() => setFormData(prev => ({ ...prev, finalImages: prev.finalImages.filter((_, i) => i !== idx) }))} className="absolute top-0 right-0 p-1 bg-red-500 text-white"><X size={12} /></button>
                   </div>
@@ -1499,27 +1499,27 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
             )}
           </div>
           <div className="mb-4">
-            <p className="text-sm font-semibold text-gray-700 mb-2">Final Notes:</p>
-            <textarea value={formData.finalNotes} onChange={e => set('finalNotes', e.target.value)} className="w-full border border-gray-400 p-2 text-sm focus:outline-none focus:border-blue-500" rows={3} placeholder="Final observations..." />
+            <p className="text-sm font-semibold text-[var(--text-secondary)] mb-2">Final Notes:</p>
+            <textarea value={formData.finalNotes} onChange={e => set('finalNotes', e.target.value)} className="w-full border border-[var(--border-base)] p-2 text-sm focus:outline-none focus:border-[var(--primary)]" rows={3} placeholder="Final observations..." />
           </div>
-          <div className="border-t-2 border-gray-800 pt-4">
-            <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2"><HardHat size={16} /> Engineer Approval</h3>
+          <div className="border-t-2 border-[var(--border-base)] pt-4">
+            <h3 className="text-sm font-bold text-[var(--text-primary)] mb-3 flex items-center gap-2"><HardHat size={16} /> Engineer Approval</h3>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">Engineer Name:</span>
-                <input type="text" value={formData.engineerName} onChange={e => set('engineerName', e.target.value)} className="flex-1 border-b border-gray-400 px-2 py-1 text-sm focus:outline-none" placeholder="Enter name" />
+                <span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Engineer Name:</span>
+                <input type="text" value={formData.engineerName} onChange={e => set('engineerName', e.target.value)} className="flex-1 border-b border-[var(--border-base)] px-2 py-1 text-sm focus:outline-none" placeholder="Enter name" />
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">Completion Date:</span>
-                <input type="date" value={formData.completionDate} onChange={e => set('completionDate', e.target.value)} className="border border-gray-400 px-2 py-1 text-sm focus:outline-none" />
+                <span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Completion Date:</span>
+                <input type="date" value={formData.completionDate} onChange={e => set('completionDate', e.target.value)} className="border border-[var(--border-base)] px-2 py-1 text-sm focus:outline-none" />
               </div>
             </div>
-            <label className="flex items-start gap-3 cursor-pointer p-3 border-2 border-gray-300 bg-gray-50">
-              <div className={`w-5 h-5 border-2 border-gray-600 flex items-center justify-center mt-0.5 flex-shrink-0 ${formData.engineerApproval ? 'bg-emerald-600 border-emerald-600' : 'bg-white'}`}>
+            <label className="flex items-start gap-3 cursor-pointer p-3 border-2 border-[var(--border-base)] bg-[var(--bg-elevated)]">
+              <div className={`w-5 h-5 border-2 border-[var(--border-muted)] flex items-center justify-center mt-0.5 flex-shrink-0 ${formData.engineerApproval ? 'bg-[var(--green)] border-[var(--green)]' : 'bg-[var(--bg-surface)]'}`}>
                 {formData.engineerApproval && <CheckCircle size={14} className="text-white" />}
               </div>
               <input type="checkbox" checked={formData.engineerApproval} onChange={e => set('engineerApproval', e.target.checked)} className="hidden" />
-              <div><p className="text-sm font-semibold text-gray-900">I confirm that the survey is complete and accurate</p><p className="text-xs text-gray-500">All measurements verified and documented.</p></div>
+              <div><p className="text-sm font-semibold text-[var(--text-primary)]">I confirm that the survey is complete and accurate</p><p className="text-xs text-[var(--text-muted)]">All measurements verified and documented.</p></div>
             </label>
           </div>
         </div>
@@ -1556,14 +1556,14 @@ const SurveyDetailsModal = ({ isOpen, onClose, survey }) => {
         <div className="bg-gradient-to-r from-primary/5 to-transparent p-4 rounded-lg border border-primary/20">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-gray-900 mb-1">{survey.clientName}</h3>
-              <p className="text-sm text-gray-600 flex items-center gap-1">
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">{survey.clientName}</h3>
+              <p className="text-sm text-[var(--text-secondary)] flex items-center gap-1">
                 <MapPin size={14} /> {survey.city}
               </p>
             </div>
             <div className="text-right">
               <SurveyStatusBadge status={survey.status} />
-              <p className="text-xs text-gray-500 mt-2 font-mono">{survey.surveyId}</p>
+              <p className="text-xs text-[var(--text-muted)] mt-2 font-mono">{survey.surveyId}</p>
             </div>
           </div>
         </div>
@@ -1571,46 +1571,46 @@ const SurveyDetailsModal = ({ isOpen, onClose, survey }) => {
         {/* Key Information Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Customer Name */}
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Customer Name</p>
-            <p className="text-sm font-medium text-gray-900">{survey.clientName}</p>
+          <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+            <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Customer Name</p>
+            <p className="text-sm font-medium text-[var(--text-primary)]">{survey.clientName}</p>
           </div>
 
           {/* Location */}
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Location</p>
-            <p className="text-sm font-medium text-gray-900 flex items-center gap-1">
-              <MapPin size={14} className="text-gray-400" /> {survey.city}
+          <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+            <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Location</p>
+            <p className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-1">
+              <MapPin size={14} className="text-[var(--text-muted)]" /> {survey.city}
             </p>
           </div>
 
           {/* Capacity */}
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Project Capacity</p>
-            <p className="text-sm font-medium text-gray-900 flex items-center gap-1">
+          <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+            <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Project Capacity</p>
+            <p className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-1">
               <Zap size={14} className="text-yellow-500" /> {survey.projectCapacity || '—'} kWp
             </p>
           </div>
 
           {/* Assigned Engineer */}
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Assigned Engineer</p>
-            <p className="text-sm font-medium text-gray-900 flex items-center gap-1">
-              <User size={14} className="text-gray-400" /> {survey.engineer || 'Not Assigned'}
+          <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+            <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Assigned Engineer</p>
+            <p className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-1">
+              <User size={14} className="text-[var(--text-muted)]" /> {survey.engineer || 'Not Assigned'}
             </p>
           </div>
 
           {/* Survey ID */}
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Survey ID</p>
-            <p className="text-sm font-medium text-gray-900 font-mono">{survey.surveyId}</p>
+          <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+            <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Survey ID</p>
+            <p className="text-sm font-medium text-[var(--text-primary)] font-mono">{survey.surveyId}</p>
           </div>
 
           {/* Survey Date */}
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Survey Date</p>
-            <p className="text-sm font-medium text-gray-900 flex items-center gap-1">
-              <Calendar size={14} className="text-gray-400" />
+          <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+            <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Survey Date</p>
+            <p className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-1">
+              <Calendar size={14} className="text-[var(--text-muted)]" />
               {survey.createdAt ? format(new Date(survey.createdAt), 'dd MMM yyyy') : '—'}
             </p>
           </div>
@@ -1618,31 +1618,31 @@ const SurveyDetailsModal = ({ isOpen, onClose, survey }) => {
 
         {/* Technical Details */}
         {(survey.roofType || survey.structureType || survey.moduleType) && (
-          <div className="border-t border-gray-200 pt-4">
-            <h4 className="text-sm font-bold text-gray-700 mb-3">Technical Specifications</h4>
+          <div className="border-t border-[var(--border-base)] pt-4">
+            <h4 className="text-sm font-bold text-[var(--text-secondary)] mb-3">Technical Specifications</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {survey.roofType && (
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Roof Type</p>
-                  <p className="text-sm font-medium text-gray-900 capitalize">{survey.roofType?.replace('_', ' ')}</p>
+                <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+                  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Roof Type</p>
+                  <p className="text-sm font-medium text-[var(--text-primary)] capitalize">{survey.roofType?.replace('_', ' ')}</p>
                 </div>
               )}
               {survey.structureType && (
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Structure Type</p>
-                  <p className="text-sm font-medium text-gray-900 capitalize">{survey.structureType?.replace('_', ' ')}</p>
+                <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+                  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Structure Type</p>
+                  <p className="text-sm font-medium text-[var(--text-primary)] capitalize">{survey.structureType?.replace('_', ' ')}</p>
                 </div>
               )}
               {survey.structureHeight && (
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Structure Height</p>
-                  <p className="text-sm font-medium text-gray-900">{survey.structureHeight}{survey.customHeight ? ` (${survey.customHeight})` : ''}</p>
+                <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+                  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Structure Height</p>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">{survey.structureHeight}{survey.customHeight ? ` (${survey.customHeight})` : ''}</p>
                 </div>
               )}
               {survey.moduleType && (
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Module Type</p>
-                  <p className="text-sm font-medium text-gray-900 capitalize">{survey.moduleType}</p>
+                <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+                  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Module Type</p>
+                  <p className="text-sm font-medium text-[var(--text-primary)] capitalize">{survey.moduleType}</p>
                 </div>
               )}
             </div>
@@ -1651,19 +1651,19 @@ const SurveyDetailsModal = ({ isOpen, onClose, survey }) => {
 
         {/* Additional Details for Active/Complete Surveys */}
         {survey.status === 'active' && activeData && (
-          <div className="border-t border-gray-200 pt-4">
-            <h4 className="text-sm font-bold text-gray-700 mb-3">Active Survey Details</h4>
+          <div className="border-t border-[var(--border-base)] pt-4">
+            <h4 className="text-sm font-bold text-[var(--text-secondary)] mb-3">Active Survey Details</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {activeData.engineerName && (
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Engineer Name</p>
-                  <p className="text-sm font-medium text-gray-900">{activeData.engineerName}</p>
+                <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+                  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Engineer Name</p>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">{activeData.engineerName}</p>
                 </div>
               )}
               {activeData.installationDate && (
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Installation Date</p>
-                  <p className="text-sm font-medium text-gray-900">
+                <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+                  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Installation Date</p>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">
                     {format(new Date(activeData.installationDate), 'dd MMM yyyy')}
                   </p>
                 </div>
@@ -1673,21 +1673,21 @@ const SurveyDetailsModal = ({ isOpen, onClose, survey }) => {
         )}
 
         {survey.status === 'complete' && completeData && (
-          <div className="border-t border-gray-200 pt-4">
-            <h4 className="text-sm font-bold text-gray-700 mb-3">Completion Details</h4>
+          <div className="border-t border-[var(--border-base)] pt-4">
+            <h4 className="text-sm font-bold text-[var(--text-secondary)] mb-3">Completion Details</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {completeData.completionDate && (
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Completion Date</p>
-                  <p className="text-sm font-medium text-gray-900">
+                <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+                  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Completion Date</p>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">
                     {format(new Date(completeData.completionDate), 'dd MMM yyyy')}
                   </p>
                 </div>
               )}
               {completeData.actualCapacity && (
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Actual Capacity</p>
-                  <p className="text-sm font-medium text-gray-900">{completeData.actualCapacity} kWp</p>
+                <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
+                  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Actual Capacity</p>
+                  <p className="text-sm font-medium text-[var(--text-primary)]">{completeData.actualCapacity} kWp</p>
                 </div>
               )}
             </div>
@@ -1696,10 +1696,10 @@ const SurveyDetailsModal = ({ isOpen, onClose, survey }) => {
 
         {/* Notes */}
         {survey.notes && (
-          <div className="border-t border-gray-200 pt-4">
-            <h4 className="text-sm font-bold text-gray-700 mb-2">Notes</h4>
+          <div className="border-t border-[var(--border-base)] pt-4">
+            <h4 className="text-sm font-bold text-[var(--text-secondary)] mb-2">Notes</h4>
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-              <p className="text-sm text-gray-700">{survey.notes}</p>
+              <p className="text-sm text-[var(--text-secondary)]">{survey.notes}</p>
             </div>
           </div>
         )}
@@ -1793,7 +1793,7 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
     const viewBox = `${minX - pad} ${minY - pad} ${w} ${h}`;
 
     return (
-      <svg viewBox={viewBox} className="w-full h-64 bg-white border border-gray-200 rounded-md">
+      <svg viewBox={viewBox} className="w-full h-64 bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-md">
         <defs>
           <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
             <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" strokeWidth="1" />
@@ -1916,8 +1916,8 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
       `}</style>
 
       <div className="max-h-[75vh] overflow-y-auto bg-[var(--bg-surface)] p-4">
-        <div id="survey-pdf-preview" className="mx-auto bg-white text-gray-900 shadow-sm border border-gray-200 overflow-hidden" style={{ maxWidth: 900 }}>
-          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-slate-900 to-slate-700 text-white">
+        <div id="survey-pdf-preview" className="mx-auto bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-sm border border-[var(--border-base)] overflow-hidden" style={{ maxWidth: 900 }}>
+          <div className="p-6 border-b border-[var(--border-base)] bg-gradient-to-r from-slate-900 to-slate-700 text-white">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold text-white/80">Solar EPC</p>
@@ -1925,7 +1925,7 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
                 <p className="text-sm text-white/90 mt-1">Survey ID: <span className="font-mono text-white">{survey.surveyId || '—'}</span></p>
               </div>
               <div className="text-right">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/10 border border-white/20 backdrop-blur-sm">{(survey.status || 'complete').toString().toUpperCase()}</span>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[var(--bg-surface)]/10 border border-white/20 backdrop-blur-sm">{(survey.status || 'complete').toString().toUpperCase()}</span>
                 <p className="text-sm text-white/90 mt-2">Report Date: <span className="font-semibold text-white">{displayDate(completeData.completionDate || survey.updatedAt || survey.createdAt)}</span></p>
               </div>
             </div>
@@ -1933,36 +1933,36 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
 
           <div className="p-6 space-y-5">
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-xl p-4 border border-gray-200 bg-white">
-                <p className="text-[11px] font-semibold text-gray-500 uppercase">Customer</p>
-                <p className="text-base font-bold text-gray-900 mt-1">{survey.clientName || '—'}</p>
-                <p className="text-sm text-gray-700 mt-1 flex items-center gap-1"><MapPin size={14} className="text-gray-400" /> {survey.city || '—'}</p>
+              <div className="rounded-xl p-4 border border-[var(--border-base)] bg-[var(--bg-surface)]">
+                <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">Customer</p>
+                <p className="text-base font-bold text-[var(--text-primary)] mt-1">{survey.clientName || '—'}</p>
+                <p className="text-sm text-[var(--text-secondary)] mt-1 flex items-center gap-1"><MapPin size={14} className="text-[var(--text-muted)]" /> {survey.city || '—'}</p>
               </div>
-              <div className="rounded-xl p-4 border border-gray-200 bg-white">
-                <p className="text-[11px] font-semibold text-gray-500 uppercase">Project</p>
+              <div className="rounded-xl p-4 border border-[var(--border-base)] bg-[var(--bg-surface)]">
+                <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">Project</p>
                 <div className="mt-2 grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-[11px] font-semibold text-gray-500 uppercase">Capacity</p>
-                    <p className="text-sm font-semibold text-gray-900">{safeCapacity}</p>
+                    <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">Capacity</p>
+                    <p className="text-sm font-semibold text-[var(--text-primary)]">{safeCapacity}</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold text-gray-500 uppercase">Floors</p>
-                    <p className="text-sm font-semibold text-gray-900">{survey.floors ?? '—'}</p>
+                    <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">Floors</p>
+                    <p className="text-sm font-semibold text-[var(--text-primary)]">{survey.floors ?? '—'}</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold text-gray-500 uppercase">Engineer</p>
-                    <p className="text-sm font-semibold text-gray-900">{survey.engineer || '—'}</p>
+                    <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">Engineer</p>
+                    <p className="text-sm font-semibold text-[var(--text-primary)]">{survey.engineer || '—'}</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold text-gray-500 uppercase">Survey Date</p>
-                    <p className="text-sm font-semibold text-gray-900">{displayDate(activeData.scheduledDate || survey.createdAt)}</p>
+                    <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">Survey Date</p>
+                    <p className="text-sm font-semibold text-[var(--text-primary)]">{displayDate(activeData.scheduledDate || survey.createdAt)}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="border border-gray-200 rounded-xl p-4">
-              <h3 className="text-sm font-bold text-gray-900">Pre-Sales Site Assessment</h3>
+            <div className="border border-[var(--border-base)] rounded-xl p-4">
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">Pre-Sales Site Assessment</h3>
               <div className="grid grid-cols-2 gap-3 mt-3">
                 <div className="bg-slate-50 rounded-lg p-3">
                   <p className="text-[11px] font-semibold text-slate-500 uppercase">Roof Type</p>
@@ -1987,16 +1987,16 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
               </div>
             </div>
 
-            <div className="border border-gray-200 rounded-xl p-4">
-              <h3 className="text-sm font-bold text-gray-900">Survey Completion</h3>
+            <div className="border border-[var(--border-base)] rounded-xl p-4">
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">Survey Completion</h3>
               <div className="grid grid-cols-2 gap-3 mt-3">
-                <div className="bg-emerald-50 rounded-lg p-3 border border-emerald-100">
-                  <p className="text-[11px] font-semibold text-emerald-700 uppercase">Completion Date</p>
-                  <p className="text-sm font-semibold text-emerald-950 mt-1">{displayDate(completeData.completionDate)}</p>
+                <div className="bg-[var(--green)]/10 rounded-lg p-3 border border-[var(--green)]/20">
+                  <p className="text-[11px] font-semibold text-[var(--green)] uppercase">Completion Date</p>
+                  <p className="text-sm font-semibold text-[var(--green)] mt-1">{displayDate(completeData.completionDate)}</p>
                 </div>
-                <div className="bg-emerald-50 rounded-lg p-3 border border-emerald-100">
-                  <p className="text-[11px] font-semibold text-emerald-700 uppercase">Engineer Approval</p>
-                  <p className="text-sm font-semibold text-emerald-950 mt-1">{completeData.engineerApproval ? 'Approved' : 'Not Approved'}</p>
+                <div className="bg-[var(--green)]/10 rounded-lg p-3 border border-[var(--green)]/20">
+                  <p className="text-[11px] font-semibold text-[var(--green)] uppercase">Engineer Approval</p>
+                  <p className="text-sm font-semibold text-[var(--green)] mt-1">{completeData.engineerApproval ? 'Approved' : 'Not Approved'}</p>
                 </div>
                 <div className="bg-slate-50 rounded-lg p-3 col-span-2">
                   <p className="text-[11px] font-semibold text-slate-500 uppercase">Engineer Name</p>
@@ -2013,11 +2013,11 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
               </div>
             </div>
 
-            <div className="border border-gray-200 rounded-xl p-4">
-              <h3 className="text-sm font-bold text-gray-900">Final Roof Layout</h3>
+            <div className="border border-[var(--border-base)] rounded-xl p-4">
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">Final Roof Layout</h3>
               <div className="mt-3">
                 {renderDrawingSvg() || (
-                  <div className="h-64 flex items-center justify-center text-sm text-gray-500 bg-slate-50 border border-gray-200 rounded-md">
+                  <div className="h-64 flex items-center justify-center text-sm text-[var(--text-muted)] bg-slate-50 border border-[var(--border-base)] rounded-md">
                     No drawing available
                   </div>
                 )}
@@ -2025,14 +2025,14 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
             </div>
 
             {topImages.length > 0 && (
-              <div className="border border-gray-200 rounded-xl p-4">
-                <h3 className="text-sm font-bold text-gray-900">Final Site Photos</h3>
+              <div className="border border-[var(--border-base)] rounded-xl p-4">
+                <h3 className="text-sm font-bold text-[var(--text-primary)]">Final Site Photos</h3>
                 <div className="grid grid-cols-3 gap-3 mt-3">
                   {topImages.map((src, idx) => (
-                    <div key={idx} className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+                    <div key={idx} className="border border-[var(--border-base)] rounded-lg overflow-hidden bg-[var(--bg-surface)]">
                       <img src={src} alt={`final-${idx}`} className="w-full h-40 object-cover" />
-                      <div className="px-3 py-2 bg-slate-50 border-t border-gray-200">
-                        <p className="text-xs font-semibold text-gray-700">Image {idx + 1}</p>
+                      <div className="px-3 py-2 bg-slate-50 border-t border-[var(--border-base)]">
+                        <p className="text-xs font-semibold text-[var(--text-secondary)]">Image {idx + 1}</p>
                       </div>
                     </div>
                   ))}
@@ -2041,14 +2041,14 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
             )}
 
             {survey.notes && (
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h3 className="text-sm font-bold text-gray-800">Notes</h3>
-                <p className="text-sm text-gray-800 mt-2 whitespace-pre-wrap">{survey.notes}</p>
+              <div className="border border-[var(--border-base)] rounded-lg p-4">
+                <h3 className="text-sm font-bold text-[var(--text-primary)]">Notes</h3>
+                <p className="text-sm text-[var(--text-primary)] mt-2 whitespace-pre-wrap">{survey.notes}</p>
               </div>
             )}
           </div>
 
-          <div className="px-6 py-4 border-t border-gray-200 text-xs text-gray-500 flex items-center justify-between">
+          <div className="px-6 py-4 border-t border-[var(--border-base)] text-xs text-[var(--text-muted)] flex items-center justify-between">
             <span>Generated by Solar EPC</span>
             <span>{survey.surveyId || ''}</span>
           </div>
@@ -2062,13 +2062,13 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
 const SurveyKpiModal = ({ title, surveys, filter, onClose, onView }) => {
   const statusColor = {
     pending:  'bg-amber-500/10 text-amber-500 border-amber-500/20',
-    active:   'bg-blue-500/10 text-blue-500 border-blue-500/20',
-    complete: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    active:   'bg-[var(--primary)]/10 text-blue-500 border-[var(--primary)]/20',
+    complete: 'bg-[var(--green)]/10 text-[var(--green)] border-[var(--green)]/20',
   };
   const actionHint = {
     pending: { label: 'Click to Assign', color: 'text-amber-500', icon: Play },
     active:  { label: 'Click to Fill Form', color: 'text-blue-500', icon: FileText },
-    complete: { label: 'Click to View', color: 'text-emerald-500', icon: Eye },
+    complete: { label: 'Click to View', color: 'text-[var(--green)]', icon: Eye },
     all:     { label: 'Click to View', color: 'text-[var(--text-muted)]', icon: Eye },
   };
   const hint = actionHint[filter] || actionHint.all;
@@ -2433,7 +2433,7 @@ const SiteSurveyPage = () => {
               >
                 {tab.label}
                 <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
-                  activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-[var(--bg-surface)] text-[var(--text-muted)]'
+                  activeTab === tab.id ? 'bg-[var(--bg-surface)]/20 text-white' : 'bg-[var(--bg-surface)] text-[var(--text-muted)]'
                 }`}>
                   {statusCountMap[tab.id]}
                 </span>
@@ -2777,13 +2777,13 @@ const SiteSurveyPage = () => {
                 <p className="text-lg font-bold text-amber-600">{surveys.filter(s => s.status === 'pending').length}</p>
                 <p className="text-xs text-amber-600">Pending</p>
               </div>
-              <div className="bg-emerald-50 border border-emerald-200 rounded p-2 text-center">
-                <p className="text-lg font-bold text-emerald-600">{surveys.filter(s => s.status === 'active').length}</p>
-                <p className="text-xs text-emerald-600">Active</p>
+              <div className="bg-[var(--green)]/10 border border-[var(--green)]/20 rounded p-2 text-center">
+                <p className="text-lg font-bold text-[var(--green)]">{surveys.filter(s => s.status === 'active').length}</p>
+                <p className="text-xs text-[var(--green)]">Active</p>
               </div>
               <div className="bg-blue-50 border border-blue-200 rounded p-2 text-center">
-                <p className="text-lg font-bold text-blue-600">{surveys.filter(s => s.status === 'complete').length}</p>
-                <p className="text-xs text-blue-600">Complete</p>
+                <p className="text-lg font-bold text-[var(--primary)]">{surveys.filter(s => s.status === 'complete').length}</p>
+                <p className="text-xs text-[var(--primary)]">Complete</p>
               </div>
             </div>
           </div>
@@ -2908,7 +2908,7 @@ const CreateSurveyModal = ({ isOpen, onClose, onCreate }) => {
       <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto p-1">
         {/* Basic Information */}
         <div className="space-y-3">
-          <h4 className="text-sm font-bold text-gray-700 border-b border-gray-200 pb-2">Basic Information</h4>
+          <h4 className="text-sm font-bold text-[var(--text-secondary)] border-b border-[var(--border-base)] pb-2">Basic Information</h4>
           
           <FormField label="Customer Name *" required>
             <Input
@@ -2949,7 +2949,7 @@ const CreateSurveyModal = ({ isOpen, onClose, onCreate }) => {
 
         {/* Technical Specifications */}
         <div className="space-y-3 pt-3">
-          <h4 className="text-sm font-bold text-gray-700 border-b border-gray-200 pb-2">Technical Specifications</h4>
+          <h4 className="text-sm font-bold text-[var(--text-secondary)] border-b border-[var(--border-base)] pb-2">Technical Specifications</h4>
           
           <FormField label="Roof Type">
             <Select
@@ -3002,7 +3002,7 @@ const CreateSurveyModal = ({ isOpen, onClose, onCreate }) => {
 
         {/* Additional Notes */}
         <div className="space-y-3 pt-3">
-          <h4 className="text-sm font-bold text-gray-700 border-b border-gray-200 pb-2">Additional Information</h4>
+          <h4 className="text-sm font-bold text-[var(--text-secondary)] border-b border-[var(--border-base)] pb-2">Additional Information</h4>
           
           <FormField label="Notes">
             <Textarea
@@ -3116,7 +3116,7 @@ const EditSurveyModal = ({ isOpen, onClose, survey, onSave }) => {
       <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto p-1">
         {/* Basic Information */}
         <div className="space-y-3">
-          <h4 className="text-sm font-bold text-gray-700 border-b border-gray-200 pb-2">Basic Information</h4>
+          <h4 className="text-sm font-bold text-[var(--text-secondary)] border-b border-[var(--border-base)] pb-2">Basic Information</h4>
           <FormField label="Customer Name *" required>
             <Input
               value={formData.clientName}
@@ -3171,7 +3171,7 @@ const EditSurveyModal = ({ isOpen, onClose, survey, onSave }) => {
         </div>
         {/* Technical Specifications */}
         <div className="space-y-3 pt-3">
-          <h4 className="text-sm font-bold text-gray-700 border-b border-gray-200 pb-2">Technical Specifications</h4>
+          <h4 className="text-sm font-bold text-[var(--text-secondary)] border-b border-[var(--border-base)] pb-2">Technical Specifications</h4>
           <FormField label="Roof Type">
             <Select
               value={formData.roofType}
@@ -3219,7 +3219,7 @@ const EditSurveyModal = ({ isOpen, onClose, survey, onSave }) => {
         </div>
         {/* Additional Notes */}
         <div className="space-y-3 pt-3">
-          <h4 className="text-sm font-bold text-gray-700 border-b border-gray-200 pb-2">Additional Information</h4>
+          <h4 className="text-sm font-bold text-[var(--text-secondary)] border-b border-[var(--border-base)] pb-2">Additional Information</h4>
           <FormField label="Notes">
             <Textarea
               value={formData.notes}
@@ -3321,7 +3321,7 @@ const AssignSurveyModal = ({ isOpen, onClose, survey, onAssign }) => {
           <p className="text-sm text-blue-700">
             <strong>Survey:</strong> {survey?.surveyId} - {survey?.clientName}
           </p>
-          <p className="text-sm text-blue-600 mt-1">
+          <p className="text-sm text-[var(--primary)] mt-1">
             <strong>Current Status:</strong> {survey?.status}
           </p>
         </div>

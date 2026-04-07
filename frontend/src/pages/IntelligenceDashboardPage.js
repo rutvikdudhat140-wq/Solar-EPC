@@ -30,33 +30,33 @@ const Ic = ({ name, size = 14, className = '', style }) => {
 };
 
 // ─── COLOUR HELPERS ───────────────────────────────────────────────────────────
-const scoreColor = s => s >= 75 ? 'text-emerald-400' : s >= 50 ? 'text-amber-400' : 'text-red-400';
+const scoreColor = s => s >= 75 ? 'text-[var(--green)]' : s >= 50 ? 'text-amber-400' : 'text-red-400';
 const scoreBg = s => s >= 75 ? 'from-emerald-500 to-teal-400' : s >= 50 ? 'from-amber-500 to-orange-400' : 'from-red-500 to-rose-400';
 const priorityBadge = p => p === 'High'
     ? 'bg-red-500/15 border-red-500/30 text-red-400'
     : p === 'Medium'
         ? 'bg-amber-500/15 border-amber-500/30 text-amber-400'
-        : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400';
+        : 'bg-[var(--green)]/15 border-[var(--green)]/30 text-[var(--green)]';
 const alertColor = c => ({
     red: 'border-red-500/25 bg-red-500/5',
     amber: 'border-amber-500/25 bg-amber-500/5',
-    emerald: 'border-emerald-500/25 bg-emerald-500/5',
+    emerald: 'border-[var(--green)]/25 bg-[var(--green)]/5',
     blue: 'border-[var(--border-active)] bg-[var(--bg-hover)]',
 }[c] || 'border-[var(--border-base)] bg-[var(--bg-raised)]');
 const alertIconColor = c => ({
-    red: 'text-red-400', amber: 'text-amber-400', emerald: 'text-emerald-400', blue: 'text-[var(--primary-light)]',
+    red: 'text-red-400', amber: 'text-amber-400', emerald: 'text-[var(--green)]', blue: 'text-[var(--primary-light)]',
 }[c] || 'text-[var(--accent)]');
 const feedBadge = t => ({
     critical: 'bg-red-500/20 text-red-400',
     warning: 'bg-amber-500/20 text-amber-400',
-    success: 'bg-emerald-500/20 text-emerald-400',
+    success: 'bg-[var(--green)]/20 text-[var(--green)]',
     info: 'bg-[var(--bg-hover)] text-[var(--primary-light)]',
 }[t] || 'bg-[var(--bg-elevated)] text-[var(--text-muted)]');
 const riskBadge = r => r === 'High'
     ? 'bg-red-500/15 border-red-500/30 text-red-400'
     : r === 'Medium'
         ? 'bg-amber-500/15 border-amber-500/30 text-amber-400'
-        : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400';
+        : 'bg-[var(--green)]/15 border-[var(--green)]/30 text-[var(--green)]';
 
 // ─── ANIMATED COUNTER ────────────────────────────────────────────────────────
 const AnimatedNumber = ({ to, prefix = '', suffix = '', duration = 1200 }) => {
@@ -151,7 +151,7 @@ const CircularScore = ({ score, size = 160 }) => {
 // ─── AI STATUS BADGE ─────────────────────────────────────────────────────────
 const AIStatusBadge = ({ status }) => {
     const map = {
-        Learning: { dot: 'bg-emerald-400', ring: 'ring-emerald-400/40', text: 'text-emerald-400', label: '🟢 Learning' },
+        Learning: { dot: 'bg-[var(--green)]', ring: 'ring-emerald-400/40', text: 'text-[var(--green)]', label: '🟢 Learning' },
         Analyzing: { dot: 'bg-amber-400', ring: 'ring-amber-400/40', text: 'text-amber-400', label: '🟡 Analyzing' },
         Optimizing: { dot: 'bg-[var(--primary-light)]', ring: 'ring-[var(--primary-glow)]', text: 'text-[var(--primary-light)]', label: '🔵 Optimizing' },
     };
@@ -270,7 +270,7 @@ const HealthScoreSection = ({ health }) => {
                     <div className="p-3 rounded-xl bg-[var(--bg-raised)] border border-[var(--border-muted)]">
                         <p className="text-[10px] font-bold text-[var(--text-faint)] uppercase tracking-wider mb-2">Score Legend</p>
                         {[
-                            { range: '75–100', label: 'Healthy', color: 'text-emerald-400', dot: 'bg-emerald-400' },
+                            { range: '75–100', label: 'Healthy', color: 'text-[var(--green)]', dot: 'bg-[var(--green)]' },
                             { range: '50–74', label: 'Attention', color: 'text-amber-400', dot: 'bg-amber-400' },
                             { range: '0–49', label: 'Critical', color: 'text-red-400', dot: 'bg-red-400' },
                         ].map(r => (
@@ -340,7 +340,7 @@ const PredictivePipeline = ({ pipeline }) => (
                                 </div>
                                 <MiniBar value={stage.convRate} color={stage.color} />
                             </div>
-                            <div className={`text-[9px] px-1.5 py-0.5 rounded font-semibold text-center ${stage.riskPct > 20 ? 'bg-red-500/10 text-red-400' : stage.riskPct > 10 ? 'bg-amber-500/10 text-amber-400' : 'bg-emerald-500/10 text-emerald-400'}`}>
+                            <div className={`text-[9px] px-1.5 py-0.5 rounded font-semibold text-center ${stage.riskPct > 20 ? 'bg-red-500/10 text-red-400' : stage.riskPct > 10 ? 'bg-amber-500/10 text-amber-400' : 'bg-[var(--green)]/10 text-[var(--green)]'}`}>
                                 {stage.riskPct}% risk
                             </div>
                         </div>
@@ -357,7 +357,7 @@ const PredictivePipeline = ({ pipeline }) => (
         {/* Legend */}
         <div className="flex gap-4 pt-3 border-t border-[var(--border-muted)] text-[10px] text-[var(--text-faint)]">
             <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />Delay risk stage</div>
-            <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400" />Healthy</div>
+            <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[var(--green)]" />Healthy</div>
             <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-400" />&gt;20% risk</div>
         </div>
     </div>
@@ -403,8 +403,8 @@ const ProjectRiskGrid = ({ risks }) => (
                     </div>
                 ) : (
                     <div className="flex items-center gap-1.5">
-                        <CheckCircle size={10} className="text-emerald-400" />
-                        <span className="text-[10px] text-emerald-400">No active risk factors</span>
+                        <CheckCircle size={10} className="text-[var(--green)]" />
+                        <span className="text-[10px] text-[var(--green)]">No active risk factors</span>
                     </div>
                 )}
 
@@ -482,9 +482,9 @@ const CashFlowForecast = ({ forecast }) => {
 
             {/* Summary cards */}
             <div className="grid grid-cols-3 gap-3">
-                <div className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/15">
-                    <p className="text-[10px] text-emerald-400 font-bold mb-1">Upcoming Inflows</p>
-                    <p className="text-sm font-extrabold text-emerald-400">{fmt(forecast[0]?.inflow)}</p>
+                <div className="p-3 rounded-xl bg-[var(--green)]/5 border border-[var(--green)]/15">
+                    <p className="text-[10px] text-[var(--green)] font-bold mb-1">Upcoming Inflows</p>
+                    <p className="text-sm font-extrabold text-[var(--green)]">{fmt(forecast[0]?.inflow)}</p>
                     <p className="text-[10px] text-[var(--text-faint)]">Next 30 days (est.)</p>
                 </div>
                 <div className="p-3 rounded-xl bg-orange-500/5 border border-orange-500/15">
@@ -522,7 +522,7 @@ const TeamPerformance = ({ metrics }) => (
                     </div>
                     <span className="text-xs font-bold text-[var(--text-primary)]">{m.dept}</span>
                     {m.trend === 'up'
-                        ? <ArrowUpRight size={12} className="text-emerald-400 ml-auto" />
+                        ? <ArrowUpRight size={12} className="text-[var(--green)] ml-auto" />
                         : <ArrowDownRight size={12} className="text-red-400 ml-auto" />}
                 </div>
 
@@ -541,15 +541,15 @@ const TeamPerformance = ({ metrics }) => (
                     </div>
                     <div className="flex justify-between">
                         <span className="text-[var(--text-faint)]">Delay ratio</span>
-                        <span className={`font-semibold ${m.delayRatio > 20 ? 'text-red-400' : m.delayRatio > 10 ? 'text-amber-400' : 'text-emerald-400'}`}>
+                        <span className={`font-semibold ${m.delayRatio > 20 ? 'text-red-400' : m.delayRatio > 10 ? 'text-amber-400' : 'text-[var(--green)]'}`}>
                             {m.delayRatio}%
                         </span>
                     </div>
                     <div className="flex items-center gap-1">
                         {m.trend === 'up'
-                            ? <TrendingUp size={9} className="text-emerald-400 shrink-0" />
+                            ? <TrendingUp size={9} className="text-[var(--green)] shrink-0" />
                             : <TrendingDown size={9} className="text-red-400 shrink-0" />}
-                        <span className={`text-[9px] ${m.trend === 'up' ? 'text-emerald-400' : 'text-red-400'}`}>
+                        <span className={`text-[9px] ${m.trend === 'up' ? 'text-[var(--green)]' : 'text-red-400'}`}>
                             {m.trend === 'up' ? '+' : '-'}{m.trendVal}% this week
                         </span>
                     </div>
@@ -757,8 +757,8 @@ const IntelligenceDashboardPage = ({ onNavigate }) => {
             {/* ── Refresh toast ── */}
             {showToast && (
                 <div className="fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl
-                    bg-[var(--bg-surface)] border border-emerald-500/30 shadow-xl shadow-black/30 animate-slide-up">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    bg-[var(--bg-surface)] border border-[var(--green)]/30 shadow-xl shadow-black/30 animate-slide-up">
+                    <span className="w-2 h-2 rounded-full bg-[var(--green)] animate-pulse" />
                     <span className="text-[11px] font-semibold text-[var(--text-primary)]">AI insights refreshed</span>
                     <Clock size={10} className="text-[var(--text-faint)]" />
                     <span className="text-[10px] text-[var(--text-faint)]">{lastRefreshStr}</span>
