@@ -53,7 +53,7 @@ const PERMISSION_PRESETS = {
   employee: { label: 'Employee', permissions: { employees: { view: true, create: false, edit: false, delete: false }, leaves: { view: true, apply: true, approve: false, reject: false }, attendance: { view: true, checkin: true, checkout: true }, payroll: { view: true }, increments: { view: true }, departments: { view: false } } },
 };
 
-const HrmPermissionsPage = () => {
+const HRMPermissionsPage = () => {
   const { user } = useAuth();
   const [roles, setRoles] = useState([]);
   const [selectedRoleId, setSelectedRoleId] = useState('');
@@ -451,4 +451,4 @@ const HrmPermissionsPage = () => {
   );
 };
 
-export default HrmPermissionsPage;
+export default HRMPermissionsPage;
