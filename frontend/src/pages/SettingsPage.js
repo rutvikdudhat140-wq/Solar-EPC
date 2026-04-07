@@ -2419,6 +2419,84 @@ const AutomationPanel = () => {
     return <AutomationBuilder tenantId={tenantId} user={user} />;
 };
 
+// ─── PANEL K: MILESTONES BUILDER ─────────────────────────────────────────────
+const MilestonesPanel = () => {
+    const { milestones, updateMilestones, isLoading } = useSettings();
+    const { user } = useAuth();
+    const [items, setItems] = useState([]);
+    const [newName, setNewName] = useState('');
+
+    // Debug logging
+    console.log('[MilestonesPanel] milestones from context:', milestones);
+    console.log('[MilestonesPanel] isLoading:', isLoading);
+
+    // Update items when milestones load from API
+    useEffect(() => {
+        if (milestones && Array.isArray(milestones)) {
+            console.log('[MilestonesPanel] Setting items from milestones:', milestones);
+            setItems(milestones);
+        }
+    }, [milestones]);
+
+    const addItem = () => {
+        if (!newName.trim()) return;
+        setItems(prev => [...prev, { name: newName.trim(), order: prev.length + 1 }]);
+        setNewName('');
+    };
+    const save = () => {
+        updateMilestones(items, user?.name);
+    };
+    const move = (index, dir) => {
+        setItems(prev => {
+            const arr = [...prev];
+            const [item] = arr.splice(index, 1);
+            arr.splice(index + dir, 0, item);
+            // Update order property
+            return arr.map((m, i) => ({ ...m, order: i + 1 }));
+        });
+    };
+    const remove = (idx) => {
+        setItems(prev => prev.filter((_, i) => i !== idx).map((m, i) => ({ ...m, order: i + 1 })));
+    };
+
+    if (isLoading) {
+        return (
+            <div>
+                <SectionHeader icon={Flag} title="Project Milestones" subtitle="Define milestone stages for project tracking" badge={user?.role === 'Admin' ? 'Admin Only' : ''} />
+                <div className="flex items-center justify-center py-8">
+                    <div className="text-sm text-[var(--text-muted)]">Loading milestones...</div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div>
+            <SectionHeader icon={Flag} title="Project Milestones" subtitle="Define milestone stages for project tracking" badge={user?.role === 'Admin' ? 'Admin Only' : ''} />
+            <div className="space-y-4">
+                {items.map((m, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[var(--accent)]/15 flex items-center justify-center text-[var(--accent)] text-xs font-bold">
+                            {i + 1}
+                        </div>
+                        <input type="text" value={m.name} disabled className="flex-1 bg-[var(--bg-input)] rounded px-2 py-1 text-xs" />
+                        <button onClick={() => move(i, -1)} disabled={i === 0} className="text-[var(--text-muted)]"><ChevronUp size={12} /></button>
+                        <button onClick={() => move(i, 1)} disabled={i === items.length - 1} className="text-[var(--text-muted)]"><ChevronDown size={12} /></button>
+                        <button onClick={() => remove(i)} className="text-red-500"><X size={12} /></button>
+                    </div>
+                ))}
+                <div className="flex gap-2">
+                    <Input placeholder="New milestone name" value={newName} onChange={e => setNewName(e.target.value)} className="flex-1 text-xs" />
+                    <Button onClick={addItem}><Plus size={12} /></Button>
+                </div>
+                <div className="flex justify-end">
+                    <Button onClick={save}>Save Changes</Button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 // ─── MAIN SETTINGS PAGE ───────────────────────────────────────────────────────
 const TABS = [
     { id: 'modules', label: 'Modules', icon: Flag, panel: ModulesPanel },
@@ -2434,6 +2512,7 @@ const TABS = [
     { id: 'projecttypes', label: 'Project Types', icon: SunMedium, panel: ProjectTypeConfigPanel },
     { id: 'installationTasks', label: 'Install Tasks', icon: List, panel: InstallationTasksPanel },
     { id: 'commissioningTasks', label: 'Commissioning Tasks', icon: CheckCircle, panel: CommissioningTasksPanel },
+    { id: 'milestones', label: 'Milestones', icon: Flag, panel: MilestonesPanel },
 ];
 
 const SettingsPage = () => {

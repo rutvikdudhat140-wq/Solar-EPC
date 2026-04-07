@@ -1,9 +1,9 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { 
-  Type, Square, Circle, Triangle, Image as ImageIcon, Table, 
-  MousePointer, Move, Trash2, Copy, AlignLeft, AlignCenter, 
+import {
+  Type, Square, Circle, Triangle, Image as ImageIcon, Table,
+  MousePointer, Move, Trash2, Copy, AlignLeft, AlignCenter,
   AlignRight, Bold, Italic, Underline, Palette, Grid3X3,
   Download, Save, Undo, Redo, ZoomIn, ZoomOut, RotateCcw,
   ChevronUp, ChevronDown, Eye, Lock, Unlock, Layers,
@@ -12,9 +12,9 @@ import {
 } from 'lucide-react';
 
 // ── Canva-Style Visual Proposal Editor ─────────────────────────────────────
-const ProposalCanvasEditor = ({ 
-  initialData, 
-  onSave, 
+const ProposalCanvasEditor = ({
+  initialData,
+  onSave,
   onSendEmail,
   onCancel,
   readOnly = false,
@@ -58,13 +58,13 @@ const ProposalCanvasEditor = ({
   const toggleTextFormat = (formatType) => {
     const newValue = !textFormat[formatType];
     setTextFormat(prev => ({ ...prev, [formatType]: newValue }));
-    
+
     // Apply to selected element
     if (selectedElement) {
       const element = elements.find(el => el.id === selectedElement);
       if (element?.type === 'text') {
         const updates = {};
-        switch(formatType) {
+        switch (formatType) {
           case 'bold':
             updates.fontWeight = newValue ? 'bold' : 'normal';
             break;
@@ -172,7 +172,7 @@ const ProposalCanvasEditor = ({
 
   // Update element
   const updateElement = (id, updates) => {
-    const newElements = elements.map(el => 
+    const newElements = elements.map(el =>
       el.id === id ? { ...el, ...updates } : el
     );
     setElements(newElements);
@@ -180,7 +180,7 @@ const ProposalCanvasEditor = ({
 
   // Update element style
   const updateElementStyle = (id, styleUpdates) => {
-    const newElements = elements.map(el => 
+    const newElements = elements.map(el =>
       el.id === id ? { ...el, style: { ...el.style, ...styleUpdates } } : el
     );
     setElements(newElements);
@@ -189,7 +189,7 @@ const ProposalCanvasEditor = ({
   // Mouse event handlers
   const handleMouseDown = (e, elementId) => {
     if (readOnly) return;
-    
+
     const element = elements.find(el => el.id === elementId);
     if (!element) return;
 
@@ -244,12 +244,12 @@ const ProposalCanvasEditor = ({
   const handleResizeStart = (e, handle) => {
     e.stopPropagation();
     e.preventDefault();
-    
+
     if (!selectedElement) return;
-    
+
     const element = elements.find(el => el.id === selectedElement);
     if (!element) return;
-    
+
     setResizingElement(selectedElement);
     setResizeHandle(handle);
     setResizeStart({
@@ -265,19 +265,19 @@ const ProposalCanvasEditor = ({
   // Handle resize move
   const handleResizeMove = useCallback((e) => {
     if (!resizingElement || !resizeHandle || !canvasRef.current) return;
-    
+
     const rect = canvasRef.current.getBoundingClientRect();
     const deltaX = (e.clientX - resizeStart.x) / scale;
     const deltaY = (e.clientY - resizeStart.y) / scale;
-    
+
     const element = elements.find(el => el.id === resizingElement);
     if (!element) return;
-    
+
     let newWidth = resizeStart.width;
     let newHeight = resizeStart.height;
     let newX = resizeStart.elementX;
     let newY = resizeStart.elementY;
-    
+
     // Calculate new size based on handle
     switch (resizeHandle) {
       case 'se': // Southeast - bottom right
@@ -301,7 +301,7 @@ const ProposalCanvasEditor = ({
         newY = resizeStart.elementY + (resizeStart.height - newHeight);
         break;
     }
-    
+
     // Snap to grid
     if (snapToGrid) {
       newWidth = Math.round(newWidth / 10) * 10;
@@ -309,9 +309,9 @@ const ProposalCanvasEditor = ({
       newX = Math.round(newX / 10) * 10;
       newY = Math.round(newY / 10) * 10;
     }
-    
-    updateElement(resizingElement, { 
-      width: newWidth, 
+
+    updateElement(resizingElement, {
+      width: newWidth,
       height: newHeight,
       x: newX,
       y: newY
@@ -336,7 +336,7 @@ const ProposalCanvasEditor = ({
   // Apply text formatting
   const applyTextFormat = (format) => {
     if (!selectedElement) return;
-    
+
     const element = elements.find(el => el.id === selectedElement);
     if (element?.type !== 'text') return;
 
@@ -345,13 +345,13 @@ const ProposalCanvasEditor = ({
       // Apply to selected text
       const range = selection.getRangeAt(0);
       const span = document.createElement('span');
-      
+
       if (format.bold) span.style.fontWeight = 'bold';
       if (format.italic) span.style.fontStyle = 'italic';
       if (format.underline) span.style.textDecoration = 'underline';
       if (format.highlight) span.style.backgroundColor = format.highlight;
       if (format.color) span.style.color = format.color;
-      
+
       range.surroundContents(span);
     } else {
       // Apply to entire element
@@ -372,10 +372,10 @@ const ProposalCanvasEditor = ({
     const element = elements.find(el => el.id === id);
     if (!element) return;
 
-    const newZIndex = direction === 'up' 
+    const newZIndex = direction === 'up'
       ? Math.max(...elements.map(e => e.zIndex)) + 1
       : 1;
-    
+
     updateElement(id, { zIndex: newZIndex });
     saveHistory(elements);
   };
@@ -393,17 +393,17 @@ const ProposalCanvasEditor = ({
   // Send email with PDF
   const handleSendEmail = async () => {
     if (!emailInput || !onSendEmail) return;
-    
+
     if (!canvasRef.current) return;
-    
+
     setSending(true);
     try {
       // Wait for any rendering to complete
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       // Get exact canvas dimensions
       const canvasElement = canvasRef.current;
-      
+
       // Generate high-quality image from canvas
       const canvasImage = await html2canvas(canvasElement, {
         scale: 2, // Reduced from 3 to keep file size under 25MB
@@ -420,23 +420,23 @@ const ProposalCanvasEditor = ({
         scrollX: 0,
         scrollY: 0
       });
-      
+
       // Create PDF with exact A4 dimensions
       const pdf = new jsPDF('p', 'mm', 'a4');
-      
+
       const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
       const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
-      
+
       // Calculate canvas aspect ratio
       const canvasWidth = canvasSize.width;
       const canvasHeight = canvasSize.height;
       const canvasAspect = canvasWidth / canvasHeight;
-      
+
       // Calculate PDF aspect ratio
       const pdfAspect = pdfWidth / pdfHeight;
-      
+
       let imgWidth, imgHeight, imgX, imgY;
-      
+
       // Fit canvas to PDF maintaining aspect ratio
       if (canvasAspect > pdfAspect) {
         // Canvas is wider relative to height - fit to width
@@ -451,20 +451,20 @@ const ProposalCanvasEditor = ({
         imgX = (pdfWidth - imgWidth) / 2;
         imgY = 10;
       }
-      
+
       // Add canvas image to PDF with JPEG compression for smaller file size
       const imgData = canvasImage.toDataURL('image/jpeg', 0.7); // Use JPEG with 70% quality
       pdf.addImage(imgData, 'JPEG', imgX, imgY, imgWidth, imgHeight);
-      
+
       // Convert PDF to blob with compression
       const pdfBlob = pdf.output('blob', { compress: true });
-      
+
       // Send email with PDF
       await onSendEmail(pdfBlob, {
         email: emailInput,
         message: `Please find attached your proposal from ${initialData?.companyName || 'Solar EPC'}`
       });
-      
+
       setShowEmailInput(false);
     } catch (error) {
       console.error('Send Email Error:', error);
@@ -477,11 +477,11 @@ const ProposalCanvasEditor = ({
 
   const handleExport = async () => {
     if (!canvasRef.current) return;
-    
+
     setExporting(true);
     try {
       const canvasElement = canvasRef.current;
-      
+
       // Generate high-quality image from canvas
       const canvasImage = await html2canvas(canvasElement, {
         scale: 2, // Reduced scale to keep file size reasonable
@@ -498,23 +498,23 @@ const ProposalCanvasEditor = ({
         scrollX: 0,
         scrollY: 0
       });
-      
+
       // Create PDF with exact A4 dimensions
       const pdf = new jsPDF('p', 'mm', 'a4');
-      
+
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      
+
       // Calculate canvas aspect ratio
       const canvasWidth = canvasSize.width;
       const canvasHeight = canvasSize.height;
       const canvasAspect = canvasWidth / canvasHeight;
-      
+
       // Calculate PDF aspect ratio
       const pdfAspect = pdfWidth / pdfHeight;
-      
+
       let imgWidth, imgHeight, imgX, imgY;
-      
+
       // Fit canvas to PDF maintaining aspect ratio
       if (canvasAspect > pdfAspect) {
         // Canvas is wider - fit to width
@@ -529,16 +529,16 @@ const ProposalCanvasEditor = ({
         imgX = (pdfWidth - imgWidth) / 2;
         imgY = 10;
       }
-      
+
       // Add canvas image to PDF with JPEG compression
       const imgData = canvasImage.toDataURL('image/jpeg', 0.7); // JPEG with 70% quality
       pdf.addImage(imgData, 'JPEG', imgX, imgY, imgWidth, imgHeight);
-      
+
       // Generate filename
       const customerName = initialData?.customerName || 'Proposal';
       const proposalNumber = initialData?.proposalNumber || initialData?.documentId || 'Unknown';
       const filename = `Proposal_${proposalNumber}_${customerName.replace(/\s+/g, '_')}.pdf`;
-      
+
       pdf.save(filename);
     } catch (error) {
       console.error('PDF Export Error:', error);
@@ -591,24 +591,24 @@ const ProposalCanvasEditor = ({
           document.body.appendChild(tempDiv);
           const contentHeight = tempDiv.scrollHeight + 16; // Add padding
           document.body.removeChild(tempDiv);
-          
+
           // Only increase height, never decrease below minimum
           const newHeight = Math.max(el.height, contentHeight);
-          
+
           if (newHeight > el.height) {
             return { ...el, height: newHeight };
           }
         }
         return el;
       });
-      
+
       // Only update if there are changes
       const hasChanges = updatedElements.some((el, idx) => el.height !== elements[idx].height);
       if (hasChanges) {
         setElements(updatedElements);
       }
     };
-    
+
     // Run auto-sizing after a short delay to ensure DOM is ready
     const timer = setTimeout(autoSizeElements, 100);
     return () => clearTimeout(timer);
@@ -626,7 +626,7 @@ const ProposalCanvasEditor = ({
   useEffect(() => {
     if (initialData && (initialData.id || initialData.proposalNumber)) {
       console.log('[Canvas] Received initialData:', initialData);
-      
+
       // Check if there's saved canvas data
       if (initialData.canvasData?.canvasElements?.length > 0) {
         console.log('[Canvas] Loading saved canvas data:', initialData.canvasData);
@@ -659,7 +659,7 @@ const ProposalCanvasEditor = ({
     if (!data || (!data.id && !data.proposalNumber)) {
       return []; // Return empty array if no real data
     }
-    
+
     const formatDate = (dateStr) => {
       if (!dateStr) return '';
       try {
@@ -669,10 +669,10 @@ const ProposalCanvasEditor = ({
         return dateStr;
       }
     };
-    
+
     const today = formatDate(new Date());
     const validUntil = formatDate(data.validUntil) || formatDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000));
-    
+
     // Parse address fields - use individual fields if available, otherwise parse from customerAddress
     const parseAddressFields = () => {
       // If individual fields are already present, use them
@@ -685,14 +685,14 @@ const ProposalCanvasEditor = ({
           zipCode: data.zipCode || ''
         };
       }
-      
+
       // Otherwise try to parse from customerAddress or projectLocation
       const fullAddress = data.customerAddress || data.projectLocation || '';
       if (!fullAddress) return { address: '', city: '', state: '', country: '', zipCode: '' };
-      
+
       // Split by comma and try to identify parts
       const parts = fullAddress.split(',').map(p => p.trim()).filter(Boolean);
-      
+
       return {
         address: parts[0] || '',
         city: parts[1] || '',
@@ -701,9 +701,9 @@ const ProposalCanvasEditor = ({
         zipCode: parts[4] || ''
       };
     };
-    
+
     const addressFields = parseAddressFields();
-    
+
     // Use actual data only - NO fallback defaults
     const customerName = data.customerName || '';
     const projectName = data.projectName || '';
@@ -712,7 +712,7 @@ const ProposalCanvasEditor = ({
     const total = data.total || 0;
     const subtotal = data.subtotal || 0;
     const gstAmount = data.gstAmount || data.taxAmount || 0;
-    
+
     // Company Info - only from data, no defaults
     const companyName = data.companyName || '';
     const companyTagline = data.companyTagline || '';
@@ -723,21 +723,21 @@ const ProposalCanvasEditor = ({
     const companyPhone = data.companyPhone || '';
     const companyEmail = data.companyEmail || '';
     const companyWebsite = data.companyWebsite || '';
-    
+
     // Format items for table - only real items, no defaults
     const items = data.items || data.equipmentItems || [];
-    const tableData = items.length > 0 
+    const tableData = items.length > 0
       ? items.map((item, idx) => [
-          String(idx + 1),
-          item.name || item.component || '',
-          String(item.quantity || 1),
-          `₹${(item.unitPrice || 0).toLocaleString()}`,
-          `₹${((item.quantity || 1) * (item.unitPrice || 0)).toLocaleString()}`
-        ])
+        String(idx + 1),
+        item.name || item.component || '',
+        String(item.quantity || 1),
+        `₹${(item.unitPrice || 0).toLocaleString()}`,
+        `₹${((item.quantity || 1) * (item.unitPrice || 0)).toLocaleString()}`
+      ])
       : []; // Empty if no items
-    
+
     const customerInitial = customerName.charAt(0).toUpperCase();
-    
+
     return [
       // Header
       {
@@ -1025,7 +1025,7 @@ const ProposalCanvasEditor = ({
         style: { fontSize: 10, color: '#6b7280', fontFamily: 'Inter, system-ui, sans-serif', lineHeight: 1.7 },
         zIndex: 1
       },
-      // Signature - moved down
+      // Signature - dynamic, no default initial
       {
         id: 'signature-line-left',
         type: 'shape',
@@ -1038,7 +1038,7 @@ const ProposalCanvasEditor = ({
         id: 'signature-text-left',
         type: 'text',
         x: 40, y: 1040, width: 300, height: 40,
-        content: `<div style="font-size: 11px; color: #4b5563; line-height: 1.5;"><strong>Signer Name:</strong> ${customerName}<br><strong>Signed Date:</strong> ${today} 07:52:52<br><strong>IP Address:</strong> 49.200.152.110</div>`,
+        content: `<div style="font-size: 11px; color: #4b5563; line-height: 1.5;"><strong>Signer Name:</strong> ${customerName}<br><strong>Signed Date:</strong> ${today}<br><strong>IP Address:</strong> ___.___.___.___</div>`,
         style: { fontSize: 11, color: '#4b5563', fontFamily: 'Inter, system-ui, sans-serif', lineHeight: 1.5 },
         zIndex: 1
       },
@@ -1052,19 +1052,11 @@ const ProposalCanvasEditor = ({
       },
       {
         id: 'signature-box-right',
-        type: 'shape',
+        type: 'image',  // Changed to image type for dynamic signature
         x: 580, y: 1035, width: 190, height: 60,
-        shapeType: 'rectangle',
+        content: '',  // Empty - user will add signature
         style: { backgroundColor: 'white', borderColor: '#d1d5db', borderWidth: 1, borderRadius: 4 },
         zIndex: 1
-      },
-      {
-        id: 'signature-initials',
-        type: 'text',
-        x: 580, y: 1055, width: 190, height: 30,
-        content: `<div style="font-size: 24px; color: #1f2937; text-align: center; font-style: italic; font-family: Georgia, serif;">${customerInitial}</div>`,
-        style: { fontSize: 24, color: '#1f2937', textAlign: 'center', fontFamily: 'Georgia, serif', fontStyle: 'italic' },
-        zIndex: 2
       },
       // Footer - moved down
       {
@@ -1094,16 +1086,15 @@ const ProposalCanvasEditor = ({
       <div className="w-16 bg-white border-r border-gray-200 flex flex-col items-center py-4 gap-2 shadow-sm z-20">
         <button
           onClick={() => setActiveTool('select')}
-          className={`p-3 rounded-lg transition-colors ${
-            activeTool === 'select' ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
-          }`}
+          className={`p-3 rounded-lg transition-colors ${activeTool === 'select' ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+            }`}
           title="Select"
         >
           <MousePointer size={20} />
         </button>
-        
+
         <div className="w-8 h-px bg-gray-200 my-1" />
-        
+
         <button
           onClick={() => addElement('text')}
           className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
@@ -1111,7 +1102,7 @@ const ProposalCanvasEditor = ({
         >
           <Type size={20} />
         </button>
-        
+
         <button
           onClick={() => addElement('table')}
           className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
@@ -1119,7 +1110,7 @@ const ProposalCanvasEditor = ({
         >
           <Table size={20} />
         </button>
-        
+
         <button
           onClick={() => addElement('image')}
           className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
@@ -1127,7 +1118,7 @@ const ProposalCanvasEditor = ({
         >
           <ImageIcon size={20} />
         </button>
-        
+
         <button
           onClick={() => addElement('shape')}
           className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
@@ -1135,7 +1126,7 @@ const ProposalCanvasEditor = ({
         >
           <Shapes size={20} />
         </button>
-        
+
         <button
           onClick={() => addElement('sticky')}
           className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
@@ -1143,14 +1134,29 @@ const ProposalCanvasEditor = ({
         >
           <StickyNote size={20} />
         </button>
-        
+
         <div className="w-8 h-px bg-gray-200 my-1" />
-        
+
+        {/* Custom Document Button */}
+        <button
+          onClick={() => {
+            // Clear canvas and start fresh
+            setElements([]);
+            setHistory([]);
+            setHistoryIndex(-1);
+          }}
+          className="p-3 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+          title="New Custom Document (Clear Canvas)"
+        >
+          <FileText size={20} />
+        </button>
+
+        <div className="w-8 h-px bg-gray-200 my-1" />
+
         <button
           onClick={() => setShowLayers(!showLayers)}
-          className={`p-3 rounded-lg transition-colors ${
-            showLayers ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
-          }`}
+          className={`p-3 rounded-lg transition-colors ${showLayers ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+            }`}
           title="Layers"
         >
           <Layers size={20} />
@@ -1162,6 +1168,24 @@ const ProposalCanvasEditor = ({
         {/* Top Toolbar */}
         <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 shadow-sm z-10">
           <div className="flex items-center gap-3">
+            {/* Custom Document Button */}
+            <button
+              onClick={() => {
+                if (window.confirm('Create new custom document? This will clear the current canvas.')) {
+                  setElements([]);
+                  setHistory([]);
+                  setHistoryIndex(-1);
+                }
+              }}
+              className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm"
+              title="New Custom Document"
+            >
+              <Plus size={16} />
+              <span>Custom Document</span>
+            </button>
+
+            <div className="w-px h-6 bg-gray-300" />
+
             {/* File Actions */}
             <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
               <button
@@ -1208,9 +1232,8 @@ const ProposalCanvasEditor = ({
             {/* Grid Toggle */}
             <button
               onClick={() => setShowGrid(!showGrid)}
-              className={`p-2 rounded-lg transition-all ${
-                showGrid ? 'bg-blue-100 text-blue-600 shadow-sm' : 'hover:bg-gray-100 text-gray-600'
-              }`}
+              className={`p-2 rounded-lg transition-all ${showGrid ? 'bg-blue-100 text-blue-600 shadow-sm' : 'hover:bg-gray-100 text-gray-600'
+                }`}
               title="Toggle Grid"
             >
               <Grid3X3 size={18} />
@@ -1218,9 +1241,8 @@ const ProposalCanvasEditor = ({
 
             <button
               onClick={() => setSnapToGrid(!snapToGrid)}
-              className={`p-2 rounded-lg transition-all ${
-                snapToGrid ? 'bg-blue-100 text-blue-600 shadow-sm' : 'hover:bg-gray-100 text-gray-600'
-              }`}
+              className={`p-2 rounded-lg transition-all ${snapToGrid ? 'bg-blue-100 text-blue-600 shadow-sm' : 'hover:bg-gray-100 text-gray-600'
+                }`}
               title="Snap to Grid"
             >
               <Frame size={18} />
@@ -1302,27 +1324,24 @@ const ProposalCanvasEditor = ({
             <div className="flex items-center gap-1 bg-white rounded-lg p-1 shadow-sm border border-gray-200">
               <button
                 onClick={() => toggleTextFormat('bold')}
-                className={`p-1.5 rounded transition-all ${
-                  textFormat.bold ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
-                }`}
+                className={`p-1.5 rounded transition-all ${textFormat.bold ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+                  }`}
                 title="Bold"
               >
                 <Bold size={16} />
               </button>
               <button
                 onClick={() => toggleTextFormat('italic')}
-                className={`p-1.5 rounded transition-all ${
-                  textFormat.italic ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
-                }`}
+                className={`p-1.5 rounded transition-all ${textFormat.italic ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+                  }`}
                 title="Italic"
               >
                 <Italic size={16} />
               </button>
               <button
                 onClick={() => toggleTextFormat('underline')}
-                className={`p-1.5 rounded transition-all ${
-                  textFormat.underline ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
-                }`}
+                className={`p-1.5 rounded transition-all ${textFormat.underline ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+                  }`}
                 title="Underline"
               >
                 <Underline size={16} />
@@ -1334,25 +1353,22 @@ const ProposalCanvasEditor = ({
             <div className="flex items-center gap-1 bg-white rounded-lg p-1 shadow-sm border border-gray-200">
               <button
                 onClick={() => applyTextFormat({ align: 'left' })}
-                className={`p-1.5 rounded transition-all ${
-                  textFormat.align === 'left' ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
-                }`}
+                className={`p-1.5 rounded transition-all ${textFormat.align === 'left' ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+                  }`}
               >
                 <AlignLeft size={16} />
               </button>
               <button
                 onClick={() => applyTextFormat({ align: 'center' })}
-                className={`p-1.5 rounded transition-all ${
-                  textFormat.align === 'center' ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
-                }`}
+                className={`p-1.5 rounded transition-all ${textFormat.align === 'center' ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+                  }`}
               >
                 <AlignCenter size={16} />
               </button>
               <button
                 onClick={() => applyTextFormat({ align: 'right' })}
-                className={`p-1.5 rounded transition-all ${
-                  textFormat.align === 'right' ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
-                }`}
+                className={`p-1.5 rounded transition-all ${textFormat.align === 'right' ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+                  }`}
               >
                 <AlignRight size={16} />
               </button>
@@ -1432,8 +1448,8 @@ const ProposalCanvasEditor = ({
               height: canvasSize.height,
               transform: `scale(${scale})`,
               transformOrigin: 'top center',
-              backgroundImage: showGrid 
-                ? 'radial-gradient(circle, #d1d5db 1px, transparent 1px)' 
+              backgroundImage: showGrid
+                ? 'radial-gradient(circle, #d1d5db 1px, transparent 1px)'
                 : 'none',
               backgroundSize: '20px 20px',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05)'
@@ -1463,7 +1479,7 @@ const ProposalCanvasEditor = ({
 
             {/* Selection Box */}
             {selectedEl && !readOnly && (
-              <SelectionBox 
+              <SelectionBox
                 element={selectedEl}
                 onBringToFront={() => changeZIndex(selectedEl.id, 'up')}
                 onSendToBack={() => changeZIndex(selectedEl.id, 'down')}
@@ -1483,7 +1499,7 @@ const ProposalCanvasEditor = ({
           </div>
           <div className="flex items-center gap-4">
             <span>{selectedElement ? `Selected: ${selectedEl?.type}` : 'No selection'}</span>
-            {snapToGrid && <span className="text-blue-600 font-medium flex items-center gap-1"><Frame size={12}/> Snap ON</span>}
+            {snapToGrid && <span className="text-blue-600 font-medium flex items-center gap-1"><Frame size={12} /> Snap ON</span>}
           </div>
         </div>
       </div>
@@ -1504,9 +1520,8 @@ const ProposalCanvasEditor = ({
                 <div
                   key={el.id}
                   onClick={() => setSelectedElement(el.id)}
-                  className={`p-3 border-b border-gray-100 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors ${
-                    selectedElement === el.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
-                  }`}
+                  className={`p-3 border-b border-gray-100 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors ${selectedElement === el.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                    }`}
                 >
                   <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
                     {el.type === 'text' && <Type size={14} className="text-gray-500" />}
@@ -1551,15 +1566,15 @@ const ProposalCanvasEditor = ({
 };
 
 // ── Canvas Element Component ───────────────────────────────────────────────
-const CanvasElement = ({ 
-  element, 
-  isSelected, 
-  onMouseDown, 
-  onUpdate, 
+const CanvasElement = ({
+  element,
+  isSelected,
+  onMouseDown,
+  onUpdate,
   onUpdateStyle,
   onDelete,
   onDuplicate,
-  readOnly 
+  readOnly
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const contentRef = useRef(null);
@@ -1621,7 +1636,7 @@ const CanvasElement = ({
               <thead>
                 <tr>
                   {element.headers?.map((header, i) => (
-                    <th 
+                    <th
                       key={i}
                       className="border border-gray-300 p-2 text-sm font-semibold bg-gray-50 text-left"
                     >
@@ -1634,7 +1649,7 @@ const CanvasElement = ({
                 {element.data?.map((row, rowIndex) => (
                   <tr key={rowIndex}>
                     {row.map((cell, colIndex) => (
-                      <td 
+                      <td
                         key={colIndex}
                         className="border border-gray-300 p-2 text-sm"
                         contentEditable={!readOnly}
@@ -1655,18 +1670,59 @@ const CanvasElement = ({
         );
 
       case 'image':
+        const handleImageDoubleClick = () => {
+          if (readOnly) return;
+          // Create a hidden file input
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'image/*';
+          input.onchange = (e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                onUpdate({ content: event.target?.result });
+              };
+              reader.readAsDataURL(file);
+            }
+          };
+          input.click();
+        };
+
+        const handleImageDrop = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (readOnly) return;
+
+          const file = e.dataTransfer.files?.[0];
+          if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              onUpdate({ content: event.target?.result });
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+
         return (
-          <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden">
+          <div
+            className="w-full h-full flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden cursor-pointer"
+            onDoubleClick={handleImageDoubleClick}
+            onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onDrop={handleImageDrop}
+          >
             {element.content ? (
-              <img 
-                src={element.content} 
+              <img
+                src={element.content}
                 alt="Canvas element"
                 className="max-w-full max-h-full object-contain"
+                draggable={false}
               />
             ) : (
               <div className="text-center p-4">
                 <ImageIcon size={32} className="mx-auto text-gray-400 mb-2" />
                 <p className="text-xs text-gray-500">Double click to add image</p>
+                <p className="text-[10px] text-gray-400 mt-1">or drag & drop</p>
               </div>
             )}
           </div>
@@ -1683,8 +1739,8 @@ const CanvasElement = ({
             className="w-full h-full"
             style={{
               backgroundColor: element.style?.backgroundColor || '#e5e7eb',
-              border: element.style?.borderWidth 
-                ? `${element.style.borderWidth}px solid ${element.style.borderColor || '#9ca3af'}` 
+              border: element.style?.borderWidth
+                ? `${element.style.borderWidth}px solid ${element.style.borderColor || '#9ca3af'}`
                 : 'none',
               ...shapeStyles[element.shapeType || 'rectangle']
             }}
@@ -1693,7 +1749,7 @@ const CanvasElement = ({
 
       case 'sticky':
         return (
-          <div 
+          <div
             className="w-full h-full p-3 shadow-md"
             style={{
               backgroundColor: element.style?.backgroundColor || '#fef3c7',
@@ -1717,9 +1773,8 @@ const CanvasElement = ({
 
   return (
     <div
-      className={`absolute transition-shadow ${
-        isSelected ? 'ring-2 ring-blue-500 shadow-lg z-50' : ''
-      } ${readOnly ? 'pointer-events-none' : ''}`}
+      className={`absolute transition-shadow ${isSelected ? 'ring-2 ring-blue-500 shadow-lg z-50' : ''
+        } ${readOnly ? 'pointer-events-none' : ''}`}
       style={{
         left: element.x,
         top: element.y,
@@ -1736,11 +1791,11 @@ const CanvasElement = ({
 };
 
 // ── Selection Box Component ─────────────────────────────────────────────────
-const SelectionBox = ({ 
-  element, 
-  onBringToFront, 
-  onSendToBack, 
-  onDelete, 
+const SelectionBox = ({
+  element,
+  onBringToFront,
+  onSendToBack,
+  onDelete,
   onDuplicate,
   onResizeStart
 }) => {
@@ -1757,21 +1812,21 @@ const SelectionBox = ({
     >
       {/* Selection border */}
       <div className="absolute inset-0 border-2 border-blue-500" />
-      
+
       {/* Resize handles */}
-      <div 
+      <div
         className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-sm cursor-nw-resize pointer-events-auto"
         onMouseDown={(e) => onResizeStart?.(e, 'nw')}
       />
-      <div 
+      <div
         className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-sm cursor-ne-resize pointer-events-auto"
         onMouseDown={(e) => onResizeStart?.(e, 'ne')}
       />
-      <div 
+      <div
         className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-sm cursor-sw-resize pointer-events-auto"
         onMouseDown={(e) => onResizeStart?.(e, 'sw')}
       />
-      <div 
+      <div
         className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-sm cursor-se-resize pointer-events-auto"
         onMouseDown={(e) => onResizeStart?.(e, 'se')}
       />

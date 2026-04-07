@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState, useRef } from 'react';
+﻿import React, { useMemo, useEffect, useState, useRef } from 'react';
 import {
   TrendingUp, TrendingDown, DollarSign, IndianRupee, Clock,
   FileText, CheckCircle, AlertCircle, BarChart3, PieChart,
@@ -1537,6 +1537,8 @@ const ExpenseByCategoryChart = ({ transactionAnalytics }) => {
             animationDuration={1500}
             animationBegin={200}
             radius={[0, 8, 8, 0]}
+            label={({ value }) => `₹${(value / 1000).toFixed(1)}L`}
+            labelPosition="right"
             onMouseEnter={(_, index) => setHoveredCategory(index)}
             onMouseLeave={() => setHoveredCategory(null)}
           >
@@ -1554,28 +1556,38 @@ const ExpenseByCategoryChart = ({ transactionAnalytics }) => {
         </BarChart>
       </ResponsiveContainer>
       
-      {/* Bottom legend showing color indicators */}
-      <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-[var(--border-base)]">
-        {data.slice(0, 6).map((item, index) => (
-          <div 
-            key={index}
-            className={`flex items-center gap-1.5 px-2 py-1 rounded-lg transition-all duration-200 ${hoveredCategory === index ? 'bg-[var(--bg-overlay)] scale-105' : ''}`}
-          >
+      {/* Enhanced Legend Grid */}
+      <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-[var(--border-base)]">
+        {data.map((item, index) => {
+          const percentage = ((item.amount / total) * 100).toFixed(1);
+          return (
             <div 
-              className="w-2.5 h-2.5 rounded-full shadow-sm"
-              style={{ 
-                background: `linear-gradient(135deg, ${item.color.from}, ${item.color.to})`,
-                boxShadow: `0 1px 3px ${item.color.glow}60`
-              }}
-            />
-            <span className="text-[9px] text-[var(--text-muted)] truncate max-w-[80px]">
-              {item.category}
-            </span>
-          </div>
-        ))}
-        {data.length > 6 && (
-          <span className="text-[9px] text-[var(--text-muted)] px-2 py-1">+{data.length - 6} more</span>
-        )}
+              key={item.category} 
+              className="group/legend flex items-center gap-2 p-2 rounded-lg hover:bg-[var(--bg-overlay)] transition-all duration-300 cursor-pointer hover:scale-105"
+              onMouseEnter={() => setHoveredCategory(index)}
+              onMouseLeave={() => setHoveredCategory(null)}
+            >
+              <div 
+                className="w-3 h-3 rounded-full shadow-lg relative overflow-hidden flex-shrink-0"
+                style={{ 
+                  background: `linear-gradient(135deg, ${item.color.from}, ${item.color.to})`,
+                  boxShadow: `0 2px 4px ${item.color.glow}80`
+                }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/legend:translate-x-full transition-transform duration-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-medium text-[var(--text-muted)] truncate group-hover/legend:text-[var(--text-primary)] transition-colors">
+                  {item.originalCategory || item.category}
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-[9px] font-bold text-[var(--text-primary)] tabular-nums">{fmt(item.amount)}</p>
+                  <span className="text-[8px] text-[var(--text-muted)]">({percentage}%)</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

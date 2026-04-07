@@ -18,6 +18,7 @@ import {
 import { extname, join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { LeadsService } from '../services/leads.service';
+import { ExportQueueService } from '../services/export-queue.service';
 import { CreateLeadDto, UpdateLeadDto, QueryLeadDto, AddActivityDto, BulkActionDto } from '../dto/lead.dto';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
 import { TenantGuard } from '../../../core/tenant/guards/tenant.guard';
@@ -29,7 +30,10 @@ import { RequirePermission } from '../../../modules/settings/decorators/permissi
 export class LeadsController {
   private readonly logger = new Logger(LeadsController.name);
   
-  constructor(private readonly leadsService: LeadsService) {}
+  constructor(
+    private readonly leadsService: LeadsService,
+    private readonly exportQueueService: ExportQueueService
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -367,14 +371,25 @@ export class LeadsController {
   @HttpCode(HttpStatus.OK)
   @RequirePermission('crm', 'export')
   async exportLeads(
-    @Body() body: { leadIds: string[] },
+    @Body() body: { leadIds?: string[]; filters?: any },
     @Request() req: any
   ) {
     try {
       const tenantId = req.tenant?.id;
       const user = req.user;
-      this.logger.log(`[DEBUG] exportLeads ${body.leadIds?.length} leads`);
-      return await this.leadsService.exportLeads(body.leadIds, tenantId, user);
+      
+      // Check if using filters or specific IDs
+      if (body.filters && Object.keys(body.filters).length > 0) {
+        this.logger.log(`[EXPORT] Filter-based export with filters:`, body.filters);
+        return await this.leadsService.exportLeadsWithFilters(body.filters, tenantId, user);
+      } else if (body.leadIds && body.leadIds.length > 0) {
+        this.logger.log(`[EXPORT] ID-based export: ${body.leadIds.length} leads`);
+        return await this.leadsService.exportLeads(body.leadIds, tenantId, user);
+      } else {
+        this.logger.log(`[EXPORT] No filters or IDs - exporting ALL leads`);
+        // Export all leads when no filters or IDs provided
+        return await this.leadsService.exportLeadsWithFilters({}, tenantId, user);
+      }
     } catch (error: any) {
       this.logger.error(`Export leads failed: ${error?.message || 'Unknown error'}`, error?.stack);
       throw error;

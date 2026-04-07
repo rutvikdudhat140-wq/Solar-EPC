@@ -252,6 +252,28 @@ const PDFTemplateCustomizer = ({
             {/* Colors Tab */}
             {activeTab === 'colors' && (
               <div className="space-y-4">
+                {/* Header Color Section */}
+                <div className="p-4 rounded-xl bg-[var(--bg-elevated)] border-2 border-[var(--primary)]">
+                  <h4 className="text-sm font-bold text-[var(--primary)] mb-3 flex items-center gap-2">
+                    <Layout size={16} />
+                    Header Background Color
+                  </h4>
+                  <div className="flex items-center gap-4">
+                    <ColorInput
+                      label="Header Color"
+                      value={config.colors.primary}
+                      onChange={(v) => updateConfig('colors.primary', v)}
+                    />
+                    <div
+                      className="w-20 h-12 rounded-lg border-2 border-[var(--border-base)]"
+                      style={{ backgroundColor: `rgb(${config.colors.primary?.join(',') || '0,128,128'})` }}
+                    />
+                  </div>
+                  <p className="text-xs text-[var(--text-muted)] mt-2">
+                    Click color picker to change PDF header background
+                  </p>
+                </div>
+
                 <h4 className="text-sm font-bold text-[var(--text-primary)]">Color Palette</h4>
                 <div className="grid grid-cols-2 gap-4 p-4 rounded-xl bg-[var(--bg-elevated)]">
                   <ColorInput

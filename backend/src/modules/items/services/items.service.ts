@@ -115,7 +115,28 @@ export class ItemsService {
       ...createItemDto,
       tenantId,
     });
-    return item.save();
+    const saved = await item.save();
+    
+    // Log stock movement if item was created with stock
+    if (saved.stock && saved.stock > 0) {
+      try {
+        console.log(`[ITEMS CREATE] Logging PURCHASE movement for new item: ${saved._id.toString()}, qty: ${saved.stock}`);
+        await this.stockMovementService.logMovement(tenantId, {
+          itemId: saved._id.toString(),
+          type: 'PURCHASE',
+          quantity: saved.stock,
+          reference: createItemDto.poReference || 'Initial Stock',
+          referenceType: 'PO',
+          note: `Initial stock of ${saved.stock} units created for new item`,
+          warehouseName: saved.warehouse,
+        });
+        console.log(`[ITEMS CREATE] PURCHASE logged successfully for new item`);
+      } catch (err) {
+        console.error('[ITEMS CREATE] Failed to log PURCHASE for new item:', err);
+      }
+    }
+    
+    return saved;
   }
 
   async update(tenantId: string, id: string, updateItemDto: UpdateItemDto) {
@@ -250,6 +271,26 @@ export class ItemsService {
           },
           { new: true },
         ).exec();
+        
+        // Log stock movement for PURCHASE (existing warehouse)
+        try {
+          if (updated) {
+            console.log(`[ITEMS STOCK-IN] Logging PURCHASE movement for existing warehouse: ${warehouse}`);
+            await this.stockMovementService.logMovement(tenantId, {
+              itemId: updated._id.toString(),
+              type: 'PURCHASE',
+              quantity: quantity,
+              reference: poReference,
+              referenceType: 'PO',
+              note: remarks || `Stock in: ${quantity} units to ${warehouse}`,
+              warehouseName: warehouse,
+            });
+            console.log(`[ITEMS STOCK-IN] PURCHASE logged successfully for existing warehouse`);
+          }
+        } catch (err) {
+          console.error('[ITEMS STOCK-IN] Failed to log PURCHASE for existing warehouse:', err);
+        }
+        
         return { data: updated, message: `Stock in successful. Added ${quantity} units to ${warehouse}.` };
       } else {
         // Create a new item record for this warehouse (clone of original item, new warehouse + stock)

@@ -173,6 +173,38 @@ LeadSchema.index({ tenantId: 1, createdBy: 1, assignedTo: 1 }); // Compound inde
 LeadSchema.index({ tenantId: 1, statusKey: 1 }); // For dashboard analytics
 LeadSchema.index({ tenantId: 1, createdAt: -1 }); // For recent leads queries
 
+// PERFORMANCE OPTIMIZATION: High-impact query indexes
+LeadSchema.index({ tenantId: 1, isDeleted: 1, createdAt: -1 }); // For list queries with pagination
+LeadSchema.index({ tenantId: 1, isDeleted: 1, statusKey: 1, createdAt: -1 }); // For filtered lists
+LeadSchema.index({ tenantId: 1, isDeleted: 1, source: 1, createdAt: -1 }); // For source-filtered lists
+LeadSchema.index({ tenantId: 1, isDeleted: 1, city: 1, createdAt: -1 }); // For city-filtered lists
+LeadSchema.index({ tenantId: 1, isDeleted: 1, score: -1 }); // For high-score lead queries
+LeadSchema.index({ tenantId: 1, isDeleted: 1, value: -1 }); // For high-value lead queries
+LeadSchema.index({ tenantId: 1, isDeleted: 1, slaBreached: 1 }); // For SLA breach queries
+
+// Dashboard analytics indexes
+LeadSchema.index({ tenantId: 1, isDeleted: 1, statusKey: 1, value: 1 }); // For funnel stats
+LeadSchema.index({ tenantId: 1, isDeleted: 1, source: 1, value: 1 }); // For source stats
+LeadSchema.index({ tenantId: 1, isDeleted: 1, assignedTo: 1, statusKey: 1 }); // For performer stats
+LeadSchema.index({ tenantId: 1, isDeleted: 1, createdAt: 1, statusKey: 1 }); // For monthly trends
+
+// Text search optimization
+LeadSchema.index({ 
+  name: 'text', 
+  email: 'text', 
+  company: 'text', 
+  phone: 'text', 
+  city: 'text' 
+}, { 
+  weights: { 
+    name: 10, 
+    email: 8, 
+    company: 6, 
+    phone: 4, 
+    city: 2 
+  } 
+});
+
 // Existing indexes
 LeadSchema.index({ email: 1, tenantId: 1 }, { unique: true, sparse: true });
 LeadSchema.index({ statusKey: 1 });

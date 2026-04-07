@@ -522,6 +522,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
       return true;
     });
   }, [manualAdjustments, calendarFilterYear, calendarFilterMonth, calendarFilterDay]);
+  
   const filteredPayablesByYear = useMemo(() => {
     if (calendarFilterYear === 'all') return payables;
     return payables.filter(p => {
@@ -725,7 +726,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
         return { month: m.month, revenue, cost };
       });
       const cashFlowSeries = months.map((m) => {
-        // Inflow: Use invoices.paid instead of payments (like backend getBalance)
+        // Inflow: Use getPaidAmount with manualAdjustments state (EXACT same as Collected calculation)
         const inflow = (invoicesRes || []).reduce((sum, inv) => {
           // For paid invoices, use invoiceDate if paidDate is missing
           let dt = safeDate(inv?.paidDate);
@@ -733,11 +734,8 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
             dt = safeDate(inv?.invoiceDate) || safeDate(inv?.updatedAt) || safeDate(inv?.createdAt);
           }
           if (!dt || dt < m.start || dt >= m.end) return sum;
-          // Use paid amount (or amount if status is Paid)
-          const paid = Number(inv?.paid || 0);
-          const amount = Number(inv?.amount || 0);
-          const effectivePaid = (paid === 0 && inv?.status === 'Paid') ? amount : paid;
-          return sum + effectivePaid;
+          // EXACT same calculation as totalCollected - must match exactly
+          return sum + getPaidAmount(inv, manualAdjustments || []);
         }, 0);
         const outflow = (vendorExpenses || []).reduce((sum, exp) => {
           if (String(exp?.status || '').toLowerCase() !== 'paid') return sum;
@@ -2382,7 +2380,21 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
   // Use filteredInvoicesByYear so values respect the selected month/year filter
   const revenueCurrent = (filteredInvoicesByYear || []).reduce((sum, inv) => sum + Number(inv?.amount || inv?.invoiceAmount || 0), 0);
   // Calculate total collected from invoices
-  const totalCollected = (filteredInvoicesByYear || []).reduce((sum, inv) => sum + getPaidAmount(inv, manualAdjustments), 0);
+  const totalCollected = (filteredInvoicesByYear || []).reduce((sum, inv) => {
+    const paid = getPaidAmount(inv, manualAdjustments);
+    console.log('💵 Collected Invoice:', {
+      id: inv.id || inv._id,
+      invoiceNumber: inv.invoiceNumber,
+      status: inv.status,
+      amount: inv.amount,
+      paid: inv.paid,
+      paidAmount: inv.paidAmount,
+      calculatedPaid: paid
+    });
+    return sum + paid;
+  }, 0);
+  console.log('✅ Total Collected:', totalCollected, 'Invoice count:', filteredInvoicesByYear?.length);
+  
   // Calculate total receivables (outstanding balance only)
   const receivables = (filteredInvoicesByYear || []).reduce((sum, inv) => sum + getBalance(inv, manualAdjustments), 0);
   // Calculate payables total for display
@@ -2536,12 +2548,13 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
                 setCalendarFilterMonth(dateInfo.month);
                 setCalendarFilterDay(dateInfo.day);
               } else {
-                setCalendarFilterYear('all');
+                // Clear filter - reset to current year (default view)
+                setCalendarFilterYear(currentYear.toString());
                 setCalendarFilterMonth(undefined);
                 setCalendarFilterDay(undefined);
               }
             }}
-            initialYear={calendarFilterYear !== 'all' ? parseInt(calendarFilterYear) : undefined}
+            initialYear={calendarFilterYear !== 'all' ? parseInt(calendarFilterYear) : currentYear}
             initialMonth={calendarFilterMonth}
             initialDay={calendarFilterDay}
             availableYears={availableYears}
@@ -2589,10 +2602,10 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
                 }
               </p>
               <button
-                onClick={() => { setCalendarFilterYear('all'); setCalendarFilterMonth(undefined); setCalendarFilterDay(undefined); }}
-                className="px-4 py-2 bg-[var(--primary)] text-[var(--primary-inv)] rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
+                onClick={() => { setCalendarFilterYear(currentYear.toString()); setCalendarFilterMonth(undefined); setCalendarFilterDay(undefined); }}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
               >
-                Show All Data
+                Show Current Year Data
               </button>
             </div>
           ) : (

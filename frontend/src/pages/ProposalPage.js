@@ -25,6 +25,7 @@ import { toast } from '../components/ui/Toast';
 import { documentsApi } from '../services/documentsApi';
 import { inventoryApi } from '../services/inventoryApi';
 import ProposalCanvasEditor from '../components/ProposalCanvasEditor';
+import CustomDocumentEditor from '../components/CustomDocumentEditor';
 
 import api from '../lib/apiClient';
 
@@ -380,6 +381,7 @@ const ProposalPage = () => {
   const [showDetailPanel, setShowDetailPanel] = useState(false);
   const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
   const [isCanvasEditorOpen, setIsCanvasEditorOpen] = useState(false);
+  const [isCustomDocumentEditorOpen, setIsCustomDocumentEditorOpen] = useState(false);
   const [showEmailOnCanvasOpen, setShowEmailOnCanvasOpen] = useState(false);
 
   // ── Filter Proposals ────────────────────────────────────────────────────────
@@ -420,7 +422,7 @@ const ProposalPage = () => {
       const res = await documentsApi.getEstimatesProposalsQuotations();
       const docs = res?.data?.data || res?.data || [];
       console.log('[ProposalPage] Raw documents from API:', docs);
-      
+
       const formatted = docs
         .filter(d => d.type === 'proposal')
         .map(d => ({
@@ -428,12 +430,12 @@ const ProposalPage = () => {
           id: d._id || d.id,
           documentId: d.documentId,
           proposalNumber: d.documentId || d.proposalNumber,
-          
+
           // Project Info
           projectName: d.title || d.projectName || 'Untitled Proposal',
           projectDescription: d.description || d.projectDescription || '',
           projectLocation: d.projectLocation || d.customerAddress || '',
-          
+
           // Customer Info
           customerName: d.customerName || 'Unknown Customer',
           customerEmail: d.customerEmail || '',
@@ -446,12 +448,12 @@ const ProposalPage = () => {
           country: d.country || '',
           zipCode: d.zipCode || '',
           companyName: d.companyName || '',
-          
+
           // System Details
           systemCapacity: d.systemCapacity || 0,
           projectType: d.projectType || 'residential',
           installationType: d.installationType || 'rooftop',
-          
+
           // Equipment Items
           equipmentItems: d.equipmentItems || d.items?.map(item => ({
             component: item.name || item.component,
@@ -460,7 +462,7 @@ const ProposalPage = () => {
             quantity: item.quantity || 0
           })) || [],
           items: d.items || [],
-          
+
           // Costs
           equipmentCost: d.equipmentCost || 0,
           installationCost: d.installationCost || 0,
@@ -468,13 +470,13 @@ const ProposalPage = () => {
           transportationCost: d.transportationCost || 0,
           miscellaneousCost: d.miscellaneousCost || 0,
           discount: d.discount || 0,
-          
+
           // Financial Summary
           subtotal: d.subtotal || d.total || 0,
           gstRate: d.taxRate || d.gstRate || 18,
           gstAmount: d.taxAmount || d.gstAmount || 0,
           total: d.total || 0,
-          
+
           // Status & Dates
           status: (d.status || 'draft').toLowerCase(),
           validUntil: d.validUntil || null,
@@ -483,21 +485,21 @@ const ProposalPage = () => {
           viewedAt: d.viewedAt || null,
           acceptedAt: d.acceptedAt || null,
           rejectedAt: d.rejectedAt || null,
-          
+
           // Terms & Notes
           terms: d.terms || d.notes || '',
           notes: d.notes || '',
-          
+
           // Benefits (calculated if not provided)
           benefits: d.benefits || {
             yearlySavings: Math.round((d.systemCapacity || 0) * 15000),
             co2Reduction: Math.round((d.systemCapacity || 0) * 1.3 * 10) / 10,
-            paybackPeriod: d.total > 0 && (d.systemCapacity || 0) > 0 
-              ? Math.round(d.total / ((d.systemCapacity || 0) * 15000) * 10) / 10 
+            paybackPeriod: d.total > 0 && (d.systemCapacity || 0) > 0
+              ? Math.round(d.total / ((d.systemCapacity || 0) * 15000) * 10) / 10
               : 0,
             warrantyYears: 25
           },
-          
+
           // Metadata
           createdBy: d.createdBy || '',
           assignedTo: d.assignedTo || '',
@@ -506,7 +508,7 @@ const ProposalPage = () => {
           customerId: d.customerId,
           tenantId: d.tenantId,
         }));
-      
+
       console.log('[ProposalPage] Formatted proposals:', formatted);
       setProposals(formatted);
     } catch (error) {
@@ -524,11 +526,11 @@ const ProposalPage = () => {
   const handleCreateProposal = async (data) => {
     try {
       console.log('[DEBUG] Creating proposal with data:', data);
-      
+
       // Generate unique documentId with timestamp to avoid duplicates
       const timestamp = Date.now().toString(36).toUpperCase();
       const uniqueId = `PROP-${new Date().getFullYear()}-${timestamp}`;
-      
+
       // Ensure all fields have default values
       const payload = {
         type: 'proposal',
@@ -546,13 +548,13 @@ const ProposalPage = () => {
         country: data.country || '',
         zipCode: data.zipCode || '',
         companyName: data.companyName || '',
-        
+
         // System details
         systemCapacity: data.systemCapacity || 0,
         projectType: data.projectType || 'residential',
         installationType: data.installationType || 'rooftop',
         projectLocation: data.projectLocation || '',
-        
+
         // Equipment items - ensure proper format
         items: (data.items || []).map(item => ({
           name: item.name || item.component || item.description || 'Item',
@@ -568,7 +570,7 @@ const ProposalPage = () => {
           description: item.description || item.longDescription || '',
           quantity: parseInt(item.quantity) || 1
         })),
-        
+
         // Costs - ensure numbers
         equipmentCost: parseFloat(data.equipmentCost) || 0,
         installationCost: parseFloat(data.installationCost) || 0,
@@ -576,21 +578,21 @@ const ProposalPage = () => {
         transportationCost: parseFloat(data.transportationCost) || 0,
         miscellaneousCost: parseFloat(data.miscellaneousCost) || 0,
         discount: parseFloat(data.discount) || 0,
-        
+
         // Financials
         subtotal: parseFloat(data.subtotal || data.subTotal || 0),
         taxRate: parseFloat(data.taxRate || data.gstRate) || 18,
         taxAmount: parseFloat(data.taxAmount || data.gstAmount) || 0,
         total: parseFloat(data.total) || 0,
-        
+
         // Status
         status: data.status || 'draft',
         validUntil: data.validUntil || data.openTill || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        
+
         // Terms & Notes
         terms: data.terms || '',
         notes: data.notes || '',
-        
+
         // Benefits
         benefits: data.benefits || {
           yearlySavings: Math.round((data.systemCapacity || 5) * 15000),
@@ -599,16 +601,16 @@ const ProposalPage = () => {
           warrantyYears: 25
         }
       };
-      
+
       console.log('[DEBUG] Payload being sent to API:', payload);
-      
+
       const response = await documentsApi.create(payload);
       console.log('[DEBUG] API Response:', response);
-      
+
       toast.success('Proposal created successfully!');
       fetchProposals();
       setIsCreateModalOpen(false);
-      
+
       // Open canvas editor with the newly created proposal data
       const newProposal = response.data || { ...payload, id: response.id || Date.now() };
       setSelectedProposal(newProposal);
@@ -618,7 +620,7 @@ const ProposalPage = () => {
       console.error('[DEBUG] Error status:', error?.status);
       console.error('[DEBUG] Error message:', error?.message);
       console.error('[DEBUG] Error data:', error?.data);
-      
+
       // Show detailed error message
       const errorMsg = error?.message || 'Failed to create proposal';
       const errorDetails = error?.data?.errors?.map(e => e.message).join(', ') || '';
@@ -686,13 +688,13 @@ const ProposalPage = () => {
         customerPhone: data.customerPhone || '',
         customerAddress: data.customerAddress || data.projectLocation || '',
         companyName: data.companyName || '',
-        
+
         // System details
         systemCapacity: data.systemCapacity || 0,
         projectType: data.projectType || 'residential',
         installationType: data.installationType || 'rooftop',
         projectLocation: data.projectLocation || '',
-        
+
         // Equipment items
         items: data.equipmentItems?.map(item => ({
           name: item.component,
@@ -703,7 +705,7 @@ const ProposalPage = () => {
           total: item.total || 0
         })) || [],
         equipmentItems: data.equipmentItems || [],
-        
+
         // Costs
         equipmentCost: data.equipmentCost || 0,
         installationCost: data.installationCost || 0,
@@ -711,18 +713,18 @@ const ProposalPage = () => {
         transportationCost: data.transportationCost || 0,
         miscellaneousCost: data.miscellaneousCost || 0,
         discount: data.discount || 0,
-        
+
         // Financials
         subtotal: data.subtotal || 0,
         taxRate: data.gstRate || 18,
         taxAmount: data.gstAmount || 0,
         total: data.total || 0,
-        
+
         // Terms & Notes
         terms: data.terms || '',
         notes: data.notes || ''
       };
-      
+
       await documentsApi.update(id, payload);
       toast.success('Proposal updated successfully');
       fetchProposals();
@@ -958,13 +960,12 @@ const ProposalPage = () => {
         const isOpen = v === 'sent' || v === 'viewed';
         return (
           <span
-            className={`px-3 py-1 rounded-full text-[11px] font-medium ${
-              isAccepted 
-                ? 'bg-green-100 text-green-700 border border-green-200' 
-                : isOpen
-                ? 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border border-[var(--border-base)]'
-                : 'bg-[var(--bg-hover)] text-[var(--text-secondary)]'
-            }`}
+            className={`px-3 py-1 rounded-full text-[11px] font-medium ${isAccepted
+              ? 'bg-green-100 text-green-700 border border-green-200'
+              : isOpen
+                ? 'bg-white text-gray-600 border border-gray-300'
+                : 'bg-gray-100 text-gray-700'
+              }`}
           >
             {config.label}
           </span>
@@ -983,11 +984,10 @@ const ProposalPage = () => {
             <Edit size={14} />
           </button>
           <button
-            className={`p-1 transition-colors ${
-              doc.customerEmail 
-                ? 'text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--bg-hover)]' 
-                : 'text-[var(--text-muted)] cursor-not-allowed'
-            }`}
+            className={`p-1 transition-colors ${doc.customerEmail
+              ? 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+              : 'text-gray-300 cursor-not-allowed'
+              }`}
             disabled={!doc.customerEmail}
             onClick={(e) => {
               e.stopPropagation();
@@ -1067,7 +1067,7 @@ const ProposalPage = () => {
             <Plus size={16} />
             New Proposal
           </button>
-          
+
           {/* Layout Toggle */}
           <div className="flex items-center border border-[var(--border-base)] rounded-lg overflow-hidden">
             <button className="p-2 bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] border-r border-[var(--border-base)]">
@@ -1110,7 +1110,7 @@ const ProposalPage = () => {
           </button>
 
           {/* Toggle Side Panel Arrow */}
-          <button 
+          <button
             onClick={() => {
               if (showDetailPanel) {
                 handleCloseDetail();
@@ -1202,34 +1202,34 @@ const ProposalPage = () => {
                   </thead>
                   <tbody>
                     {filteredProposals.map((proposal, index) => (
-                      <tr 
-                        key={proposal.id} 
-                        className={`border-b border-[var(--border-base)] hover:bg-[var(--bg-hover)] cursor-pointer ${selectedProposal?.id === proposal.id ? 'bg-[var(--bg-hover)] border-l-4 border-l-[var(--primary)]' : ''}`}
+                      <tr
+                        key={proposal.id}
+                        className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${selectedProposal?.id === proposal.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`}
                       >
                         <td className="py-3 px-4 group">
                           <div className="relative">
-                            <span 
-                              className="text-xs font-medium text-[var(--red)] hover:text-[var(--red)] cursor-pointer block"
+                            <span
+                              className="text-xs font-medium text-red-500 hover:text-red-600 cursor-pointer block"
                               onClick={() => handleOpenCanvasEditor(proposal)}
                             >{proposal.proposalNumber}</span>
                             {/* View | Edit links - visible on hover */}
                             <div className="absolute left-0 top-full mt-0.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto">
-                              <button 
+                              <button
                                 onClick={(e) => { e.stopPropagation(); handleOpenCanvasEditor(proposal); }}
                                 className="text-[10px] text-[var(--text-muted)] hover:text-[var(--primary)] hover:underline"
                                 title="Open in Canvas Editor"
                               >
                                 Canvas
                               </button>
-                              <span className="text-[10px] text-[var(--text-muted)]">|</span>
-                              <button 
+                              <span className="text-[10px] text-gray-400">|</span>
+                              <button
                                 onClick={(e) => { e.stopPropagation(); handleProposalClick(proposal); }}
                                 className="text-[10px] text-[var(--text-muted)] hover:text-[var(--primary)] hover:underline"
                               >
                                 View
                               </button>
-                              <span className="text-[10px] text-[var(--text-muted)]">|</span>
-                              <button 
+                              <span className="text-[10px] text-gray-400">|</span>
+                              <button
                                 onClick={(e) => { e.stopPropagation(); handleProposalClick(proposal); setIsEditMode(true); }}
                                 className="text-[10px] text-[var(--text-muted)] hover:text-[var(--primary)] hover:underline"
                               >
@@ -1238,13 +1238,13 @@ const ProposalPage = () => {
                             </div>
                           </div>
                         </td>
-                        <td 
+                        <td
                           className="py-3 px-4"
                           onClick={() => { setSelectedProposal(proposal); setIsEditMode(true); }}
                         >
                           <span className="text-xs text-[var(--text-secondary)] hover:text-[var(--primary)] cursor-pointer">{proposal.projectName}</span>
                         </td>
-                        <td 
+                        <td
                           className="py-3 px-4"
                           onClick={() => { setSelectedProposal(proposal); setIsEditMode(true); }}
                         >
@@ -1275,13 +1275,12 @@ const ProposalPage = () => {
                             const isOpen = proposal.status === 'sent' || proposal.status === 'viewed';
                             return (
                               <span
-                                className={`px-3 py-1 rounded-full text-[11px] font-medium ${
-                                  isAccepted 
-                                    ? 'bg-green-100 text-green-700 border border-green-200' 
-                                    : isOpen
-                                    ? 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border border-[var(--border-base)]'
-                                    : 'bg-[var(--bg-hover)] text-[var(--text-secondary)]'
-                                }`}
+                                className={`px-3 py-1 rounded-full text-[11px] font-medium ${isAccepted
+                                  ? 'bg-green-100 text-green-700 border border-green-200'
+                                  : isOpen
+                                    ? 'bg-white text-gray-600 border border-gray-300'
+                                    : 'bg-gray-100 text-gray-700'
+                                  }`}
                               >
                                 {config.label}
                               </span>
@@ -1292,11 +1291,10 @@ const ProposalPage = () => {
                           <button
                             onClick={(e) => { e.stopPropagation(); handleSendEmail(proposal); }}
                             disabled={!proposal.customerEmail}
-                            className={`p-1 transition-colors ${
-                              proposal.customerEmail 
-                                ? 'text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--bg-hover)]' 
-                                : 'text-[var(--text-secondary)] cursor-not-allowed'
-                            }`}
+                            className={`p-1 transition-colors ${proposal.customerEmail
+                              ? 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                              : 'text-gray-600 cursor-not-allowed'
+                              }`}
                             title={proposal.customerEmail ? `Send PDF to ${proposal.customerEmail}` : 'No email available'}
                           >
                             <Mail size={14} />
@@ -1307,7 +1305,7 @@ const ProposalPage = () => {
                   </tbody>
                 </table>
               </div>
-              
+
               {/* Pagination Footer */}
               <div className="flex items-center justify-between px-4 py-3 bg-[var(--bg-surface)] border-t border-[var(--border-base)]">
                 <div className="text-xs text-[var(--text-muted)]">
@@ -1331,8 +1329,8 @@ const ProposalPage = () => {
 
         {/* Right Side - Detail Panel */}
         {showDetailPanel && selectedProposal && (
-          <div className="w-[45%] bg-[var(--bg-surface)] border-l border-[var(--border-base)] min-h-[calc(100vh-200px)]">
-            <ProposalSidePanel 
+          <div className="w-[45%] bg-white border-l border-gray-200 min-h-[calc(100vh-200px)]">
+            <ProposalSidePanel
               proposal={selectedProposal}
               activeTab={detailTab}
               onTabChange={setDetailTab}
@@ -1360,10 +1358,10 @@ const ProposalPage = () => {
           projectTypeOptions={projectTypeOptions}
           installationTypeOptions={installationTypeOptions}
           onSubmit={isEditMode ? (data) => handleUpdateProposal(selectedProposal.id, data) : handleCreateProposal}
-          onCancel={() => { 
-            setIsCreateModalOpen(false); 
-            setSelectedProposal(null); 
-            setIsEditMode(false); 
+          onCancel={() => {
+            setIsCreateModalOpen(false);
+            setSelectedProposal(null);
+            setIsEditMode(false);
           }}
         />
       </Modal>
@@ -1395,7 +1393,7 @@ const ProposalPage = () => {
               initialData={selectedProposal}
               readOnly={true}
               onCancel={() => setSelectedProposal(null)}
-              onSubmit={() => {}}
+              onSubmit={() => { }}
             />
           )}
         </Modal>
@@ -1480,12 +1478,12 @@ const ProposalPage = () => {
           showEmailOnOpen={showEmailOnCanvasOpen}
           onSave={async (canvasData) => {
             console.log('[Canvas] Saving canvas data:', canvasData);
-            
+
             if (!selectedProposal?.id && !selectedProposal?.documentId) {
               toast.error('Proposal ID not found. Cannot save canvas.');
               return;
             }
-            
+
             try {
               // Save canvas data to backend
               const proposalId = selectedProposal.id || selectedProposal.documentId;
@@ -1494,7 +1492,7 @@ const ProposalPage = () => {
                 canvasSize: canvasData.canvasSize,
                 savedAt: new Date().toISOString()
               });
-              
+
               toast.success('Proposal canvas saved successfully!');
               setIsCanvasEditorOpen(false);
               setShowEmailOnCanvasOpen(false);
@@ -1506,21 +1504,21 @@ const ProposalPage = () => {
           }}
           onSendEmail={async (pdfBlob, emailData) => {
             console.log('[Canvas] Sending email with PDF:', emailData);
-            
+
             if (!selectedProposal?.id && !selectedProposal?.documentId) {
               toast.error('Proposal ID not found. Cannot send email.');
               return;
             }
-            
+
             try {
               const proposalId = selectedProposal.id || selectedProposal.documentId;
-              
+
               // Convert PDF blob to base64
               const reader = new FileReader();
               reader.readAsDataURL(pdfBlob);
               reader.onloadend = async () => {
                 const base64data = reader.result.split(',')[1];
-                
+
                 // Send email with PDF via backend
                 await api.post(`/documents/${proposalId}/send-pdf`, {
                   sendDto: {
@@ -1529,7 +1527,7 @@ const ProposalPage = () => {
                   },
                   pdfBase64: base64data
                 });
-                
+
                 toast.success(`Proposal sent to ${emailData.email}`);
                 setIsCanvasEditorOpen(false);
                 setShowEmailOnCanvasOpen(false);
@@ -1769,12 +1767,12 @@ const CreateProposalWizard = ({
   // Transform initial data to new form structure
   const transformInitialData = (data) => {
     if (!data) return null;
-    
+
     // Parse address into components
     const addressParts = (data.customerAddress || '').split(',').map(p => p.trim());
     const city = data.projectLocation?.split(',')[0] || addressParts[1] || '';
     const state = data.projectLocation?.split(',')[1]?.trim() || addressParts[2] || '';
-    
+
     return {
       // Header Info
       subject: data.projectName || data.title || '',
@@ -1785,12 +1783,12 @@ const CreateProposalWizard = ({
       discountType: data.discountType || 'no_discount',
       tags: data.tags || '',
       allowComments: data.allowComments !== false,
-      
+
       // Status & Assignment
       status: data.status || 'draft',
       assignedTo: data.assignedTo || '',
       to: data.customerName || data.to || '',
-      
+
       // Address
       address: addressParts[0] || data.customerAddress || '',
       city: city,
@@ -1799,7 +1797,7 @@ const CreateProposalWizard = ({
       zipCode: data.zipCode || '',
       email: data.customerEmail || data.email || '',
       phone: data.customerPhone || data.phone || '',
-      
+
       // Items - map from equipmentItems or items
       items: (data.items || data.equipmentItems || []).map((item, idx) => ({
         id: item.id || Date.now() + idx,
@@ -1812,13 +1810,13 @@ const CreateProposalWizard = ({
         amount: (item.quantity || 1) * (item.unitPrice || item.rate || 0),
         isOptional: item.isOptional || false
       })),
-      
+
       // Totals
       subtotal: data.subtotal || 0,
       discount: data.discount || 0,
       adjustment: data.adjustment || 0,
       total: data.total || 0,
-      
+
       // Terms
       terms: data.terms || data.notes || '',
     };
@@ -1834,12 +1832,12 @@ const CreateProposalWizard = ({
     discountType: 'no_discount',
     tags: '',
     allowComments: true,
-    
+
     // Status & Assignment
     status: 'draft',
     assignedTo: '',
     to: '',
-    
+
     // Address
     address: '',
     city: '',
@@ -1848,16 +1846,16 @@ const CreateProposalWizard = ({
     zipCode: '',
     email: '',
     phone: '',
-    
+
     // Items
     items: [],
-    
+
     // Totals
     subtotal: 0,
     discount: 0,
     adjustment: 0,
     total: 0,
-    
+
     // Terms
     terms: '',
   };
@@ -1917,29 +1915,29 @@ const CreateProposalWizard = ({
 
   const calculateTotals = () => {
     const subtotal = formData.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-    const discountAmount = formData.discountType === 'percentage' 
+    const discountAmount = formData.discountType === 'percentage'
       ? (subtotal * (formData.discount || 0) / 100)
       : (formData.discount || 0);
     const adjustment = formData.adjustment || 0;
     const total = subtotal - discountAmount + adjustment;
-    
+
     return { subtotal, discountAmount, total };
   };
 
   const handleAddItem = () => {
     if (!newItem.description) return;
-    
+
     const item = {
       ...newItem,
       id: Date.now(),
       amount: newItem.quantity * newItem.rate
     };
-    
+
     setFormData(prev => ({
       ...prev,
       items: [...prev.items, item]
     }));
-    
+
     setNewItem({
       description: '',
       longDescription: '',
@@ -1965,21 +1963,21 @@ const CreateProposalWizard = ({
     console.log('[DEBUG] handleSubmit called with send=', send);
     console.log('[DEBUG] onSubmit prop is:', typeof onSubmit);
     console.log('[DEBUG] Form data before submit:', formData);
-    
+
     if (!onSubmit || typeof onSubmit !== 'function') {
       console.error('[DEBUG] ERROR: onSubmit is not a function!');
       alert('Error: onSubmit function is not defined');
       return;
     }
-    
+
     // Use default values if fields are empty
     const subject = formData.subject?.trim() || 'New Solar Proposal';
     const customerName = formData.to?.trim() || 'Unknown Customer';
     const email = formData.email?.trim() || '';
-    
+
     const totals = calculateTotals();
     console.log('[DEBUG] Calculated totals:', totals);
-    
+
     const payload = {
       ...formData,
       ...totals,
@@ -2004,16 +2002,16 @@ const CreateProposalWizard = ({
       items: formData.items || [],
       equipmentItems: formData.items || []
     };
-    
+
     console.log('[DEBUG] Final payload:', payload);
     onSubmit(payload);
   };
 
   // Base classes for inputs - changes based on readOnly mode
-  const inputBaseClass = readOnly 
-    ? "w-full px-3 py-2 border border-[var(--border-base)] rounded text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)] cursor-default"
-    : "w-full px-3 py-2 border border-[var(--border-base)] rounded text-sm focus:outline-none focus:border-[var(--primary)] bg-[var(--bg-elevated)] text-[var(--text-primary)]";
-  
+  const inputBaseClass = readOnly
+    ? "w-full px-3 py-2 border border-gray-200 rounded text-sm bg-gray-50 text-gray-700 cursor-default"
+    : "w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-blue-500";
+
   const selectBaseClass = readOnly
     ? "w-full px-3 py-2 border border-[var(--border-base)] rounded text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)] cursor-default appearance-none"
     : "w-full px-3 py-2 border border-[var(--border-base)] rounded text-sm focus:outline-none focus:border-[var(--primary)] bg-[var(--bg-elevated)] text-[var(--text-primary)]";
@@ -2035,7 +2033,7 @@ const CreateProposalWizard = ({
           </button>
         </div>
       )}
-      
+
       {/* Header - Only show in readOnly mode */}
       {readOnly && initialData && (
         <div className="flex items-center justify-between pb-4 border-b border-[var(--border-base)]">
@@ -2049,18 +2047,17 @@ const CreateProposalWizard = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-              initialData.status === 'accepted' ? 'bg-green-100 text-green-700' :
-               initialData.status === 'sent' ? 'bg-[var(--blue-bg)] text-[var(--blue)]' :
-               initialData.status === 'rejected' ? 'bg-[var(--red-bg)] text-[var(--red)]' :
-              'bg-[var(--bg-hover)] text-[var(--text-secondary)]'
-            }`}>
+            <span className={`px-3 py-1 rounded-full text-xs font-medium ${initialData.status === 'accepted' ? 'bg-green-100 text-green-700' :
+              initialData.status === 'sent' ? 'bg-blue-100 text-blue-700' :
+                initialData.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                  'bg-gray-100 text-gray-700'
+              }`}>
               {initialData.status?.toUpperCase() || 'DRAFT'}
             </span>
           </div>
         </div>
       )}
-      
+
       {/* Main Form Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column */}
@@ -2171,14 +2168,12 @@ const CreateProposalWizard = ({
             <button
               type="button"
               onClick={() => !readOnly && setFormData({ ...formData, allowComments: !formData.allowComments })}
-              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                formData.allowComments ? 'bg-[var(--primary)]' : 'bg-[var(--text-muted)]'
-              }`}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${formData.allowComments ? 'bg-blue-500' : 'bg-gray-300'
+                }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-[var(--bg-surface)] transition-transform ${
-                  formData.allowComments ? 'translate-x-5' : 'translate-x-1'
-                }`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.allowComments ? 'translate-x-5' : 'translate-x-1'
+                  }`}
               />
             </button>
           </div>
@@ -2399,7 +2394,7 @@ const CreateProposalWizard = ({
                 +
               </button>
             </div>
-            
+
             <div className="flex items-center gap-2 text-xs">
               <span className="text-[var(--text-muted)]">Show quantity as:</span>
               <label className="flex items-center gap-1">
@@ -2459,7 +2454,7 @@ const CreateProposalWizard = ({
                   </td>
                 </tr>
               )}
-              
+
               {formData.items.map((item, index) => (
                 <tr key={item.id} className="border-t border-[var(--border-base)]">
                   <td className="py-2 px-3">
@@ -2616,7 +2611,7 @@ const CreateProposalWizard = ({
             <span className="text-[var(--text-secondary)]">Sub Total:</span>
             <span className="font-medium">${subtotal.toFixed(2)}</span>
           </div>
-          
+
           {formData.discountType !== 'no_discount' && (
             <div className="flex justify-between text-sm items-center">
               <span className="text-[var(--text-secondary)]">Discount {formData.discountType === 'percentage' ? '%' : ''}:</span>
@@ -2631,7 +2626,7 @@ const CreateProposalWizard = ({
               </div>
             </div>
           )}
-          
+
           <div className="flex justify-between text-sm items-center">
             <span className="text-[var(--text-secondary)]">Adjustment:</span>
             <input
@@ -2641,8 +2636,8 @@ const CreateProposalWizard = ({
               className="w-20 px-2 py-1 border border-[var(--border-base)] rounded text-sm text-right"
             />
           </div>
-          
-          <div className="flex justify-between text-base font-bold border-t border-[var(--border-base)] pt-2">
+
+          <div className="flex justify-between text-base font-bold border-t border-gray-200 pt-2">
             <span>Total:</span>
             <span>${total.toFixed(2)}</span>
           </div>
@@ -2654,7 +2649,7 @@ const CreateProposalWizard = ({
         <p className="text-xs text-[var(--text-muted)] mb-4">
           Include proposal items with merge field anywhere in proposal content by using: {'{proposal_items}'}
         </p>
-        
+
         <div className="flex items-center justify-end gap-3 relative z-50">
           {readOnly ? (
             <>
@@ -2665,8 +2660,8 @@ const CreateProposalWizard = ({
                 Close
               </button>
               <button
-                onClick={() => {}}
-                className="px-4 py-2 text-sm text-[var(--primary-inv)] bg-[var(--primary)] hover:bg-[var(--primary-hover)] rounded"
+                onClick={() => { }}
+                className="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded"
               >
                 Edit
               </button>
@@ -2689,8 +2684,8 @@ const CreateProposalWizard = ({
                   console.log('[DEBUG] Save as Draft clicked - executing handleSubmit');
                   handleSubmit(false);
                 }}
-                style={{position: 'relative', zIndex: 9999}}
-                className="px-4 py-2 text-sm text-white bg-[var(--primary-hover)] hover:bg-[var(--primary)] rounded pointer-events-auto"
+                style={{ position: 'relative', zIndex: 9999 }}
+                className="px-4 py-2 text-sm text-white bg-gray-700 hover:bg-gray-800 rounded pointer-events-auto"
               >
                 Save as Draft
               </button>
@@ -2703,8 +2698,8 @@ const CreateProposalWizard = ({
                   console.log('[DEBUG] Save & Send clicked - executing handleSubmit');
                   handleSubmit(true);
                 }}
-                style={{position: 'relative', zIndex: 9999}}
-                className="px-4 py-2 text-sm text-[var(--primary-inv)] bg-[var(--primary)] hover:bg-[var(--primary-hover)] rounded pointer-events-auto"
+                style={{ position: 'relative', zIndex: 9999 }}
+                className="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded pointer-events-auto"
               >
                 Save & Send
               </button>
@@ -3088,11 +3083,10 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`px-4 py-3 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
-                activeTab === tab.id 
-                  ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--bg-elevated)]' 
-                  : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
-              }`}
+              className={`px-4 py-3 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${activeTab === tab.id
+                ? 'border-blue-500 text-blue-600 bg-white'
+                : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                }`}
             >
               {tab.label}
             </button>
@@ -3108,7 +3102,7 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
           <button className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
             <MoreVertical size={16} />
           </button>
-          <button 
+          <button
             onClick={onClose}
             className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
           >
@@ -3134,10 +3128,10 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
         {activeTab === 'proposal' && (
           <div className="space-y-6">
             {/* Proposal Header */}
-            <div className="border-b border-[var(--border-base)] pb-4">
-              <h2 className="text-xl font-bold text-[var(--primary)] mb-1">{proposal.proposalNumber}</h2>
-              <p className="text-sm text-[var(--text-secondary)] mb-3">{proposal.projectName}</p>
-              
+            <div className="border-b border-gray-200 pb-4">
+              <h2 className="text-xl font-bold text-blue-600 mb-1">{proposal.proposalNumber}</h2>
+              <p className="text-sm text-gray-600 mb-3">{proposal.projectName}</p>
+
               {/* Action Buttons */}
               <div className="flex items-center gap-2 mb-4">
                 <button className="p-2 text-[var(--text-muted)] hover:text-[var(--primary)] border border-[var(--border-base)] rounded">
@@ -3152,7 +3146,7 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
                 <button className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] border border-[var(--border-base)] rounded">
                   <MoreVertical size={16} />
                 </button>
-                <button 
+                <button
                   onClick={onAccept}
                   className="flex items-center gap-1.5 px-3 py-2 bg-green-500 hover:bg-green-600 text-white text-xs font-medium rounded"
                 >
@@ -3161,14 +3155,13 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
                 </button>
               </div>
 
-              <span 
-                className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                  proposal.status === 'accepted' 
-                    ? 'bg-green-100 text-green-700 border border-green-200' 
-                    : proposal.status === 'sent' || proposal.status === 'viewed'
-                    ? 'bg-[var(--bg-surface)] text-[var(--text-secondary)] border border-[var(--border-base)]'
-                    : 'bg-[var(--bg-hover)] text-[var(--text-secondary)]'
-                }`}
+              <span
+                className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${proposal.status === 'accepted'
+                  ? 'bg-green-100 text-green-700 border border-green-200'
+                  : proposal.status === 'sent' || proposal.status === 'viewed'
+                    ? 'bg-white text-gray-600 border border-gray-300'
+                    : 'bg-gray-100 text-gray-700'
+                  }`}
               >
                 {statusConfig.label}
               </span>
@@ -3218,9 +3211,9 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
                   <p>IP Address: 49.200.152.110</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-[var(--red)] mb-2">✕ Signature (Customer)</p>
-                  <div className="w-32 h-16 border border-[var(--border-base)] rounded flex items-center justify-center">
-                    <span className="text-2xl font-cursive italic text-[var(--text-secondary)]" style={{fontFamily: 'cursive'}}>
+                  <p className="text-xs text-red-500 mb-2">✕ Signature (Customer)</p>
+                  <div className="w-32 h-16 border border-gray-300 rounded flex items-center justify-center">
+                    <span className="text-2xl font-cursive italic text-gray-600" style={{ fontFamily: 'cursive' }}>
                       {proposal.customerName?.charAt(0) || 'R'}
                     </span>
                   </div>
@@ -3248,7 +3241,7 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
           <div className="p-4 space-y-4">
             {/* Set Proposal Reminder Button */}
             <div>
-              <button 
+              <button
                 onClick={onReminderClick}
                 className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-[var(--primary-inv)] text-sm font-medium rounded"
               >

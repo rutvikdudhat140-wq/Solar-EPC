@@ -84,6 +84,7 @@ export class PermissionEngineService {
     quotation: ['view', 'create', 'edit', 'delete', 'export', 'approve'],
     quotations: ['view', 'create', 'edit', 'delete', 'export', 'approve'],
     leads: ['view', 'create', 'edit', 'delete', 'export', 'assign', 'convert'],
+    tasks: ['view', 'create', 'edit', 'delete', 'export', 'assign'],
   };
 
   constructor(

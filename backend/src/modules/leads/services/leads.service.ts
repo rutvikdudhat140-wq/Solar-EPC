@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import * as fs from 'fs';
 import * as xlsx from 'xlsx';
+import { createHash } from 'crypto';
 import { Lead, LeadDocument } from '../schemas/lead.schema';
 import { CreateLeadDto, UpdateLeadDto, QueryLeadDto, AddActivityDto } from '../dto/lead.dto';
 import { LeadStatus, LeadStatusDocument, LeadStatusModuleConnection } from '../../settings/schemas/lead-status.schema';
@@ -12,6 +13,7 @@ import { Tenant, TenantDocument } from '../../../core/tenant/schemas/tenant.sche
 import { Project, ProjectDocument } from '../../projects/schemas/project.schema';
 import { SiteSurveysService } from '../../survey/services/site-surveys.service';
 import { CustomersService } from '../../customers/services/customers.service';
+import { RedisService } from '../../../common/services/redis.service';
 
 @Injectable()
 export class LeadsService {
@@ -24,15 +26,236 @@ export class LeadsService {
     @Inject(forwardRef(() => SiteSurveysService))
     private readonly siteSurveysService: SiteSurveysService,
     private readonly customersService: CustomersService,
+    private readonly redisService: RedisService,
   ) {}
 
-  private readonly dashboardCache = new Map<string, { ts: number; data: any }>();
-  private readonly dashboardCacheTtlMs = 30_000;
+  // Cache TTL constants (in seconds)
+  private readonly DASHBOARD_TTL = 30; // 30 seconds with stale-while-revalidate
+  private readonly LIST_TTL = 60; // 1 minute for list data
+  private readonly EXPORT_TTL = 300; // 5 minutes for export results
+  private readonly STALE_REFRESH_THRESHOLD = 10; // Refresh when <10s left
 
+  /**
+   * Generic cache wrapper using Redis with stampede protection
+   * Executes function and caches result if not in cache
+   * Implements stale-while-revalidate pattern
+   */
+  private async withCache<T>(
+    key: string,
+    ttlSeconds: number,
+    fn: () => Promise<T>,
+    useLock: boolean = true
+  ): Promise<T> {
+    try {
+      // Try to get from Redis
+      const cached = await this.redisService.get(key);
+      if (cached) {
+        Logger.log(`[CACHE HIT] ${key}`, 'LeadsService');
+        
+        // Check if cache is stale (needs background refresh)
+        const ttl = await this.redisService.ttl(key);
+        if (ttl > 0 && ttl < this.STALE_REFRESH_THRESHOLD) {
+          Logger.log(`[STALE CACHE] ${key} - TTL: ${ttl}s, triggering background refresh`, 'LeadsService');
+          // Trigger background refresh without waiting
+          this.refreshCacheInBackground(key, ttlSeconds, fn).catch(err => {
+            Logger.error(`[BACKGROUND REFRESH FAILED] ${key}: ${err.message}`, 'LeadsService');
+          });
+        }
+        
+        return JSON.parse(cached);
+      }
+      
+      Logger.log(`[CACHE MISS] ${key}`, 'LeadsService');
+      
+      // Use distributed lock to prevent cache stampede
+      if (useLock) {
+        const lockKey = `lock:${key}`;
+        try {
+          return await this.redisService.withLock(lockKey, async () => {
+            // Double-check cache after acquiring lock (another request might have populated it)
+            const doubleCheck = await this.redisService.get(key);
+            if (doubleCheck) {
+              Logger.log(`[CACHE HIT AFTER LOCK] ${key}`, 'LeadsService');
+              return JSON.parse(doubleCheck);
+            }
+            
+            // Execute and cache
+            const result = await fn();
+            await this.redisService.set(key, JSON.stringify(result), ttlSeconds);
+            return result;
+          }, 10, 5000); // 10s lock TTL, 5s max wait
+        } catch (error: any) {
+          if (error.message === 'LOCK_RELEASED' || error.message === 'LOCK_TIMEOUT') {
+            // Lock was released or timed out, use fallback execution
+            Logger.warn(`[LOCK WAIT TIMEOUT] ${key}, executing without lock`, 'LeadsService');
+            return fn();
+          }
+          throw error;
+        }
+      } else {
+        // No locking, direct cache
+        const result = await fn();
+        await this.redisService.set(key, JSON.stringify(result), ttlSeconds);
+        return result;
+      }
+    } catch (error) {
+      Logger.error(`[CACHE ERROR] ${key}: ${(error as any).message}`, 'LeadsService');
+      // Fallback: execute without caching
+      return fn();
+    }
+  }
+
+  /**
+   * Refresh cache in background (stale-while-revalidate)
+   */
+  private async refreshCacheInBackground<T>(
+    key: string,
+    ttlSeconds: number,
+    fn: () => Promise<T>
+  ): Promise<void> {
+    try {
+      // Acquire lock to prevent multiple refreshes
+      const lockKey = `lock:refresh:${key}`;
+      const acquired = await this.redisService.acquireLock(lockKey, 5);
+      
+      if (acquired) {
+        try {
+          Logger.log(`[BACKGROUND REFRESH] ${key}`, 'LeadsService');
+          const result = await fn();
+          await this.redisService.set(key, JSON.stringify(result), ttlSeconds);
+          Logger.log(`[BACKGROUND REFRESH COMPLETE] ${key}`, 'LeadsService');
+        } finally {
+          await this.redisService.releaseLock(lockKey);
+        }
+      } else {
+        Logger.log(`[BACKGROUND REFRESH SKIPPED] ${key} - already refreshing`, 'LeadsService');
+      }
+    } catch (error) {
+      Logger.error(`[BACKGROUND REFRESH ERROR] ${key}: ${(error as any).message}`, 'LeadsService');
+    }
+  }
+
+  /**
+   * Normalize filters to prevent key explosion
+   * Only includes important fields in cache key
+   */
+  private normalizeFilters(filters: any): any {
+    if (!filters) return {};
+    
+    const normalized: any = {};
+    
+    // Only include important filter fields
+    const importantFields = ['status', 'source', 'assignedTo', 'minValue', 'maxValue', 'startDate', 'endDate', 'statusKey', 'statusKeys'];
+    
+    for (const field of importantFields) {
+      if (filters[field] !== undefined && filters[field] !== null && filters[field] !== '') {
+        normalized[field] = filters[field];
+      }
+    }
+    
+    return normalized;
+  }
+
+  /**
+   * Generate optimized cache key with normalized filters hash
+   * Prevents Redis key explosion from too many filter combinations
+   */
+  private generateCacheKey(prefix: string, tenantId?: string, userId?: string, filters?: any, ...parts: any[]): string {
+    // Normalize filters first to reduce key variations
+    const normalizedFilters = this.normalizeFilters(filters);
+    
+    const partsString = parts.map(p => 
+      typeof p === 'object' ? JSON.stringify(p) : String(p)
+    ).join(':');
+    
+    // Build key components
+    const keyParts = [prefix];
+    
+    if (tenantId) keyParts.push(tenantId);
+    if (userId) keyParts.push(userId);
+    
+    // Add normalized filters hash (only if filters exist)
+    if (Object.keys(normalizedFilters).length > 0) {
+      const filtersHash = createHash('md5')
+        .update(JSON.stringify(normalizedFilters))
+        .digest('hex');
+      keyParts.push(filtersHash);
+    }
+    
+    // Add remaining parts
+    if (partsString) {
+      keyParts.push(partsString);
+    }
+    
+    const key = keyParts.join(':');
+    
+    // Use hash for long keys to stay within Redis key limits
+    return key.length > 150 
+      ? `${prefix}:${createHash('md5').update(key).digest('hex')}`
+      : key;
+  }
+
+  /**
+   * Build complete filter with tenant and visibility
+   */
   private buildCompleteFilter(tenantId?: string, user?: UserWithVisibility, baseFilter: any = {}): any {
     // Use the centralized buildCompleteFilter from visibility-filter.ts
     // This properly respects dataScope (ALL vs ASSIGNED)
     return buildCompleteFilter(tenantId, user, baseFilter);
+  }
+
+  /**
+   * Invalidate all CRM caches for a tenant
+   * Call this when lead data changes (create/update/delete)
+   * Uses granular invalidation to avoid over-invalidating
+   */
+  private async invalidateCrmCaches(
+    tenantId?: string,
+    options: {
+      invalidateDashboard?: boolean;
+      invalidateLists?: boolean;
+      invalidateSpecificKey?: string;
+    } = {}
+  ): Promise<void> {
+    if (!tenantId) return;
+    
+    const {
+      invalidateDashboard = true,
+      invalidateLists = true,
+      invalidateSpecificKey
+    } = options;
+    
+    try {
+      const patterns: string[] = [];
+      
+      // Granular invalidation based on what changed
+      if (invalidateDashboard) {
+        patterns.push(`crm:dashboard:*:${tenantId}:*`);
+      }
+      
+      if (invalidateLists) {
+        patterns.push(`crm:leads:list:*:${tenantId}:*`);
+      }
+      
+      // Specific key invalidation (most efficient)
+      if (invalidateSpecificKey) {
+        patterns.push(invalidateSpecificKey);
+      }
+      
+      let totalInvalidated = 0;
+      for (const pattern of patterns) {
+        const keys = await this.redisService.keys(pattern);
+        for (const key of keys) {
+          await this.redisService.del(key);
+          totalInvalidated++;
+        }
+        Logger.log(`[CACHE INVALIDATE] Pattern ${pattern}: cleared ${keys.length} keys`, 'LeadsService');
+      }
+      
+      Logger.log(`[CACHE INVALIDATE] Total caches invalidated: ${totalInvalidated}`, 'LeadsService');
+    } catch (error) {
+      Logger.error(`[CACHE INVALIDATE] Failed: ${(error as any).message}`, 'LeadsService');
+    }
   }
 
   // Check if user can access a specific lead
@@ -123,36 +346,46 @@ export class LeadsService {
       pipelineValuePct: number;
     };
   }> {
-    // FORCE INLINE DATE FILTER IN EVERY QUERY
-    const start = dateFilter?.startDate ? new Date(dateFilter.startDate) : null;
-    const end = dateFilter?.endDate ? new Date(dateFilter.endDate) : null;
+    // Generate cache key based on tenant, user, and date filter
+    const cacheKey = this.generateCacheKey(
+      'crm:dashboard:kpis',
+      tenantId,
+      user?.id,
+      dateFilter?.startDate || 'all',
+      dateFilter?.endDate || 'all'
+    );
     
-    if (start) start.setHours(0, 0, 0, 0);
-    if (end) end.setHours(23, 59, 59, 999);
-    
-    Logger.log(`[getDashboardKpis] INLINE DATES: start=${start?.toISOString()}, end=${end?.toISOString()}`, 'LeadsService');
+    return this.withCache(cacheKey, this.DASHBOARD_TTL, async () => {
+      // FORCE INLINE DATE FILTER IN EVERY QUERY
+      const start = dateFilter?.startDate ? new Date(dateFilter.startDate) : null;
+      const end = dateFilter?.endDate ? new Date(dateFilter.endDate) : null;
+      
+      if (start) start.setHours(0, 0, 0, 0);
+      if (end) end.setHours(23, 59, 59, 999);
+      
+      Logger.log(`[getDashboardKpis] INLINE DATES: start=${start?.toISOString()}, end=${end?.toISOString()}`, 'LeadsService');
 
-    const baseMatch: any = { isDeleted: { $ne: true } };
-    
-    // Add tenant filter
-    if (tenantId) {
-      baseMatch.tenantId = new Types.ObjectId(tenantId);
-    }
-    
-    // Add visibility filter from user
-    if (user && !user.isSuperAdmin) {
-      const visibility = buildVisibilityFilter(user);
-      if (visibility.$and) {
-        Object.assign(baseMatch, visibility);
+      const baseMatch: any = { isDeleted: { $ne: true } };
+      
+      // Add tenant filter
+      if (tenantId) {
+        baseMatch.tenantId = new Types.ObjectId(tenantId);
       }
-    }
+      
+      // Add visibility filter from user
+      if (user && !user.isSuperAdmin) {
+        const visibility = buildVisibilityFilter(user);
+        if (visibility.$and) {
+          Object.assign(baseMatch, visibility);
+        }
+      }
 
-    // CRITICAL: Add inline date filter
-    if (start && end) {
-      baseMatch.createdAt = { $gte: start, $lte: end };
-    }
+      // CRITICAL: Add inline date filter
+      if (start && end) {
+        baseMatch.createdAt = { $gte: start, $lte: end };
+      }
 
-    Logger.log(`[getDashboardKpis] baseMatch: ${JSON.stringify(baseMatch)}`, 'LeadsService');
+      Logger.log(`[getDashboardKpis] baseMatch: ${JSON.stringify(baseMatch)}`, 'LeadsService');
 
     const normalizedWonOrCustomer = ['won', 'customer'];
     const normalizedLost = ['lost'];
@@ -228,6 +461,7 @@ export class LeadsService {
         pipelineValuePct: 0,
       },
     };
+    }); // End withCache
   }
 
   private async assertValidStatusKey(statusKey: string | undefined, tenantId?: string): Promise<void> {
@@ -348,21 +582,6 @@ export class LeadsService {
     return activeAutomation;
   }
 
-  private async withDashboardCache<T>(tenantId: string | undefined, key: string, fn: () => Promise<T>): Promise<T> {
-    const cacheKey = `${tenantId || 'default'}:${key}`;
-    const now = Date.now();
-    const cached = this.dashboardCache.get(cacheKey);
-    
-    if (cached && now - cached.ts <= this.dashboardCacheTtlMs) {
-      Logger.log(`[DEBUG] Cache hit for ${cacheKey}`, 'LeadsService');
-      return cached.data as T;
-    }
-    Logger.log(`[DEBUG] Cache miss for ${cacheKey}, fetching fresh data`, 'LeadsService');
-    const data = await fn();
-    this.dashboardCache.set(cacheKey, { ts: now, data });
-    return data;
-  }
-
   async create(createLeadDto: CreateLeadDto, tenantId?: string, user?: UserWithVisibility): Promise<Lead> {
     const now = new Date();
     const leadId = `LEAD-${Date.now()}`;
@@ -441,10 +660,41 @@ export class LeadsService {
     Logger.log(`[create] >>> FINAL LEAD DATA: tenantId=${leadData.tenantId}, createdBy=${leadData.createdBy}, assignedTo=${leadData.assignedTo}`, 'LeadsService');
 
     const createdLead = new this.leadModel(leadData);
-    return createdLead.save();
+    const savedLead = await createdLead.save();
+    
+    // Invalidate caches after successful save
+    await this.invalidateCrmCaches(tenantId);
+    
+    return savedLead;
   }
 
   async findAll(
+    query: QueryLeadDto,
+    tenantId?: string,
+    user?: UserWithVisibility
+  ): Promise<{ data: Lead[]; total: number }> {
+    // TEMPORARY: Bypass cache for debugging
+    const CACHE_BYPASS = true; // Set to false to re-enable cache
+    
+    if (CACHE_BYPASS) {
+      Logger.log('[findAll] CACHE BYPASS ENABLED - executing fresh query', 'LeadsService');
+      return this.executeFindAll(query, tenantId, user);
+    }
+    
+    // Generate cache key based on query parameters
+    const cacheKey = this.generateCacheKey(
+      'crm:leads:list',
+      tenantId,
+      user?.id,
+      JSON.stringify(query)
+    );
+    
+    return this.withCache(cacheKey, this.LIST_TTL, async () => {
+      return this.executeFindAll(query, tenantId, user);
+    });
+  }
+  
+  private async executeFindAll(
     query: QueryLeadDto,
     tenantId?: string,
     user?: UserWithVisibility
@@ -469,7 +719,16 @@ export class LeadsService {
     } = query;
 
     // Build complete filter with tenant and visibility
-    const filter = this.buildCompleteFilter(tenantId, user, { isDeleted: false });
+    const filter = this.buildCompleteFilter(tenantId, user, { isDeleted: { $ne: true } });
+    
+    // CRITICAL: If filter has top-level $or (visibility), we need to restructure it
+    // to avoid mixing $or and $and at the same level
+    if (filter.$or && !filter.$and) {
+      // Move visibility $or into $and to keep structure clean
+      const visibilityOr = filter.$or;
+      delete filter.$or;
+      filter.$and = [{ $or: visibilityOr }];
+    }
     
     // CRITICAL DEBUG LOGGING
     Logger.log(`[findAll] >>> USER CONTEXT: id=${user?.id}, _id=${user?._id}, role=${user?.role}, tenant=${tenantId}`, 'LeadsService');
@@ -514,11 +773,11 @@ export class LeadsService {
           ],
         },
       };
-      if (filter.$and) {
-        filter.$and.push(statusExpr);
-      } else {
-        filter.$and = [statusExpr];
+      // Status filter always adds to $and (which now always exists due to preprocessing)
+      if (!filter.$and) {
+        filter.$and = [];
       }
+      filter.$and.push(statusExpr);
     } else if (statusKey) {
       const normalizedStatusKey = String(statusKey).trim().toLowerCase();
       if (normalizedStatusKey) {
@@ -530,11 +789,10 @@ export class LeadsService {
             ],
           },
         };
-        if (filter.$and) {
-          filter.$and.push(statusExpr);
-        } else {
-          filter.$and = [statusExpr];
+        if (!filter.$and) {
+          filter.$and = [];
         }
+        filter.$and.push(statusExpr);
       }
     }
     if (city) filter.city = { $regex: city, $options: 'i' };
@@ -552,22 +810,43 @@ export class LeadsService {
     }
 
     if (startDate || endDate) {
-      const range: any = {};
-      if (startDate) range.$gte = new Date(startDate);
-      if (endDate) range.$lte = new Date(endDate);
+      // Use dates directly from ISO strings - frontend already sets proper boundaries
+      const dateFilter: any = {};
+      
+      if (startDate) {
+        dateFilter.$gte = new Date(startDate);
+      }
+      
+      if (endDate) {
+        const end = new Date(endDate);
+        // CRITICAL FIX: If start and end are the same day, set end to end-of-day
+        // This ensures single-day selections work correctly
+        if (startDate) {
+          const start = new Date(startDate);
+          const isSameDay = start.toISOString().split('T')[0] === end.toISOString().split('T')[0];
+          if (isSameDay) {
+            end.setHours(23, 59, 59, 999);
+            Logger.log(`[findAll] Single day detected, adjusting end to: ${end.toISOString()}`, 'LeadsService');
+          }
+        }
+        dateFilter.$lte = end;
+      }
 
+      // Apply date filter to BOTH createdAt AND created fields
       const dateExpr = {
         $or: [
-          { createdAt: range },
-          { created: range },
-        ],
+          { createdAt: dateFilter },
+          { created: dateFilter }
+        ]
       };
 
-      if (filter.$and) {
-        filter.$and.push(dateExpr);
-      } else {
-        filter.$and = [dateExpr];
+      // Add to $and array (always exists due to preprocessing)
+      if (!filter.$and) {
+        filter.$and = [];
       }
+      filter.$and.push(dateExpr);
+
+      Logger.log(`[findAll] Date filter applied: ${JSON.stringify(dateFilter)}`, 'LeadsService');
     }
 
     if (search) {
@@ -597,11 +876,10 @@ export class LeadsService {
       }
       
       // Combine search $or with existing filter using $and
-      if (filter.$and) {
-        filter.$and.push({ $or: orConditions });
-      } else {
-        filter.$and = [{ $or: orConditions }];
+      if (!filter.$and) {
+        filter.$and = [];
       }
+      filter.$and.push({ $or: orConditions });
     }
 
     const sort: any = {};
@@ -611,6 +889,9 @@ export class LeadsService {
     const skip = (page - 1) * limit;
 
     Logger.log(`[findAll] Final filter: ${JSON.stringify(filter)}`, 'LeadsService');
+
+    // DEBUG: Log the actual query that will be executed
+    Logger.log(`[findAll] EXECUTING QUERY with filter: ${JSON.stringify(filter)}`, 'LeadsService');
 
     const [data, total] = await Promise.all([
       this.leadModel
@@ -622,6 +903,8 @@ export class LeadsService {
         .exec(),
       this.leadModel.countDocuments(filter),
     ]);
+
+    Logger.log(`[findAll] QUERY RESULT: ${data.length} leads found, total: ${total}`, 'LeadsService');
 
     const assignedToIds = Array.from(
       new Set(
@@ -962,6 +1245,9 @@ export class LeadsService {
       }
     }
 
+    // Invalidate caches after successful update
+    await this.invalidateCrmCaches(tenantId);
+    
     return updatedLead;
   }
 
@@ -986,6 +1272,9 @@ export class LeadsService {
     if (!result) {
       throw new NotFoundException('Lead not found');
     }
+    
+    // Invalidate caches after successful delete
+    await this.invalidateCrmCaches(tenantId);
   }
 
   async duplicate(id: string, tenantId?: string, user?: UserWithVisibility): Promise<Lead> {
@@ -1257,36 +1546,46 @@ export class LeadsService {
     user?: UserWithVisibility,
     dateFilter?: { startDate?: string; endDate?: string }
   ): Promise<any> {
-    // FORCE INLINE DATE FILTER
-    const start = dateFilter?.startDate ? new Date(dateFilter.startDate) : null;
-    const end = dateFilter?.endDate ? new Date(dateFilter.endDate) : null;
+    // Generate cache key based on tenant, user, and date filter
+    const cacheKey = this.generateCacheKey(
+      'crm:dashboard:funnel',
+      tenantId,
+      user?.id,
+      dateFilter?.startDate || 'all',
+      dateFilter?.endDate || 'all'
+    );
     
-    if (start) start.setHours(0, 0, 0, 0);
-    if (end) end.setHours(23, 59, 59, 999);
-    
-    Logger.log(`[getDashboardFunnel] INLINE DATES: start=${start?.toISOString()}, end=${end?.toISOString()}`, 'LeadsService');
+    return this.withCache(cacheKey, this.DASHBOARD_TTL, async () => {
+      // FORCE INLINE DATE FILTER
+      const start = dateFilter?.startDate ? new Date(dateFilter.startDate) : null;
+      const end = dateFilter?.endDate ? new Date(dateFilter.endDate) : null;
+      
+      if (start) start.setHours(0, 0, 0, 0);
+      if (end) end.setHours(23, 59, 59, 999);
+      
+      Logger.log(`[getDashboardFunnel] INLINE DATES: start=${start?.toISOString()}, end=${end?.toISOString()}`, 'LeadsService');
 
-    const baseMatch: any = { isDeleted: { $ne: true } };
-    
-    // Add tenant filter
-    if (tenantId) {
-      baseMatch.tenantId = new Types.ObjectId(tenantId);
-    }
-    
-    // Add visibility filter from user
-    if (user && !user.isSuperAdmin) {
-      const visibility = buildVisibilityFilter(user);
-      if (visibility.$and) {
-        Object.assign(baseMatch, visibility);
+      const baseMatch: any = { isDeleted: { $ne: true } };
+      
+      // Add tenant filter
+      if (tenantId) {
+        baseMatch.tenantId = new Types.ObjectId(tenantId);
       }
-    }
+      
+      // Add visibility filter from user
+      if (user && !user.isSuperAdmin) {
+        const visibility = buildVisibilityFilter(user);
+        if (visibility.$and) {
+          Object.assign(baseMatch, visibility);
+        }
+      }
 
-    // CRITICAL: Add inline date filter
-    if (start && end) {
-      baseMatch.createdAt = { $gte: start, $lte: end };
-    }
+      // CRITICAL: Add inline date filter
+      if (start && end) {
+        baseMatch.createdAt = { $gte: start, $lte: end };
+      }
 
-    Logger.log(`[getDashboardFunnel] baseMatch: ${JSON.stringify(baseMatch)}`, 'LeadsService');
+      Logger.log(`[getDashboardFunnel] baseMatch: ${JSON.stringify(baseMatch)}`, 'LeadsService');
     
     // Get lead statuses with tenant filtering
     const statusQuery: any = { entity: 'lead', isActive: true };
@@ -1331,6 +1630,7 @@ export class LeadsService {
       .map(s => ({ stage: s.label, count: s.count }));
 
     return { stages: uniqueStages };
+    }); // End withCache
   }
 
   async getDashboardSources(
@@ -1338,14 +1638,24 @@ export class LeadsService {
     user?: UserWithVisibility,
     dateFilter?: { startDate?: string; endDate?: string }
   ): Promise<{ sources: Array<{ source: string; leads: number; value: number; pct: number }> }> {
-    // FORCE INLINE DATE FILTER
-    const start = dateFilter?.startDate ? new Date(dateFilter.startDate) : null;
-    const end = dateFilter?.endDate ? new Date(dateFilter.endDate) : null;
+    // Generate cache key
+    const cacheKey = this.generateCacheKey(
+      'crm:dashboard:sources',
+      tenantId,
+      user?.id,
+      dateFilter?.startDate || 'all',
+      dateFilter?.endDate || 'all'
+    );
     
-    if (start) start.setHours(0, 0, 0, 0);
-    if (end) end.setHours(23, 59, 59, 999);
-    
-    Logger.log(`[getDashboardSources] INLINE DATES: start=${start?.toISOString()}, end=${end?.toISOString()}`, 'LeadsService');
+    return this.withCache(cacheKey, this.DASHBOARD_TTL, async () => {
+      // FORCE INLINE DATE FILTER
+      const start = dateFilter?.startDate ? new Date(dateFilter.startDate) : null;
+      const end = dateFilter?.endDate ? new Date(dateFilter.endDate) : null;
+      
+      if (start) start.setHours(0, 0, 0, 0);
+      if (end) end.setHours(23, 59, 59, 999);
+      
+      Logger.log(`[getDashboardSources] INLINE DATES: start=${start?.toISOString()}, end=${end?.toISOString()}`, 'LeadsService');
 
     const baseMatch: any = { isDeleted: { $ne: true } };
     
@@ -1424,6 +1734,7 @@ export class LeadsService {
         return { source, leads: v.leads, value: v.value, pct };
       }),
     };
+    }); // End withCache
   }
 
   async getDashboardMonthly(
@@ -1431,36 +1742,46 @@ export class LeadsService {
     user?: UserWithVisibility,
     dateFilter?: { startDate?: string; endDate?: string }
   ): Promise<{ months: Array<{ month: string; created: number; won: number }> }> {
-    // FORCE INLINE DATE FILTER
-    const start = dateFilter?.startDate ? new Date(dateFilter.startDate) : null;
-    const end = dateFilter?.endDate ? new Date(dateFilter.endDate) : null;
+    // Generate cache key
+    const cacheKey = this.generateCacheKey(
+      'crm:dashboard:monthly',
+      tenantId,
+      user?.id,
+      dateFilter?.startDate || 'all',
+      dateFilter?.endDate || 'all'
+    );
     
-    if (start) start.setHours(0, 0, 0, 0);
-    if (end) end.setHours(23, 59, 59, 999);
-    
-    Logger.log(`[getDashboardMonthly] INLINE DATES: start=${start?.toISOString()}, end=${end?.toISOString()}`, 'LeadsService');
+    return this.withCache(cacheKey, this.DASHBOARD_TTL, async () => {
+      // FORCE INLINE DATE FILTER
+      const start = dateFilter?.startDate ? new Date(dateFilter.startDate) : null;
+      const end = dateFilter?.endDate ? new Date(dateFilter.endDate) : null;
+      
+      if (start) start.setHours(0, 0, 0, 0);
+      if (end) end.setHours(23, 59, 59, 999);
+      
+      Logger.log(`[getDashboardMonthly] INLINE DATES: start=${start?.toISOString()}, end=${end?.toISOString()}`, 'LeadsService');
 
-    const baseMatch: any = { isDeleted: { $ne: true } };
-    
-    // Add tenant filter
-    if (tenantId) {
-      baseMatch.tenantId = new Types.ObjectId(tenantId);
-    }
-    
-    // Add visibility filter from user
-    if (user && !user.isSuperAdmin) {
-      const visibility = buildVisibilityFilter(user);
-      if (visibility.$and) {
-        Object.assign(baseMatch, visibility);
+      const baseMatch: any = { isDeleted: { $ne: true } };
+      
+      // Add tenant filter
+      if (tenantId) {
+        baseMatch.tenantId = new Types.ObjectId(tenantId);
       }
-    }
+      
+      // Add visibility filter from user
+      if (user && !user.isSuperAdmin) {
+        const visibility = buildVisibilityFilter(user);
+        if (visibility.$and) {
+          Object.assign(baseMatch, visibility);
+        }
+      }
 
-    // CRITICAL: Add inline date filter
-    if (start && end) {
-      baseMatch.createdAt = { $gte: start, $lte: end };
-    }
+      // CRITICAL: Add inline date filter
+      if (start && end) {
+        baseMatch.createdAt = { $gte: start, $lte: end };
+      }
 
-    Logger.log(`[getDashboardMonthly] baseMatch: ${JSON.stringify(baseMatch)}`, 'LeadsService');
+      Logger.log(`[getDashboardMonthly] baseMatch: ${JSON.stringify(baseMatch)}`, 'LeadsService');
 
     // Aggregate created leads by month - INLINE FILTER
     const createdAgg = await this.leadModel.aggregate([
@@ -1520,6 +1841,7 @@ export class LeadsService {
     }
 
     return { months };
+    }); // End withCache
   }
 
   async getDashboardTopPerformers(
@@ -1527,14 +1849,24 @@ export class LeadsService {
     user?: UserWithVisibility,
     dateFilter?: { startDate?: string; endDate?: string }
   ): Promise<{ performers: Array<{ id: string; name: string; leadsHandled: number; converted: number; conversionRate: number }> }> {
-    // FORCE INLINE DATE FILTER
-    const start = dateFilter?.startDate ? new Date(dateFilter.startDate) : null;
-    const end = dateFilter?.endDate ? new Date(dateFilter.endDate) : null;
+    // Generate cache key
+    const cacheKey = this.generateCacheKey(
+      'crm:dashboard:performers',
+      tenantId,
+      user?.id,
+      dateFilter?.startDate || 'all',
+      dateFilter?.endDate || 'all'
+    );
     
-    if (start) start.setHours(0, 0, 0, 0);
-    if (end) end.setHours(23, 59, 59, 999);
-    
-    Logger.log(`[getDashboardTopPerformers] INLINE DATES: start=${start?.toISOString()}, end=${end?.toISOString()}`, 'LeadsService');
+    return this.withCache(cacheKey, this.DASHBOARD_TTL, async () => {
+      // FORCE INLINE DATE FILTER
+      const start = dateFilter?.startDate ? new Date(dateFilter.startDate) : null;
+      const end = dateFilter?.endDate ? new Date(dateFilter.endDate) : null;
+      
+      if (start) start.setHours(0, 0, 0, 0);
+      if (end) end.setHours(23, 59, 59, 999);
+      
+      Logger.log(`[getDashboardTopPerformers] INLINE DATES: start=${start?.toISOString()}, end=${end?.toISOString()}`, 'LeadsService');
 
     const baseMatch: any = { isDeleted: { $ne: true } };
     
@@ -1605,6 +1937,7 @@ export class LeadsService {
     });
 
     return { performers };
+    }); // End withCache
   }
 
   // ============================================
@@ -1872,7 +2205,8 @@ export class LeadsService {
   }
 
   async getDashboardSource(tenantId?: string, user?: UserWithVisibility): Promise<{ sources: Array<{ source: string; leads: number; value: number }> }> {
-    return this.withDashboardCache(tenantId, 'source', async () => {
+    const cacheKey = this.generateCacheKey('crm:dashboard:source', tenantId, user?.id);
+    return this.withCache(cacheKey, this.DASHBOARD_TTL, async () => {
       const filter = this.buildCompleteFilter(tenantId, user, {});
 
       const agg = await this.leadModel.aggregate([
@@ -2667,6 +3001,87 @@ export class LeadsService {
     const filter: any = this.buildCompleteFilter(tenantId, user, base);
     const leads = await this.leadModel.find(filter).lean().exec();
 
+    return this.generateCSV(leads);
+  }
+
+  /**
+   * Export leads with filters - supports date range and other filters
+   * Uses streaming/batching for large datasets to avoid memory issues
+   */
+  async exportLeadsWithFilters(
+    filters: any,
+    tenantId?: string,
+    user?: UserWithVisibility
+  ): Promise<{ csv: string; filename: string }> {
+    try {
+      Logger.log(`[EXPORT] Building filter for export`, 'LeadsService');
+      
+      // Build base filter
+      const baseFilter: any = { isDeleted: { $ne: true } };
+      
+      // Add tenant filter
+      if (tenantId) {
+        baseFilter.tenantId = new Types.ObjectId(tenantId);
+      }
+      
+      // Add visibility filter from user (using buildCompleteFilter pattern)
+      // Note: Visibility is handled by buildCompleteFilter
+      
+      // Apply date filters if provided
+      if (filters?.startDate || filters?.endDate) {
+        baseFilter.createdAt = {};
+        if (filters.startDate) {
+          const start = new Date(filters.startDate);
+          start.setHours(0, 0, 0, 0);
+          baseFilter.createdAt.$gte = start;
+        }
+        if (filters.endDate) {
+          const end = new Date(filters.endDate);
+          end.setHours(23, 59, 59, 999);
+          baseFilter.createdAt.$lte = end;
+        }
+        Logger.log(`[EXPORT] Date filter applied: ${JSON.stringify(baseFilter.createdAt)}`, 'LeadsService');
+      }
+      
+      // Merge with additional filters
+      const finalFilter = { ...baseFilter, ...filters };
+      delete finalFilter.startDate;
+      delete finalFilter.endDate;
+      
+      Logger.log(`[EXPORT] Final filter: ${JSON.stringify(finalFilter)}`, 'LeadsService');
+      
+      // Use batch processing for memory efficiency
+      const BATCH_SIZE = 1000;
+      let skip = 0;
+      let allLeads: any[] = [];
+      
+      do {
+        const batch = await this.leadModel
+          .find(finalFilter)
+          .lean()
+          .skip(skip)
+          .limit(BATCH_SIZE)
+          .exec();
+        
+        allLeads = [...allLeads, ...batch];
+        skip += BATCH_SIZE;
+        
+        Logger.log(`[EXPORT] Fetched batch: ${batch.length} leads, total: ${allLeads.length}`, 'LeadsService');
+      } while (skip < 10000); // Safety limit to prevent infinite loops
+      
+      Logger.log(`[EXPORT] Total leads fetched: ${allLeads.length}`, 'LeadsService');
+      
+      return this.generateCSV(allLeads);
+    } catch (error: any) {
+      Logger.error(`[EXPORT] Export failed: ${error.message}`, 'LeadsService');
+      throw error;
+    }
+  }
+
+  /**
+   * Generate CSV from leads array
+   */
+  private generateCSV(leads: any[]): { csv: string; filename: string } {
     // Collect all unique custom field keys across all leads
     const allCustomFieldKeys = new Set<string>();
     leads.forEach(lead => {

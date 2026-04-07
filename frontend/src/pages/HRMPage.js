@@ -22,7 +22,7 @@ import { api } from '../lib/apiClient';
 import { useQuery } from '@tanstack/react-query';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext'; // Fix component usage to match import name
-import HRMPermissionsPage from './HrmPermissionsPage';
+import HrmPermissionsPage from './HrmPermissionsPage';
 import AttendancePolicySettings from './AttendancePolicySettings';
 // import AdminReportDashboard from './AdminReportDashboard'; // TODO: Create this component
 import { toast } from '../components/ui/Toast';
@@ -286,10 +286,10 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
       const response = await employeeApi.getAll();
       // API returns {success: true, data: [...employees]}
       const employeesData = response.data?.data || response.data || [];
-      console.log('[DEBUG] Employee data from API:', employeesData.map(e => ({ 
-        id: e.employeeId, 
+      console.log('[DEBUG] Employee data from API:', employeesData.map(e => ({
+        id: e.employeeId,
         joiningDate: e.joiningDate,
-        roleId: e.roleId 
+        roleId: e.roleId
       })));
       setEmployees(employeesData);
     } catch (error) {
@@ -493,7 +493,7 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
       toast.error('Please select an employee');
       return;
     }
-    
+
     // Get precise location before check-in
     let locationText = '';
     try {
@@ -504,9 +504,9 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
           maximumAge: 0
         });
       });
-      
+
       const { latitude, longitude } = position.coords;
-      
+
       // Try to get address from reverse geocoding
       try {
         const response = await attendanceApi.reverseGeocode(latitude, longitude);
@@ -520,7 +520,7 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
       toast.error('Please enable location access for accurate check-in');
       return;
     }
-    
+
     try {
       await attendanceApi.checkIn({
         employeeId: attendanceForm.employeeId,
@@ -548,9 +548,9 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
           maximumAge: 0
         });
       });
-      
+
       const { latitude, longitude } = position.coords;
-      
+
       // Try to get address from reverse geocoding
       try {
         const response = await attendanceApi.reverseGeocode(latitude, longitude);
@@ -563,7 +563,7 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
       toast.error('Please enable location access for accurate check-out');
       return;
     }
-    
+
     try {
       await attendanceApi.checkOut({ employeeId, location: locationText });
       toast.success('Check-out successful');
@@ -715,7 +715,7 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
       const activeEmployees = employees.filter(e => e.status === 'active').length;
       const pendingLeaves = leaves.filter(l => l.status === 'pending').length;
       const totalPayroll = payrolls.reduce((sum, p) => sum + (p.netSalary || 0), 0);
-      
+
       return [
         {
           value: totalEmployees,
@@ -982,22 +982,22 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
         }
 
         // Convert customRoles to array if it's an object (dictionary)
-        const customRolesArray = Array.isArray(customRoles) 
-          ? customRoles 
+        const customRolesArray = Array.isArray(customRoles)
+          ? customRoles
           : Object.values(customRoles || {});
-        
+
         // Check custom roles first - try exact key match first for dictionary format
         let customRole = null;
         if (customRoles && !Array.isArray(customRoles)) {
           // Dictionary format: { roleId: { id, label, ... } }
           customRole = customRoles[val];
         }
-        
+
         if (!customRole) {
           // Try array search
           customRole = customRolesArray.find(r => r.id === val || r._id === val || r.roleId === val);
         }
-        
+
         if (customRole) {
           return (
             <span className="px-2 py-1 rounded-full text-xs font-medium bg-[var(--primary)]/10 text-[var(--primary)]">
@@ -1373,29 +1373,28 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
             {kpis.map((kpi, index) => (
               <div
                 key={index}
-                className={`relative overflow-hidden rounded-xl p-4 transition-all duration-300 hover:scale-[1.03] hover:shadow-xl hover:-translate-y-1 cursor-pointer group ${
-                  kpi.color === 'green' ? 'bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 hover:from-emerald-500/15 hover:to-emerald-600/10 hover:border-emerald-500/40' :
-                  kpi.color === 'red' ? 'bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-500/20 hover:from-red-500/15 hover:to-red-600/10 hover:border-red-500/40' :
-                  kpi.color === 'yellow' ? 'bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 hover:from-amber-500/15 hover:to-amber-600/10 hover:border-amber-500/40' :
-                  kpi.color === 'blue' ? 'bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 hover:from-blue-500/15 hover:to-blue-600/10 hover:border-blue-500/40' :
-                  kpi.color === 'purple' ? 'bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 hover:from-purple-500/15 hover:to-purple-600/10 hover:border-purple-500/40' :
-                  kpi.color === 'amber' ? 'bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 hover:from-amber-500/15 hover:to-amber-600/10 hover:border-amber-500/40' :
-                  'bg-[var(--bg-elevated)] border border-[var(--border)]'
-                }`}
+                className={`relative overflow-hidden rounded-xl p-4 transition-all duration-300 hover:scale-[1.03] hover:shadow-xl hover:-translate-y-1 cursor-pointer group ${kpi.color === 'green' ? 'bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 hover:from-emerald-500/15 hover:to-emerald-600/10 hover:border-emerald-500/40' :
+                    kpi.color === 'red' ? 'bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-500/20 hover:from-red-500/15 hover:to-red-600/10 hover:border-red-500/40' :
+                      kpi.color === 'yellow' ? 'bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 hover:from-amber-500/15 hover:to-amber-600/10 hover:border-amber-500/40' :
+                        kpi.color === 'blue' ? 'bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 hover:from-blue-500/15 hover:to-blue-600/10 hover:border-blue-500/40' :
+                          kpi.color === 'purple' ? 'bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 hover:from-purple-500/15 hover:to-purple-600/10 hover:border-purple-500/40' :
+                            kpi.color === 'amber' ? 'bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 hover:from-amber-500/15 hover:to-amber-600/10 hover:border-amber-500/40' :
+                              'bg-[var(--bg-elevated)] border border-[var(--border)]'
+                  }`}
               >
                 {/* Animated background glow effect */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 bg-gradient-to-br from-white to-transparent pointer-events-none"></div>
-                
+
                 {/* Big Number */}
                 <div className="text-3xl font-bold text-[var(--text-primary)] mb-1 group-hover:text-[var(--primary)] transition-colors duration-300">
                   {kpi.value}
                 </div>
-                
+
                 {/* Label */}
                 <div className="text-sm font-medium text-[var(--text-secondary)] mb-2">
                   {kpi.label}
                 </div>
-                
+
                 {/* Trend - Micro text */}
                 {kpi.trend && (
                   <div className="text-xs text-[var(--text-muted)] flex items-center gap-1 group-hover:text-[var(--text-secondary)] transition-colors duration-300">
@@ -1403,14 +1402,14 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
                     {kpi.trend}
                   </div>
                 )}
-                
+
                 {/* Emotion Badge */}
                 {kpi.emotion && (
                   <div className="absolute top-3 right-3 text-xs group-hover:scale-110 transition-transform duration-300">
                     {kpi.emotion}
                   </div>
                 )}
-                
+
                 {/* Icon */}
                 <div className="absolute bottom-3 right-3 opacity-10 group-hover:opacity-20 transition-opacity duration-300 group-hover:scale-110 group-hover:-rotate-6 transition-transform">
                   {kpi.icon && <kpi.icon size={24} />}
@@ -1440,12 +1439,11 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
           {alerts.map((alert, index) => (
             <div
               key={index}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${
-                alert.type === 'critical' ? 'bg-red-500/10 border border-red-500/20 text-red-400' :
-                alert.type === 'warning' ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400' :
-                alert.type === 'positive' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' :
-                'bg-blue-500/10 border border-blue-500/20 text-blue-400'
-              }`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${alert.type === 'critical' ? 'bg-red-500/10 border border-red-500/20 text-red-400' :
+                  alert.type === 'warning' ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400' :
+                    alert.type === 'positive' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' :
+                      'bg-blue-500/10 border border-blue-500/20 text-blue-400'
+                }`}
             >
               <span className="text-lg">{alert.emoji}</span>
               <span>{alert.message}</span>
@@ -1468,28 +1466,28 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
                 <AreaChart data={dashboardMetrics?.attendance?.weeklyTrend || []}>
                   <defs>
                     <linearGradient id="colorPercentage" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis dataKey="day" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
                   <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'var(--bg-elevated)', 
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'var(--bg-elevated)',
                       border: '1px solid var(--border)',
                       borderRadius: '8px',
                       fontSize: '12px'
                     }}
                   />
-                  <Area 
-                    type="monotone" 
-                    dataKey="percentage" 
-                    stroke="#3b82f6" 
+                  <Area
+                    type="monotone"
+                    dataKey="percentage"
+                    stroke="#3b82f6"
                     strokeWidth={2}
-                    fillOpacity={1} 
-                    fill="url(#colorPercentage)" 
+                    fillOpacity={1}
+                    fill="url(#colorPercentage)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -1522,9 +1520,9 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
                     <Cell fill="#ef4444" />
                     <Cell fill="#f59e0b" />
                   </Pie>
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'var(--bg-elevated)', 
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'var(--bg-elevated)',
                       border: '1px solid var(--border)',
                       borderRadius: '8px',
                       fontSize: '12px'
@@ -1674,7 +1672,7 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
           {/* ── Role Permissions Tab ── */}
           {(activeTab === 'role-permissions' || activeTab === 'hrm-role-permissions') && (
             <div className="animate-fade-in">
-              <HRMPermissionsPage />
+              <HrmPermissionsPage />
             </div>
           )}
 

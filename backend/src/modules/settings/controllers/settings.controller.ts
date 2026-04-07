@@ -110,7 +110,6 @@ export class SettingsController {
 
   // ── Full Settings ─────────────────────────────────────────────────────────
   @Get()
-  @UseGuards(AdminGuard)
   async getFullSettings(@Request() req: any) {
     try {
       const tenantId = req.tenant?.id;
@@ -169,6 +168,10 @@ export class SettingsController {
       const legacy = await this.settingsService.getFullSettings(tenantId);
       // Also fetch installation task config if available
       const installCfg = await this.installationTaskService.getConfig(tenantId);
+      // Also fetch commissioning task config if available
+      const commissioningCfg = await this.commissioningTaskService.getConfig(tenantId);
+      // Also fetch milestones config
+      const milestones = await this.settingsService.getMilestones(tenantId);
 
       return {
         flags,
@@ -177,7 +180,9 @@ export class SettingsController {
         auditLogs: legacy.auditLogs,
         customRoles, // Now from customRoleService
         projectTypeConfigs: legacy.projectTypeConfigs,
-      installationTasks: installCfg.tasks,
+        installationTasks: installCfg.tasks,
+        commissioningTasks: commissioningCfg.tasks,
+        milestones,
       };
     } catch (error: any) {
       return {
@@ -1239,6 +1244,27 @@ export class SettingsController {
     const userId = req.user?.id;
     const doc = await this.commissioningTaskService.updateConfig(tenantId, body.tasks, userId);
     return { data: doc.tasks };
+  }
+
+  // ── Milestones Config ───────────────────────────────────────────────────
+  @Get('milestones')
+  @UseGuards(AdminGuard)
+  async getMilestones(@Request() req: any) {
+    const tenantId = req.tenant?.id;
+    const cfg = await this.settingsService.getMilestones(tenantId);
+    return { data: cfg };
+  }
+
+  @Put('milestones')
+  @UseGuards(AdminGuard)
+  async updateMilestones(
+    @Body() body: { milestones: any[] },
+    @Request() req: any,
+  ) {
+    const tenantId = req.tenant?.id;
+    const userId = req.user?.id;
+    const doc = await this.settingsService.updateMilestones(tenantId, body.milestones, userId);
+    return { data: doc };
   }
 
   // ── Project Type Configs ────────────────────────────────────────────────

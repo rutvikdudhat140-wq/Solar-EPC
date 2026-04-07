@@ -1268,6 +1268,19 @@ const InventoryPage = ({ onNavigate }) => {
         setInventory(prev => prev.map(i => i._id === item._id ? transformedItem : i));
       }
 
+      // Refresh full inventory to ensure consistency
+      const refreshData = await api.get('/items', { headers: { 'x-tenant-id': TENANT_ID } });
+      const refreshItemsArray = Array.isArray(refreshData) ? refreshData : (refreshData.data || []);
+      const refreshedInventoryData = refreshItemsArray.map(item => ({
+        ...item,
+        _id: item._id || item.id,
+        name: item.description || item.name || 'Unnamed Item',
+        reserved: item.reserved || 0,
+        available: (item.stock || 0) - (item.reserved || 0),
+        lastUpdated: item.updatedAt || new Date().toISOString().split('T')[0]
+      }));
+      setInventory(refreshedInventoryData);
+
       // Reset form and close modal
       setShowStockOut(false);
       setStockOutForm({ projectId: '', issuedDate: '', remarks: '', quotationId: '' });
@@ -1599,86 +1612,90 @@ const InventoryPage = ({ onNavigate }) => {
             {/* Inventory Card - Shows AVAILABLE stock (Total - Reserved) */}
             <div
               onClick={() => setActiveTab('inventory')}
-              className="relative overflow-hidden bg-gradient-to-br from-[var(--blue-bg)] to-[var(--cyan-bg)] border border-[var(--blue)]/20 rounded-2xl p-5 cursor-pointer hover:shadow-md transition-all"
+              className="group relative overflow-hidden bg-gradient-to-br from-blue-100 to-sky-200 border border-blue-200 rounded-2xl p-5 cursor-pointer hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
             >
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="relative flex items-start justify-between">
                 <div>
-                  <p className="text-xs font-bold text-[var(--blue)] uppercase tracking-wider">Total Stock</p>
-                  <p className="text-3xl font-bold text-[var(--text-primary)] mt-2">{filteredInventoryForDashboard.reduce((sum, i) => sum + ((i.stock || 0) - (i.reserved || 0)), 0)}</p>
-                  <p className="text-xs text-[var(--text-muted)] mt-1">Available quantity in inventory</p>
+                  <p className="text-[10px] uppercase tracking-wider text-blue-700 font-bold">Total Stock</p>
+                  <p className="text-3xl font-bold text-gray-800 mt-2">{filteredInventoryForDashboard.reduce((sum, i) => sum + ((i.stock || 0) - (i.reserved || 0)), 0)}</p>
+                  <p className="text-xs text-gray-600 mt-1 flex items-center gap-1"><TrendingUp size={10} className="text-blue-600" /> Available quantity</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-[var(--blue)]/20 flex items-center justify-center">
-                  <Package size={24} className="text-[var(--blue)]" />
+                <div className="w-12 h-12 rounded-xl bg-blue-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Package size={24} className="text-blue-700" />
                 </div>
               </div>
               <div className="relative mt-3 flex gap-2">
-                <span className="text-[10px] px-2 py-1 bg-[var(--bg-surface)]/80 rounded text-[var(--text-secondary)] font-medium">₹{(dynamicStats.totalValue / 100000).toFixed(1)}L value</span>
-                <span className="text-[10px] px-2 py-1 bg-[var(--bg-surface)]/80 rounded text-[var(--text-secondary)] font-medium">{dynamicStats.lowStockItems} low</span>
+                <span className="text-[10px] px-2 py-1 bg-blue-100 rounded text-blue-700 font-medium">₹{(dynamicStats.totalValue / 100000).toFixed(1)}L value</span>
+                <span className="text-[10px] px-2 py-1 bg-blue-100 rounded text-blue-700 font-medium">{dynamicStats.lowStockItems} low</span>
               </div>
             </div>
 
             {/* Warehouse Card */}
             <div
               onClick={() => setActiveTab('warehouse')}
-              className="relative overflow-hidden bg-gradient-to-br from-emerald-100 to-green-200 border border-[var(--green)]/20 rounded-2xl p-5 cursor-pointer hover:shadow-md transition-all"
+              className="group relative overflow-hidden bg-gradient-to-br from-emerald-100 to-green-200 border border-emerald-200 rounded-2xl p-5 cursor-pointer hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
             >
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="relative flex items-start justify-between">
                 <div>
-                  <p className="text-xs font-bold text-[var(--green)] uppercase tracking-wider">Warehouse</p>
-                  <p className="text-3xl font-bold text-[var(--text-primary)] mt-2">{warehouses.length}</p>
-                  <p className="text-xs text-[var(--text-muted)] mt-1">Active warehouses</p>
+                  <p className="text-[10px] uppercase tracking-wider text-emerald-700 font-bold">Warehouse</p>
+                  <p className="text-3xl font-bold text-gray-800 mt-2">{warehouses.length}</p>
+                  <p className="text-xs text-gray-600 mt-1 flex items-center gap-1"><Warehouse size={10} className="text-emerald-600" /> Active warehouses</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-[var(--green)]/20 flex items-center justify-center">
-                  <Warehouse size={24} className="text-[var(--green)]" />
+                <div className="w-12 h-12 rounded-xl bg-emerald-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Warehouse size={24} className="text-emerald-700" />
                 </div>
               </div>
               <div className="relative mt-3 flex gap-2">
-                <span className="text-[10px] px-2 py-1 bg-[var(--bg-surface)]/80 rounded text-[var(--text-secondary)] font-medium">{filteredInventoryForDashboard.length} items stored</span>
+                <span className="text-[10px] px-2 py-1 bg-emerald-100 rounded text-emerald-700 font-medium">{filteredInventoryForDashboard.length} items stored</span>
               </div>
             </div>
 
             {/* Items Card */}
             <div
               onClick={() => setActiveTab('items')}
-              className="relative overflow-hidden bg-gradient-to-br from-violet-100 to-purple-200 border border-violet-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition-all"
+              className="group relative overflow-hidden bg-gradient-to-br from-violet-100 to-purple-200 border border-violet-200 rounded-2xl p-5 cursor-pointer hover:shadow-xl hover:shadow-violet-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
             >
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="relative flex items-start justify-between">
                 <div>
-                  <p className="text-xs font-bold text-violet-700 uppercase tracking-wider">Items</p>
-                  <p className="text-3xl font-bold text-[var(--text-primary)] mt-2">{new Set(filteredInventoryForDashboard.map(i => i.itemId)).size}</p>
-                  <p className="text-xs text-[var(--text-muted)] mt-1">Unique items in system</p>
+                  <p className="text-[10px] uppercase tracking-wider text-violet-700 font-bold">Items</p>
+                  <p className="text-3xl font-bold text-gray-800 mt-2">{new Set(filteredInventoryForDashboard.map(i => i.itemId)).size}</p>
+                  <p className="text-xs text-gray-600 mt-1 flex items-center gap-1"><Package size={10} className="text-violet-600" /> Unique items</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-violet-200 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-violet-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <Package size={24} className="text-violet-700" />
                 </div>
               </div>
               <div className="relative mt-3 flex gap-2">
-                <span className="text-[10px] px-2 py-1 bg-[var(--bg-surface)]/80 rounded text-[var(--text-secondary)] font-medium">{filteredInventoryForDashboard.length} total entries</span>
-                <span className="text-[10px] px-2 py-1 bg-[var(--bg-surface)]/80 rounded text-[var(--text-secondary)] font-medium">{categories.length} categories</span>
+                <span className="text-[10px] px-2 py-1 bg-violet-100 rounded text-violet-700 font-medium">{filteredInventoryForDashboard.length} total</span>
+                <span className="text-[10px] px-2 py-1 bg-violet-100 rounded text-violet-700 font-medium">{categories.length} categories</span>
               </div>
             </div>
 
             {/* Category Card */}
             <div
               onClick={() => setActiveTab('category')}
-              className="relative overflow-hidden bg-gradient-to-br from-amber-100 to-orange-200 border border-amber-200 rounded-2xl p-5 cursor-pointer hover:shadow-md transition-all"
+              className="group relative overflow-hidden bg-gradient-to-br from-amber-100 to-orange-200 border border-amber-200 rounded-2xl p-5 cursor-pointer hover:shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
             >
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="relative flex items-start justify-between">
                 <div>
-                  <p className="text-xs font-bold text-amber-700 uppercase tracking-wider">Category</p>
-                  <p className="text-3xl font-bold text-[var(--text-primary)] mt-2">{categories.length}</p>
-                  <p className="text-xs text-[var(--text-muted)] mt-1">Item categories</p>
+                  <p className="text-[10px] uppercase tracking-wider text-amber-700 font-bold">Category</p>
+                  <p className="text-3xl font-bold text-gray-800 mt-2">{categories.length}</p>
+                  <p className="text-xs text-gray-600 mt-1 flex items-center gap-1"><Tag size={10} className="text-amber-600" /> Item categories</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-amber-200 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-amber-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <Tag size={24} className="text-amber-700" />
                 </div>
               </div>
               <div className="relative mt-3 flex gap-2 flex-wrap">
                 {categories.slice(0, 2).map((cat, i) => (
-                  <span key={cat} className="text-[10px] px-2 py-1 bg-[var(--bg-surface)]/80 rounded text-[var(--text-secondary)] font-medium">{cat}</span>
+                  <span key={cat} className="text-[10px] px-2 py-1 bg-amber-100 rounded text-amber-700 font-medium">{cat}</span>
                 ))}
                 {categories.length > 2 && (
-                  <span className="text-[10px] px-2 py-1 bg-[var(--bg-surface)]/80 rounded text-[var(--text-secondary)] font-medium">+{categories.length - 2}</span>
+                  <span className="text-[10px] px-2 py-1 bg-amber-100 rounded text-amber-700 font-medium">+{categories.length - 2}</span>
                 )}
               </div>
             </div>
@@ -1686,39 +1703,57 @@ const InventoryPage = ({ onNavigate }) => {
             {/* Unit Card */}
             <div
               onClick={() => setActiveTab('unit')}
-              className="relative overflow-hidden bg-gradient-to-br from-cyan-100 to-teal-200 border border-[var(--blue)]/20 rounded-2xl p-5 cursor-pointer hover:shadow-md transition-all"
+              className="group relative overflow-hidden bg-gradient-to-br from-cyan-100 to-teal-200 border border-cyan-200 rounded-2xl p-5 cursor-pointer hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300"
             >
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="relative flex items-start justify-between">
                 <div>
-                  <p className="text-xs font-bold text-[var(--blue)] uppercase tracking-wider">Unit</p>
-                  <p className="text-3xl font-bold text-[var(--text-primary)] mt-2">{units.length}</p>
-                  <p className="text-xs text-[var(--text-muted)] mt-1">Measurement units</p>
+                  <p className="text-[10px] uppercase tracking-wider text-cyan-700 font-bold">Unit</p>
+                  <p className="text-3xl font-bold text-gray-800 mt-2">{units.length}</p>
+                  <p className="text-xs text-gray-600 mt-1 flex items-center gap-1"><Scale size={10} className="text-cyan-600" /> Measurement units</p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-[var(--blue)]/20 flex items-center justify-center">
-                  <Scale size={24} className="text-[var(--blue)]" />
+                <div className="w-12 h-12 rounded-xl bg-cyan-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Scale size={24} className="text-cyan-700" />
                 </div>
               </div>
               <div className="relative mt-3 flex gap-2 flex-wrap">
                 {units.slice(0, 3).map((unit, i) => (
-                  <span key={unit} className="text-[10px] px-2 py-1 bg-[var(--bg-surface)]/80 rounded text-[var(--text-secondary)] font-medium">{unit}</span>
+                  <span key={unit} className="text-[10px] px-2 py-1 bg-cyan-100 rounded text-cyan-700 font-medium">{unit}</span>
                 ))}
                 {units.length > 3 && (
-                  <span className="text-[10px] px-2 py-1 bg-[var(--bg-surface)]/80 rounded text-[var(--text-secondary)] font-medium">+{units.length - 3}</span>
+                  <span className="text-[10px] px-2 py-1 bg-cyan-100 rounded text-cyan-700 font-medium">+{units.length - 3}</span>
                 )}
               </div>
             </div>
           </div>
 
+          {/* Section Header - Analytics Overview */}
+          <div className="flex items-center gap-3 mb-2 mt-6">
+            <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-cyan-600 rounded-full" />
+            <h2 className="text-base font-bold text-[var(--text-primary)] tracking-tight">Analytics Overview</h2>
+            <div className="flex-1 h-px bg-gradient-to-r from-[var(--border-base)] to-transparent" />
+          </div>
+
           {/* Charts Row 1 - 3 charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* Inventory Status Pie Chart */}
-            <div className="glass-card p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <PieChartIcon size={16} className="text-[var(--accent)]" />
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Stock Status</h3>
-              </div>
+            <div className="group relative overflow-hidden bg-white rounded-2xl border border-gray-200 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
+              {/* Gradient Top Border */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-sky-500 to-blue-600 rounded-t-2xl" />
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              <div className="relative p-5 pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-sky-600 flex items-center justify-center shadow-md">
+                      <PieChartIcon size={16} className="text-white" />
+                    </div>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">Stock Status</h3>
+                  </div>
+                  <span className="text-[10px] text-[var(--text-muted)] bg-blue-50 px-2 py-1 rounded-full">Inventory</span>
+                </div>
               <ResponsiveContainer width="100%" height={220}>
-                <PieChart margin={{ top: 0, right: 20, left: 20, bottom: 0 }}>
+                <PieChart margin={{ top: 20, right: 20, left: 20, bottom: 0 }}>
                   <Pie
                     data={[
                       { name: 'In Stock', value: Math.max(0, dynamicStats.totalItems - dynamicStats.lowStockItems - dynamicStats.outOfStockItems), color: '#3b82f6' },
@@ -1727,9 +1762,9 @@ const InventoryPage = ({ onNavigate }) => {
                     ].filter(d => d.value > 0)}
                     cx="50%"
                     cy="50%"
-                    innerRadius={45}
+                    innerRadius={40}
                     outerRadius={70}
-                    paddingAngle={5}
+                    paddingAngle={4}
                     dataKey="value"
                     label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
                   >
@@ -1738,30 +1773,34 @@ const InventoryPage = ({ onNavigate }) => {
                       { name: 'Low Stock', value: dynamicStats.lowStockItems, color: '#f59e0b' },
                       { name: 'Out of Stock', value: dynamicStats.outOfStockItems, color: '#ef4444' },
                     ].filter(d => d.value > 0).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell key={`cell-${index}`} fill={entry.color} stroke="white" strokeWidth={2} />
                     ))}
                   </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      background: 'var(--bg-surface)',
-                      border: '1px solid var(--border-base)',
-                      borderRadius: 8,
-                      fontSize: 12
-                    }}
-                  />
-                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 10, paddingTop: 10 }} />
+                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 11, paddingTop: 10 }} iconType="circle" />
                 </PieChart>
               </ResponsiveContainer>
+              </div>
             </div>
 
             {/* Category Distribution Donut */}
-            <div className="glass-card p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Tag size={16} className="text-[var(--accent)]" />
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Category Distribution</h3>
-              </div>
+            <div className="group relative overflow-hidden bg-white rounded-2xl border border-gray-200 hover:shadow-2xl hover:shadow-violet-500/10 transition-all duration-300">
+              {/* Gradient Top Border */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-400 via-purple-500 to-violet-600 rounded-t-2xl" />
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-50/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              <div className="relative p-5 pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center shadow-md">
+                      <Tag size={16} className="text-white" />
+                    </div>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">Category Distribution</h3>
+                  </div>
+                  <span className="text-[10px] text-[var(--text-muted)] bg-violet-50 px-2 py-1 rounded-full">By Items</span>
+                </div>
               <ResponsiveContainer width="100%" height={220}>
-                <PieChart margin={{ top: 10, right: 40, left: 40, bottom: 10 }}>
+                <PieChart margin={{ top: 20, right: 40, left: 40, bottom: 10 }}>
                   <Pie
                     data={categories.map((cat, i) => ({
                       name: cat,
@@ -1769,31 +1808,42 @@ const InventoryPage = ({ onNavigate }) => {
                       color: ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4'][i % 6]
                     })).filter(d => d.value > 0)}
                     cx="50%"
-                    cy="45%"
-                    innerRadius={45}
-                    outerRadius={65}
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={70}
                     paddingAngle={3}
                     dataKey="value"
                     label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
                   >
                     {categories.map((cat, i) => (
-                      <Cell key={`cell-${i}`} fill={['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4'][i % 6]} />
+                      <Cell key={`cell-${i}`} fill={['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4'][i % 6]} stroke="white" strokeWidth={2} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 8, fontSize: 12 }} />
-                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 10, paddingTop: 10 }} />
+                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 11, paddingTop: 10 }} iconType="circle" />
                 </PieChart>
               </ResponsiveContainer>
+              </div>
             </div>
 
             {/* Unit Distribution */}
-            <div className="glass-card p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Scale size={16} className="text-[var(--accent)]" />
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Unit Distribution</h3>
-              </div>
+            <div className="group relative overflow-hidden bg-white rounded-2xl border border-gray-200 hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300">
+              {/* Gradient Top Border */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-teal-500 to-cyan-600 rounded-t-2xl" />
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-50/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              <div className="relative p-5 pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-teal-600 flex items-center justify-center shadow-md">
+                      <Scale size={16} className="text-white" />
+                    </div>
+                    <h3 className="text-sm font-bold text-[var(--text-primary)]">Unit Distribution</h3>
+                  </div>
+                  <span className="text-[10px] text-[var(--text-muted)] bg-cyan-50 px-2 py-1 rounded-full">By Items</span>
+                </div>
               <ResponsiveContainer width="100%" height={220}>
-                <PieChart margin={{ top: 0, right: 30, left: 30, bottom: 0 }}>
+                <PieChart margin={{ top: 20, right: 30, left: 30, bottom: 0 }}>
                   <Pie
                     data={units.map((unit, i) => ({
                       name: unit,
@@ -1802,54 +1852,65 @@ const InventoryPage = ({ onNavigate }) => {
                     })).filter(d => d.value > 0)}
                     cx="50%"
                     cy="50%"
-                    innerRadius={45}
+                    innerRadius={40}
                     outerRadius={70}
                     paddingAngle={2}
                     dataKey="value"
                     label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
                   >
                     {units.map((unit, i) => (
-                      <Cell key={`cell-${i}`} fill={['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'][i % 6]} />
+                      <Cell key={`cell-${i}`} fill={['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'][i % 6]} stroke="white" strokeWidth={2} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 8, fontSize: 12 }} />
-                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 10, paddingTop: 10 }} />
+                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 11, paddingTop: 10 }} iconType="circle" />
                 </PieChart>
               </ResponsiveContainer>
+              </div>
             </div>
           </div>
 
+          {/* Section Header - Category Analysis */}
+          <div className="flex items-center gap-3 mb-2 mt-6">
+            <div className="w-1 h-6 bg-gradient-to-b from-violet-500 to-purple-600 rounded-full" />
+            <h2 className="text-base font-bold text-[var(--text-primary)] tracking-tight">Category & Warehouse Analysis</h2>
+            <div className="flex-1 h-px bg-gradient-to-r from-[var(--border-base)] to-transparent" />
+          </div>
+
           {/* Charts Row 2 - Bar Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {/* Items by Category Bar Chart */}
-            <div className="glass-card p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <BarChart2 size={16} className="text-[var(--accent)]" />
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Items by Category</h3>
+            <div className="group relative overflow-hidden bg-white rounded-2xl p-5 shadow-lg shadow-black/5 border border-gray-200 hover:shadow-2xl hover:shadow-violet-500/10 hover:-translate-y-1 transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center">
+                    <BarChart2 size={16} className="text-violet-600" />
+                  </div>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Items by Category</h3>
+                </div>
+                <span className="text-[10px] text-[var(--text-muted)] bg-violet-50 px-2 py-1 rounded-full">Count</span>
               </div>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={categories.map(cat => ({ name: cat, count: inventory.filter(i => i.category === cat).length })).filter(c => c.count > 0)} barSize={30}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{
-                      background: 'var(--bg-surface)',
-                      border: '1px solid var(--border-base)',
-                      borderRadius: 8,
-                      fontSize: 12
-                    }}
-                  />
+                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
                   <Bar dataKey="count" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
             {/* Inventory Value by Warehouse */}
-            <div className="glass-card p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Warehouse size={16} className="text-[var(--accent)]" />
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Value by Warehouse</h3>
+            <div className="group relative overflow-hidden bg-white rounded-2xl p-5 shadow-lg shadow-black/5 border border-gray-200 hover:shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-1 transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                    <Warehouse size={16} className="text-emerald-600" />
+                  </div>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Value by Warehouse</h3>
+                </div>
+                <span className="text-[10px] text-[var(--text-muted)] bg-emerald-50 px-2 py-1 rounded-full">₹ Value</span>
               </div>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={warehouses.map(wh => {
@@ -1857,31 +1918,35 @@ const InventoryPage = ({ onNavigate }) => {
                   const value = whItems.reduce((sum, i) => sum + ((i.stock || 0) * (i.rate || 0)), 0);
                   return { name: wh, value: value / 1000 };
                 })} barSize={40}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v}K`} />
-                  <Tooltip
-                    formatter={(value) => [`₹${value}K`, 'Value']}
-                    contentStyle={{
-                      background: 'var(--bg-surface)',
-                      border: '1px solid var(--border-base)',
-                      borderRadius: 8,
-                      fontSize: 12
-                    }}
-                  />
+                  <Tooltip formatter={(value) => [`₹${value}K`, 'Value']} contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
                   <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
 
+          {/* Section Header - Stock Trends */}
+          <div className="flex items-center gap-3 mb-2 mt-6">
+            <div className="w-1 h-6 bg-gradient-to-b from-emerald-500 to-teal-600 rounded-full" />
+            <h2 className="text-base font-bold text-[var(--text-primary)] tracking-tight">Stock Trends & Analysis</h2>
+            <div className="flex-1 h-px bg-gradient-to-r from-[var(--border-base)] to-transparent" />
+          </div>
+
           {/* Charts Row 3 - 2x2 Grid Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {/* Stock vs Reserved Area Chart */}
-            <div className="glass-card p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Activity size={16} className="text-[var(--accent)]" />
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Stock vs Reserved (Top 10 Items)</h3>
+            <div className="group relative overflow-hidden bg-white rounded-2xl p-5 shadow-lg shadow-black/5 border border-gray-200 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <Activity size={16} className="text-blue-600" />
+                  </div>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Stock vs Reserved</h3>
+                </div>
+                <span className="text-[10px] text-[var(--text-muted)] bg-blue-50 px-2 py-1 rounded-full">Top 10 Items</span>
               </div>
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={inventory.slice(0, 10).map(i => ({ name: (i.name || i.description || 'Unknown').slice(0, 15), stock: i.stock || 0, reserved: i.reserved || 0 }))} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -1895,11 +1960,11 @@ const InventoryPage = ({ onNavigate }) => {
                       <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fill: 'var(--text-muted)', fontSize: 9 }} axisLine={false} tickLine={false} angle={-15} textAnchor="end" height={50} />
                   <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 8, fontSize: 12 }} />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} iconType="circle" />
                   <Area type="monotone" dataKey="stock" name="Total Stock" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorStock)" />
                   <Area type="monotone" dataKey="reserved" name="Reserved" stroke="#f59e0b" strokeWidth={2} fillOpacity={1} fill="url(#colorReserved)" />
                 </AreaChart>
@@ -1907,10 +1972,15 @@ const InventoryPage = ({ onNavigate }) => {
             </div>
 
             {/* Inventory Value Trend */}
-            <div className="glass-card p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <TrendingUp size={16} className="text-[var(--accent)]" />
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Inventory Value Trend (Simulated)</h3>
+            <div className="group relative overflow-hidden bg-white rounded-2xl p-5 shadow-lg shadow-black/5 border border-gray-200 hover:shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-1 transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                    <TrendingUp size={16} className="text-emerald-600" />
+                  </div>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Value Trend</h3>
+                </div>
+                <span className="text-[10px] text-[var(--text-muted)] bg-emerald-50 px-2 py-1 rounded-full">6 Months</span>
               </div>
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={[
@@ -1927,20 +1997,25 @@ const InventoryPage = ({ onNavigate }) => {
                       <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                   <XAxis dataKey="month" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v.toFixed(1)}L`} />
-                  <Tooltip formatter={(value) => [`₹${value.toFixed(1)}L`, 'Value']} contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 8, fontSize: 12 }} />
+                  <Tooltip formatter={(value) => [`₹${value.toFixed(1)}L`, 'Value']} contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
                   <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
 
             {/* Stock Movement Analysis */}
-            <div className="glass-card p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Activity size={16} className="text-[var(--accent)]" />
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Stock Movement Analysis (6 Months)</h3>
+            <div className="group relative overflow-hidden bg-white rounded-2xl p-5 shadow-lg shadow-black/5 border border-gray-200 hover:shadow-2xl hover:shadow-rose-500/10 hover:-translate-y-1 transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center">
+                    <Activity size={16} className="text-rose-600" />
+                  </div>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Stock Movement</h3>
+                </div>
+                <span className="text-[10px] text-[var(--text-muted)] bg-rose-50 px-2 py-1 rounded-full">In vs Out</span>
               </div>
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={[
@@ -1961,11 +2036,11 @@ const InventoryPage = ({ onNavigate }) => {
                       <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                   <XAxis dataKey="month" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 8, fontSize: 12 }} />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} iconType="circle" />
                   <Area type="monotone" dataKey="stockIn" name="Stock In" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorStockIn)" />
                   <Area type="monotone" dataKey="stockOut" name="Stock Out" stroke="#ef4444" strokeWidth={2} fillOpacity={1} fill="url(#colorStockOut)" />
                 </AreaChart>
@@ -1973,10 +2048,15 @@ const InventoryPage = ({ onNavigate }) => {
             </div>
 
             {/* Category Value Comparison */}
-            <div className="glass-card p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <BarChart2 size={16} className="text-[var(--accent)]" />
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Inventory Value by Category</h3>
+            <div className="group relative overflow-hidden bg-white rounded-2xl p-5 shadow-lg shadow-black/5 border border-gray-200 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
+                    <BarChart2 size={16} className="text-purple-600" />
+                  </div>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">Value by Category</h3>
+                </div>
+                <span className="text-[10px] text-[var(--text-muted)] bg-purple-50 px-2 py-1 rounded-full">Value & Count</span>
               </div>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={categories.map(cat => {
@@ -1985,12 +2065,12 @@ const InventoryPage = ({ onNavigate }) => {
                   const count = catItems.length;
                   return { name: cat, value: value / 1000, count };
                 }).filter(c => c.value > 0)} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
                   <YAxis yAxisId="left" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v}K`} />
                   <YAxis yAxisId="right" orientation="right" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 8, fontSize: 12 }} />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border-base)', borderRadius: 12, fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} iconType="circle" />
                   <Bar yAxisId="left" dataKey="value" name="Value (₹K)" fill="#8b5cf6" radius={[4, 4, 0, 0]} barSize={40} />
                   <Bar yAxisId="right" dataKey="count" name="Item Count" fill="#06b6d4" radius={[4, 4, 0, 0]} barSize={20} />
                 </BarChart>
@@ -1998,37 +2078,44 @@ const InventoryPage = ({ onNavigate }) => {
             </div>
           </div>
 
+          {/* Section Header - Quick Actions */}
+          <div className="flex items-center gap-3 mb-2 mt-6">
+            <div className="w-1 h-6 bg-gradient-to-b from-amber-500 to-orange-600 rounded-full" />
+            <h2 className="text-base font-bold text-[var(--text-primary)] tracking-tight">Quick Actions</h2>
+            <div className="flex-1 h-px bg-gradient-to-r from-[var(--border-base)] to-transparent" />
+          </div>
+
           {/* Quick Actions */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             <button
               onClick={() => setActiveTab('inventory')}
-              className="p-3 rounded-xl bg-[var(--primary)]/10 border border-[var(--primary)]/20 text-[var(--primary)] hover:bg-[var(--primary)]/20 transition-colors text-sm font-medium flex items-center gap-2"
+              className="group p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 text-blue-700 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-0.5 transition-all duration-300 text-sm font-semibold flex items-center justify-center gap-2"
             >
-              <Package size={16} /> View Inventory
+              <Package size={18} className="group-hover:scale-110 transition-transform" /> View Inventory
             </button>
             <button
               onClick={() => setActiveTab('warehouse')}
-              className="p-3 rounded-xl bg-[var(--green)]/10 border border-[var(--green)]/20 text-[var(--green)] hover:bg-[var(--green)]/20 transition-colors text-sm font-medium flex items-center gap-2"
+              className="group p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 text-emerald-700 hover:shadow-lg hover:shadow-emerald-500/10 hover:-translate-y-0.5 transition-all duration-300 text-sm font-semibold flex items-center justify-center gap-2"
             >
-              <Warehouse size={16} /> Manage Warehouses
+              <Warehouse size={18} className="group-hover:scale-110 transition-transform" /> Warehouses
             </button>
             <button
               onClick={() => setActiveTab('items')}
-              className="p-3 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-600 hover:bg-violet-500/20 transition-colors text-sm font-medium flex items-center gap-2"
+              className="group p-4 rounded-xl bg-gradient-to-br from-violet-50 to-violet-100 border border-violet-200 text-violet-700 hover:shadow-lg hover:shadow-violet-500/10 hover:-translate-y-0.5 transition-all duration-300 text-sm font-semibold flex items-center justify-center gap-2"
             >
-              <Plus size={16} /> Add Items
+              <Plus size={18} className="group-hover:scale-110 transition-transform" /> Add Items
             </button>
             <button
               onClick={() => setActiveTab('category')}
-              className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 hover:bg-amber-500/20 transition-colors text-sm font-medium flex items-center gap-2"
+              className="group p-4 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 text-amber-700 hover:shadow-lg hover:shadow-amber-500/10 hover:-translate-y-0.5 transition-all duration-300 text-sm font-semibold flex items-center justify-center gap-2"
             >
-              <Tag size={16} /> Categories
+              <Tag size={18} className="group-hover:scale-110 transition-transform" /> Categories
             </button>
             <button
               onClick={() => setActiveTab('unit')}
-              className="p-3 rounded-xl bg-[var(--blue)]/10 border border-[var(--blue)]/20 text-[var(--blue)] hover:bg-[var(--blue)]/20 transition-colors text-sm font-medium flex items-center gap-2"
+              className="group p-4 rounded-xl bg-gradient-to-br from-cyan-50 to-cyan-100 border border-cyan-200 text-cyan-700 hover:shadow-lg hover:shadow-cyan-500/10 hover:-translate-y-0.5 transition-all duration-300 text-sm font-semibold flex items-center justify-center gap-2"
             >
-              <Scale size={16} /> Units
+              <Scale size={18} className="group-hover:scale-110 transition-transform" /> Units
             </button>
           </div>
             </>
@@ -2067,68 +2154,77 @@ const InventoryPage = ({ onNavigate }) => {
 
           {showCardsInViews && (
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-              <div className="relative overflow-hidden bg-gradient-to-br from-[var(--blue-bg)] to-[var(--cyan-bg)] border border-[var(--blue)]/20 rounded-2xl p-5 shadow-lg">
+              {/* Card 1: Total Stock */}
+              <div className="group relative overflow-hidden bg-gradient-to-br from-blue-100 to-sky-200 border border-blue-200 rounded-2xl p-5 hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative flex items-start justify-between">
                   <div>
-                    <p className="text-xs font-bold text-[var(--blue)] uppercase tracking-wider">Total Stock</p>
-                    <p className="text-3xl font-bold text-[var(--text-primary)] mt-2">{activeStockStats.totalAvailableStock}</p>
-                    <p className="text-xs text-[var(--text-muted)] mt-1">Available quantity in inventory</p>
+                    <p className="text-[10px] uppercase tracking-wider text-blue-700 font-bold">Total Stock</p>
+                    <p className="text-3xl font-bold text-gray-800 mt-2">{activeStockStats.totalAvailableStock}</p>
+                    <p className="text-xs text-gray-600 mt-1 flex items-center gap-1"><Package size={10} className="text-blue-600" /> Available quantity</p>
                   </div>
-                  <div className="w-12 h-12 rounded-xl bg-[var(--blue)]/20 flex items-center justify-center">
-                    <Package size={24} className="text-[var(--blue)]" />
-                  </div>
-                </div>
-              </div>
-              {/* Card 2: Reserved Items - Swapped to position 2 */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-violet-100 to-purple-200 border border-violet-200 rounded-2xl p-5 shadow-lg">
-                <div className="relative flex items-start justify-between">
-                  <div>
-                    <p className="text-xs font-bold text-violet-700 uppercase tracking-wider">Reserved Items</p>
-                    <p className="text-3xl font-bold text-[var(--text-primary)] mt-2">{activeStockStats.totalReservedQuantity}</p>
-                    <p className="text-xs text-[var(--text-muted)] mt-1">Allocated to projects</p>
-                  </div>
-                  <div className="w-12 h-12 rounded-xl bg-violet-200 flex items-center justify-center">
-                    <Package size={24} className="text-violet-700" />
+                  <div className="w-12 h-12 rounded-xl bg-blue-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Package size={24} className="text-blue-700" />
                   </div>
                 </div>
               </div>
 
-              <div className="relative overflow-hidden bg-gradient-to-br from-amber-100 to-orange-200 border border-amber-200 rounded-2xl p-5 shadow-lg">
+              {/* Card 2: Reserved Items */}
+              <div className="group relative overflow-hidden bg-gradient-to-br from-violet-100 to-purple-200 border border-violet-200 rounded-2xl p-5 hover:shadow-xl hover:shadow-violet-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative flex items-start justify-between">
                   <div>
-                    <p className="text-xs font-bold text-amber-700 uppercase tracking-wider">Low Stock</p>
-                    <p className="text-3xl font-bold text-[var(--text-primary)] mt-2">{activeStockStats.lowStockItems}</p>
-                    <p className="text-xs text-[var(--text-muted)] mt-1">Items need reorder</p>
+                    <p className="text-[10px] uppercase tracking-wider text-violet-700 font-bold">Reserved Items</p>
+                    <p className="text-3xl font-bold text-gray-800 mt-2">{activeStockStats.totalReservedQuantity}</p>
+                    <p className="text-xs text-gray-600 mt-1 flex items-center gap-1"><Layers size={10} className="text-violet-600" /> Allocated to projects</p>
                   </div>
-                  <div className="w-12 h-12 rounded-xl bg-amber-200 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-xl bg-violet-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Layers size={24} className="text-violet-700" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 3: Low Stock */}
+              <div className="group relative overflow-hidden bg-gradient-to-br from-amber-100 to-orange-200 border border-amber-200 rounded-2xl p-5 hover:shadow-xl hover:shadow-amber-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative flex items-start justify-between">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-amber-700 font-bold">Low Stock</p>
+                    <p className="text-3xl font-bold text-gray-800 mt-2">{activeStockStats.lowStockItems}</p>
+                    <p className="text-xs text-gray-600 mt-1 flex items-center gap-1"><AlertTriangle size={10} className="text-amber-600" /> Items need reorder</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-amber-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <AlertTriangle size={24} className="text-amber-700" />
                   </div>
                 </div>
               </div>
 
-              <div className="relative overflow-hidden bg-gradient-to-br from-rose-100 to-rose-200 border border-rose-200 rounded-2xl p-5 shadow-lg">
+              {/* Card 4: Out of Stock */}
+              <div className="group relative overflow-hidden bg-gradient-to-br from-rose-100 to-pink-200 border border-rose-200 rounded-2xl p-5 hover:shadow-xl hover:shadow-rose-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative flex items-start justify-between">
                   <div>
-                    <p className="text-xs font-bold text-rose-700 uppercase tracking-wider">Out of Stock</p>
-                    <p className="text-3xl font-bold text-[var(--text-primary)] mt-2">{activeStockStats.outOfStockItems}</p>
-                    <p className="text-xs text-[var(--text-muted)] mt-1">Immediate action needed</p>
+                    <p className="text-[10px] uppercase tracking-wider text-rose-700 font-bold">Out of Stock</p>
+                    <p className="text-3xl font-bold text-gray-800 mt-2">{activeStockStats.outOfStockItems}</p>
+                    <p className="text-xs text-gray-600 mt-1 flex items-center gap-1"><AlertTriangle size={10} className="text-rose-600" /> Immediate action needed</p>
                   </div>
-                  <div className="w-12 h-12 rounded-xl bg-rose-200 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-xl bg-rose-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <AlertTriangle size={24} className="text-rose-700" />
                   </div>
                 </div>
               </div>
 
-              {/* Card 5: Inventory Value - Swapped to position 5 */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-emerald-100 to-green-200 border border-[var(--green)]/20 rounded-2xl p-5 shadow-lg">
+              {/* Card 5: Inventory Value */}
+              <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-100 to-green-200 border border-emerald-200 rounded-2xl p-5 hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative flex items-start justify-between">
                   <div>
-                    <p className="text-xs font-bold text-[var(--green)] uppercase tracking-wider">Inventory Value</p>
-                    <p className="text-xl font-bold text-[var(--text-primary)] mt-2">₹{(activeStockStats.totalValue / 100000).toFixed(1)}L</p>
-                    <p className="text-xs text-[var(--text-muted)] mt-1">At current rates</p>
+                    <p className="text-[10px] uppercase tracking-wider text-emerald-700 font-bold">Inventory Value</p>
+                    <p className="text-2xl font-bold text-gray-800 mt-2">₹{(activeStockStats.totalValue / 100000).toFixed(1)}L</p>
+                    <p className="text-xs text-gray-600 mt-1 flex items-center gap-1"><TrendingUp size={10} className="text-emerald-600" /> At current rates</p>
                   </div>
-                  <div className="w-12 h-12 rounded-xl bg-[var(--green)]/20 flex items-center justify-center">
-                    <Warehouse size={24} className="text-[var(--green)]" />
+                  <div className="w-12 h-12 rounded-xl bg-emerald-200 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <TrendingUp size={24} className="text-emerald-700" />
                   </div>
                 </div>
               </div>

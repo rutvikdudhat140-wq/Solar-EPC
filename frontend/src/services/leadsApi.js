@@ -176,9 +176,27 @@ export const leadsApi = {
     return api.get('/users', { roleId });
   },
 
-  // Export leads to CSV - POST /api/v1/leads/export
-  async exportCSV(ids) {
-    return api.post('/leads/export', { leadIds: ids });
+  // Export leads to CSV - POST /api/v1/leads/export (ASYNC JOB)
+  // Supports both ID-based and filter-based export
+  async exportCSV(leadIds = [], filters = {}) {
+    const payload = {};
+    
+    // If leadIds provided, use ID-based export
+    if (leadIds && leadIds.length > 0) {
+      payload.leadIds = leadIds;
+    }
+    
+    // If filters provided, use filter-based export
+    if (filters && Object.keys(filters).length > 0) {
+      payload.filters = filters;
+    }
+    
+    return api.post('/leads/export', payload);
+  },
+
+  // Get export job status - GET /api/v1/leads/export/:jobId/status
+  async getExportStatus(jobId) {
+    return api.get(`/leads/export/${jobId}/status`);
   },
 
   // Import leads from file (CSV, XLSX, JSON)

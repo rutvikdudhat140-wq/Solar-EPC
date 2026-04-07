@@ -193,9 +193,50 @@ export class SettingsService {
     return doc;
   }
 
+  // ── Milestones Config ─────────────────────────────────────────────────
+  async getMilestones(tenantId: string): Promise<any[]> {
+    try {
+      const tid = this.toObjectId(tenantId);
+      console.log('[DEBUG getMilestones] tenantId:', tenantId, 'tid:', tid);
+      // Use ProjectTypeConfig as a generic settings store for milestones
+      const config = await this.projectTypeConfigModel.findOne({ tenantId: tid, typeId: '__milestones__' }).exec();
+      console.log('[DEBUG getMilestones] config from DB:', config);
+      // Cast to any to bypass TypeScript strict type checking
+      const milestones = (config?.config as any)?.milestones || [];
+      console.log('[DEBUG getMilestones] milestones:', milestones);
+      return milestones;
+    } catch (err) {
+      console.error('[DEBUG getMilestones] Error:', err);
+      return [];
+    }
+  }
+
+  async updateMilestones(tenantId: string, milestones: any[], userId?: string): Promise<any> {
+    const tid = this.toObjectId(tenantId);
+    console.log('[DEBUG updateMilestones] tenantId:', tenantId, 'tid:', tid);
+    console.log('[DEBUG updateMilestones] milestones to save:', milestones);
+    const filter = { tenantId: tid, typeId: '__milestones__' };
+    const update = { 
+      $set: { 
+        config: { milestones },
+        updatedAt: new Date(),
+        updatedBy: userId,
+      },
+      $setOnInsert: {
+        createdAt: new Date(),
+        createdBy: userId,
+      }
+    };
+    console.log('[DEBUG updateMilestones] filter:', filter, 'update:', JSON.stringify(update));
+    const doc = await this.projectTypeConfigModel.findOneAndUpdate(filter, update, { upsert: true, new: true }).exec();
+    console.log('[DEBUG updateMilestones] saved doc:', doc);
+    // Cast to any to bypass TypeScript strict type checking
+    return (doc?.config as any)?.milestones || milestones;
+  }
+
   // ── Full Settings ───────────────────────────────────────────────────────
   async getFullSettings(tenantId: string): Promise<any> {
-    const [flags, rbac, workflows, auditLogs, customRoles, projectTypeConfigs, commissioningTaskConfig] = await Promise.all([
+    const [flags, rbac, workflows, auditLogs, customRoles, projectTypeConfigs, commissioningTaskConfig, milestonesConfig] = await Promise.all([
       this.getFeatureFlags(tenantId),
       this.getRBACConfigs(tenantId),
       this.getWorkflowRules(tenantId),
@@ -203,6 +244,7 @@ export class SettingsService {
       this.getCustomRoles(tenantId),
       this.getProjectTypeConfigs(tenantId),
       this.commissioningTaskConfigModel.findOne({ tenantId: this.toObjectId(tenantId) }).exec(),
+      this.getMilestones(tenantId),
     ]);
 
     return {
@@ -213,6 +255,7 @@ export class SettingsService {
       customRoles,
       projectTypeConfigs,
       commissioningTasks: commissioningTaskConfig?.tasks || [],
+      milestones: milestonesConfig,
     };
   }
 }

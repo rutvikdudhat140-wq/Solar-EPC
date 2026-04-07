@@ -1,5 +1,5 @@
 // Solar OS – Document Management Module
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Plus, FileText, Send, DollarSign,
   LayoutGrid, List, Search, Filter,
@@ -13,7 +13,7 @@ import {
   Activity, PieChart as PieChartIcon,
   BarChart3, Target, Zap,
   Sun, Hammer,
-  MoreVertical, CheckCircle, Eye,
+  MoreVertical, CheckCircle, Eye, RefreshCw,
 } from 'lucide-react';
 import {
   BarChart, Bar, PieChart, Pie, Cell,
@@ -37,6 +37,46 @@ import ProposalPage from './ProposalPage';
 import { toast } from '../components/ui/Toast';
 import { documentsApi } from '../services/documentsApi';
 
+// ── Live Counts Component ────────────────────────────────────────────────────
+const LiveCountCard = ({ label, count, color = 'blue', onClick, isLoading }) => {
+  const [displayCount, setDisplayCount] = useState(count);
+  const [isPulsing, setIsPulsing] = useState(false);
+
+  useEffect(() => {
+    if (count !== displayCount) {
+      setIsPulsing(true);
+      setDisplayCount(count);
+      setTimeout(() => setIsPulsing(false), 500);
+    }
+  }, [count]);
+
+  const colorClasses = {
+    blue: 'bg-blue-50 border-blue-200 text-blue-700',
+    green: 'bg-green-50 border-green-200 text-green-700',
+    orange: 'bg-orange-50 border-orange-200 text-orange-700',
+    purple: 'bg-purple-50 border-purple-200 text-purple-700',
+    red: 'bg-red-50 border-red-200 text-red-700',
+    teal: 'bg-teal-50 border-teal-200 text-teal-700',
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={isLoading}
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all ${colorClasses[color]
+        } ${isPulsing ? 'scale-105 shadow-lg' : 'hover:shadow-md'} ${isLoading ? 'opacity-70' : ''
+        }`}
+    >
+      <div className="text-left">
+        <p className="text-xs font-medium opacity-80 uppercase tracking-wide">{label}</p>
+        <p className={`text-2xl font-bold ${isPulsing ? 'animate-pulse' : ''}`}>
+          {isLoading ? <RefreshCw className="animate-spin" size={24} /> : displayCount}
+        </p>
+      </div>
+    </button>
+  );
+};
+
 const fmt = CURRENCY.format;
 
 // ── Mock Data for Documents ───────────────────────────────────────────────────
@@ -59,7 +99,7 @@ const DOCUMENT_STATUS = {
 const StatusCell = ({ status, doc, isProcessing, onUpdateStatus }) => {
   const [statusMenuOpen, setStatusMenuOpen] = useState(false);
   const config = DOCUMENT_STATUS[status] || DOCUMENT_STATUS.draft;
-  
+
   return (
     <div className="relative">
       <button
@@ -73,7 +113,7 @@ const StatusCell = ({ status, doc, isProcessing, onUpdateStatus }) => {
       >
         {config.label}
       </button>
-      
+
       {statusMenuOpen && (
         <div className="absolute left-0 mt-1 w-32 bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg shadow-lg z-50 py-1">
           {Object.entries(DOCUMENT_STATUS).map(([statusKey, statusConfig]) => (
@@ -87,8 +127,8 @@ const StatusCell = ({ status, doc, isProcessing, onUpdateStatus }) => {
               disabled={isProcessing || status === statusKey}
               className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
             >
-              <span 
-                className="w-2 h-2 rounded-full" 
+              <span
+                className="w-2 h-2 rounded-full"
                 style={{ background: statusConfig.color }}
               />
               <span>{statusConfig.label}</span>
@@ -217,6 +257,66 @@ const DocumentPage = () => {
   const [actionMenuOpen, setActionMenuOpen] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+
+  // Live counts state
+  const [liveCounts, setLiveCounts] = useState({
+    estimates: 0,
+    proposals: 0,
+    quotations: 0,
+    total: 0,
+    draft: 0,
+    sent: 0,
+    accepted: 0
+  });
+
+  // Fetch live counts function
+  const fetchLiveCounts = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      const [statsRes, quotRes, docsRes] = await Promise.all([
+        documentsApi.getDashboardStats(),
+        api.get('/quotations'),
+        api.get('/documents/all')
+      ]);
+
+      const statsData = statsRes?.data?.data || statsRes?.data;
+
+      const rawQuots = quotRes?.data || quotRes || [];
+      const quotationsCount = Array.isArray(rawQuots) ? rawQuots.length : 0;
+
+      const rawDocs = docsRes?.data?.data || docsRes?.data || [];
+      const estimates = rawDocs.filter(d => d.type === 'estimate').length;
+      const proposals = rawDocs.filter(d => d.type === 'proposal').length;
+      const draft = [...rawDocs, ...(Array.isArray(rawQuots) ? rawQuots : [])]
+        .filter(d => (d.status || 'draft').toString().toLowerCase() === 'draft').length;
+      const sent = [...rawDocs, ...(Array.isArray(rawQuots) ? rawQuots : [])]
+        .filter(d => (d.status || '').toString().toLowerCase() === 'sent').length;
+      const accepted = [...rawDocs, ...(Array.isArray(rawQuots) ? rawQuots : [])]
+        .filter(d => ['accepted', 'approved'].includes((d.status || '').toString().toLowerCase())).length;
+
+      setLiveCounts({
+        estimates,
+        proposals,
+        quotations: quotationsCount,
+        total: estimates + proposals + quotationsCount,
+        draft,
+        sent,
+        accepted
+      });
+
+      setLastUpdated(new Date());
+      setDashboardStats(statsData);
+    } catch (err) {
+      console.error('Error fetching live counts:', err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  // Initial load
   useEffect(() => {
     let cancelled = false;
     const loadData = async () => {
@@ -226,7 +326,7 @@ const DocumentPage = () => {
           api.get('/quotations'),
           api.get('/documents/all')
         ]);
-        
+
         const statsData = statsRes?.data?.data || statsRes?.data;
         if (!cancelled) setDashboardStats(statsData);
 
@@ -289,10 +389,29 @@ const DocumentPage = () => {
             }))
           });
         });
-        
+
         if (!cancelled) {
           setRealQuotations(formattedQuots);
           setDocuments(formattedDocs);
+
+          // Update live counts
+          const estimates = formattedDocs.filter(d => d.type === 'estimate').length;
+          const proposals = formattedDocs.filter(d => d.type === 'proposal').length;
+          const quotationsCount = formattedQuots.length;
+          const draft = [...formattedDocs, ...formattedQuots].filter(d => d.status === 'draft').length;
+          const sent = [...formattedDocs, ...formattedQuots].filter(d => d.status === 'sent').length;
+          const accepted = [...formattedDocs, ...formattedQuots].filter(d => d.status === 'accepted').length;
+
+          setLiveCounts({
+            estimates,
+            proposals,
+            quotations: quotationsCount,
+            total: estimates + proposals + quotationsCount,
+            draft,
+            sent,
+            accepted
+          });
+          setLastUpdated(new Date());
         }
       } catch (err) {
         console.error('Error loading documents data:', err);
@@ -304,10 +423,21 @@ const DocumentPage = () => {
     };
   }, [solarQuoteKey]);
 
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    if (!autoRefresh) return;
+
+    const interval = setInterval(() => {
+      fetchLiveCounts();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [autoRefresh, fetchLiveCounts]);
+
   // Merge real documents with real quotations for the 'All' view
   const allDocuments = useMemo(() => {
     console.log('[DocumentPage] Merging documents for All view:', { documents, realQuotations });
-    return [...documents, ...realQuotations].sort((a, b) => 
+    return [...documents, ...realQuotations].sort((a, b) =>
       new Date(b.createdAt) - new Date(a.createdAt)
     );
   }, [documents, realQuotations]);
@@ -407,10 +537,10 @@ const DocumentPage = () => {
       } else {
         endpoint = `/documents/${doc.dbId || doc.id}`;
       }
-      
+
       // API call to update document/quotation status
       await api.put(endpoint, { status: newStatus });
-      
+
       // Update local state
       setDocuments(docs => docs.map(d =>
         d.id === doc.id ? { ...d, status: newStatus } : d
@@ -418,7 +548,7 @@ const DocumentPage = () => {
       setRealQuotations(quots => quots.map(q =>
         q.id === doc.id ? { ...q, status: newStatus } : q
       ));
-      
+
       toast.success(`Status updated to ${newStatus}`);
     } catch (error) {
       console.error('Error updating status:', error);
@@ -432,7 +562,7 @@ const DocumentPage = () => {
   // ── New Action Handlers ──────────────────────────────────────────────────────
   const handleApproveDocument = async (doc) => {
     if (!window.confirm(`Approve ${doc.id} and create project?`)) return;
-    
+
     setIsProcessing(true);
     try {
       // Create project from document/quotation
@@ -462,18 +592,18 @@ const DocumentPage = () => {
         visitsPerMonth: doc.visitInMonth || '',
         totalVisits: doc.totalVisit || '',
       };
-      
+
       console.log('Creating project with data:', projectData);
-      
+
       // API call to create project
       const response = await api.post('/projects', projectData);
-      
+
       if (response.data) {
         // Update document status to approved
         setDocuments(docs => docs.map(d =>
           d.id === doc.id ? { ...d, status: 'accepted', approvedAt: new Date().toISOString() } : d
         ));
-        
+
         alert(`✅ Project created successfully from ${doc.id}!`);
       }
     } catch (error) {
@@ -487,7 +617,7 @@ const DocumentPage = () => {
 
   const handleSendEmailAndComplete = async (doc) => {
     if (!window.confirm(`Send email to ${doc.customerEmail} and mark as completed?`)) return;
-    
+
     setIsProcessing(true);
     try {
       // Prepare document data for PDF generation
@@ -505,32 +635,32 @@ const DocumentPage = () => {
         total: doc.total,
         notes: doc.notes || `Document sent from Documents module`,
       };
-      
+
       console.log('Sending email with data:', emailData);
-      
+
       // Send email with PDF attachment
       const response = await api.post('/email/send-document', emailData);
-      
+
       console.log('Email API response:', response);
-      
-      // api interceptor returns response.data directly, so response is already the data object
-      const result = response;
-      
-      if (!result?.success) {
-        throw new Error(result?.message || 'Failed to send email');
+
+      // Check if response has data and success flag
+      const result = response.data || response;
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to send email');
       }
-      
+
       // Mark document as completed after successful email send
       setDocuments(docs => docs.map(d =>
-        d.id === doc.id ? { 
-          ...d, 
-          status: 'completed', 
+        d.id === doc.id ? {
+          ...d,
+          status: 'completed',
           completedAt: new Date().toISOString(),
           emailSent: true,
           emailSentAt: new Date().toISOString()
         } : d
       ));
-      
+
       alert(`✅ Email with PDF sent to ${doc.customerEmail} successfully!`);
     } catch (error) {
       console.error('Error sending email:', error);
@@ -545,12 +675,12 @@ const DocumentPage = () => {
 
   const handleMarkAsCompleted = async (doc) => {
     if (!window.confirm(`Mark ${doc.id} as completed and create project?`)) return;
-    
+
     setIsProcessing(true);
     try {
       // Reuse handleApproveDocument logic as /projects/quotations endpoint doesn't exist
       await handleApproveDocument(doc);
-      
+
       // The local state update is handled within handleApproveDocument
     } catch (error) {
       console.error('Error marking as completed:', error);
@@ -586,11 +716,11 @@ const DocumentPage = () => {
       key: 'status',
       header: 'Status',
       render: (v, doc) => (
-        <StatusCell 
-          status={v} 
-          doc={doc} 
-          isProcessing={isProcessing} 
-          onUpdateStatus={handleUpdateStatus} 
+        <StatusCell
+          status={v}
+          doc={doc}
+          isProcessing={isProcessing}
+          onUpdateStatus={handleUpdateStatus}
         />
       ),
     },
@@ -609,11 +739,11 @@ const DocumentPage = () => {
           >
             <MoreVertical size={16} />
           </button>
-          
+
           {actionMenuOpen === doc.id && (
             <>
               {/* Backdrop to close menu when clicking outside */}
-              <div 
+              <div
                 className="fixed inset-0 z-[9998]"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -643,8 +773,8 @@ const DocumentPage = () => {
                       disabled={isProcessing || doc.status === statusKey}
                       className="w-full flex items-center gap-3 px-4 py-2 text-sm text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
                     >
-                      <span 
-                        className="w-3 h-3 rounded-full flex-shrink-0" 
+                      <span
+                        className="w-3 h-3 rounded-full flex-shrink-0"
                         style={{ background: statusConfig.color }}
                       />
                       <span className="flex-1">{statusConfig.label}</span>
@@ -654,61 +784,61 @@ const DocumentPage = () => {
                     </button>
                   ))}
                 </div>
-              
-              <div className="border-t border-[var(--border-base)] my-1" />
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleApproveDocument(doc);
-                }}
-                disabled={isProcessing || doc.status === 'accepted'}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
-              >
-                <CheckCircle size={14} className="text-[var(--green)]" />
-                <span>Approve & Create Project</span>
-              </button>
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleSendEmailAndComplete(doc);
-                }}
-                disabled={isProcessing || !doc.customerEmail}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
-              >
-                <Mail size={14} className="text-[var(--primary)]" />
-                <span>Send Email & Complete</span>
-              </button>
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleMarkAsCompleted(doc);
-                }}
-                disabled={isProcessing}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
-              >
-                <FileCheck size={14} className="text-purple-500" />
-                <span>Mark as Completed</span>
-              </button>
-              
-              <div className="border-t border-[var(--border-base)] my-1" />
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteDocument(doc);
-                  setActionMenuOpen(null);
-                }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-red-50 text-red-500 transition-colors"
-              >
-                <Trash2 size={14} />
-                <span>Delete</span>
-              </button>
-            </div>
-          </>
-        )}
+
+                <div className="border-t border-gray-200 my-1" />
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleApproveDocument(doc);
+                  }}
+                  disabled={isProcessing || doc.status === 'accepted'}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  <CheckCircle size={14} className="text-emerald-500" />
+                  <span>Approve & Create Project</span>
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSendEmailAndComplete(doc);
+                  }}
+                  disabled={isProcessing || !doc.customerEmail}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  <Mail size={14} className="text-blue-500" />
+                  <span>Send Email & Complete</span>
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleMarkAsCompleted(doc);
+                  }}
+                  disabled={isProcessing}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  <FileCheck size={14} className="text-purple-500" />
+                  <span>Mark as Completed</span>
+                </button>
+
+                <div className="border-t border-gray-200 my-1" />
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteDocument(doc);
+                    setActionMenuOpen(null);
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-red-50 text-red-500 transition-colors"
+                >
+                  <Trash2 size={14} />
+                  <span>Delete</span>
+                </button>
+              </div>
+            </>
+          )}
         </div>
       ),
     },
@@ -724,7 +854,7 @@ const DocumentPage = () => {
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       const currentMonth = new Date().getMonth();
       const last6Months = [];
-      
+
       for (let i = 5; i >= 0; i--) {
         const monthIndex = (currentMonth - i + 12) % 12;
         last6Months.push({
@@ -741,7 +871,7 @@ const DocumentPage = () => {
         const date = new Date(doc.createdAt);
         const monthName = months[date.getMonth()];
         const entry = last6Months.find(m => m.month === monthName);
-        
+
         if (entry) {
           if (doc.type === 'estimate') entry.estimates++;
           else if (doc.type === 'proposal') entry.proposals++;
@@ -798,6 +928,87 @@ const DocumentPage = () => {
 
     return (
       <div className="space-y-4 animate-fade-in">
+        {/* Live Counts Section */}
+        <div className="glass-card p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Activity size={18} className="text-blue-500" />
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">Live Document Counts</h3>
+              <span className="text-[10px] text-[var(--text-muted)]">
+                Last updated: {lastUpdated.toLocaleTimeString()}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] transition-colors ${autoRefresh ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                  }`}
+                title={autoRefresh ? 'Auto-refresh ON (30s)' : 'Auto-refresh OFF'}
+              >
+                <div className={`w-1.5 h-1.5 rounded-full ${autoRefresh ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                {autoRefresh ? 'Live' : 'Paused'}
+              </button>
+              <button
+                onClick={fetchLiveCounts}
+                disabled={isRefreshing}
+                className="p-1.5 rounded hover:bg-[var(--bg-hover)] text-[var(--text-muted)] transition-colors disabled:opacity-50"
+                title="Refresh Now"
+              >
+                <RefreshCw size={14} className={isRefreshing ? 'animate-spin' : ''} />
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+            <LiveCountCard
+              label="Total"
+              count={liveCounts.total}
+              color="blue"
+              isLoading={isRefreshing}
+              onClick={() => setActiveTab('all')}
+            />
+            <LiveCountCard
+              label="Estimates"
+              count={liveCounts.estimates}
+              color="purple"
+              isLoading={isRefreshing}
+              onClick={() => setActiveTab('estimate')}
+            />
+            <LiveCountCard
+              label="Proposals"
+              count={liveCounts.proposals}
+              color="orange"
+              isLoading={isRefreshing}
+              onClick={() => setActiveTab('proposal')}
+            />
+            <LiveCountCard
+              label="Quotations"
+              count={liveCounts.quotations}
+              color="green"
+              isLoading={isRefreshing}
+              onClick={() => setActiveTab('quotation')}
+            />
+            <LiveCountCard
+              label="Draft"
+              count={liveCounts.draft}
+              color="red"
+              isLoading={isRefreshing}
+            />
+            <LiveCountCard
+              label="Sent"
+              count={liveCounts.sent}
+              color="teal"
+              isLoading={isRefreshing}
+            />
+            <LiveCountCard
+              label="Accepted"
+              count={liveCounts.accepted}
+              color="green"
+              isLoading={isRefreshing}
+            />
+          </div>
+        </div>
+
         {/* Filter Bar */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -1114,7 +1325,7 @@ const DocumentPage = () => {
             >
               <Eye size={16} />
             </button>
-            
+
             {/* Email Button */}
             <button
               onClick={(e) => {
@@ -1127,7 +1338,7 @@ const DocumentPage = () => {
             >
               <Mail size={16} />
             </button>
-            
+
             {/* More Options Dropdown */}
             <div className="relative">
               <button
@@ -1140,7 +1351,7 @@ const DocumentPage = () => {
               >
                 <MoreVertical size={16} />
               </button>
-              
+
               {actionMenuOpen === doc.id && (
                 <div className="action-menu-container absolute right-0 mt-1 w-48 bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg shadow-lg z-50 py-1">
                   <button
@@ -1154,7 +1365,7 @@ const DocumentPage = () => {
                     <CheckCircle size={14} className="text-[var(--green)]" />
                     <span>Approve & Create Project</span>
                   </button>
-                  
+
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -1166,7 +1377,7 @@ const DocumentPage = () => {
                     <Mail size={14} className="text-[var(--primary)]" />
                     <span>Send Email & Complete</span>
                   </button>
-                  
+
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -1178,7 +1389,7 @@ const DocumentPage = () => {
                     <FileCheck size={14} className="text-purple-500" />
                     <span>Mark as Completed</span>
                   </button>
-                  
+
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -1312,10 +1523,10 @@ const DocumentPage = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-[var(--bg-surface)] rounded-lg border border-[var(--border-base)] overflow-hidden">
-            <DataTable 
-              columns={tableColumns} 
-              data={filteredByStatus} 
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <DataTable
+              columns={tableColumns}
+              data={filteredByStatus}
               onRowClick={(doc) => setSelectedDocForView(doc)}
             />
           </div>

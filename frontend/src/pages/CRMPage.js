@@ -41,6 +41,7 @@ import ImportExport from '../components/ui/ImportExport';
 import LeadTracker from '../components/LeadTracker';
 import { useAuditLog } from '../hooks/useAuditLog';
 import { usePermissions } from '../hooks/usePermissions';
+import { useDashboardFilters, useLeadFilters } from '../hooks/useDashboardFilters';
 import { useAuth } from '../context/AuthContext';
 import { CURRENCY } from '../config/app.config';
 import CanAccess, { CanCreate, CanEdit, CanDelete, CanView } from '../components/CanAccess';
@@ -471,8 +472,10 @@ const PerformanceReport = () => {
       const res = await leadsApi.getDashboardOverview();
       return res?.data?.data || res?.data || res;
     },
-    refetchInterval: 30000,
-    staleTime: 10000,
+    staleTime: 30000, // 30 seconds - data is fresh for 30s
+    cacheTime: 300000, // 5 minutes - keep in cache for 5min
+    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchInterval: false, // Don't auto-refetch (use window focus instead)
   });
 
   const overview = overviewRaw;
@@ -578,8 +581,10 @@ const LeadTrendReport = () => {
       const res = await leadsApi.getDashboardTrend();
       return res?.data?.data || res?.data || res;
     },
-    refetchInterval: 30000,
-    staleTime: 10000,
+    staleTime: 30000, // 30 seconds
+    cacheTime: 300000, // 5 minutes
+    refetchOnWindowFocus: true,
+    refetchInterval: false,
   });
 
   const monthlyData = (trendRaw?.months || []).map((m) => ({
@@ -625,8 +630,10 @@ const SourcePerformanceReport = () => {
       const res = await leadsApi.getDashboardSource();
       return res?.data?.data || res?.data || res;
     },
-    refetchInterval: 30000,
-    staleTime: 10000,
+    staleTime: 30000, // 30 seconds
+    cacheTime: 300000, // 5 minutes
+    refetchOnWindowFocus: true,
+    refetchInterval: false,
   });
 
   const data = (sourceRaw?.sources || []).map((s) => ({
@@ -906,24 +913,30 @@ const CRMPage = ({ onNavigate }) => {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [showColumnsDropdown, setShowColumnsDropdown] = useState(false);
   const [dateRange, setDateRange] = useState({
-    start: format(subMonths(new Date(), 6), 'yyyy-MM-dd'),
-    end: format(new Date(), 'yyyy-MM-dd')
+    start: '',
+    end: ''
   });
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [dashboardQuickFilter, setDashboardQuickFilter] = useState('all'); // 'all', 'today', 'thisWeek', 'thisMonth', 'custom' - FOR DASHBOARD ONLY
   const sortDropdownRef = useRef(null);
   const columnsDropdownRef = useRef(null);
-  // Date Range Filter State - SEPARATE FOR DASHBOARD AND LEADS
-  const [dashboardDateRangeFilter, setDashboardDateRangeFilter] = useState({
-    type: 'last7days', // today, yesterday, last7days, last30days, thisMonth, lastMonth, custom
-    startDate: null,
-    endDate: null
-  });
-  const [leadsDateRangeFilter, setLeadsDateRangeFilter] = useState({
-    type: 'last7days',
-    startDate: null,
-    endDate: null
-  });
+
+  // Initialize independent filter hooks - COMPLETE ISOLATION
+  const {
+    dateRangeFilter: dashboardDateRangeFilter,
+    setDateRangeFilter: setDashboardDateRangeFilter,
+    resetDateRangeFilter: resetDashboardDateRangeFilter
+  } = useDashboardFilters();
+
+  console.log('[CRM PAGE] Dashboard filter state:', dashboardDateRangeFilter);
+
+  const {
+    dateRangeFilter: leadsDateRangeFilter,
+    setDateRangeFilter: setLeadsDateRangeFilter,
+    resetDateRangeFilter: resetLeadsDateRangeFilter
+  } = useLeadFilters();
+
+  console.log('[CRM PAGE] Leads filter state:', leadsDateRangeFilter);
+
   const [showDateRangeDropdown, setShowDateRangeDropdown] = useState(false);
   const dateRangeRef = useRef(null);
   const [showDateRangeInfo, setShowDateRangeInfo] = useState(false);
@@ -952,7 +965,7 @@ const CRMPage = ({ onNavigate }) => {
   ]);
 
   const [activeFilters, setActiveFilters] = useState([]);
-  const [quickFilter, setQuickFilter] = useState(null);
+  const [quickFilter, setQuickFilter] = useState(null); // FOR LEADS TABLE FILTERING - separate from dashboardQuickFilter
 
   // Advanced filter states - arrays for multiple values
   const [filterStages, setFilterStages] = useState([]); // multiple stages
@@ -1014,6 +1027,20 @@ const CRMPage = ({ onNavigate }) => {
     document.addEventListener('mousedown', onDocClick);
     return () => document.removeEventListener('mousedown', onDocClick);
   }, [showDateRangeInfo]);
+
+  // CRITICAL FIX: Close date range dropdown when clicking outside
+  useEffect(() => {
+    if (!showDateRangeDropdown) return;
+    const onDocClick = (e) => {
+      const el = dateRangeRef.current;
+      if (!el) return;
+      if (!el.contains(e.target)) {
+        setShowDateRangeDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, [showDateRangeDropdown]);
 
   const isAdminLike = useMemo(() => {
     const role = String(user?.role || '').toLowerCase();
@@ -1114,7 +1141,7 @@ const CRMPage = ({ onNavigate }) => {
         break;
       case 'thisMonth':
         startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        endDate = new Date(today);
+        endDate = new Date(today.getFullYear(), today.getMonth(), 0); // Last day of current month
         endDate.setHours(23, 59, 59, 999);
         break;
       case 'lastMonth':
@@ -1128,6 +1155,9 @@ const CRMPage = ({ onNavigate }) => {
           startDate.setHours(0, 0, 0, 0);
           endDate = new Date(leadsDateRangeFilter.endDate);
           endDate.setHours(23, 59, 59, 999);
+        } else {
+          // If custom selected but dates not set, return all (no date restriction)
+          return { startDate: null, endDate: null };
         }
         break;
       default:
@@ -1167,10 +1197,21 @@ const CRMPage = ({ onNavigate }) => {
       }
 
       // Add date range filter
-      const { startDate, endDate } = getDateRangeFromPreset(leadsDateRangeFilter.type);
-      if (startDate && endDate) {
-        params.startDate = startDate.toISOString();
-        params.endDate = endDate.toISOString();
+      console.log('[FILTER DEBUG] leadsDateRangeFilter:', leadsDateRangeFilter);
+      const type = String(leadsDateRangeFilter.type || 'all');
+      if (type !== 'all') {
+        const presetRange = getDateRangeFromPreset(type);
+        const start = leadsDateRangeFilter.startDate || (presetRange?.startDate ? presetRange.startDate.toISOString() : null);
+        const end = leadsDateRangeFilter.endDate || (presetRange?.endDate ? presetRange.endDate.toISOString() : null);
+        if (start && end) {
+          params.startDate = start;
+          params.endDate = end;
+          console.log('[FILTER DEBUG] Sending dates to API:', { startDate: params.startDate, endDate: params.endDate });
+        } else {
+          console.log('[FILTER DEBUG] Date preset selected but range missing - fallback to all');
+        }
+      } else {
+        console.log('[FILTER DEBUG] All time selected - showing all leads');
       }
 
       // Only add sort params if sort key is valid
@@ -1205,7 +1246,7 @@ const CRMPage = ({ onNavigate }) => {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, debouncedSearch, sort.key, sort.dir, quickFilter, leadsDateRangeFilter.type, getDateRangeFromPreset, filterStages, filterSources, filterScoreRanges, filterValueRanges]);
+  }, [page, pageSize, debouncedSearch, sort.key, sort.dir, quickFilter, leadsDateRangeFilter.type, leadsDateRangeFilter.startDate, leadsDateRangeFilter.endDate, filterStages, filterSources, filterScoreRanges, filterValueRanges]);
 
   // Fetch customers
   const fetchCustomers = useCallback(async () => {
@@ -2359,11 +2400,8 @@ const CRMPage = ({ onNavigate }) => {
 
   // Reset date range filter (for leads view)
   const resetDateRangeFilter = () => {
-    setLeadsDateRangeFilter({
-      type: 'last7days',
-      startDate: null,
-      endDate: null
-    });
+    console.log('[LEADS RESET] Triggering leads reset');
+    resetLeadsDateRangeFilter();
     setPage(1);
   };
   const sortedLeads = useMemo(() => {
@@ -2621,90 +2659,98 @@ const CRMPage = ({ onNavigate }) => {
           <div className="flex flex-wrap gap-3 items-center">
             <div className="flex items-center gap-2">
               <Calendar size={14} className="text-[var(--text-muted)]" />
+              <span className="text-xs text-[var(--text-muted)]">Quick Filter:</span>
+              <Select
+                value={dashboardQuickFilter}
+                onChange={e => {
+                  const filterType = e.target.value;
+                  setDashboardQuickFilter(filterType);
+                  const now = new Date();
+                  
+                  // Calculate dates based on quick filter
+                  let startDate, endDate;
+                  
+                  if (filterType === 'all') {
+                    setDateRange({ start: '', end: '' });
+                    setDashboardDateRangeFilter({ type: 'all', startDate: null, endDate: null });
+                    return;
+                  }
+
+                  if (filterType === 'today') {
+                    // Today: 00:00:00 to 23:59:59
+                    startDate = format(now, 'yyyy-MM-dd');
+                    endDate = startDate;
+                    setDashboardDateRangeFilter({ type: filterType, startDate, endDate });
+                  } else if (filterType === 'thisWeek') {
+                    // This Week = Last 7 Days (rolling)
+                    // endDate = today (end of day)
+                    // startDate = today - 6 days (start of day)
+                    endDate = format(now, 'yyyy-MM-dd');
+                    const sevenDaysAgo = new Date(now);
+                    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+                    startDate = format(sevenDaysAgo, 'yyyy-MM-dd');
+                    setDashboardDateRangeFilter({ type: filterType, startDate, endDate });
+                  } else if (filterType === 'thisMonth') {
+                    // This Month: 1st to last day of current month
+                    startDate = format(new Date(now.getFullYear(), now.getMonth(), 1), 'yyyy-MM-dd');
+                    endDate = format(new Date(now.getFullYear(), now.getMonth() + 1, 0), 'yyyy-MM-dd');
+                    setDashboardDateRangeFilter({ type: filterType, startDate, endDate });
+                  }
+                }}
+                className="h-7 text-xs w-32"
+              >
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="thisWeek">This Week</option>
+                <option value="thisMonth">This Month</option>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
               <span className="text-xs text-[var(--text-muted)]">Date Range:</span>
               <Input
                 type="date"
-                value={leadsDateRangeFilter.type === 'custom' ? leadsDateRangeFilter.startDate || '' : dateRange.start}
+                value={dashboardDateRangeFilter.startDate || dateRange.start}
                 onChange={e => {
                   const newDate = e.target.value;
+                  const endDateVal = dashboardDateRangeFilter.endDate || dateRange.end || newDate;
+                  
                   setDateRange(prev => ({ ...prev, start: newDate }));
-                  setLeadsDateRangeFilter(prev => ({
+                  setDashboardDateRangeFilter({
                     type: 'custom',
                     startDate: newDate,
-                    endDate: prev.endDate || dateRange.end
-                  }));
+                    endDate: endDateVal
+                  });
+                  setDashboardQuickFilter(null); // Clear quick filter when manually selecting date
                 }}
                 className="h-7 text-xs w-32"
               />
               <span className="text-xs text-[var(--text-muted)]">to</span>
               <Input
                 type="date"
-                value={leadsDateRangeFilter.type === 'custom' ? leadsDateRangeFilter.endDate || '' : dateRange.end}
+                value={dashboardDateRangeFilter.endDate || dateRange.end}
                 onChange={e => {
                   const newDate = e.target.value;
+                  const startDateVal = dashboardDateRangeFilter.startDate || dateRange.start || newDate;
+                  
                   setDateRange(prev => ({ ...prev, end: newDate }));
-                  setLeadsDateRangeFilter(prev => ({
+                  setDashboardDateRangeFilter({
                     type: 'custom',
-                    startDate: prev.startDate || dateRange.start,
+                    startDate: startDateVal,
                     endDate: newDate
-                  }));
+                  });
+                  setDashboardQuickFilter(null); // Clear quick filter when manually selecting date
                 }}
                 className="h-7 text-xs w-32"
               />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-[var(--text-muted)]">Year:</span>
-              <Select
-                value={selectedYear}
-                onChange={e => setSelectedYear(Number(e.target.value))}
-                className="h-7 text-xs w-24"
-              >
-                {[2024, 2025, 2026].map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </Select>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-[var(--text-muted)]">Month:</span>
-              <Select
-                value={selectedMonth}
-                onChange={e => setSelectedMonth(Number(e.target.value))}
-                className="h-7 text-xs w-28"
-              >
-                {[
-                  { value: 1, label: 'January' },
-                  { value: 2, label: 'February' },
-                  { value: 3, label: 'March' },
-                  { value: 4, label: 'April' },
-                  { value: 5, label: 'May' },
-                  { value: 6, label: 'June' },
-                  { value: 7, label: 'July' },
-                  { value: 8, label: 'August' },
-                  { value: 9, label: 'September' },
-                  { value: 10, label: 'October' },
-                  { value: 11, label: 'November' },
-                  { value: 12, label: 'December' },
-                ].map(m => (
-                  <option key={m.value} value={m.value}>{m.label}</option>
-                ))}
-              </Select>
             </div>
             <div className="ml-auto flex gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  setDateRange({
-                    start: format(subMonths(new Date(), 6), 'yyyy-MM-dd'),
-                    end: format(new Date(), 'yyyy-MM-dd')
-                  });
-                  setLeadsDateRangeFilter({
-                    type: 'custom',
-                    startDate: format(subMonths(new Date(), 6), 'yyyy-MM-dd'),
-                    endDate: format(new Date(), 'yyyy-MM-dd')
-                  });
-                  setSelectedYear(new Date().getFullYear());
-                  setSelectedMonth(new Date().getMonth() + 1);
+                  setDashboardQuickFilter('all');
+                  setDateRange({ start: '', end: '' });
+                  setDashboardDateRangeFilter({ type: 'all', startDate: null, endDate: null });
                 }}
               >
                 <RefreshCw size={12} /> Reset
@@ -2717,9 +2763,13 @@ const CRMPage = ({ onNavigate }) => {
       {/* ── Advanced Dashboard ── */}
       {view === 'dashboard' && crmFeatures.analytics && (
         <LeadAnalyticsDashboard
-          onNavigate={(nextView) => setView(nextView)}
+          onNavigate={(nextView) => {
+            console.log('[DASHBOARD] Navigate to:', nextView);
+            setView(nextView);
+          }}
           dateFilter={dashboardDateRangeFilter}
           onFilterChange={(newFilter) => {
+            console.log('[DASHBOARD] Filter change received:', newFilter);
             // Update dashboard filter only
             setDashboardDateRangeFilter(newFilter);
           }}
@@ -2730,15 +2780,28 @@ const CRMPage = ({ onNavigate }) => {
             // Reset pagination to first page
             setPage(1);
             // Apply appropriate filter based on KPI clicked
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
             switch (filterType) {
-              case 'today':
+              case 'today': {
                 // Clear all other filters first, then set date to today
                 setFilterStages([]);
                 setFilterSources([]);
                 setFilterScoreRanges([]);
                 setFilterValueRanges([]);
-                setLeadsDateRangeFilter({ type: 'today', startDate: null, endDate: null });
+                // Calculate today's dates
+                const startDate = new Date(today);
+                startDate.setHours(0, 0, 0, 0);
+                const endDate = new Date(today);
+                endDate.setHours(23, 59, 59, 999);
+                setLeadsDateRangeFilter({ 
+                  type: 'today', 
+                  startDate: startDate.toISOString(), 
+                  endDate: endDate.toISOString() 
+                });
                 break;
+              }
               case 'converted':
                 // Clear all other filters first, then set stage to converted
                 setFilterSources([]);
@@ -2919,14 +2982,6 @@ const CRMPage = ({ onNavigate }) => {
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-bold text-[var(--text-primary)]">Pipeline Kanban Board</h3>
               <span className="text-xs text-[var(--text-muted)]">{enhancedLeads.length} total leads</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button className="px-3 py-1 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-base)] text-[10px] font-medium text-[var(--text-muted)] hover:bg-[var(--bg-hovered)] transition-colors">
-                <FilterX size={10} className="inline mr-1" /> Clear Filters
-              </button>
-              <button className="px-3 py-1 rounded-lg bg-[var(--primary)] text-white text-[10px] font-medium hover:opacity-90 transition-opacity">
-                <Plus size={10} className="inline mr-1" /> Add Stage
-              </button>
             </div>
           </div>
 
@@ -3264,11 +3319,63 @@ const CRMPage = ({ onNavigate }) => {
                         <button
                           key={option.id}
                           onClick={() => {
-                            setLeadsDateRangeFilter(prev => ({
-                              ...prev,
+                            // Calculate dates for the selected preset
+                            const now = new Date();
+                            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                            let startDate = null;
+                            let endDate = null;
+                            
+                            if (option.id !== 'custom' && option.id !== 'all') {
+                              switch (option.id) {
+                                case 'today':
+                                  startDate = new Date(today);
+                                  startDate.setHours(0, 0, 0, 0);
+                                  endDate = new Date(today);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  break;
+                                case 'yesterday':
+                                  startDate = new Date(today);
+                                  startDate.setDate(startDate.getDate() - 1);
+                                  startDate.setHours(0, 0, 0, 0);
+                                  endDate = new Date(startDate);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  break;
+                                case 'last7days':
+                                  endDate = new Date(today);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  startDate = new Date(today);
+                                  startDate.setDate(startDate.getDate() - 6);
+                                  startDate.setHours(0, 0, 0, 0);
+                                  break;
+                                case 'last30days':
+                                  endDate = new Date(today);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  startDate = new Date(today);
+                                  startDate.setDate(startDate.getDate() - 29);
+                                  startDate.setHours(0, 0, 0, 0);
+                                  break;
+                                case 'thisMonth':
+                                  startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                                  endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  break;
+                                case 'lastMonth':
+                                  startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                                  endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+                                  endDate.setHours(23, 59, 59, 999);
+                                  break;
+                                default:
+                                  break;
+                              }
+                            }
+                            
+                            setLeadsDateRangeFilter({
                               type: option.id,
-                              ...(option.id !== 'custom' ? { startDate: null, endDate: null } : {})
-                            }));
+                              startDate: startDate ? startDate.toISOString() : null,
+                              endDate: endDate ? endDate.toISOString() : null
+                            });
+                            console.log('[FILTER DEBUG] Preset applied:', option.id, { startDate: startDate?.toISOString(), endDate: endDate?.toISOString() });
+                            
                             // Don't close dropdown for custom - show date inputs
                             if (option.id !== 'custom') {
                               setShowDateRangeDropdown(false);
@@ -3330,7 +3437,7 @@ const CRMPage = ({ onNavigate }) => {
               </div>
 
               {/* Reset Filter Button */}
-              {leadsDateRangeFilter.type !== 'last7days' && (
+              {leadsDateRangeFilter.type !== 'all' && (
                 <button
                   onClick={resetDateRangeFilter}
                   className="px-3 py-1.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-base)] text-xs text-[var(--text-muted)] hover:bg-[var(--bg-hovered)] transition-colors flex items-center gap-1"
