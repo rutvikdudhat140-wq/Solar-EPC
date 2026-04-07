@@ -1818,30 +1818,42 @@ const CRMPage = ({ onNavigate }) => {
       // Fetch all roles
       const rolesResult = await leadsApi.getRoles();
       console.log('[ASSIGN] Roles API raw response:', rolesResult);
-      console.log('[ASSIGN] Roles response.data:', rolesResult.data);
 
       // apiClient interceptor returns response.data already.
-      // Expected body: { success: true, data: [...] }
-      const rolesBody = rolesResult?.data ?? rolesResult;
-      const rolesPayload = rolesBody?.success === true && rolesBody?.data != null ? rolesBody.data : rolesBody;
-      const rawRoles = Array.isArray(rolesPayload)
-        ? rolesPayload
-        : rolesPayload && typeof rolesPayload === 'object'
-          ? Object.values(rolesPayload)
-          : [];
+      // Response can be: { success: true, data: [...] } or direct array or object
+      let rolesData = [];
+      
+      if (Array.isArray(rolesResult)) {
+        // Direct array response
+        rolesData = rolesResult;
+      } else if (rolesResult?.success === true && Array.isArray(rolesResult?.data)) {
+        // { success: true, data: [...] } format
+        rolesData = rolesResult.data;
+      } else if (rolesResult?.data) {
+        // Try data field
+        const data = rolesResult.data;
+        if (Array.isArray(data)) {
+          rolesData = data;
+        } else if (typeof data === 'object') {
+          rolesData = Object.values(data);
+        }
+      } else if (typeof rolesResult === 'object' && rolesResult !== null) {
+        // Convert object to array
+        rolesData = Object.values(rolesResult);
+      }
 
-      const rolesData = (Array.isArray(rawRoles) ? rawRoles : [])
+      const rolesMapped = rolesData
         .map((r) => {
           const id = r?._id || r?.id || r?.roleId;
           const name = r?.name || r?.label;
           if (!id || !name) return null;
-          return { ...r, _id: id, name };
+          return { ...r, _id: String(id), name };
         })
         .filter(Boolean);
 
-      console.log('[ASSIGN] Fetched roles:', rolesData);
-      console.log('[ASSIGN] Roles count:', rolesData.length);
-      setRoles(rolesData);
+      console.log('[ASSIGN] Fetched roles:', rolesMapped);
+      console.log('[ASSIGN] Roles count:', rolesMapped.length);
+      setRoles(rolesMapped);
 
       // Fetch all employees upfront
       const employeesResult = await leadsApi.getAllEmployees();

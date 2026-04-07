@@ -148,21 +148,25 @@ export function buildCompleteFilter(
 
   // All users except SuperAdmin in global view MUST have tenantId
   if (!tenantId && !user?.isSuperAdmin) {
-    console.log("[BUILD_FILTER] No tenantId and not SuperAdmin - returning empty filter");
-    // Return filter that will match nothing - tenant isolation is mandatory
-    return { tenantId: null, ...filter };
+    console.log("[BUILD_FILTER] No tenantId and not SuperAdmin - applying only visibility filter");
+    // Skip tenant filter for non-superadmins without tenant context
+    // but still apply visibility filters
   }
 
-  // Apply tenant filter if tenantId is provided
+  // Apply tenant filter ONLY if tenantId is provided
   if (tenantId) {
     const tenantObjId = typeof tenantId === 'string' && Types.ObjectId.isValid(tenantId)
       ? new Types.ObjectId(tenantId)
       : tenantId;
     filter.tenantId = tenantObjId;
+    console.log("[BUILD_FILTER] Applied tenant filter:", tenantObjId.toString());
+  } else {
+    console.log("[BUILD_FILTER] No tenantId - skipping tenant filter");
   }
 
   // Apply visibility filter ONLY for users with ASSIGNED dataScope
-  if (!hasFullAccess) {
+  // AND when tenantId is provided (skip for leads without tenant context)
+  if (!hasFullAccess && tenantId) {
     const visibilityFilter = buildVisibilityFilter(user);
     if (Object.keys(visibilityFilter).length > 0) {
       // Merge visibility filter
@@ -170,7 +174,7 @@ export function buildCompleteFilter(
       console.log("[BUILD_FILTER] Applied ASSIGNED visibility filter");
     }
   } else {
-    console.log("[BUILD_FILTER] Skipping visibility filter (dataScope=ALL or Admin)");
+    console.log("[BUILD_FILTER] Skipping visibility filter (dataScope=ALL or Admin or No tenantId)");
   }
 
   console.log("[BUILD_FILTER] Final filter:", JSON.stringify(filter));

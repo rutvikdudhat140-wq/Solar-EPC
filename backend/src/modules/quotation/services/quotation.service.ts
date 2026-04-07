@@ -207,4 +207,26 @@ export class QuotationService {
   async getHistory(quotationId: string, tenantId: string): Promise<QuotationHistory[]> {
     return this.historyModel.find({ quotationId, tenantId }).sort({ timestamp: -1 }).exec();
   }
+
+  async getStats(tenantId: string) {
+    const allQuotations = await this.quotationModel.find({ tenantId }).exec();
+    
+    const total = allQuotations.length;
+    const draft = allQuotations.filter(q => q.status === 'Draft').length;
+    const sent = allQuotations.filter(q => q.status === 'Sent').length;
+    const approved = allQuotations.filter(q => q.status === 'Approved').length;
+    const rejected = allQuotations.filter(q => q.status === 'Rejected').length;
+    const converted = allQuotations.filter(q => q.status === 'ConvertedToProject').length;
+    const pending = draft + sent;
+
+    return {
+      total,
+      draft,
+      sent,
+      approved,
+      pending,
+      rejected,
+      converted,
+    };
+  }
 }

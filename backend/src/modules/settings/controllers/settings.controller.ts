@@ -728,7 +728,10 @@ export class SettingsController {
   @UseGuards(AdminGuard)
   async getCustomRoles(@Request() req: any) {
     const tenantId = req.tenant?.id;
+    console.log('[DEBUG] getCustomRoles called with tenantId:', tenantId);
     const roles = await this.customRoleService.getCustomRoles(tenantId);
+    console.log('[DEBUG] Roles fetched from DB:', roles.length, 'roles');
+    console.log('[DEBUG] First role sample:', roles[0]);
     
     // Transform to { [roleId]: role }
     const result: Record<string, any> = {};
@@ -772,6 +775,7 @@ export class SettingsController {
         updatedAt: (r as any).updatedAt,
       };
     });
+    console.log('[DEBUG] Transformed result keys:', Object.keys(result));
     return result;
   }
 

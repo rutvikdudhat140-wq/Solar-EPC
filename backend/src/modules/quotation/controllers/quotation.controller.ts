@@ -84,4 +84,9 @@ export class QuotationController {
   getHistory(@Param('id') id: string, @Req() req: RequestWithUser) {
     return this.quotationService.getHistory(id, req.user.tenantId);
   }
+
+  @Get('stats')
+  getStats(@Req() req: RequestWithUser) {
+    return this.quotationService.getStats(req.user.tenantId);
+  }
 }

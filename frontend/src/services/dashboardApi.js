@@ -191,78 +191,45 @@ const DashboardService = {
   // Dashboard Widget Data (aggregated from ALL modules)
   getWidgetData: async () => {
     try {
-      const results = await Promise.allSettled([
-        api.get('/projects/stats'),
-        api.get('/inventory/stats'),
-        api.get('/leads/stats'),
-        api.get('/finance/stats'),
-        api.get('/surveys/stats'),
-        api.get('/commissioning/stats'),
-        api.get('/service-amc/stats'),
-        api.get('/hrm/employees/stats'),
-        api.get('/installation/stats'),
-        api.get('/quotation/stats'),
-        api.get('/estimates/stats'),
-        api.get('/procurement/stats'),
-        api.get('/logistics/stats'),
-        api.get('/compliance/stats'),
-        api.get('/document/stats'),
-      ]);
+      const endpoints = [
+        { name: 'projects', url: '/projects/stats' },
+        { name: 'inventory', url: '/inventory/stats' },
+        { name: 'leads', url: '/leads/stats' },
+        { name: 'finance', url: '/finance/stats' },
+        { name: 'surveys', url: '/surveys/stats' },
+        { name: 'commissioning', url: '/commissioning/stats' },
+        { name: 'service', url: '/service-amc/stats' },
+        { name: 'employees', url: '/hrm/employees/stats' },
+        { name: 'installation', url: '/installation/stats' },
+        { name: 'quotation', url: '/quotation/stats' },
+        { name: 'estimates', url: '/estimates/stats' },
+        { name: 'procurement', url: '/procurement/stats' },
+        { name: 'logistics', url: '/logistics/stats' },
+        { name: 'compliance', url: '/compliance/stats' },
+        { name: 'documents', url: '/document/stats' },
+      ];
 
-      const [
-        projects,
-        inventory,
-        leads,
-        finance,
-        surveys,
-        commissioning,
-        service,
-        employees,
-        installation,
-        quotation,
-        estimates,
-        procurement,
-        logistics,
-        compliance,
-        documents,
-      ] = results;
+      const results = await Promise.allSettled(
+        endpoints.map(ep => api.get(ep.url))
+      );
 
-      return {
-        projects: projects.status === 'fulfilled' ? projects.value?.data || projects.value : { total: 0, active: 0, completed: 0 },
-        inventory: inventory.status === 'fulfilled' ? inventory.value?.data || inventory.value : { totalItems: 0, lowStockItems: 0 },
-        leads: leads.status === 'fulfilled' ? leads.value?.data || leads.value : { total: 0, hot: 0, new: 0, converted: 0 },
-        finance: finance.status === 'fulfilled' ? finance.value?.data || finance.value : { totalRevenue: 0, outstanding: 0, totalInvoices: 0 },
-        surveys: surveys.status === 'fulfilled' ? surveys.value?.data || surveys.value : { total: 0, pending: 0, completed: 0 },
-        commissioning: commissioning.status === 'fulfilled' ? commissioning.value?.data || commissioning.value : { total: 0, completed: 0, pending: 0 },
-        service: service.status === 'fulfilled' ? service.value?.data || service.value : { openTickets: 0, totalContracts: 0, amcContracts: 0 },
-        employees: employees.status === 'fulfilled' ? employees.value?.data || employees.value : { total: 0, active: 0, onLeave: 0 },
-        installation: installation.status === 'fulfilled' ? installation.value?.data || installation.value : { total: 0, inProgress: 0, completed: 0 },
-        quotation: quotation.status === 'fulfilled' ? quotation.value?.data || quotation.value : { total: 0, pending: 0, approved: 0 },
-        estimates: estimates.status === 'fulfilled' ? estimates.value?.data || estimates.value : { total: 0, approved: 0, pending: 0 },
-        procurement: procurement.status === 'fulfilled' ? procurement.value?.data || procurement.value : { total: 0, pending: 0, completed: 0 },
-        logistics: logistics.status === 'fulfilled' ? logistics.value?.data || logistics.value : { total: 0, inTransit: 0, delivered: 0 },
-        compliance: compliance.status === 'fulfilled' ? compliance.value?.data || compliance.value : { total: 0, compliant: 0, pending: 0 },
-        documents: documents.status === 'fulfilled' ? documents.value?.data || documents.value : { total: 0, pending: 0, approved: 0 },
-      };
+      const data = {};
+      
+      results.forEach((result, index) => {
+        const endpoint = endpoints[index];
+        if (result.status === 'fulfilled') {
+          data[endpoint.name] = result.value?.data || result.value || {};
+          console.log(`[Dashboard] ${endpoint.name}:`, data[endpoint.name]);
+        } else {
+          console.warn(`[Dashboard] Failed to fetch ${endpoint.name}:`, result.reason);
+          data[endpoint.name] = {};
+        }
+      });
+
+      return data;
     } catch (error) {
       console.error('Error fetching widget data:', error);
-      return {
-        projects: { total: 0, active: 0, completed: 0 },
-        inventory: { totalItems: 0, lowStockItems: 0 },
-        leads: { total: 0, hot: 0, new: 0, converted: 0 },
-        finance: { totalRevenue: 0, outstanding: 0, totalInvoices: 0 },
-        surveys: { total: 0, pending: 0, completed: 0 },
-        commissioning: { total: 0, completed: 0, pending: 0 },
-        service: { openTickets: 0, totalContracts: 0, amcContracts: 0 },
-        employees: { total: 0, active: 0, onLeave: 0 },
-        installation: { total: 0, inProgress: 0, completed: 0 },
-        quotation: { total: 0, pending: 0, approved: 0 },
-        estimates: { total: 0, approved: 0, pending: 0 },
-        procurement: { total: 0, pending: 0, completed: 0 },
-        logistics: { total: 0, inTransit: 0, delivered: 0 },
-        compliance: { total: 0, compliant: 0, pending: 0 },
-        documents: { total: 0, pending: 0, approved: 0 },
-      };
+      return {};
     }
   },
 };

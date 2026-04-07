@@ -36,9 +36,17 @@ export class LeadsController {
   @RequirePermission('crm', 'create')
   async create(@Body() createLeadDto: CreateLeadDto, @Request() req: any) {
     try {
-      const tenantId = req.tenant?.id;
-      this.logger.log(`[DEBUG] create lead - tenantId: ${tenantId}`);
-      const result = await this.leadsService.create(createLeadDto, tenantId, req.user);
+      let tenantId = req.tenant?.id;
+      const user = req.user;
+      
+      // Fallback: If tenantId is missing but user has tenantId in token, use that
+      if (!tenantId && user?.tenantId) {
+        tenantId = user.tenantId;
+        this.logger.log(`[DEBUG CREATE] Using fallback tenantId from user: ${tenantId}`);
+      }
+      
+      this.logger.log(`[DEBUG] create lead - tenantId: ${tenantId}, user: ${user?.id}`);
+      const result = await this.leadsService.create(createLeadDto, tenantId, user);
       return { success: true, data: result };
     } catch (error: any) {
       this.logger.error(`Create lead failed: ${error?.message || 'Unknown error'}`, error?.stack);

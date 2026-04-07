@@ -27,6 +27,9 @@ export class Department {
   @Prop({ default: 0 })
   employeeCount!: number;
 
+  @Prop({ type: Types.ObjectId, ref: 'User', required: false, index: true })
+  headId?: Types.ObjectId;
+
   @Prop({ type: Date })
   createdAt!: Date;
 

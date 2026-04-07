@@ -156,8 +156,8 @@ export class Lead {
     triggeredAt: Date;
   }[];
 
-  @Prop({ ...BaseSchemaDefinition.tenantId })
-  tenantId!: Types.ObjectId;
+  @Prop({ ...BaseSchemaDefinition.tenantId, required: false })
+  tenantId?: Types.ObjectId;
 
   @Prop({ ...BaseSchemaDefinition.isDeleted })
   isDeleted!: boolean;

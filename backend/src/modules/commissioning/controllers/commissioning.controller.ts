@@ -99,6 +99,15 @@ export class CommissioningController {
   }
 
   /**
+   * Get Commissioning stats (alias for statistics - used by dashboard)
+   */
+  @Get('stats')
+  @RequirePermission('commissioning', 'view')
+  async getStats(@Request() req: AuthenticatedRequest) {
+    return this.commissioningService.getStatistics(this.getUserContext(req));
+  }
+
+  /**
    * Get single Commissioning by ID
    */
   @Get(':id')

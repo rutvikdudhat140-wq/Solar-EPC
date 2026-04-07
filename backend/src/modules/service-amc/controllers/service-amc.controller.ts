@@ -297,4 +297,32 @@ export class ServiceAmcController {
     const tenantId = req.tenant?.id;
     return this.visitsService.remove(id, tenantId);
   }
+
+  // ============ STATS ============
+  @Get('stats')
+  @UseGuards(JwtAuthGuard, TenantGuard, PermissionGuard)
+  async getStats(@Request() req: any) {
+    try {
+      const user = req?.user;
+      const tenantId = req.tenant?.id;
+      
+      const [ticketStats, contracts, visits] = await Promise.all([
+        this.ticketsService.getStats(tenantId, user),
+        this.amcContractsService.findAll({}, tenantId),
+        this.visitsService.findAll({}, tenantId),
+      ]);
+      
+      return {
+        success: true,
+        data: {
+          ...ticketStats,
+          totalContracts: contracts.total,
+          totalVisits: visits.total,
+        },
+      };
+    } catch (error: any) {
+      console.error('Error getting service-amc stats:', error.message, error.stack);
+      throw error;
+    }
+  }
 }

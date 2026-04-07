@@ -77,10 +77,12 @@ import AttendancePageV3 from './pages/AttendancePageV3';
 import IntelligenceDashboardPage from './pages/IntelligenceDashboardPage';
 
 import RemindersPage from './pages/RemindersPage';
-import HRMPermissionsPage from './pages/HRMPermissionsPage';
+import HrmPermissionsPage from './pages/HrmPermissionsPage';
 import ProfilePage from './pages/ProfilePage';
 import TasksPage from './pages/TasksPage';
 import NotificationSystem from './components/NotificationSystem';
+import UserManagementPage from './pages/UserManagementPage';
+import TeamManagementPage from './pages/TeamManagementPage';
 
 
 
@@ -142,11 +144,13 @@ const PAGE_MAP = {
 
   compliance: { component: CompliancePage, title: 'Compliance' },
   settings: { component: SettingsPage, title: 'Settings' },
-  'hrm-permissions': { component: HRMPermissionsPage, title: 'HRM Permissions' },
+  'hrm-permissions': { component: HrmPermissionsPage, title: 'HRM Permissions' },
   intelligence: { component: IntelligenceDashboardPage, title: 'AI Intelligence' },
   documents: { component: DocumentPage, title: 'Documents' },
   profile: { component: ProfilePage, title: 'My Profile' },
   tasks: { component: TasksPage, title: 'Tasks' },
+  'user-management': { component: UserManagementPage, title: 'User Management' },
+  'team-management': { component: TeamManagementPage, title: 'Team Management' },
 };
 
 
