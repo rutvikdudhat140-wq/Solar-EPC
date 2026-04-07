@@ -2616,7 +2616,7 @@ const CRMPage = ({ onNavigate }) => {
   const crmFeatures = useMemo(() => {
     return {
       kanban: crmPerms.feature('kanban_view'),
-      analytics: crmPerms.feature('analytics_view'),
+      analytics: true, // Force enable dashboard
       importCsv: crmPerms.feature('import_csv') || crmPerms.feature('csv_import'),
       bulkActions: crmPerms.feature('bulk_actions'),
     };
