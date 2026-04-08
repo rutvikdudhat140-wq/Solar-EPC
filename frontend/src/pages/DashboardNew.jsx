@@ -28,28 +28,51 @@ const Badge = ({ children, className = '', style = {} }) => (
   </span>
 );
 
-// Local KPICard component (no Redux)
+// Local KPICard component - Inventory Style
 const KPICard = ({ title, value, subtitle, trend, trendValue, icon: Icon, color, onClick, loading }) => {
+  const colorMap = {
+    blue: { from: 'from-blue-100', to: 'to-sky-200', border: 'border-blue-200', text: 'text-blue-700', iconBg: 'bg-blue-200', iconColor: 'text-blue-700' },
+    emerald: { from: 'from-emerald-100', to: 'to-green-200', border: 'border-emerald-200', text: 'text-emerald-700', iconBg: 'bg-emerald-200', iconColor: 'text-emerald-700' },
+    amber: { from: 'from-amber-100', to: 'to-orange-200', border: 'border-amber-200', text: 'text-amber-700', iconBg: 'bg-amber-200', iconColor: 'text-amber-700' },
+    purple: { from: 'from-violet-100', to: 'to-purple-200', border: 'border-violet-200', text: 'text-violet-700', iconBg: 'bg-violet-200', iconColor: 'text-violet-700' },
+    red: { from: 'from-red-100', to: 'to-rose-200', border: 'border-red-200', text: 'text-red-700', iconBg: 'bg-red-200', iconColor: 'text-red-700' },
+    cyan: { from: 'from-cyan-100', to: 'to-teal-200', border: 'border-cyan-200', text: 'text-cyan-700', iconBg: 'bg-cyan-200', iconColor: 'text-cyan-700' },
+  };
+
+  const colors = colorMap[color] || colorMap.blue;
   const isPositive = trend === 'up';
-  return (
-    <div onClick={onClick} className="glass-card p-5 cursor-pointer hover:border-[var(--border-active)] transition-all duration-300">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-[var(--text-muted)] mb-1">{title}</p>
-          <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-1">{loading ? '---' : value}</h3>
-          <p className="text-xs text-[var(--text-secondary)]">{subtitle}</p>
-        </div>
-        <div className="p-3 rounded-xl" style={{ backgroundColor: `${color}20` }}>
-          <Icon className="w-5 h-5" style={{ color }} />
+
+  if (loading) {
+    return (
+      <div className={`bg-gradient-to-br ${colors.from} ${colors.to} border ${colors.border} rounded-2xl p-5 animate-pulse`}>
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="h-3 w-20 bg-gray-300 rounded mb-2"></div>
+            <div className="h-8 w-24 bg-gray-300 rounded"></div>
+          </div>
+          <div className={`w-12 h-12 rounded-xl ${colors.iconBg}`}></div>
         </div>
       </div>
-      {!loading && trendValue && (
-        <div className="mt-4 flex items-center gap-2">
-          <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${isPositive ? 'bg-[var(--green-bg)] text-[var(--green)]' : 'bg-red-500/10 text-red-500'}`}>
-            {isPositive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-            {trendValue}
-          </div>
-          <span className="text-xs text-[var(--text-muted)]">vs last month</span>
+    );
+  }
+
+  return (
+    <div onClick={onClick} className={`group relative overflow-hidden bg-gradient-to-br ${colors.from} ${colors.to} border ${colors.border} rounded-2xl p-5 cursor-pointer hover:shadow-xl hover:shadow-${color}-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300`}>
+      <div className={`absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+      <div className="relative flex items-start justify-between">
+        <div>
+          <p className={`text-[10px] uppercase tracking-wider ${colors.text} font-bold`}>{title}</p>
+          <p className="text-3xl font-bold text-gray-800 mt-2">{value}</p>
+          {subtitle && <p className="text-xs text-gray-600 mt-1">{subtitle}</p>}
+        </div>
+        <div className={`w-12 h-12 rounded-xl ${colors.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+          <Icon size={24} className={colors.iconColor} />
+        </div>
+      </div>
+      {trendValue && (
+        <div className={`flex items-center gap-1 mt-3`}>
+          {trend === 'up' ? <ArrowUpRight size={12} className="text-emerald-600" /> : trend === 'down' ? <ArrowDownRight size={12} className="text-red-600" /> : null}
+          <span className={`text-[10px] font-medium ${isPositive ? 'text-emerald-600' : isPositive === false ? 'text-red-600' : 'text-gray-500'}`}>{trendValue}</span>
         </div>
       )}
     </div>

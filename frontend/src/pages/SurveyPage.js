@@ -10,6 +10,7 @@ import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { Input, FormField, Textarea, Select } from '../components/ui/Input';
 import { toast } from '../components/ui/Toast';
+import { KPICard } from '../components/ui/KPICard';
 import { useAuditLog } from '../hooks/useAuditLog';
 import { usePermissions } from '../hooks/usePermissions';
 
@@ -167,19 +168,25 @@ const SurveyPage = () => {
     );
   };
 
-  const SummaryCard = ({ title, value, icon: Icon, color }) => (
-    <div className="bg-[var(--bg-surface)] rounded-xl p-5 border border-[var(--border-base)] shadow-sm">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-[var(--text-muted)] mb-1">{title}</p>
-          <p className="text-2xl font-bold text-[var(--text-primary)]">{value}</p>
-        </div>
-        <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}>
-          <Icon size={24} className="text-white" />
-        </div>
-      </div>
-    </div>
-  );
+  const SummaryCard = ({ title, value, icon: Icon, color }) => {
+    const colorMap = {
+      'bg-blue-500': { variant: 'blue', tag: 'Surveys' },
+      'bg-amber-500': { variant: 'amber', tag: 'Pending' },
+      'bg-[var(--green)]/100': { variant: 'emerald', tag: 'Active' },
+      'bg-purple-500': { variant: 'purple', tag: 'Completed' },
+    };
+    const config = colorMap[color] || { variant: 'blue', tag: 'Status' };
+    
+    return (
+      <KPICard
+        label={title}
+        value={value}
+        icon={Icon}
+        variant={config.variant}
+        tags={[config.tag]}
+      />
+    );
+  };
 
   const TabButton = ({ id, label, count }) => (
     <button

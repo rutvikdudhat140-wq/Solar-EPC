@@ -41,37 +41,36 @@ import {
   ArrowDownRight,
 } from 'lucide-react';
 
-// KPI Card Component
+// KPI Card Component - Inventory Style
 const KPICard = ({ title, value, subtitle, icon: Icon, trend, trendValue, color }) => {
-  const colorClasses = {
-    blue: 'from-blue-500 to-blue-600',
-    emerald: 'from-emerald-500 to-emerald-600',
-    amber: 'from-amber-500 to-amber-600',
-    purple: 'from-purple-500 to-purple-600',
-    rose: 'from-rose-500 to-rose-600',
-    cyan: 'from-cyan-500 to-cyan-600',
+  const colorMap = {
+    blue: { from: 'from-blue-100', to: 'to-sky-200', border: 'border-blue-200', text: 'text-blue-700', iconBg: 'bg-blue-200', iconColor: 'text-blue-700', tagBg: 'bg-blue-100', tagText: 'text-blue-700' },
+    emerald: { from: 'from-emerald-100', to: 'to-green-200', border: 'border-emerald-200', text: 'text-emerald-700', iconBg: 'bg-emerald-200', iconColor: 'text-emerald-700', tagBg: 'bg-emerald-100', tagText: 'text-emerald-700' },
+    amber: { from: 'from-amber-100', to: 'to-orange-200', border: 'border-amber-200', text: 'text-amber-700', iconBg: 'bg-amber-200', iconColor: 'text-amber-700', tagBg: 'bg-amber-100', tagText: 'text-amber-700' },
+    purple: { from: 'from-violet-100', to: 'to-purple-200', border: 'border-violet-200', text: 'text-violet-700', iconBg: 'bg-violet-200', iconColor: 'text-violet-700', tagBg: 'bg-violet-100', tagText: 'text-violet-700' },
+    rose: { from: 'from-red-100', to: 'to-rose-200', border: 'border-red-200', text: 'text-red-700', iconBg: 'bg-red-200', iconColor: 'text-red-700', tagBg: 'bg-red-100', tagText: 'text-red-700' },
+    cyan: { from: 'from-cyan-100', to: 'to-teal-200', border: 'border-cyan-200', text: 'text-cyan-700', iconBg: 'bg-cyan-200', iconColor: 'text-cyan-700', tagBg: 'bg-cyan-100', tagText: 'text-cyan-700' },
   };
 
+  const colors = colorMap[color] || colorMap.blue;
+
   return (
-    <div className="relative overflow-hidden rounded-xl p-4 shadow-sm transition-all duration-300 hover:shadow-md group" style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border-base)' }}>
-      <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${colorClasses[color]} opacity-10 rounded-full -translate-y-1/2 translate-x-1/2`} />
-
-      <div className="flex items-center justify-between relative z-10">
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium mb-1 truncate" style={{ color: 'var(--text-muted)' }}>{title}</p>
-          <h3 className="text-2xl font-bold mb-0.5" style={{ color: 'var(--text-primary)' }}>{value}</h3>
-          {subtitle && <p className="text-xs truncate" style={{ color: 'var(--text-secondary)' }}>{subtitle}</p>}
-
+    <div className={`group relative overflow-hidden bg-gradient-to-br ${colors.from} ${colors.to} border ${colors.border} rounded-2xl p-4 cursor-pointer hover:shadow-xl hover:shadow-${color}-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300`}>
+      <div className={`absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+      <div className="relative flex items-start justify-between">
+        <div>
+          <p className={`text-[10px] uppercase tracking-wider ${colors.text} font-bold`}>{title}</p>
+          <p className="text-2xl font-bold text-gray-800 mt-1">{value}</p>
+          {subtitle && <p className="text-xs text-gray-600 mt-0.5">{subtitle}</p>}
           {trend && (
-            <div className={`flex items-center gap-1 mt-2 text-xs font-medium ${trend === 'up' ? 'text-emerald-500' : trend === 'down' ? 'text-rose-500' : ''}`} style={{ color: trend === 'neutral' ? 'var(--text-muted)' : undefined }}>
-              {trend === 'up' ? <ArrowUpRight size={14} /> : trend === 'down' ? <ArrowDownRight size={14} /> : null}
-              <span>{trendValue}</span>
+            <div className={`flex items-center gap-1 mt-2`}>
+              {trend === 'up' ? <ArrowUpRight size={12} className="text-emerald-600" /> : trend === 'down' ? <ArrowDownRight size={12} className="text-red-600" /> : null}
+              <span className={`text-[10px] font-medium ${trend === 'up' ? 'text-emerald-600' : trend === 'down' ? 'text-red-600' : 'text-gray-500'}`}>{trendValue}</span>
             </div>
           )}
         </div>
-
-        <div className={`p-2.5 rounded-lg bg-gradient-to-br ${colorClasses[color]} shadow-md shrink-0 ml-3`}>
-          <Icon className="w-5 h-5 text-white" />
+        <div className={`w-10 h-10 rounded-xl ${colors.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+          <Icon size={20} className={colors.iconColor} />
         </div>
       </div>
     </div>
