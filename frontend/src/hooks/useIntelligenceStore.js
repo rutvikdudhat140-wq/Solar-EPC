@@ -1,6 +1,6 @@
 // Solar OS – AI Intelligence Store
 // Pure mock intelligence engine — derived from existing module data.
-// No backend, no API calls. All logic is computed from mockData.
+// Backend API integration enabled
 
 import { useState, useEffect, useMemo } from 'react';
 import {

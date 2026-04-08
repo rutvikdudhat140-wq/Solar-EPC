@@ -13,131 +13,6 @@ export const useReminders = () => {
     return context;
 };
 
-// Mock data for comprehensive reminder system
-const MOCK_REMINDERS = [
-    {
-        id: 'r1',
-        title: 'Follow up with Solar Tech Industries',
-        description: 'Contact customer about installation date confirmation',
-        module: 'sales',
-        priority: 'high',
-        type: 'followup',
-        dueDate: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
-        createdBy: 'sales-manager',
-        assignedTo: 'sales-rep',
-        status: 'pending',
-        recurring: false,
-        notificationChannels: ['in-app', 'sms'],
-        metadata: { leadId: 'L001', amount: 450000 }
-    },
-    {
-        id: 'r2',
-        title: 'Site survey deadline approaching',
-        description: 'Complete technical survey for Rajkot residential project',
-        module: 'survey',
-        priority: 'critical',
-        type: 'deadline',
-        dueDate: new Date(Date.now() + 4 * 60 * 60 * 1000), // 4 hours from now
-        createdBy: 'project-manager',
-        assignedTo: 'survey-engineer',
-        status: 'pending',
-        recurring: false,
-        notificationChannels: ['in-app', 'voice', 'sms'],
-        metadata: { projectId: 'P003', location: 'Rajkot' }
-    },
-    {
-        id: 'r3',
-        title: 'Design approval pending',
-        description: 'Customer approval required for solar panel layout design',
-        module: 'design',
-        priority: 'medium',
-        type: 'approval',
-        dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
-        createdBy: 'design-engineer',
-        assignedTo: 'sales-manager',
-        status: 'pending',
-        recurring: false,
-        notificationChannels: ['in-app'],
-        metadata: { designId: 'D012', customerId: 'C045' }
-    },
-    {
-        id: 'r4',
-        title: 'Invoice payment overdue',
-        description: 'Payment of ₹2,50,000 is 5 days overdue',
-        module: 'finance',
-        priority: 'critical',
-        type: 'payment',
-        dueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago (overdue)
-        createdBy: 'finance-manager',
-        assignedTo: 'accounts-team',
-        status: 'overdue',
-        recurring: false,
-        notificationChannels: ['in-app', 'sms'],
-        metadata: { invoiceId: 'INV-2024-089', amount: 250000 }
-    },
-    {
-        id: 'r5',
-        title: 'Material procurement deadline',
-        description: 'Order solar panels for March installations',
-        module: 'procurement',
-        priority: 'high',
-        type: 'procurement',
-        dueDate: new Date(Date.now() + 6 * 60 * 60 * 1000), // 6 hours from now
-        createdBy: 'procurement-officer',
-        assignedTo: 'procurement-team',
-        status: 'pending',
-        recurring: false,
-        notificationChannels: ['in-app', 'voice'],
-        metadata: { itemCount: 45, totalValue: 850000 }
-    },
-    {
-        id: 'r6',
-        title: 'Weekly maintenance check',
-        description: 'Scheduled maintenance for Ahmedabad solar farm',
-        module: 'service',
-        priority: 'medium',
-        type: 'maintenance',
-        dueDate: new Date(Date.now() + 48 * 60 * 60 * 1000), // 2 days from now
-        createdBy: 'service-manager',
-        assignedTo: 'technician',
-        status: 'pending',
-        recurring: true,
-        recurringPattern: 'weekly',
-        notificationChannels: ['in-app'],
-        metadata: { siteId: 'S012', capacity: '500kW' }
-    },
-    {
-        id: 'r7',
-        title: 'Inventory stock alert',
-        description: 'Solar inverters below minimum stock level',
-        module: 'inventory',
-        priority: 'high',
-        type: 'stock-alert',
-        dueDate: new Date(Date.now() + 1 * 60 * 60 * 1000), // 1 hour from now
-        createdBy: 'store-manager',
-        assignedTo: 'procurement-team',
-        status: 'pending',
-        recurring: false,
-        notificationChannels: ['in-app', 'sms'],
-        metadata: { itemName: 'Solar Inverters 5kW', currentStock: 8, minStock: 15 }
-    },
-    {
-        id: 'r8',
-        title: 'Installation team dispatch',
-        description: 'Team deployment for Surat residential installation',
-        module: 'installation',
-        priority: 'medium',
-        type: 'deployment',
-        dueDate: new Date(Date.now() + 12 * 60 * 60 * 1000), // 12 hours from now
-        createdBy: 'project-manager',
-        assignedTo: 'installation-supervisor',
-        status: 'pending',
-        recurring: false,
-        notificationChannels: ['in-app', 'voice'],
-        metadata: { teamSize: 4, duration: '3 days', location: 'Surat' }
-    }
-];
-
 export const ReminderProvider = ({ children }) => {
     const [reminders, setReminders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -177,9 +52,8 @@ export const ReminderProvider = ({ children }) => {
         } catch (err) {
             console.error('[DEBUG] Error fetching reminders:', err);
             console.error('[DEBUG] Error response:', err.response);
-            // Fallback to mock data if API fails
-            console.log('[DEBUG] Falling back to mock data');
-            setReminders(MOCK_REMINDERS);
+            // No fake data - empty array on error
+            setReminders([]);
         } finally {
             setLoading(false);
         }

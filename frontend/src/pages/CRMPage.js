@@ -24,7 +24,7 @@ import {
   AreaChart, Area, RadarChart, Radar, PolarGrid, PolarAngleAxis,
   PolarRadiusAxis, Treemap, ComposedChart, ScatterChart, Scatter
 } from 'recharts';
-import { USERS } from '../data/mockData';
+// Real user data from API
 import { leadsApi } from '../services/leadsApi';
 import { projectsApi } from '../services/projectsApi';
 import { inventoryApi } from '../services/inventoryApi';
