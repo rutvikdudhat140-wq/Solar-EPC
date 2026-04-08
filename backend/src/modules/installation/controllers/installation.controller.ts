@@ -14,6 +14,7 @@ import {
   HttpStatus,
   BadRequestException,
   UseInterceptors,
+  Headers,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
@@ -103,8 +104,16 @@ export class InstallationController {
    */
   @Get('stats')
   @RequirePermission('installation', 'view')
-  async getStats(@Request() req: AuthenticatedRequest) {
-    return this.installationService.getStatistics(this.getUserContext(req));
+  async getStats(
+    @Request() req: AuthenticatedRequest,
+    @Headers('x-tenant-id') headerTenantId?: string,
+  ) {
+    const userContext = this.getUserContext(req);
+    if (headerTenantId) {
+      userContext.tenantId = headerTenantId;
+      console.log('[Installation Stats] Using header tenantId:', headerTenantId);
+    }
+    return this.installationService.getStatistics(userContext);
   }
 
   /**

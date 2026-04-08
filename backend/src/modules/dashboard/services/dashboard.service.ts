@@ -12,6 +12,12 @@ import { PurchaseOrder } from '../../procurement/schemas/purchase-order.schema';
 import { Estimate } from '../../estimates/schemas/estimate.schema';
 import { Employee } from '../../hrm/schemas/employee.schema';
 import { Attendance } from '../../hrm/schemas/attendance.schema';
+import { Survey } from '../../survey/schemas/survey.schema';
+import { Quotation } from '../../quotation/schemas/quotation.schema';
+import { Ticket } from '../../service-amc/schemas/ticket.schema';
+import { Commissioning } from '../../commissioning/schemas/commissioning.schema';
+import { Tenant } from '../../../core/tenant/schemas/tenant.schema';
+import { Task } from '../../tasks/schemas/task.schema';
 
 @Injectable()
 export class DashboardService {
@@ -28,8 +34,335 @@ export class DashboardService {
     @InjectModel(Estimate.name) private estimateModel: Model<Estimate>,
     @InjectModel(Employee.name) private employeeModel: Model<Employee>,
     @InjectModel(Attendance.name) private attendanceModel: Model<Attendance>,
+    @InjectModel(Survey.name) private surveyModel: Model<Survey>,
+    @InjectModel(Quotation.name) private quotationModel: Model<Quotation>,
+    @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
+    @InjectModel(Commissioning.name) private commissioningModel: Model<Commissioning>,
+    @InjectModel(Tenant.name) private tenantModel: Model<Tenant>,
+    @InjectModel(Task.name) private taskModel: Model<Task>,
     private cacheService: DashboardCacheService,
   ) {}
+
+  private async buildBaseQuery(tenantId: string, user?: any) {
+    // For dashboard, always try to get data - return empty query if no valid tenant
+    if (!tenantId || tenantId === 'solarcorp' || tenantId === 'default') {
+      this.logger.log('[Dashboard] No valid tenantId, returning empty query to get all data');
+      return {};
+    }
+
+    const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(tenantId);
+    const isSuperAdmin = user?.isSuperAdmin || user?.role?.toLowerCase() === 'superadmin';
+
+    if (isSuperAdmin) {
+      this.logger.log('[Dashboard] SuperAdmin - returning empty query');
+      return {};
+    }
+
+    const buildTenantOr = (tid: Types.ObjectId, tenantCodeOrId: string) => {
+      // Some modules store tenantId as ObjectId, some as string.
+      // We match both to avoid 0 counts because of type mismatch.
+      return {
+        $or: [
+          { tenantId: tid },
+          { tenantId: tid.toString() },
+          { tenantId: tenantCodeOrId },
+        ],
+      };
+    };
+
+    if (isValidObjectId) {
+      const tid = new Types.ObjectId(tenantId);
+      this.logger.log(`[Dashboard] Using ObjectId tenant (OR match): ${tenantId}`);
+      return buildTenantOr(tid, tenantId);
+    }
+
+    // Try to resolve tenant code to ObjectId (like inventory service does)
+    try {
+      const tenant = await this.tenantModel.findOne({ code: tenantId }).lean();
+      if (tenant) {
+        const tid = (tenant as any)._id as Types.ObjectId;
+        this.logger.log(`[Dashboard] Resolved tenant code '${tenantId}' to ObjectId: ${tid}`);
+        return buildTenantOr(tid, tenantId);
+      }
+    } catch (error: any) {
+      this.logger.error(`[Dashboard] Error resolving tenant code '${tenantId}':`, error?.message);
+    }
+
+    // Fallback: Try as string tenantId (some schemas store it as string)
+    this.logger.log(`[Dashboard] Using string tenant: ${tenantId}`);
+    return { tenantId };
+  }
+
+  async getWidgetData(tenantId: string, user?: any) {
+    const baseQuery = await this.buildBaseQuery(tenantId, user);
+    this.logger.log(`[Dashboard] getWidgetData for tenant: ${tenantId}`);
+
+    const [
+      leadsData,
+      projectsData,
+      surveysData,
+      inventoryData,
+      commissioningData,
+      installationData,
+      quotationData,
+      serviceData,
+      procurementData,
+      financeData,
+      employeesData,
+      tasksData,
+    ] = await Promise.all([
+      this.getLeadsStats(baseQuery),
+      this.getProjectsStats(baseQuery),
+      this.getSurveysStats(baseQuery),
+      this.getInventoryStats(baseQuery),
+      this.getCommissioningStats(baseQuery),
+      this.getInstallationStats(baseQuery),
+      this.getQuotationStats(baseQuery),
+      this.getServiceStats(baseQuery),
+      this.getProcurementStats(baseQuery),
+      this.getFinanceStats(baseQuery),
+      this.getEmployeesStats(baseQuery),
+      this.getTasksStats(baseQuery),
+    ]);
+
+    return {
+      leads: leadsData,
+      projects: projectsData,
+      surveys: surveysData,
+      inventory: inventoryData,
+      commissioning: commissioningData,
+      installation: installationData,
+      quotation: quotationData,
+      service: serviceData,
+      procurement: procurementData,
+      finance: financeData,
+      employees: employeesData,
+      tasks: tasksData,
+      estimates: { total: 0, pending: 0, approved: 0 },
+      logistics: { total: 0, inTransit: 0, delivered: 0 },
+      compliance: { total: 0, pending: 0, compliant: 0 },
+      documents: { total: 0, pending: 0, approved: 0 },
+    };
+  }
+
+  private async getTasksStats(baseQuery: any) {
+    this.logger.log('[Dashboard] getTasksStats with query:', JSON.stringify(baseQuery));
+    const queryWithDelete = { ...baseQuery, isDeleted: { $ne: true } };
+
+    const [total, pending, inProgress, completed] = await Promise.all([
+      this.taskModel.countDocuments(queryWithDelete),
+      this.taskModel.countDocuments({ ...queryWithDelete, status: 'pending' }),
+      this.taskModel.countDocuments({ ...queryWithDelete, status: 'in-progress' }),
+      this.taskModel.countDocuments({ ...queryWithDelete, status: 'completed' }),
+    ]);
+
+    return { total, pending, inProgress, completed };
+  }
+
+  private async getLeadsStats(baseQuery: any) {
+    this.logger.log('[Dashboard] getLeadsStats with query:', JSON.stringify(baseQuery));
+    const queryWithDelete = { ...baseQuery, isDeleted: { $ne: true } };
+    const [total, hot, newLeads, converted, qualified, won, lost] = await Promise.all([
+      this.leadModel.countDocuments(queryWithDelete),
+      this.leadModel.countDocuments({ ...queryWithDelete, statusKey: 'hot' }),
+      this.leadModel.countDocuments({ ...queryWithDelete, statusKey: 'new' }),
+      this.leadModel.countDocuments({ ...queryWithDelete, statusKey: 'won' }),
+      this.leadModel.countDocuments({ ...queryWithDelete, statusKey: { $in: ['qualified', 'proposal', 'negotiation'] } }),
+      this.leadModel.countDocuments({ ...queryWithDelete, statusKey: 'won' }),
+      this.leadModel.countDocuments({ ...queryWithDelete, statusKey: 'lost' }),
+    ]);
+    this.logger.log('[Dashboard] Leads stats:', { total, hot, newLeads, converted, qualified, won, lost });
+    return {
+      total,
+      hot,
+      new: newLeads,
+      converted,
+      qualified,
+      won,
+      lost,
+    };
+  }
+
+  private async getProjectsStats(baseQuery: any) {
+    this.logger.log('[Dashboard] getProjectsStats with query:', JSON.stringify(baseQuery));
+    const queryWithDelete = { ...baseQuery, isDeleted: { $ne: true } };
+    const [total, active, completed, byStatus] = await Promise.all([
+      this.projectModel.countDocuments(queryWithDelete),
+      this.projectModel.countDocuments({ ...queryWithDelete, status: { $in: ['Survey', 'Design', 'Quotation', 'Procurement', 'Installation'] } }),
+      this.projectModel.countDocuments({ ...queryWithDelete, status: 'Commissioned' }),
+      this.projectModel.aggregate([
+        { $match: queryWithDelete },
+        { $group: { _id: '$status', count: { $sum: 1 } } },
+      ]),
+    ]);
+    this.logger.log('[Dashboard] Projects stats:', { total, active, completed, byStatus });
+    const statusCounts = byStatus.reduce((acc, item) => {
+      acc[item._id] = item.count;
+      return acc;
+    }, {});
+
+    return { total, active, completed, ...statusCounts };
+  }
+
+  private async getInventoryStats(baseQuery: any) {
+    this.logger.log('[Dashboard] getInventoryStats with query:', JSON.stringify(baseQuery));
+    const queryWithDelete = { ...baseQuery, isDeleted: { $ne: true } };
+    this.logger.log('[Dashboard] Inventory final query:', JSON.stringify(queryWithDelete));
+
+    // Debug: Check a sample inventory document
+    const sampleInv = await this.inventoryModel.findOne({}).lean();
+    this.logger.log('[Dashboard] Sample inventory doc:', JSON.stringify(sampleInv, null, 2)?.substring(0, 500));
+
+    // Debug: Count without any filter
+    const totalWithoutFilter = await this.inventoryModel.countDocuments({});
+    this.logger.log('[Dashboard] Inventory total without filter:', totalWithoutFilter);
+
+    const [totalItems, lowStockItems, byCategory] = await Promise.all([
+      this.inventoryModel.countDocuments(queryWithDelete),
+      this.inventoryModel.countDocuments({ ...queryWithDelete, $or: [{ status: 'Low Stock' }, { stock: { $lt: 10 } }] }),
+      this.inventoryModel.aggregate([
+        { $match: queryWithDelete },
+        { $group: { _id: '$category', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+      ]),
+    ]);
+    this.logger.log('[Dashboard] Inventory stats:', { totalItems, lowStockItems, byCategory });
+    return {
+      totalItems,
+      total: totalItems,
+      lowStockItems,
+      byCategory: byCategory.map(c => ({ name: c._id || 'Other', value: c.count })),
+    };
+  }
+
+  private async getSurveysStats(baseQuery: any) {
+    this.logger.log('[Dashboard] getSurveysStats with query:', JSON.stringify(baseQuery));
+    const queryWithDelete = { ...baseQuery, isDeleted: { $ne: true } };
+    this.logger.log('[Dashboard] Surveys final query:', JSON.stringify(queryWithDelete));
+
+    // Debug: Check a sample survey document
+    const sampleSurvey = await this.surveyModel.findOne({}).lean();
+    this.logger.log('[Dashboard] Sample survey doc:', JSON.stringify(sampleSurvey, null, 2)?.substring(0, 500));
+
+    const [total, completed, pending, scheduled] = await Promise.all([
+      this.surveyModel.countDocuments(queryWithDelete),
+      this.surveyModel.countDocuments({ ...queryWithDelete, status: { $regex: '^Completed$', $options: 'i' } }),
+      this.surveyModel.countDocuments({ ...queryWithDelete, status: { $regex: '^Pending$', $options: 'i' } }),
+      this.surveyModel.countDocuments({ ...queryWithDelete, status: { $regex: '^Scheduled$', $options: 'i' } }),
+    ]);
+    this.logger.log('[Dashboard] Surveys stats:', { total, completed, pending, scheduled });
+    return { total, completed, pending, scheduled };
+  }
+
+  private async getCommissioningStats(baseQuery: any) {
+    this.logger.log('[Dashboard] getCommissioningStats with query:', JSON.stringify(baseQuery));
+    const queryWithDelete = { ...baseQuery, isDeleted: { $ne: true } };
+    this.logger.log('[Dashboard] Commissioning final query:', JSON.stringify(queryWithDelete));
+
+    // Debug: Check a sample commissioning document
+    const sampleComm = await this.commissioningModel.findOne({}).lean();
+    this.logger.log('[Dashboard] Sample commissioning doc:', JSON.stringify(sampleComm, null, 2)?.substring(0, 500));
+
+    // Debug: Count without any filter
+    const totalWithoutFilter = await this.commissioningModel.countDocuments({});
+    this.logger.log('[Dashboard] Commissioning total without filter:', totalWithoutFilter);
+
+    const [total, completed, pending, inProgress] = await Promise.all([
+      this.commissioningModel.countDocuments(queryWithDelete),
+      this.commissioningModel.countDocuments({ ...queryWithDelete, status: 'Completed' }),
+      this.commissioningModel.countDocuments({ ...queryWithDelete, status: 'Pending' }),
+      this.commissioningModel.countDocuments({ ...queryWithDelete, status: 'In Progress' }),
+    ]);
+    this.logger.log('[Dashboard] Commissioning stats:', { total, completed, pending, inProgress });
+    return { total, completed, pending, inProgress };
+  }
+
+  private async getInstallationStats(baseQuery: any) {
+    this.logger.log('[Dashboard] getInstallationStats with query:', JSON.stringify(baseQuery));
+    const queryWithDelete = { ...baseQuery, isDeleted: { $ne: true } };
+    const [total, inProgress, completed, pending] = await Promise.all([
+      this.installationModel.countDocuments(queryWithDelete),
+      this.installationModel.countDocuments({ ...queryWithDelete, status: 'In Progress' }),
+      this.installationModel.countDocuments({ ...queryWithDelete, status: 'Completed' }),
+      this.installationModel.countDocuments({ ...queryWithDelete, status: 'Pending' }),
+    ]);
+    this.logger.log('[Dashboard] Installation stats:', { total, inProgress, completed, pending });
+    return { total, inProgress, completed, pending, active: inProgress };
+  }
+
+  private async getQuotationStats(baseQuery: any) {
+    this.logger.log('[Dashboard] getQuotationStats with query:', JSON.stringify(baseQuery));
+    const queryWithDelete = { ...baseQuery, isDeleted: { $ne: true } };
+    const [total, pending, approved, rejected] = await Promise.all([
+      this.quotationModel.countDocuments(queryWithDelete),
+      this.quotationModel.countDocuments({ ...queryWithDelete, status: { $in: ['Draft', 'Sent', 'Viewed'] } }),
+      this.quotationModel.countDocuments({ ...queryWithDelete, status: 'Approved' }),
+      this.quotationModel.countDocuments({ ...queryWithDelete, status: 'Rejected' }),
+    ]);
+    this.logger.log('[Dashboard] Quotation stats:', { total, pending, approved, rejected });
+    return { total, pending, approved, rejected, draft: pending };
+  }
+
+  private async getServiceStats(baseQuery: any) {
+    this.logger.log('[Dashboard] getServiceStats with query:', JSON.stringify(baseQuery));
+    const queryWithDelete = { ...baseQuery, isDeleted: { $ne: true } };
+    const [openTickets, inProgress, resolved, totalContracts] = await Promise.all([
+      this.ticketModel.countDocuments({ ...queryWithDelete, status: 'Open' }),
+      this.ticketModel.countDocuments({ ...queryWithDelete, status: 'In Progress' }),
+      this.ticketModel.countDocuments({ ...queryWithDelete, status: 'Resolved' }),
+      this.ticketModel.countDocuments(queryWithDelete),
+    ]);
+    this.logger.log('[Dashboard] Service stats:', { openTickets, inProgress, resolved, totalContracts });
+    return { openTickets, open: openTickets, inProgressTickets: inProgress, resolvedTickets: resolved, totalContracts };
+  }
+
+  private async getProcurementStats(baseQuery: any) {
+    this.logger.log('[Dashboard] getProcurementStats with query:', JSON.stringify(baseQuery));
+    const [total, pending, completed, ordered] = await Promise.all([
+      this.poModel.countDocuments({ ...baseQuery, isActive: true }),
+      this.poModel.countDocuments({ ...baseQuery, isActive: true, status: 'Pending' }),
+      this.poModel.countDocuments({ ...baseQuery, isActive: true, status: 'Completed' }),
+      this.poModel.countDocuments({ ...baseQuery, isActive: true, status: 'Ordered' }),
+    ]);
+    this.logger.log('[Dashboard] Procurement stats:', { total, pending, completed, ordered });
+    return { total, pending, completed, ordered };
+  }
+
+  private async getFinanceStats(baseQuery: any) {
+    this.logger.log('[Dashboard] getFinanceStats with query:', JSON.stringify(baseQuery));
+    const queryWithDelete = { ...baseQuery, isDeleted: { $ne: true } };
+    const [totalRevenue, outstanding, totalInvoices, paidInvoices] = await Promise.all([
+      this.invoiceModel.aggregate([
+        { $match: { ...queryWithDelete, status: 'Paid' } },
+        { $group: { _id: null, total: { $sum: '$paid' } } },
+      ]),
+      this.invoiceModel.aggregate([
+        { $match: { ...queryWithDelete, status: { $in: ['Pending', 'Partial', 'Overdue'] } } },
+        { $group: { _id: null, total: { $sum: '$balance' } } },
+      ]),
+      this.invoiceModel.countDocuments(queryWithDelete),
+      this.invoiceModel.countDocuments({ ...queryWithDelete, status: 'Paid' }),
+    ]);
+    this.logger.log('[Dashboard] Finance stats:', { totalRevenue: totalRevenue[0]?.total, outstanding: outstanding[0]?.total, totalInvoices, paidInvoices });
+    return {
+      totalRevenue: totalRevenue[0]?.total || 0,
+      outstanding: outstanding[0]?.total || 0,
+      totalInvoices,
+      paidInvoices,
+    };
+  }
+
+  private async getEmployeesStats(baseQuery: any) {
+    this.logger.log('[Dashboard] getEmployeesStats with query:', JSON.stringify(baseQuery));
+    const queryWithDelete = { ...baseQuery, isDeleted: { $ne: true } };
+    const [total, active, onLeave] = await Promise.all([
+      this.employeeModel.countDocuments(queryWithDelete),
+      this.employeeModel.countDocuments({ ...queryWithDelete, status: 'active' }),
+      this.employeeModel.countDocuments({ ...queryWithDelete, status: 'on_leave' }),
+    ]);
+    this.logger.log('[Dashboard] Employees stats:', { total, active, onLeave });
+    return { total, active, onLeave };
+  }
 
   async getOverview(tenantId: string, user?: any) {
     const cacheKey = 'overview';
@@ -39,9 +372,7 @@ export class DashboardService {
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    const tid = new Types.ObjectId(tenantId);
-    const isSuperAdmin = user?.isSuperAdmin || user?.role?.toLowerCase() === 'superadmin';
-    const baseQuery = isSuperAdmin ? {} : { tenantId: tid };
+    const baseQuery = await this.buildBaseQuery(tenantId, user);
 
     const [
       totalLeads,
@@ -131,9 +462,7 @@ export class DashboardService {
   }
 
   async getSalesPipeline(tenantId: string, user?: any) {
-    const tid = new Types.ObjectId(tenantId);
-    const isSuperAdmin = user?.isSuperAdmin || user?.role?.toLowerCase() === 'superadmin';
-    const baseQuery = isSuperAdmin ? {} : { tenantId: tid };
+    const baseQuery = await this.buildBaseQuery(tenantId, user);
 
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
@@ -203,9 +532,7 @@ export class DashboardService {
   }
 
   async getFinancialMetrics(tenantId: string, user?: any) {
-    const tid = new Types.ObjectId(tenantId);
-    const isSuperAdmin = user?.isSuperAdmin || user?.role?.toLowerCase() === 'superadmin';
-    const baseQuery = isSuperAdmin ? {} : { tenantId: tid };
+    const baseQuery = await this.buildBaseQuery(tenantId, user);
 
     const now = new Date();
     const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 12, 1);
@@ -270,9 +597,7 @@ export class DashboardService {
   }
 
   async getProjectMetrics(tenantId: string, user?: any) {
-    const tid = new Types.ObjectId(tenantId);
-    const isSuperAdmin = user?.isSuperAdmin || user?.role?.toLowerCase() === 'superadmin';
-    const baseQuery = isSuperAdmin ? {} : { tenantId: tid };
+    const baseQuery = await this.buildBaseQuery(tenantId, user);
 
     const [
       projectsByStage,
@@ -309,9 +634,7 @@ export class DashboardService {
   }
 
   async getInventoryAlerts(tenantId: string, user?: any) {
-    const tid = new Types.ObjectId(tenantId);
-    const isSuperAdmin = user?.isSuperAdmin || user?.role?.toLowerCase() === 'superadmin';
-    const baseQuery = isSuperAdmin ? {} : { tenantId: tid };
+    const baseQuery = await this.buildBaseQuery(tenantId, user);
 
     const [
       lowStockItems,
@@ -349,9 +672,7 @@ export class DashboardService {
   }
 
   async getTeamPerformance(tenantId: string, user?: any) {
-    const tid = new Types.ObjectId(tenantId);
-    const isSuperAdmin = user?.isSuperAdmin || user?.role?.toLowerCase() === 'superadmin';
-    const baseQuery = isSuperAdmin ? {} : { tenantId: tid };
+    const baseQuery = await this.buildBaseQuery(tenantId, user);
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -397,9 +718,7 @@ export class DashboardService {
   }
 
   async getIntelligentInsights(tenantId: string, user?: any) {
-    const tid = new Types.ObjectId(tenantId);
-    const isSuperAdmin = user?.isSuperAdmin || user?.role?.toLowerCase() === 'superadmin';
-    const baseQuery = isSuperAdmin ? {} : { tenantId: tid };
+    const baseQuery = await this.buildBaseQuery(tenantId, user);
 
     const insights = [];
 
@@ -512,9 +831,7 @@ export class DashboardService {
   }
 
   async getRecentActivities(tenantId: string, limit = 10, user?: any) {
-    const tid = new Types.ObjectId(tenantId);
-    const isSuperAdmin = user?.isSuperAdmin || user?.role?.toLowerCase() === 'superadmin';
-    const baseQuery = isSuperAdmin ? {} : { tenantId: tid };
+    const baseQuery = await this.buildBaseQuery(tenantId, user);
 
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 

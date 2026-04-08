@@ -14,6 +14,7 @@ import {
   HttpStatus,
   BadRequestException,
   UseInterceptors,
+  Headers,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
@@ -103,8 +104,17 @@ export class CommissioningController {
    */
   @Get('stats')
   @RequirePermission('commissioning', 'view')
-  async getStats(@Request() req: AuthenticatedRequest) {
-    return this.commissioningService.getStatistics(this.getUserContext(req));
+  async getStats(
+    @Request() req: AuthenticatedRequest,
+    @Headers('x-tenant-id') headerTenantId?: string,
+  ) {
+    const userContext = this.getUserContext(req);
+    // Override tenantId from header if provided
+    if (headerTenantId) {
+      userContext.tenantId = headerTenantId;
+      console.log('[Commissioning Stats] Using header tenantId:', headerTenantId);
+    }
+    return this.commissioningService.getStatistics(userContext);
   }
 
   /**

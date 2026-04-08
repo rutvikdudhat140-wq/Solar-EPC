@@ -44,8 +44,9 @@ export class ProjectsController {
     @Query('tenantId') queryTenantId: string,
     @Request() req?: any,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = headerTenantId || queryTenantId || '';
     const user = req?.user;
+    console.log('[Projects Stats] tenantId:', tenantId);
     return this.projectsService.getStats(tenantId, user);
   }
 
@@ -54,7 +55,7 @@ export class ProjectsController {
     @Headers('x-tenant-id') headerTenantId: string,
     @Query('tenantId') queryTenantId: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = headerTenantId || queryTenantId || '';
     return this.projectsService.getProjectsByStage(tenantId);
   }
 

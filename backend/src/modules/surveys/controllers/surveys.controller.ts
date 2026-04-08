@@ -15,6 +15,7 @@ import {
   UseGuards,
   Request,
   Logger,
+  Headers,
 } from '@nestjs/common';
 import { SurveysService } from '../services/surveys.service';
 import { CreateSurveyDto, UpdateSurveyDto, QuerySurveyDto } from '../dto/survey.dto';
@@ -44,9 +45,13 @@ export class SurveysController {
   }
 
   @Get('stats')
-  getStats(@Request() req: any) {
-    const tenantId = req.tenant?.id;
+  getStats(
+    @Headers('x-tenant-id') headerTenantId: string,
+    @Request() req: any
+  ) {
+    const tenantId = headerTenantId || req.tenant?.id || req.user?.tenantId || '';
     const user = req.user;
+    console.log('[Surveys Stats] tenantId:', tenantId);
     return this.surveysService.getStats(tenantId, user);
   }
 

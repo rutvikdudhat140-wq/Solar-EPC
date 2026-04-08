@@ -958,6 +958,7 @@ export class CommissioningService {
     inProgress: number;
     delayed: number;
     completed: number;
+    commissioned: number;
     averageProgress: number;
   }> {
     const tenantId = this.toObjectId(userContext.tenantId);

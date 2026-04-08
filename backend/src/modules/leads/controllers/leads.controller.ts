@@ -14,6 +14,7 @@ import {
   HttpStatus,
   Logger,
   BadRequestException,
+  Headers,
 } from '@nestjs/common';
 import { extname, join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
@@ -88,9 +89,12 @@ export class LeadsController {
   }
 
   @Get('stats')
-  async getStats(@Request() req: any) {
+  async getStats(
+    @Request() req: any,
+    @Headers('x-tenant-id') headerTenantId?: string,
+  ) {
     try {
-      const tenantId = req.tenant?.id;
+      const tenantId = headerTenantId || req.tenant?.id || '';
       const user = req.user;
       this.logger.log(`[DEBUG] getStats leads - tenantId: ${tenantId}, user: ${user?.id}, dataScope: ${user?.dataScope}`);
       return await this.leadsService.getStats(tenantId, user);

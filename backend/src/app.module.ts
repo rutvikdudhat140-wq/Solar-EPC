@@ -28,6 +28,7 @@ import { SuperadminModule } from './modules/superadmin';
 import { AutomationModule } from './modules/automation/automation.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -61,6 +62,7 @@ import { AppController } from './app.controller';
     SuperadminModule,
     AutomationModule,
     TasksModule,
+    DashboardModule,
   ],
   controllers: [AppController],
 })
