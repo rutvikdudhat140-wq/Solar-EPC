@@ -1,17 +1,21 @@
 // Dashboard API Service - Fetches live data from all modules
 import { api } from '../lib/apiClient';
 
+// Get tenant ID from localStorage
+const TENANT_ID = localStorage.getItem('tenantId') || 'solarcorp';
+
 const DashboardService = {
   // Overview Stats
   getOverviewStats: async () => {
     try {
+      const headers = { 'x-tenant-id': TENANT_ID };
       const [projects, inventory, leads, finance, hrm, surveys] = await Promise.allSettled([
-        api.get('/projects/stats'),
-        api.get('/inventory/stats'),
-        api.get('/leads/stats'),
-        api.get('/finance/stats'),
-        api.get('/hrm/stats'),
-        api.get('/surveys/stats'),
+        api.get('/projects/stats', { headers }),
+        api.get('/inventory/stats', { headers }),
+        api.get('/leads/stats', { headers }),
+        api.get('/finance/stats', { headers }),
+        api.get('/hrm/stats', { headers }),
+        api.get('/surveys/stats', { headers }),
       ]);
 
       return {
@@ -195,7 +199,7 @@ const DashboardService = {
         { name: 'projects', url: '/projects/stats' },
         { name: 'inventory', url: '/inventory/stats' },
         { name: 'leads', url: '/leads/stats' },
-        { name: 'finance', url: '/finance/stats' },
+        { name: 'finance', url: '/finance/dashboard-stats' },  // Use dashboard-stats endpoint
         { name: 'surveys', url: '/surveys/stats' },
         { name: 'commissioning', url: '/commissioning/stats' },
         { name: 'service', url: '/service-amc/stats' },
@@ -209,22 +213,35 @@ const DashboardService = {
         { name: 'documents', url: '/document/stats' },
       ];
 
+      console.log('[Dashboard] Fetching widget data from all modules with tenant:', TENANT_ID);
+      
+      const headers = { 'x-tenant-id': TENANT_ID };
       const results = await Promise.allSettled(
-        endpoints.map(ep => api.get(ep.url))
+        endpoints.map(ep => api.get(ep.url, { headers }).catch(err => {
+          console.error(`[Dashboard] API Error for ${ep.name}:`, err.message);
+          return null;
+        }))
       );
 
       const data = {};
       
       results.forEach((result, index) => {
         const endpoint = endpoints[index];
-        if (result.status === 'fulfilled') {
-          data[endpoint.name] = result.value?.data || result.value || {};
-          console.log(`[Dashboard] ${endpoint.name}:`, data[endpoint.name]);
+        if (result.status === 'fulfilled' && result.value) {
+          // Extract data from various response formats
+          const responseData = result.value?.data || result.value || {};
+          data[endpoint.name] = responseData;
+          console.log(`[Dashboard] ✅ ${endpoint.name}:`, responseData);
         } else {
-          console.warn(`[Dashboard] Failed to fetch ${endpoint.name}:`, result.reason);
+          console.warn(`[Dashboard] ❌ Failed to fetch ${endpoint.name}:`, result.reason?.message || 'Unknown error');
+          // Provide fallback data structure
           data[endpoint.name] = {};
         }
       });
+
+      // Log summary
+      const successful = Object.keys(data).filter(k => Object.keys(data[k]).length > 0).length;
+      console.log(`[Dashboard] Summary: ${successful}/${endpoints.length} modules returned data`);
 
       return data;
     } catch (error) {

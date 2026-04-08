@@ -3011,6 +3011,11 @@ Solar EPC Team
 
 
       statusDistribution: statusCounts.reduce((acc: any, curr: any) => ({ ...acc, [curr._id]: curr.count }), {}),
+      // Alias fields for frontend compatibility
+      inProgressTickets: inProgress,
+      resolvedTickets: resolved,
+      scheduledTickets: scheduled,
+      closedTickets: closed,
 
 
 

@@ -1012,6 +1012,7 @@ export class CommissioningService {
       inProgress,
       delayed,
       completed,
+      commissioned: completed, // Alias for frontend compatibility
       averageProgress,
     };
   }
