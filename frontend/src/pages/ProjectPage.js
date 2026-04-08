@@ -478,14 +478,21 @@ const ProjectPage = () => {
       try {
         console.log('[DEBUG] Fetching employees for department:', form.department);
         const res = await employeeApi.getByDepartment(form.department);
-        console.log('[DEBUG] Employees API response:', res);
+        console.log('[DEBUG] Employees API full response:', res);
         const result = res?.data ?? res;
         const employees = Array.isArray(result) ? result : (result?.data || []);
         console.log('[DEBUG] Employees array:', employees);
         console.log('[DEBUG] First employee fields:', employees[0] ? Object.keys(employees[0]) : 'none');
         setEmployeesByDept(employees);
+        // If no employees found, show alert
+        if (employees.length === 0) {
+          console.warn('[DEBUG] No employees found for department:', form.department);
+        }
       } catch (err) {
         console.error('[DEBUG] Error fetching employees by department:', err);
+        console.error('[DEBUG] Error response:', err.response);
+        console.error('[DEBUG] Error message:', err.message);
+        setEmployeesByDept([]);
       } finally {
         setEmployeesLoading(false);
       }
@@ -1082,6 +1089,13 @@ const ProjectPage = () => {
   const handleCreateProject = async () => {
     setSubmitting(true);
     try {
+      // Validate required fields before sending
+      if (!form.customerName || !form.site || !form.systemSize || !form.pm) {
+        alert('Please fill in all required fields: Customer Name, Site, System Size, and Assign Employee');
+        setSubmitting(false);
+        return;
+      }
+
       const newProject = {
         projectId: `P${Date.now().toString().slice(-4)}`,
         customerName: form.customerName,
@@ -1108,15 +1122,21 @@ const ProjectPage = () => {
         }))
       };
 
+      console.log('[DEBUG] Creating project with data:', newProject);
+
       const createdProject = await api.post(`/projects?tenantId=${TENANT_ID}`, newProject);
+      console.log('[DEBUG] Project created response:', createdProject);
       const projectData = createdProject?.data ?? createdProject;
       setProjects(prev => [...prev, { ...projectData, id: projectData.projectId }]);
       setShowAdd(false);
       setForm({ customerName: '', site: '', systemSize: '', pm: '', department: '', value: '', estEndDate: '', email: '', mobileNumber: '', paymentTerms: '', visitsPerMonth: '', totalVisits: '', materials: [] });
       alert('Project created successfully!');
     } catch (err) {
-      console.error('Error creating project:', err);
-      alert(err.message || 'Failed to create project. Please try again.');
+      console.error('[DEBUG] Error creating project:', err);
+      console.error('[DEBUG] Error response:', err.response);
+      console.error('[DEBUG] Error message:', err.message);
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to create project. Please try again.';
+      alert('Error: ' + errorMsg);
     } finally {
       setSubmitting(false);
     }
@@ -1953,7 +1973,12 @@ const ProjectPage = () => {
             </FormField>
             <FormField label="Assign Employee">
               <Select value={form.pm} onChange={e => setForm(f => ({ ...f, pm: e.target.value }))} disabled={!form.department || employeesLoading}>
-                <option value="">{employeesLoading ? 'Loading...' : form.department ? 'Select Employee' : 'First select department'}</option>
+                <option value="">
+                  {employeesLoading ? 'Loading employees...' : 
+                   !form.department ? 'First select department' : 
+                   employeesByDept.length === 0 ? 'No employees in this department' : 
+                   'Select Employee'}
+                </option>
                 {employeesByDept.map(e => {
                   const fullName = getEmployeeDisplayName(e);
                   const designation = e.designation || e.role || e.roleId || e.position || '';
@@ -1965,6 +1990,9 @@ const ProjectPage = () => {
                   );
                 })}
               </Select>
+              {form.department && employeesByDept.length === 0 && !employeesLoading && (
+                <p className="text-xs text-red-500 mt-1">No employees found in {form.department} department. Please add employees in HRM module.</p>
+              )}
             </FormField>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
