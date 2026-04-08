@@ -1121,6 +1121,8 @@ const CommissioningPage = () => {
  // fetch Commissionings
  const { data: CommissioningsRaw=[], refetch } = useQuery({
  queryKey: ['Commissionings'],
+ refetchInterval: 10000, // Live refresh every 10 seconds
+ refetchOnWindowFocus: true,
  queryFn: async () => { const r = await apiClient.get('/commissionings'); return r.data || []; }
  });
 
@@ -1493,6 +1495,9 @@ const CommissioningPage = () => {
  const [bulkAssignIds, setBulkAssignIds] = useState([]);
  const [bulkAssignForm, setBulkAssignForm] = useState({ department: '', technicianId: '', technicianName: '', dueDate: '' });
  const [bulkAssignDept, setBulkAssignDept] = useState('');
+const [showAssignModal, setShowAssignModal] = useState(false);
+const [assignForm, setAssignForm] = useState({ commissioningId: '', department: '', technicianId: '', technicianName: '', dueDate: '' });
+const [assignDept, setAssignDept] = useState('');
  
  // Fetch completed installations to show in commissioning
  const { data: completedInstallations = [] } = useQuery({
@@ -1563,7 +1568,7 @@ const CommissioningPage = () => {
  return [];
  }
  },
- enabled: showAdd || showEdit || showBulkAssign,
+ enabled: showAdd || showEdit || showBulkAssign || showAssignModal,
  });
 
  // Fetch employees from HRM
@@ -1584,7 +1589,7 @@ const CommissioningPage = () => {
  return [];
  }
  },
- enabled: showAdd || showEdit || showBulkAssign,
+ enabled: showAdd || showEdit || showBulkAssign || showAssignModal,
  });
 
  // Departments list from HRM (fallback: extract from employees)
@@ -1656,7 +1661,8 @@ const CommissioningPage = () => {
  activeTab={view} 
  onTabChange={setView} 
  actions={[
- can('commissioning','create') && { type: 'button', label: 'Assign', icon: Plus, variant: 'primary', onClick: () => setShowAdd(true) },
+ can('commissioning','create') && { type: 'button', label: 'Create', icon: Plus, variant: 'primary', onClick: () => setShowAdd(true) },
+ ...(can('commissioning','assign') || can('commissioning','edit') ? [{ type: 'button', label: 'Assign', icon: UserPlus, variant: 'secondary', onClick: () => { setShowAssignModal(true); } }] : []),
  view !== 'dashboard' && { type: 'button', label: showCardsInViews ? 'Hide Cards' : 'Show Cards', icon: Layers, variant: 'ghost', onClick: () => setShowCardsInViews(!showCardsInViews) }
  ].filter(Boolean)} 
  />
@@ -1954,14 +1960,122 @@ const CommissioningPage = () => {
  </div>
  </Modal>
 
- {/* New Log Modal */}
- <Modal open={showAdd} onClose={()=>{setShowAdd(false); setSelectedDept(''); setSelectedProjectId('');}} title="Assign Commissioning" footer={
+ 
+{/* Assign Technician Modal */}
+<Modal
+  open={showAssignModal}
+  onClose={() => { setShowAssignModal(false); setAssignDept(''); setAssignForm({ commissioningId: '', department: '', technicianId: '', technicianName: '', dueDate: '' }); }}
+  title="Assign Technician"
+  footer={
+    <div className="flex gap-2 justify-end pt-1">
+      <Button variant="ghost" onClick={() => { setShowAssignModal(false); setAssignDept(''); setAssignForm({ commissioningId: '', department: '', technicianId: '', technicianName: '', dueDate: '' }); }}>Cancel</Button>
+      <Button
+        disabled={!assignForm.commissioningId || !assignForm.technicianId}
+        onClick={async () => {
+          try {
+            const selectedLog = logs.find(l => (l._id || l.id) === assignForm.commissioningId);
+            await apiClient.patch(`/commissionings/${assignForm.commissioningId}`, {
+              technicianId: assignForm.technicianId,
+              technicianName: assignForm.technicianName,
+              department: assignForm.department,
+              ...(assignForm.dueDate ? { scheduledDate: assignForm.dueDate, dueDate: assignForm.dueDate } : {}),
+              status: 'In Progress',
+            });
+            setShowAssignModal(false);
+            setAssignDept('');
+            setAssignForm({ commissioningId: '', department: '', technicianId: '', technicianName: '', dueDate: '' });
+            refetch();
+            toast.success(`Assigned to ${assignForm.technicianName}`);
+          } catch(err) { toast.error(err.message || 'Assign failed'); }
+        }}
+      >
+        <UserPlus size={14} /> Assign
+      </Button>
+    </div>
+  }
+>
+  <div className="space-y-4 py-1">
+    {/* Select Commissioning */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Select Commissioning</label>
+      <select
+        className="w-full px-3 py-2.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-base)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] transition-colors"
+        value={assignForm.commissioningId}
+        onChange={e => setAssignForm(p => ({ ...p, commissioningId: e.target.value }))}
+      >
+        <option value="">Select Commissioning</option>
+        {logs.filter(l => l.status === 'Pending Assign' || !l.technicianId).map(log => (
+          <option key={log._id || log.id} value={log._id || log.id}>
+            {log.customerName || 'Unknown'} - {log.siteAddress || 'No Site'} ({log.CommissioningId || log.id})
+          </option>
+        ))}
+      </select>
+      {logs.filter(l => l.status === 'Pending Assign' || !l.technicianId).length === 0 && (
+        <p className="text-[10px] text-amber-500 mt-1">No unassigned commissionings available.</p>
+      )}
+    </div>
+
+    {/* Department */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Department</label>
+      <select
+        className="w-full px-3 py-2.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-base)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] transition-colors"
+        value={assignDept}
+        onChange={e => {
+          setAssignDept(e.target.value);
+          setAssignForm(p => ({ ...p, department: e.target.value, technicianId: '', technicianName: '' }));
+        }}
+      >
+        <option value="">{departments.length > 0 ? 'Select Department' : 'No Departments'}</option>
+        {departments.map(dept => (
+          <option key={dept.id} value={dept.name}>{dept.name}</option>
+        ))}
+      </select>
+    </div>
+
+    {/* Technician */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Technician</label>
+      <select
+        className="w-full px-3 py-2.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-base)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        value={assignForm.technicianId}
+        disabled={!assignDept}
+        onChange={e => {
+          const emp = employees.find(x => (x._id || x.id) === e.target.value);
+          const name = emp ? ((emp.firstName || '') + ' ' + (emp.lastName || '')).trim() || emp.name || '' : '';
+          setAssignForm(p => ({ ...p, technicianId: e.target.value, technicianName: name }));
+        }}
+      >
+        <option value="">{assignDept ? 'Select Technician' : 'Select Dept First'}</option>
+        {employees.filter(e => e.department === assignDept).map(emp => (
+          <option key={emp._id || emp.id} value={emp._id || emp.id}>
+            {((emp.firstName || '') + ' ' + (emp.lastName || '')).trim() || emp.name}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    {/* Due Date */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Due Date</label>
+      <Input
+        type="datetime-local"
+        step={1}
+        value={assignForm.dueDate}
+        onChange={e => setAssignForm(p => ({ ...p, dueDate: e.target.value }))}
+        className="py-2.5"
+      />
+    </div>
+  </div>
+</Modal>
+{/* New Log Modal */}
+ <Modal open={showAdd} onClose={()=>{setShowAdd(false); setSelectedDept(''); setSelectedProjectId('');}} title="Create Commissioning" footer={
  <div className="flex gap-2 justify-end pt-1">
  <Button variant="ghost" onClick={()=>{setShowAdd(false); setSelectedDept(''); setSelectedProjectId('');}}>
  Cancel
  </Button>
  <Button onClick={createCommissioning} disabled={!newForm.technicianId}>
- <Plus size={14} /> Assign
+ <Plus size={14} /> Create
  </Button>
  </div>
  }>
