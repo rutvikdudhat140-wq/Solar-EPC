@@ -1,4 +1,4 @@
-// NotificationSystem.js — Real-time notification display component
+// NotificationSystem.js Ã¢â‚¬â€ Real-time notification display component
 import React, { useEffect, useState } from 'react';
 import { Bell, X, Clock, AlertTriangle, CheckCircle, Volume2, Smartphone } from 'lucide-react';
 import { useReminders } from '../context/ReminderContext';
@@ -21,7 +21,7 @@ const NotificationSystem = () => {
             case 'medium':
                 return <Clock size={16} className="text-blue-500" />;
             default:
-                return <CheckCircle size={16} className="text-gray-500" />;
+                return <CheckCircle size={16} className="text-[var(--text-muted)]" />;
         }
     };
 
@@ -44,7 +44,7 @@ const NotificationSystem = () => {
             {displayedNotifications.map((notification, index) => (
                 <div
                     key={notification.id}
-                    className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 transform transition-all duration-500 ease-out overflow-visible ${index === 0 ? 'animate-slide-in-right' : ''
+                    className={`bg-[var(--bg-surface)] dark:bg-gray-800 border border-[var(--border-base)] dark:border-gray-700 rounded-lg shadow-lg p-4 transform transition-all duration-500 ease-out overflow-visible ${index === 0 ? 'animate-slide-in-right' : ''
                         } ${notification.isOverdue ? 'border-l-4 border-l-red-500' : notification.priority === 'critical' ? 'border-l-4 border-l-orange-500' : ''}`}
                     style={{
                         animationDelay: `${index * 100}ms`,
@@ -62,13 +62,13 @@ const NotificationSystem = () => {
                                     </h4>
                                     <button
                                         onClick={() => dismissNotification(notification.id)}
-                                        className="flex-shrink-0 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ml-2"
+                                        className="flex-shrink-0 p-1 rounded-full hover:bg-[var(--bg-overlay)] dark:hover:bg-gray-700 transition-colors ml-2"
                                     >
                                         <X size={14} className="text-gray-400" />
                                     </button>
                                 </div>
 
-                                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
+                                <p className="text-xs text-[var(--text-secondary)] dark:text-gray-300 mt-1 line-clamp-2">
                                     {notification.description}
                                 </p>
 
@@ -83,7 +83,7 @@ const NotificationSystem = () => {
                                             {notification.timeToGo}
                                         </span>
 
-                                        <span className="text-xs text-gray-500 capitalize">
+                                        <span className="text-xs text-[var(--text-muted)] capitalize">
                                             {notification.module}
                                         </span>
                                     </div>

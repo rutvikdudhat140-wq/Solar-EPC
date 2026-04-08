@@ -2,13 +2,13 @@ import React, { useState, useMemo, useEffect } from 'react';
 
 import {
 
-  Headphones, Plus, Clock, CheckCircle, AlertTriangle,
+ Headphones, Plus, Clock, CheckCircle, AlertTriangle,
 
-  Shield, Zap, Wrench, Calendar, XCircle, ArrowLeft,
+ Shield, Zap, Wrench, Calendar, XCircle, ArrowLeft,
 
-  TrendingUp, BarChart3, PieChart, Activity, Users,
+ TrendingUp, BarChart3, PieChart, Activity, Users,
 
-  FileText, IndianRupee, RefreshCw, Filter
+ FileText, IndianRupee, RefreshCw, Filter
 
 } from 'lucide-react';
 
@@ -26,23 +26,23 @@ import DataTable from '../components/ui/DataTable';
 
 import {
 
-  getTickets,
+ getTickets,
 
-  getTicketStats,
+ getTicketStats,
 
-  getAmcContracts,
+ getAmcContracts,
 
-  getAmcContractStats,
+ getAmcContractStats,
 
-  getAiInsight,
+ getAiInsight,
 
-  getEngineers,
+ getEngineers,
 
-  getCustomers,
+ getCustomers,
 
-  getVisits,
+ getVisits,
 
-  getVisitStats,
+ getVisitStats,
 
 } from '../modules/service-amc/services/serviceAmcApi';
 
@@ -54,1117 +54,1117 @@ const TENANT_ID = 'solarcorp';
 
 
 
-/* ── Priority helpers ───────────────────────────────────────────────────────── */
+/* �’�’Priority helpers �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/
 
 const NEUTRAL_BADGE = 'bg-[var(--bg-elevated)] text-[var(--text-muted)] border-[var(--border-muted)]';
 
 const PRIORITY_MAP = {
 
-  High: { label: 'High', color: 'bg-red-500/15    text-red-400    border-red-500/30' },
+ High: { label: 'High', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
 
-  Medium: { label: 'Medium', color: 'bg-amber-500/15  text-amber-400  border-amber-500/30' },
+ Medium: { label: 'Medium', color: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
 
-  Low: { label: 'Low', color: NEUTRAL_BADGE },
+ Low: { label: 'Low', color: NEUTRAL_BADGE },
 
 };
 
 const PriorityBadge = ({ value }) => {
 
-  const meta = PRIORITY_MAP[value] ?? PRIORITY_MAP.Low;
+ const meta = PRIORITY_MAP[value] ?? PRIORITY_MAP.Low;
 
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-medium ${meta.color}`}>{meta.label}</span>;
+ return <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-medium ${meta.color}`}>{meta.label}</span>;
 
 };
 
 
 
-/* ── AMC badge ──────────────────────────────────────────────────────────────── */
+/* �’�’AMC badge �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/
 
 const AMC_MAP = {
 
-  Active: { label: 'Active', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+ Active: { label: 'Active', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
 
-  Expired: { label: 'Expired', color: 'bg-red-500/15    text-red-400    border-red-500/30' },
+ Expired: { label: 'Expired', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
 
-  Expiring: { label: 'Expiring', color: 'bg-amber-500/15  text-amber-400  border-amber-500/30' },
+ Expiring: { label: 'Expiring', color: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
 
 };
 
 const AmcBadge = ({ value }) => {
 
-  const meta = AMC_MAP[value] ?? AMC_MAP.Active;
+ const meta = AMC_MAP[value] ?? AMC_MAP.Active;
 
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-medium ${meta.color}`}>{meta.label}</span>;
+ return <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-medium ${meta.color}`}>{meta.label}</span>;
 
 };
 
 
 
-/* ── Ticket Status Badge ────────────────────────────────────────────────────── */
+/* �’�’Ticket Status Badge �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/
 
 const TICKET_STATUS_MAP = {
 
-  Open: { label: 'Open', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
+ Open: { label: 'Open', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
 
-  Scheduled: { label: 'Scheduled', color: 'bg-blue-500/15 text-blue-400 border-blue-500/30' },
+ Scheduled: { label: 'Scheduled', color: 'bg-blue-500/15 text-blue-400 border-blue-500/30' },
 
-  'In Progress': { label: 'In Progress', color: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
+ 'In Progress': { label: 'In Progress', color: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
 
-  Resolved: { label: 'Resolved', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+ Resolved: { label: 'Resolved', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
 
-  Closed: { label: 'Closed', color: 'bg-slate-500/15 text-slate-400 border-slate-500/30' },
+ Closed: { label: 'Closed', color: 'bg-slate-500/15 text-slate-400 border-slate-500/30' },
 
 };
 
 const TicketStatusBadge = ({ value }) => {
 
-  const meta = TICKET_STATUS_MAP[value] ?? { label: value, color: NEUTRAL_BADGE };
+ const meta = TICKET_STATUS_MAP[value] ?? { label: value, color: NEUTRAL_BADGE };
 
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-medium ${meta.color}`}>{meta.label}</span>;
+ return <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-medium ${meta.color}`}>{meta.label}</span>;
 
 };
 
 
 
-/* ── Visit Status Badge ─────────────────────────────────────────────────────── */
+/* �’�’Visit Status Badge �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/
 
 const VISIT_STATUS_MAP = {
 
-  Scheduled: { label: 'Scheduled', color: 'bg-blue-500/15 text-blue-400 border-blue-500/30' },
+ Scheduled: { label: 'Scheduled', color: 'bg-blue-500/15 text-blue-400 border-blue-500/30' },
 
-  Completed: { label: 'Completed', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+ Completed: { label: 'Completed', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
 
-  Cancelled: { label: 'Cancelled', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
+ Cancelled: { label: 'Cancelled', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
 
 };
 
 const VisitStatusBadge = ({ value }) => {
 
-  const meta = VISIT_STATUS_MAP[value] ?? { label: value, color: NEUTRAL_BADGE };
+ const meta = VISIT_STATUS_MAP[value] ?? { label: value, color: NEUTRAL_BADGE };
 
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-medium ${meta.color}`}>{meta.label}</span>;
+ return <span className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-medium ${meta.color}`}>{meta.label}</span>;
 
 };
 
 
 
-/* ══════════════════════════════════════════════════════════════════════════════
+/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 
-   SERVICE DASHBOARD PAGE
+ SERVICE DASHBOARD PAGE
 
-══════════════════════════════════════════════════════════════════════════════ */
+�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/
 
 const ServiceDashboardPage = ({ onNavigate }) => {
 
-  // Data states
+ // Data states
 
-  const [tickets, setTickets] = useState([]);
+ const [tickets, setTickets] = useState([]);
 
-  const [amcContracts, setAmcContracts] = useState([]);
+ const [amcContracts, setAmcContracts] = useState([]);
 
-  const [visits, setVisits] = useState([]);
+ const [visits, setVisits] = useState([]);
 
-  const [engineers, setEngineers] = useState([]);
+ const [engineers, setEngineers] = useState([]);
 
-  const [customers, setCustomers] = useState([]);
+ const [customers, setCustomers] = useState([]);
 
-  const [ticketStats, setTicketStats] = useState({ openTickets: 0, inProgress: 0, resolved: 0 });
+ const [ticketStats, setTicketStats] = useState({ openTickets: 0, inProgress: 0, resolved: 0 });
 
-  const [amcStats, setAmcStats] = useState({ activeContracts: 0 });
+ const [amcStats, setAmcStats] = useState({ activeContracts: 0 });
 
-  const [visitStats, setVisitStats] = useState({ totalVisits: 0, scheduled: 0, completed: 0, cancelled: 0 });
+ const [visitStats, setVisitStats] = useState({ totalVisits: 0, scheduled: 0, completed: 0, cancelled: 0 });
 
-  const [aiInsight, setAiInsight] = useState({ insight: '', recommendations: [] });
+ const [aiInsight, setAiInsight] = useState({ insight: '', recommendations: [] });
 
-  // Store raw API responses to extract pagination metadata
+ // Store raw API responses to extract pagination metadata
 
-  const [amcResponseMeta, setAmcResponseMeta] = useState({ total: 0 });
+ const [amcResponseMeta, setAmcResponseMeta] = useState({ total: 0 });
 
-  const [visitsResponseMeta, setVisitsResponseMeta] = useState({ total: 0 });
+ const [visitsResponseMeta, setVisitsResponseMeta] = useState({ total: 0 });
 
 
 
-  // Loading states
+ // Loading states
 
-  const [loadingTickets, setLoadingTickets] = useState(false);
+ const [loadingTickets, setLoadingTickets] = useState(false);
 
-  const [loadingAmc, setLoadingAmc] = useState(false);
+ const [loadingAmc, setLoadingAmc] = useState(false);
 
-  const [loadingVisits, setLoadingVisits] = useState(false);
+ const [loadingVisits, setLoadingVisits] = useState(false);
 
-  const [loadingStats, setLoadingStats] = useState(false);
+ const [loadingStats, setLoadingStats] = useState(false);
 
-  const [loadingEngineers, setLoadingEngineers] = useState(false);
+ const [loadingEngineers, setLoadingEngineers] = useState(false);
 
-  const [lastRefresh, setLastRefresh] = useState(new Date());
+ const [lastRefresh, setLastRefresh] = useState(new Date());
 
 
 
-  // Toast notification state
+ // Toast notification state
 
-  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+ const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 
-  const showToast = (message, type = 'success') => {
+ const showToast = (message, type = 'success') => {
 
-    setToast({ show: true, message, type });
+ setToast({ show: true, message, type });
 
-    setTimeout(() => setToast({ show: false, message: '', type }), 5000);
+ setTimeout(() => setToast({ show: false, message: '', type }), 5000);
 
-  };
+ };
 
 
 
-  // Fetch all data
+ // Fetch all data
 
-  const fetchAllData = async () => {
+ const fetchAllData = async () => {
 
-    setLoadingTickets(true);
+ setLoadingTickets(true);
 
-    setLoadingAmc(true);
+ setLoadingAmc(true);
 
-    setLoadingVisits(true);
+ setLoadingVisits(true);
 
-    setLoadingStats(true);
+ setLoadingStats(true);
 
-    setLoadingEngineers(true);
+ setLoadingEngineers(true);
 
 
 
-    try {
+ try {
 
-      // Fetch stats for counts (independent of pagination)
+ // Fetch stats for counts (independent of pagination)
 
-      const [tStats, aStats, vStats] = await Promise.all([
+ const [tStats, aStats, vStats] = await Promise.all([
 
-        getTicketStats(),
+ getTicketStats(),
 
-        getAmcContractStats(),
+ getAmcContractStats(),
 
-        getVisitStats()
+ getVisitStats()
 
-      ]);
+ ]);
 
 
 
-      // Set stats immediately for cards display
+ // Set stats immediately for cards display
 
-      console.log('DEBUG - Setting stats:', { tStats, aStats, vStats });
+ console.log('DEBUG - Setting stats:', { tStats, aStats, vStats });
 
-      setTicketStats(tStats || { openTickets: 0, inProgress: 0, resolved: 0 });
+ setTicketStats(tStats || { openTickets: 0, inProgress: 0, resolved: 0 });
 
-      setAmcStats(aStats || { activeContracts: 0, totalContracts: 0 });
+ setAmcStats(aStats || { activeContracts: 0, totalContracts: 0 });
 
-      setVisitStats(vStats || { totalVisits: 0, scheduled: 0, completed: 0, cancelled: 0 });
+ setVisitStats(vStats || { totalVisits: 0, scheduled: 0, completed: 0, cancelled: 0 });
 
 
 
-      // Fetch detailed data for recent activity lists
+ // Fetch detailed data for recent activity lists
 
-      const [
+ const [
 
-        ticketsRes,
+ ticketsRes,
 
-        amcRes,
+ amcRes,
 
-        visitsRes,
+ visitsRes,
 
-        engineersRes,
+ engineersRes,
 
-        customersRes,
+ customersRes,
 
-        aiRes
+ aiRes
 
-      ] = await Promise.all([
+ ] = await Promise.all([
 
-        getTickets({ limit: 1000 }),
+ getTickets({ limit: 1000 }),
 
-        getAmcContracts({ limit: 1000 }),
+ getAmcContracts({ limit: 1000 }),
 
-        getVisits({ limit: 1000 }),
+ getVisits({ limit: 1000 }),
 
-        getEngineers(),
+ getEngineers(),
 
-        getCustomers(),
+ getCustomers(),
 
-        getAiInsight()
+ getAiInsight()
 
-      ]);
+ ]);
 
 
 
-      // Process tickets
+ // Process tickets
 
-      let ticketsData = [];
+ let ticketsData = [];
 
-      if (Array.isArray(ticketsRes)) {
+ if (Array.isArray(ticketsRes)) {
 
-        ticketsData = ticketsRes;
+ ticketsData = ticketsRes;
 
-      } else if (ticketsRes?.data && Array.isArray(ticketsRes.data)) {
+ } else if (ticketsRes?.data && Array.isArray(ticketsRes.data)) {
 
-        ticketsData = ticketsRes.data;
+ ticketsData = ticketsRes.data;
 
-      } else if (ticketsRes?.data?.data && Array.isArray(ticketsRes.data.data)) {
+ } else if (ticketsRes?.data?.data && Array.isArray(ticketsRes.data.data)) {
 
-        ticketsData = ticketsRes.data.data;
+ ticketsData = ticketsRes.data.data;
 
-      }
+ }
 
-      setTickets(ticketsData);
+ setTickets(ticketsData);
 
 
 
-      // Process AMC contracts
+ // Process AMC contracts
 
-      let contractsData = [];
+ let contractsData = [];
 
-      let amcTotalCount = 0;
+ let amcTotalCount = 0;
 
-      console.log('DEBUG - AMC Raw Response:', amcRes);
+ console.log('DEBUG - AMC Raw Response:', amcRes);
 
-      if (Array.isArray(amcRes)) {
+ if (Array.isArray(amcRes)) {
 
-        contractsData = amcRes;
+ contractsData = amcRes;
 
-        amcTotalCount = amcRes.length;
+ amcTotalCount = amcRes.length;
 
-      } else if (amcRes?.data && Array.isArray(amcRes.data)) {
+ } else if (amcRes?.data && Array.isArray(amcRes.data)) {
 
-        contractsData = amcRes.data;
+ contractsData = amcRes.data;
 
-        amcTotalCount = amcRes?.total || amcRes.data?.length;
+ amcTotalCount = amcRes?.total || amcRes.data?.length;
 
-      } else if (amcRes?.data?.data && Array.isArray(amcRes.data.data)) {
+ } else if (amcRes?.data?.data && Array.isArray(amcRes.data.data)) {
 
-        contractsData = amcRes.data.data;
+ contractsData = amcRes.data.data;
 
-        // Priority: data.data.total > data.total > res.total > array.length
+ // Priority: data.data.total > data.total > res.total > array.length
 
-        amcTotalCount = amcRes.data?.total ?? amcRes?.data?.total ?? amcRes?.total ?? amcRes.data.data.length;
+ amcTotalCount = amcRes.data?.total ?? amcRes?.data?.total ?? amcRes?.total ?? amcRes.data.data.length;
 
-        console.log('DEBUG - AMC total extracted:', amcTotalCount, 'from:', { 'data.total': amcRes.data?.total, 'res.data.total': amcRes?.data?.total, 'res.total': amcRes?.total });
+ console.log('DEBUG - AMC total extracted:', amcTotalCount, 'from:', { 'data.total': amcRes.data?.total, 'res.data.total': amcRes?.data?.total, 'res.total': amcRes?.total });
 
-      } else if (amcRes?.data && typeof amcRes.data === 'object') {
+ } else if (amcRes?.data && typeof amcRes.data === 'object') {
 
-        // Handle case where data.data might not exist but data is object with data and total
+ // Handle case where data.data might not exist but data is object with data and total
 
-        if (Array.isArray(amcRes.data.data)) {
+ if (Array.isArray(amcRes.data.data)) {
 
-          contractsData = amcRes.data.data;
+ contractsData = amcRes.data.data;
 
-          amcTotalCount = amcRes.data.total || amcRes.data.data.length;
+ amcTotalCount = amcRes.data.total || amcRes.data.data.length;
 
-        } else {
+ } else {
 
-          contractsData = Object.values(amcRes.data).filter(v => Array.isArray(v))[0] || [];
+ contractsData = Object.values(amcRes.data).filter(v => Array.isArray(v))[0] || [];
 
-          amcTotalCount = amcRes.data.total || contractsData.length;
+ amcTotalCount = amcRes.data.total || contractsData.length;
 
-        }
+ }
 
-      }
+ }
 
-      setAmcContracts(contractsData);
+ setAmcContracts(contractsData);
 
-      setAmcResponseMeta({ total: amcTotalCount });
+ setAmcResponseMeta({ total: amcTotalCount });
 
-      console.log('DEBUG - AMC total from API:', amcTotalCount, 'array length:', contractsData.length);
+ console.log('DEBUG - AMC total from API:', amcTotalCount, 'array length:', contractsData.length);
 
 
 
-      // Process visits
+ // Process visits
 
-      let visitsData = [];
+ let visitsData = [];
 
-      let visitsTotalCount = 0;
+ let visitsTotalCount = 0;
 
-      if (Array.isArray(visitsRes)) {
+ if (Array.isArray(visitsRes)) {
 
-        visitsData = visitsRes;
+ visitsData = visitsRes;
 
-        visitsTotalCount = visitsRes.length;
+ visitsTotalCount = visitsRes.length;
 
-      } else if (visitsRes?.data && Array.isArray(visitsRes.data)) {
+ } else if (visitsRes?.data && Array.isArray(visitsRes.data)) {
 
-        visitsData = visitsRes.data;
+ visitsData = visitsRes.data;
 
-        visitsTotalCount = visitsRes?.total || visitsRes.data?.length;
+ visitsTotalCount = visitsRes?.total || visitsRes.data?.length;
 
-      } else if (visitsRes?.data?.data && Array.isArray(visitsRes.data.data)) {
+ } else if (visitsRes?.data?.data && Array.isArray(visitsRes.data.data)) {
 
-        visitsData = visitsRes.data.data;
+ visitsData = visitsRes.data.data;
 
-        visitsTotalCount = visitsRes?.data?.total || visitsRes?.total || visitsRes.data.data.length;
+ visitsTotalCount = visitsRes?.data?.total || visitsRes?.total || visitsRes.data.data.length;
 
-      }
+ }
 
-      setVisits(visitsData);
+ setVisits(visitsData);
 
-      setVisitsResponseMeta({ total: visitsTotalCount });
+ setVisitsResponseMeta({ total: visitsTotalCount });
 
-      console.log('DEBUG - Visits total from API:', visitsTotalCount, 'array length:', visitsData.length);
+ console.log('DEBUG - Visits total from API:', visitsTotalCount, 'array length:', visitsData.length);
 
 
 
-      // Process engineers
+ // Process engineers
 
-      let engineersData = [];
+ let engineersData = [];
 
-      if (Array.isArray(engineersRes)) {
+ if (Array.isArray(engineersRes)) {
 
-        engineersData = engineersRes;
+ engineersData = engineersRes;
 
-      } else if (engineersRes?.data && Array.isArray(engineersRes.data)) {
+ } else if (engineersRes?.data && Array.isArray(engineersRes.data)) {
 
-        engineersData = engineersRes.data;
+ engineersData = engineersRes.data;
 
-      } else if (engineersRes?.data?.data && Array.isArray(engineersRes.data.data)) {
+ } else if (engineersRes?.data?.data && Array.isArray(engineersRes.data.data)) {
 
-        engineersData = engineersRes.data.data;
+ engineersData = engineersRes.data.data;
 
-      }
+ }
 
-      setEngineers(engineersData);
+ setEngineers(engineersData);
 
 
 
-      // Process customers
+ // Process customers
 
-      const customersData = Array.isArray(customersRes) ? customersRes : customersRes?.data || [];
+ const customersData = Array.isArray(customersRes) ? customersRes : customersRes?.data || [];
 
-      setCustomers(customersData);
+ setCustomers(customersData);
 
 
 
-      // Set AI insight
+ // Set AI insight
 
-      setAiInsight(aiRes || { insight: '', recommendations: [] });
+ setAiInsight(aiRes || { insight: '', recommendations: [] });
 
 
 
-      setLastRefresh(new Date());
+ setLastRefresh(new Date());
 
-    } catch (err) {
+ } catch (err) {
 
-      console.error('Error fetching dashboard data:', err);
+ console.error('Error fetching dashboard data:', err);
 
-      showToast('Failed to fetch some data', 'error');
+ showToast('Failed to fetch some data', 'error');
 
-    } finally {
+ } finally {
 
-      setLoadingTickets(false);
+ setLoadingTickets(false);
 
-      setLoadingAmc(false);
+ setLoadingAmc(false);
 
-      setLoadingVisits(false);
+ setLoadingVisits(false);
 
-      setLoadingStats(false);
+ setLoadingStats(false);
 
-      setLoadingEngineers(false);
+ setLoadingEngineers(false);
 
-    }
+ }
 
-  };
+ };
 
 
 
-  // Initial fetch
+ // Initial fetch
 
-  useEffect(() => {
+ useEffect(() => {
 
-    fetchAllData();
+ fetchAllData();
 
-  }, []);
+ }, []);
 
 
 
-  // Auto-refresh every 30 seconds
+ // Auto-refresh every 30 seconds
 
-  useEffect(() => {
+ useEffect(() => {
 
-    const interval = setInterval(() => {
+ const interval = setInterval(() => {
 
-      fetchAllData();
+ fetchAllData();
 
-    }, 30000);
+ }, 30000);
 
-    return () => clearInterval(interval);
+ return () => clearInterval(interval);
 
-  }, []);
+ }, []);
 
 
 
-  // Calculate dynamic stats
+ // Calculate dynamic stats
 
-  const dynamicTicketStats = useMemo(() => {
+ const dynamicTicketStats = useMemo(() => {
 
-    const ticketsArray = Array.isArray(tickets) ? tickets : [];
+ const ticketsArray = Array.isArray(tickets) ? tickets : [];
 
-    // Use API stats when available, fallback to calculated from array
+ // Use API stats when available, fallback to calculated from array
 
-    return {
+ return {
 
-      openTickets: ticketStats?.openTickets ?? ticketsArray.filter(t => t.status === 'Open').length,
+ openTickets: ticketStats?.openTickets ?? ticketsArray.filter(t => t.status === 'Open').length,
 
-      scheduled: ticketStats?.scheduled ?? ticketsArray.filter(t => t.status === 'Scheduled').length,
+ scheduled: ticketStats?.scheduled ?? ticketsArray.filter(t => t.status === 'Scheduled').length,
 
-      inProgress: ticketStats?.inProgress ?? ticketsArray.filter(t => t.status === 'In Progress').length,
+ inProgress: ticketStats?.inProgress ?? ticketsArray.filter(t => t.status === 'In Progress').length,
 
-      resolved: ticketStats?.resolved ?? ticketsArray.filter(t => t.status === 'Resolved').length,
+ resolved: ticketStats?.resolved ?? ticketsArray.filter(t => t.status === 'Resolved').length,
 
-      closed: ticketStats?.closed ?? ticketsArray.filter(t => t.status === 'Closed').length,
+ closed: ticketStats?.closed ?? ticketsArray.filter(t => t.status === 'Closed').length,
 
-      total: ticketStats?.total ?? ticketsArray.length,
+ total: ticketStats?.total ?? ticketsArray.length,
 
-    };
+ };
 
-  }, [tickets, ticketStats]);
+ }, [tickets, ticketStats]);
 
 
 
-  const dynamicAmcStats = useMemo(() => {
+ const dynamicAmcStats = useMemo(() => {
 
-    // Use API response metadata total (actual total count), not array length (paginated)
+ // Use API response metadata total (actual total count), not array length (paginated)
 
-    const totalContracts = amcResponseMeta?.total || amcContracts.length;
+ const totalContracts = amcResponseMeta?.total || amcContracts.length;
 
-    const activeContracts = amcStats?.activeContracts ?? amcContracts.filter(c => c.status === 'Active').length;
+ const activeContracts = amcStats?.activeContracts ?? amcContracts.filter(c => c.status === 'Active').length;
 
-    console.log('DEBUG - AMC Stats final:', { totalContracts, activeContracts, amcResponseMeta, contractsLength: amcContracts.length });
+ console.log('DEBUG - AMC Stats final:', { totalContracts, activeContracts, amcResponseMeta, contractsLength: amcContracts.length });
 
-    return {
+ return {
 
-      total: totalContracts,
+ total: totalContracts,
 
-      active: activeContracts,
+ active: activeContracts,
 
-      expiring: amcStats?.expiringContracts ?? amcContracts.filter(c => c.status === 'Expiring').length,
+ expiring: amcStats?.expiringContracts ?? amcContracts.filter(c => c.status === 'Expiring').length,
 
-      expired: amcStats?.expiredContracts ?? amcContracts.filter(c => c.status === 'Expired').length,
+ expired: amcStats?.expiredContracts ?? amcContracts.filter(c => c.status === 'Expired').length,
 
-      totalValue: amcStats?.totalValue ?? amcContracts.reduce((sum, c) => sum + (c.amount || 0), 0),
+ totalValue: amcStats?.totalValue ?? amcContracts.reduce((sum, c) => sum + (c.amount || 0), 0),
 
-    };
+ };
 
-  }, [amcContracts, amcStats, amcResponseMeta]);
+ }, [amcContracts, amcStats, amcResponseMeta]);
 
 
 
-  const dynamicVisitStats = useMemo(() => {
+ const dynamicVisitStats = useMemo(() => {
 
-    // Use API response metadata total (actual total count), not array length (paginated)
+ // Use API response metadata total (actual total count), not array length (paginated)
 
-    const totalVisits = visitsResponseMeta?.total || visits.length;
+ const totalVisits = visitsResponseMeta?.total || visits.length;
 
-    const scheduledVisits = visits.filter(v => v.status === 'Scheduled').length;
+ const scheduledVisits = visits.filter(v => v.status === 'Scheduled').length;
 
-    const completedVisits = visits.filter(v => v.status === 'Completed').length;
+ const completedVisits = visits.filter(v => v.status === 'Completed').length;
 
-    console.log('DEBUG - Visit Stats final:', { totalVisits, scheduledVisits, completedVisits, visitsResponseMeta, visitsLength: visits.length });
+ console.log('DEBUG - Visit Stats final:', { totalVisits, scheduledVisits, completedVisits, visitsResponseMeta, visitsLength: visits.length });
 
-    return {
+ return {
 
-      total: totalVisits,
+ total: totalVisits,
 
-      scheduled: scheduledVisits,
+ scheduled: scheduledVisits,
 
-      completed: completedVisits,
+ completed: completedVisits,
 
-      cancelled: visits.filter(v => v.status === 'Cancelled').length,
+ cancelled: visits.filter(v => v.status === 'Cancelled').length,
 
-    };
+ };
 
-  }, [visits, visitsResponseMeta]);
+ }, [visits, visitsResponseMeta]);
 
 
 
-  // AI insight text
+ // AI insight text
 
-  const aiInsightText = aiInsight?.insight ||
+ const aiInsightText = aiInsight?.insight ||
 
-    (aiInsight?.recommendations?.length > 0
+ (aiInsight?.recommendations?.length > 0
 
-      ? aiInsight.recommendations.join(' ')
+ ? aiInsight.recommendations.join(' ')
 
-      : 'No insights available at this time.');
+ : 'No insights available at this time.');
 
 
 
-  // Recent items (sorted by date) - Show ALL tickets without limit
+ // Recent items (sorted by date) - Show ALL tickets without limit
 
-  const recentTickets = useMemo(() => {
+ const recentTickets = useMemo(() => {
 
-    const allTickets = [...tickets]
+ const allTickets = [...tickets]
 
-      .sort((a, b) => {
+ .sort((a, b) => {
 
-        const dateA = a.created || a.createdAt || a.date;
+ const dateA = a.created || a.createdAt || a.date;
 
-        const dateB = b.created || b.createdAt || b.date;
+ const dateB = b.created || b.createdAt || b.date;
 
-        // Handle missing dates - put items with valid dates first
+ // Handle missing dates - put items with valid dates first
 
-        if (!dateA && !dateB) return 0;
+ if (!dateA && !dateB) return 0;
 
-        if (!dateA) return 1;
+ if (!dateA) return 1;
 
-        if (!dateB) return -1;
+ if (!dateB) return -1;
 
-        return new Date(dateB) - new Date(dateA);
+ return new Date(dateB) - new Date(dateA);
 
-      });
+ });
 
-    console.log('DEBUG - Total tickets:', tickets.length);
+ console.log('DEBUG - Total tickets:', tickets.length);
 
-    console.log('DEBUG - Recent tickets count:', allTickets.length);
+ console.log('DEBUG - Recent tickets count:', allTickets.length);
 
-    console.log('DEBUG - All ticket IDs:', allTickets.map(t => ({id: t.id, status: t.status, customer: t.customerName})));
+ console.log('DEBUG - All ticket IDs:', allTickets.map(t => ({id: t.id, status: t.status, customer: t.customerName})));
 
-    return allTickets;
+ return allTickets;
 
-  }, [tickets]);
+ }, [tickets]);
 
 
 
-  const recentVisits = useMemo(() => {
+ const recentVisits = useMemo(() => {
 
-    return [...visits]
+ return [...visits]
 
-      .sort((a, b) => new Date(b.scheduledDate || b.createdAt) - new Date(a.scheduledDate || a.createdAt))
+ .sort((a, b) => new Date(b.scheduledDate || b.createdAt) - new Date(a.scheduledDate || a.createdAt))
 
-      .slice(0, 5);
+ .slice(0, 5);
 
-  }, [visits]);
+ }, [visits]);
 
 
 
-  const recentContracts = useMemo(() => {
+ const recentContracts = useMemo(() => {
 
-    return [...amcContracts]
+ return [...amcContracts]
 
-      .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
+ .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
 
-      .slice(0, 5);
+ .slice(0, 5);
 
-  }, [amcContracts]);
+ }, [amcContracts]);
 
 
 
-  // Ticket columns for recent tickets table
+ // Ticket columns for recent tickets table
 
-  const RECENT_TICKET_COLUMNS = [
+ const RECENT_TICKET_COLUMNS = [
 
-    { key: 'id', header: 'ID', render: v => <span className="text-xs font-mono text-[var(--accent-light)]">{v}</span> },
+ { key: 'id', header: 'ID', render: v => <span className="text-xs font-mono text-[var(--accent-light)]">{v}</span> },
 
-    { key: 'customerName', header: 'Customer', render: v => <span className="text-xs font-semibold text-[var(--text-primary)]">{v}</span> },
+ { key: 'customerName', header: 'Customer', render: v => <span className="text-xs font-semibold text-[var(--text-primary)]">{v}</span> },
 
-    { key: 'type', header: 'Type', render: v => <span className="text-xs text-[var(--text-muted)]">{v}</span> },
+ { key: 'type', header: 'Type', render: v => <span className="text-xs text-[var(--text-muted)]">{v}</span> },
 
-    { key: 'status', header: 'Status', render: v => <TicketStatusBadge value={v} /> },
+ { key: 'status', header: 'Status', render: v => <TicketStatusBadge value={v} /> },
 
-    { key: 'priority', header: 'Priority', render: v => <PriorityBadge value={v} /> },
+ { key: 'priority', header: 'Priority', render: v => <PriorityBadge value={v} /> },
 
-    {
+ {
 
-      key: 'assignedTo', header: 'Assigned', render: v => (
+ key: 'assignedTo', header: 'Assigned', render: v => (
 
-        <div className="flex items-center gap-1.5">
+ <div className="flex items-center gap-1.5">
 
-          <Avatar name={v} size="xs" />
+ <Avatar name={v} size="xs" />
 
-          <span className="text-xs text-[var(--text-muted)]">{v || 'Unassigned'}</span>
+ <span className="text-xs text-[var(--text-muted)]">{v || 'Unassigned'}</span>
 
-        </div>
+ </div>
 
-      )
+ )
 
-    },
+ },
 
-  ];
+ ];
 
 
 
-  return (
+ return (
 
-    <div className="animate-fade-in space-y-5">
+ <div className="animate-fade-in space-y-5">
 
-      {/* Header */}
+ {/* Header */}
 
-      <PageHeader
+ <PageHeader
 
-        title="Service & AMC Dashboard"
+ title="Service & AMC Dashboard"
 
-        subtitle="Real-time overview of tickets, AMC contracts, visits, and team performance"
+ subtitle="Real-time overview of tickets, AMC contracts, visits, and team performance"
 
-        actions={[
+ actions={[
 
-          { type: 'button', label: 'Back to Service', icon: ArrowLeft, variant: 'secondary', onClick: () => onNavigate('service') },
+ { type: 'button', label: 'Back to Service', icon: ArrowLeft, variant: 'secondary', onClick: () => onNavigate('service') },
 
-          { type: 'button', label: 'New Ticket', icon: Plus, variant: 'primary', onClick: () => onNavigate('service') }
+ { type: 'button', label: 'New Ticket', icon: Plus, variant: 'primary', onClick: () => onNavigate('service') }
 
-        ]}
+ ]}
 
-      />
+ />
 
 
 
-      {/* Overview Stats Cards */}
+ {/* Overview Stats Cards */}
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+ <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
 
-        <KPICard
+ <KPICard
 
-          label="Total Tickets"
+ label="Total Tickets"
 
-          value={dynamicTicketStats.total}
+ value={dynamicTicketStats.total}
 
-          icon={Headphones}
+ icon={Headphones}
 
-          sub={`${dynamicTicketStats.openTickets} open now`}
+ sub={`${dynamicTicketStats.openTickets} open now`}
 
-          variant="blue"
+ variant="blue"
 
-        />
+ />
 
-        <KPICard
+ <KPICard
 
-          label="Open Tickets"
+ label="Open Tickets"
 
-          value={dynamicTicketStats.openTickets}
+ value={dynamicTicketStats.openTickets}
 
-          icon={AlertTriangle}
+ icon={AlertTriangle}
 
-          trend="Need attention"
+ trend="Need attention"
 
-          trendUp={false}
+ trendUp={false}
 
-          variant="amber"
+ variant="amber"
 
-        />
+ />
 
-        <KPICard
+ <KPICard
 
-          label="Scheduled"
+ label="Scheduled"
 
-          value={dynamicVisitStats.scheduled}
+ value={dynamicVisitStats.scheduled}
 
-          icon={Calendar}
+ icon={Calendar}
 
-          sub={`${dynamicVisitStats.total} total visits`}
+ sub={`${dynamicVisitStats.total} total visits`}
 
-          variant="purple"
+ variant="purple"
 
-        />
+ />
 
-        <KPICard
+ <KPICard
 
-          label="In Progress"
+ label="In Progress"
 
-          value={dynamicTicketStats.inProgress}
+ value={dynamicTicketStats.inProgress}
 
-          icon={Clock}
+ icon={Clock}
 
-          sub="Being handled"
+ sub="Being handled"
 
-          variant="indigo"
+ variant="indigo"
 
-        />
+ />
 
-      </div>
+ </div>
 
 
 
-      {/* Second Row Stats */}
+ {/* Second Row Stats */}
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+ <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
 
-        <KPICard
+ <KPICard
 
-          label="Resolved"
+ label="Resolved"
 
-          value={dynamicTicketStats.resolved}
+ value={dynamicTicketStats.resolved}
 
-          icon={CheckCircle}
+ icon={CheckCircle}
 
-          trend="This month"
+ trend="This month"
 
-          trendUp={true}
+ trendUp={true}
 
-          variant="emerald"
+ variant="emerald"
 
-        />
+ />
 
-        <KPICard
+ <KPICard
 
-          label="Closed"
+ label="Closed"
 
-          value={dynamicTicketStats.closed}
+ value={dynamicTicketStats.closed}
 
-          icon={XCircle}
+ icon={XCircle}
 
-          sub="Completed"
+ sub="Completed"
 
-          variant="indigo"
+ variant="indigo"
 
-        />
+ />
 
-        <KPICard
+ <KPICard
 
-          label="AMC Contracts"
+ label="AMC Contracts"
 
-          value={dynamicAmcStats.total}
+ value={dynamicAmcStats.total}
 
-          icon={Shield}
+ icon={Shield}
 
-          sub={`${dynamicAmcStats.active} active contracts`}
+ sub={`${dynamicAmcStats.active} active contracts`}
 
-          variant="purple"
+ variant="purple"
 
-        />
+ />
 
-        <KPICard
+ <KPICard
 
-          label="Total Visits"
+ label="Total Visits"
 
-          value={dynamicVisitStats.total}
+ value={dynamicVisitStats.total}
 
-          icon={Activity}
+ icon={Activity}
 
-          sub={`${dynamicVisitStats.scheduled} scheduled`}
+ sub={`${dynamicVisitStats.scheduled} scheduled`}
 
-          variant="blue"
+ variant="blue"
 
-        />
+ />
 
-      </div>
+ </div>
 
 
 
-      {/* Status Breakdown Section */}
+ {/* Status Breakdown Section */}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-        {/* Tickets Status Breakdown */}
+ {/* Tickets Status Breakdown */}
 
-        <div className="glass-card p-4">
+ <div className="glass-card p-4">
 
-          <div className="flex items-center justify-between mb-4">
+ <div className="flex items-center justify-between mb-4">
 
-            <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
+ <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
 
-              <PieChart size={16} className="text-[var(--accent-light)]" />
+ <PieChart size={16} className="text-[var(--accent-light)]" />
 
-              Tickets Status Breakdown
+ Tickets Status Breakdown
 
-            </h3>
+ </h3>
 
-            <span className="text-xs text-[var(--text-muted)]">Total: {dynamicTicketStats.total}</span>
+ <span className="text-xs text-[var(--text-muted)]">Total: {dynamicTicketStats.total}</span>
 
-          </div>
+ </div>
 
-          <div className="space-y-3">
+ <div className="space-y-3">
 
-            {[
+ {[
 
-              { label: 'Open', count: dynamicTicketStats.openTickets, color: 'bg-red-500', text: 'text-red-400' },
+ { label: 'Open', count: dynamicTicketStats.openTickets, color: 'bg-red-500', text: 'text-red-400' },
 
-              { label: 'Scheduled', count: dynamicTicketStats.scheduled, color: 'bg-blue-500', text: 'text-blue-400' },
+ { label: 'Scheduled', count: dynamicTicketStats.scheduled, color: 'bg-blue-500', text: 'text-blue-400' },
 
-              { label: 'In Progress', count: dynamicTicketStats.inProgress, color: 'bg-amber-500', text: 'text-amber-400' },
+ { label: 'In Progress', count: dynamicTicketStats.inProgress, color: 'bg-amber-500', text: 'text-amber-400' },
 
-              { label: 'Resolved', count: dynamicTicketStats.resolved, color: 'bg-emerald-500', text: 'text-emerald-400' },
+ { label: 'Resolved', count: dynamicTicketStats.resolved, color: 'bg-emerald-500', text: 'text-emerald-400' },
 
-              { label: 'Closed', count: dynamicTicketStats.closed, color: 'bg-slate-500', text: 'text-slate-400' },
+ { label: 'Closed', count: dynamicTicketStats.closed, color: 'bg-slate-500', text: 'text-slate-400' },
 
-            ].map((item) => (
+ ].map((item) => (
 
-              <div key={item.label} className="flex items-center gap-3">
+ <div key={item.label} className="flex items-center gap-3">
 
-                <span className={`text-xs font-medium w-20 ${item.text}`}>{item.label}</span>
+ <span className={`text-xs font-medium w-20 ${item.text}`}>{item.label}</span>
 
-                <div className="flex-1 h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
+ <div className="flex-1 h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
 
-                  <div
+ <div
 
-                    className={`h-full ${item.color} rounded-full`}
+ className={`h-full ${item.color} rounded-full`}
 
-                    style={{ width: `${dynamicTicketStats.total > 0 ? (item.count / dynamicTicketStats.total) * 100 : 0}%` }}
+ style={{ width: `${dynamicTicketStats.total > 0 ? (item.count / dynamicTicketStats.total) * 100 : 0}%` }}
 
-                  />
+ />
 
-                </div>
+ </div>
 
-                <span className="text-xs font-bold text-[var(--text-primary)] w-8 text-right">{item.count}</span>
+ <span className="text-xs font-bold text-[var(--text-primary)] w-8 text-right">{item.count}</span>
 
-              </div>
+ </div>
 
-            ))}
+ ))}
 
-          </div>
+ </div>
 
-        </div>
+ </div>
 
 
 
-        {/* Visits Status */}
+ {/* Visits Status */}
 
-        <div className="glass-card p-4">
+ <div className="glass-card p-4">
 
-          <div className="flex items-center justify-between mb-4">
+ <div className="flex items-center justify-between mb-4">
 
-            <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
+ <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
 
-              <Activity size={16} className="text-[var(--accent-light)]" />
+ <Activity size={16} className="text-[var(--accent-light)]" />
 
-              Visit Statistics
+ Visit Statistics
 
-            </h3>
+ </h3>
 
-            <span className="text-xs text-[var(--text-muted)]">Total: {dynamicVisitStats.total}</span>
+ <span className="text-xs text-[var(--text-muted)]">Total: {dynamicVisitStats.total}</span>
 
-          </div>
+ </div>
 
-          <div className="space-y-3">
+ <div className="space-y-3">
 
-            {[
+ {[
 
-              { label: 'Scheduled', count: dynamicVisitStats.scheduled, color: 'bg-blue-500', text: 'text-blue-400' },
+ { label: 'Scheduled', count: dynamicVisitStats.scheduled, color: 'bg-blue-500', text: 'text-blue-400' },
 
-              { label: 'Completed', count: dynamicVisitStats.completed, color: 'bg-emerald-500', text: 'text-emerald-400' },
+ { label: 'Completed', count: dynamicVisitStats.completed, color: 'bg-emerald-500', text: 'text-emerald-400' },
 
-              { label: 'Cancelled', count: dynamicVisitStats.cancelled, color: 'bg-red-500', text: 'text-red-400' },
+ { label: 'Cancelled', count: dynamicVisitStats.cancelled, color: 'bg-red-500', text: 'text-red-400' },
 
-            ].map((item) => (
+ ].map((item) => (
 
-              <div key={item.label} className="flex items-center gap-3">
+ <div key={item.label} className="flex items-center gap-3">
 
-                <span className={`text-xs font-medium w-20 ${item.text}`}>{item.label}</span>
+ <span className={`text-xs font-medium w-20 ${item.text}`}>{item.label}</span>
 
-                <div className="flex-1 h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
+ <div className="flex-1 h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
 
-                  <div
+ <div
 
-                    className={`h-full ${item.color} rounded-full`}
+ className={`h-full ${item.color} rounded-full`}
 
-                    style={{ width: `${dynamicVisitStats.total > 0 ? (item.count / dynamicVisitStats.total) * 100 : 0}%` }}
+ style={{ width: `${dynamicVisitStats.total > 0 ? (item.count / dynamicVisitStats.total) * 100 : 0}%` }}
 
-                  />
+ />
 
-                </div>
+ </div>
 
-                <span className="text-xs font-bold text-[var(--text-primary)] w-8 text-right">{item.count}</span>
+ <span className="text-xs font-bold text-[var(--text-primary)] w-8 text-right">{item.count}</span>
 
-              </div>
+ </div>
 
-            ))}
+ ))}
 
-          </div>
+ </div>
 
-        </div>
+ </div>
 
-      </div>
+ </div>
 
 
 
-      {/* Recent Activity Section */}
+ {/* Recent Activity Section */}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-        {/* Recent Tickets */}
+ {/* Recent Tickets */}
 
-        <div className="glass-card p-4">
+ <div className="glass-card p-4">
 
-          <div className="flex items-center justify-between mb-3">
+ <div className="flex items-center justify-between mb-3">
 
-            <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
+ <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
 
-              <Headphones size={16} className="text-[var(--accent-light)]" />
+ <Headphones size={16} className="text-[var(--accent-light)]" />
 
-              Recent Tickets
+ Recent Tickets
 
-            </h3>
+ </h3>
 
-            <Button variant="ghost" size="sm" onClick={() => onNavigate('service')}>
+ <Button variant="ghost" size="sm" onClick={() => onNavigate('service')}>
 
-              View All
+ View All
 
-            </Button>
+ </Button>
 
-          </div>
+ </div>
 
-          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+ <div className="space-y-2 max-h-[300px] overflow-y-auto">
 
-            {recentTickets.map((ticket) => (
+ {recentTickets.map((ticket) => (
 
-              <div key={ticket.id} className="p-2 rounded-lg bg-[var(--bg-tertiary)] text-xs">
+ <div key={ticket.id} className="p-2 rounded-lg bg-[var(--bg-tertiary)] text-xs">
 
-                <div className="flex items-center justify-between">
+ <div className="flex items-center justify-between">
 
-                  <span className="font-mono text-[var(--accent-light)]">{ticket.id}</span>
+ <span className="font-mono text-[var(--accent-light)]">{ticket.id}</span>
 
-                  <TicketStatusBadge value={ticket.status} />
+ <TicketStatusBadge value={ticket.status} />
 
-                </div>
+ </div>
 
-                <div className="text-[var(--text-primary)] truncate mt-1">{ticket.customerName}</div>
+ <div className="text-[var(--text-primary)] truncate mt-1">{ticket.customerName}</div>
 
-                <div className="flex items-center justify-between mt-1">
+ <div className="flex items-center justify-between mt-1">
 
-                  <span className="text-[10px] text-[var(--text-muted)]">{ticket.type}</span>
+ <span className="text-[10px] text-[var(--text-muted)]">{ticket.type}</span>
 
-                  <PriorityBadge value={ticket.priority} />
+ <PriorityBadge value={ticket.priority} />
 
-                </div>
+ </div>
 
-              </div>
+ </div>
 
-            ))}
+ ))}
 
-            {recentTickets.length === 0 && (
+ {recentTickets.length === 0 && (
 
-              <p className="text-xs text-[var(--text-muted)] text-center py-4">No tickets found</p>
+ <p className="text-xs text-[var(--text-muted)] text-center py-4">No tickets found</p>
 
-            )}
+ )}
 
-          </div>
+ </div>
 
-        </div>
+ </div>
 
 
 
-        {/* Recent Visits */}
+ {/* Recent Visits */}
 
-        <div className="glass-card p-4">
+ <div className="glass-card p-4">
 
-          <div className="flex items-center justify-between mb-3">
+ <div className="flex items-center justify-between mb-3">
 
-            <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
+ <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
 
-              <Clock size={16} className="text-[var(--accent-light)]" />
+ <Clock size={16} className="text-[var(--accent-light)]" />
 
-              Recent Visits
+ Recent Visits
 
-            </h3>
+ </h3>
 
-            <Button variant="ghost" size="sm" onClick={() => onNavigate('service', 'schedule-visit')}>
+ <Button variant="ghost" size="sm" onClick={() => onNavigate('service', 'schedule-visit')}>
 
-              View All
+ View All
 
-            </Button>
+ </Button>
 
-          </div>
+ </div>
 
-          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+ <div className="space-y-2 max-h-[300px] overflow-y-auto">
 
-            {recentVisits.map((visit) => (
+ {recentVisits.map((visit) => (
 
-              <div key={visit.id || visit.visitId} className="p-2 rounded-lg bg-[var(--bg-tertiary)] text-xs">
+ <div key={visit.id || visit.visitId} className="p-2 rounded-lg bg-[var(--bg-tertiary)] text-xs">
 
-                <div className="flex items-center justify-between">
+ <div className="flex items-center justify-between">
 
-                  <span className="font-mono text-[var(--accent-light)]">{visit.visitId || visit.id}</span>
+ <span className="font-mono text-[var(--accent-light)]">{visit.visitId || visit.id}</span>
 
-                  <VisitStatusBadge value={visit.status} />
+ <VisitStatusBadge value={visit.status} />
 
-                </div>
+ </div>
 
-                <div className="text-[var(--text-primary)] truncate mt-1">{visit.customer}</div>
+ <div className="text-[var(--text-primary)] truncate mt-1">{visit.customer}</div>
 
-                <div className="text-[10px] text-[var(--text-muted)] mt-1">
+ <div className="text-[10px] text-[var(--text-muted)] mt-1">
 
-                  {visit.visitType} • {visit.scheduledDate}
+ {visit.visitType} �’{visit.scheduledDate}
 
-                </div>
+ </div>
 
-              </div>
+ </div>
 
-            ))}
+ ))}
 
-            {recentVisits.length === 0 && (
+ {recentVisits.length === 0 && (
 
-              <p className="text-xs text-[var(--text-muted)] text-center py-4">No visits found</p>
+ <p className="text-xs text-[var(--text-muted)] text-center py-4">No visits found</p>
 
-            )}
+ )}
 
-          </div>
+ </div>
 
-        </div>
+ </div>
 
 
 
-        {/* Team Overview */}
+ {/* Team Overview */}
 
-        <div className="glass-card p-4">
+ <div className="glass-card p-4">
 
-          <div className="flex items-center justify-between mb-3">
+ <div className="flex items-center justify-between mb-3">
 
-            <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
+ <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
 
-              <Users size={16} className="text-[var(--accent-light)]" />
+ <Users size={16} className="text-[var(--accent-light)]" />
 
-              Team Overview
+ Team Overview
 
-            </h3>
+ </h3>
 
-            <span className="text-xs text-[var(--text-muted)]">{engineers.length} Engineers</span>
+ <span className="text-xs text-[var(--text-muted)]">{engineers.length} Engineers</span>
 
-          </div>
+ </div>
 
-          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+ <div className="space-y-2 max-h-[300px] overflow-y-auto">
 
-            {engineers.slice(0, 8).map((engineer) => (
+ {engineers.slice(0, 8).map((engineer) => (
 
-              <div key={engineer.id} className="flex items-center gap-2 p-2 rounded-lg bg-[var(--bg-tertiary)]">
+ <div key={engineer.id} className="flex items-center gap-2 p-2 rounded-lg bg-[var(--bg-tertiary)]">
 
-                <Avatar name={engineer.name} size="sm" />
+ <Avatar name={engineer.name} size="sm" />
 
-                <div className="flex-1 min-w-0">
+ <div className="flex-1 min-w-0">
 
-                  <div className="text-xs font-medium text-[var(--text-primary)] truncate">{engineer.name}</div>
+ <div className="text-xs font-medium text-[var(--text-primary)] truncate">{engineer.name}</div>
 
-                  <div className="text-[10px] text-[var(--text-muted)] truncate">{engineer.email}</div>
+ <div className="text-[10px] text-[var(--text-muted)] truncate">{engineer.email}</div>
 
-                </div>
+ </div>
 
-                <div className="text-[10px] text-[var(--text-muted)]">
+ <div className="text-[10px] text-[var(--text-muted)]">
 
-                  {tickets.filter(t => t.assignedTo === engineer.name).length} tickets
+ {tickets.filter(t => t.assignedTo === engineer.name).length} tickets
 
-                </div>
+ </div>
 
-              </div>
+ </div>
 
-            ))}
+ ))}
 
-            {engineers.length === 0 && (
+ {engineers.length === 0 && (
 
-              <p className="text-xs text-[var(--text-muted)] text-center py-4">No engineers found</p>
+ <p className="text-xs text-[var(--text-muted)] text-center py-4">No engineers found</p>
 
-            )}
+ )}
 
-          </div>
+ </div>
 
-        </div>
+ </div>
 
-      </div>
+ </div>
 
 
 
-      {/* Toast Notification */}
+ {/* Toast Notification */}
 
-      {toast.show && (
+ {toast.show && (
 
-        <div className={`fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+ <div className={`fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
 
-          {toast.message}
+ {toast.message}
 
-        </div>
+ </div>
 
-      )}
+ )}
 
-    </div>
+ </div>
 
-  );
+ );
 
 };
 

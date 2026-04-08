@@ -17,11 +17,11 @@ import { toast } from '../ui/Toast';
 import { leadsApi } from '../../services/leadsApi';
 
 const fmt = (val) => {
-  if (!val || val === 0) return '₹0';
-  if (val >= 10000000) return `₹${(val / 10000000).toFixed(1)}Cr`;
-  if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
-  if (val >= 1000) return `₹${(val / 1000).toFixed(0)}K`;
-  return `₹${val.toLocaleString()}`;
+  if (!val || val === 0) return 'Ã¢â€šÂ¹0';
+  if (val >= 10000000) return `Ã¢â€šÂ¹${(val / 10000000).toFixed(1)}Cr`;
+  if (val >= 100000) return `Ã¢â€šÂ¹${(val / 100000).toFixed(1)}L`;
+  if (val >= 1000) return `Ã¢â€šÂ¹${(val / 1000).toFixed(0)}K`;
+  return `Ã¢â€šÂ¹${val.toLocaleString()}`;
 };
 
 const formatNumber = (num) => {
@@ -57,23 +57,23 @@ const LiveIndicator = ({ isLive }) => (
 
 // Loading skeleton for cards
 const SkeletonCard = () => (
-  <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 animate-pulse">
+  <div className="bg-[var(--bg-surface)] rounded-xl p-5 shadow-sm border border-[var(--border-muted)] animate-pulse">
     <div className="flex items-start justify-between">
-      <div className="w-12 h-12 rounded-lg bg-gray-200" />
-      <div className="w-16 h-5 rounded bg-gray-200" />
+      <div className="w-12 h-12 rounded-lg bg-[var(--skeleton-base)]" />
+      <div className="w-16 h-5 rounded bg-[var(--skeleton-base)]" />
     </div>
     <div className="mt-4 space-y-2">
-      <div className="w-24 h-3 rounded bg-gray-200" />
-      <div className="w-20 h-7 rounded bg-gray-200" />
+      <div className="w-24 h-3 rounded bg-[var(--skeleton-base)]" />
+      <div className="w-20 h-7 rounded bg-[var(--skeleton-base)]" />
     </div>
   </div>
 );
 
 // Loading skeleton for charts
 const SkeletonChart = () => (
-  <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-pulse">
-    <div className="w-40 h-5 rounded bg-gray-200 mb-6" />
-    <div className="h-64 bg-gray-200 rounded-lg" />
+  <div className="bg-[var(--bg-surface)] rounded-xl p-6 shadow-sm border border-[var(--border-muted)] animate-pulse">
+    <div className="w-40 h-5 rounded bg-[var(--skeleton-base)] mb-6" />
+    <div className="h-64 bg-[var(--skeleton-base)] rounded-lg" />
   </div>
 );
 
@@ -88,7 +88,7 @@ const KPICard = ({ title, value, change, trend, icon: Icon, color, loading, subt
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all ${onClick ? 'cursor-pointer hover:border-blue-300' : ''}`}
+      className={`bg-[var(--bg-surface)] rounded-xl p-5 shadow-sm border border-[var(--border-muted)] hover:shadow-md transition-all ${onClick ? 'cursor-pointer hover:border-blue-300' : ''}`}
     >
       <div className="flex items-start justify-between">
         <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${color}15` }}>
@@ -102,7 +102,7 @@ const KPICard = ({ title, value, change, trend, icon: Icon, color, loading, subt
         )}
       </div>
       <div className="mt-4">
-        <p className="text-sm text-gray-500 font-medium">{title}</p>
+        <p className="text-sm text-[var(--text-muted)] font-medium">{title}</p>
         <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
         {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
       </div>
@@ -126,14 +126,14 @@ const ChartDateFilter = ({ dateRange, onDateRangeChange, size = 'sm' }) => {
     : 'px-3 py-1.5 text-sm';
 
   return (
-    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+    <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
       {filters.map((filter) => (
         <button
           key={filter.key}
           onClick={() => onDateRangeChange(filter.key)}
           className={`${baseClasses} rounded-md font-medium transition-all ${dateRange === filter.key
-            ? 'bg-white text-blue-600 shadow-sm'
-            : 'text-gray-600 hover:text-gray-900'
+            ? 'bg-[var(--bg-surface)] text-blue-600 shadow-sm'
+            : 'text-[var(--text-secondary)] hover:text-gray-900'
             }`}
         >
           {filter.label}
@@ -146,12 +146,12 @@ const ChartDateFilter = ({ dateRange, onDateRangeChange, size = 'sm' }) => {
 // Error State
 // eslint-disable-next-line no-unused-vars
 const ErrorState = ({ onRetry }) => (
-  <div className="bg-white rounded-xl p-12 shadow-sm border border-gray-100 text-center">
+  <div className="bg-[var(--bg-surface)] rounded-xl p-12 shadow-sm border border-[var(--border-muted)] text-center">
     <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
       <AlertCircle size={40} className="text-red-500" />
     </div>
     <h3 className="text-xl font-semibold text-gray-900 mb-2">Failed to Load Data</h3>
-    <p className="text-gray-500 mb-6">
+    <p className="text-[var(--text-muted)] mb-6">
       There was an error loading the dashboard data. Please try again.
     </p>
     {onRetry && (
@@ -164,12 +164,12 @@ const ErrorState = ({ onRetry }) => (
 
 // Empty State
 const EmptyState = () => (
-  <div className="bg-white rounded-xl p-12 shadow-sm border border-gray-100 text-center">
-    <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+  <div className="bg-[var(--bg-surface)] rounded-xl p-12 shadow-sm border border-[var(--border-muted)] text-center">
+    <div className="w-20 h-20 rounded-full bg-[var(--bg-overlay)] flex items-center justify-center mx-auto mb-4">
       <Users size={40} className="text-gray-400" />
     </div>
     <h3 className="text-xl font-semibold text-gray-900 mb-2">No Leads Available</h3>
-    <p className="text-gray-500 mb-6 max-w-md mx-auto">
+    <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
       Import or add leads to see analytics. Once you have leads, this dashboard will show your sales funnel, pipeline value, and conversion metrics.
     </p>
   </div>
@@ -236,7 +236,7 @@ const FunnelChart = ({ data, loading, leads = [] }) => {
 
   if (!filteredData || filteredData.length === 0) {
     return (
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="bg-[var(--bg-surface)] rounded-xl p-6 shadow-sm border border-[var(--border-muted)]">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Sales Funnel</h3>
           <ChartDateFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
@@ -259,11 +259,11 @@ const FunnelChart = ({ data, loading, leads = [] }) => {
   const totalValue = chartData.reduce((sum, d) => sum + d.value, 0);
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-[var(--bg-surface)] rounded-xl p-6 shadow-sm border border-[var(--border-muted)]">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Sales Funnel</h3>
-          <p className="text-sm text-gray-500 mt-1">{totalLeads} leads · {fmt(totalValue)}</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">{totalLeads} leads Ã‚Â· {fmt(totalValue)}</p>
         </div>
         <ChartDateFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
       </div>
@@ -271,26 +271,26 @@ const FunnelChart = ({ data, loading, leads = [] }) => {
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 80, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" />
-            <XAxis type="number" tick={{ fontSize: 12, fill: '#6b7280' }} axisLine={false} tickLine={false} />
+            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border-base)" />
+            <XAxis type="number" tick={{ fontSize: 12, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
             <YAxis
               type="category"
               dataKey="name"
-              tick={{ fontSize: 12, fill: '#374151' }}
+              tick={{ fontSize: 12, fill: 'var(--text-secondary)' }}
               axisLine={false}
               tickLine={false}
               width={70}
             />
             <Tooltip
-              cursor={{ fill: '#f3f4f6' }}
+              cursor={{ fill: 'var(--bg-elevated)' }}
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   const data = payload[0].payload;
                   return (
-                    <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100">
+                    <div className="bg-[var(--bg-surface)] p-3 rounded-lg shadow-lg border border-[var(--border-muted)]">
                       <p className="font-semibold text-gray-900">{data.name}</p>
-                      <p className="text-sm text-gray-600">Leads: {data.leads}</p>
-                      <p className="text-sm text-gray-600">Value: {fmt(data.value)}</p>
+                      <p className="text-sm text-[var(--text-secondary)]">Leads: {data.leads}</p>
+                      <p className="text-sm text-[var(--text-secondary)]">Value: {fmt(data.value)}</p>
                     </div>
                   );
                 }
@@ -306,10 +306,10 @@ const FunnelChart = ({ data, loading, leads = [] }) => {
         </ResponsiveContainer>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-gray-100">
+      <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-[var(--border-muted)]">
         {chartData.slice(0, 3).map((stage, idx) => (
           <div key={idx} className="text-center">
-            <p className="text-xs text-gray-500">{stage.name}</p>
+            <p className="text-xs text-[var(--text-muted)]">{stage.name}</p>
             <p className="text-lg font-bold" style={{ color: stage.fill }}>{stage.leads}</p>
           </div>
         ))}
@@ -343,7 +343,7 @@ const SourceChart = ({ data, loading, leads = [] }) => {
 
   if (!filteredData || filteredData.length === 0) {
     return (
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="bg-[var(--bg-surface)] rounded-xl p-6 shadow-sm border border-[var(--border-muted)]">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Lead Sources</h3>
           <ChartDateFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
@@ -366,11 +366,11 @@ const SourceChart = ({ data, loading, leads = [] }) => {
   const total = chartData.reduce((sum, d) => sum + d.leads, 0);
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-[var(--bg-surface)] rounded-xl p-6 shadow-sm border border-[var(--border-muted)]">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Lead Sources</h3>
-          <p className="text-sm text-gray-500 mt-1">{total} total leads</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">{total} total leads</p>
         </div>
         <ChartDateFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
       </div>
@@ -398,9 +398,9 @@ const SourceChart = ({ data, loading, leads = [] }) => {
                     const data = payload[0];
                     const pct = total > 0 ? Math.round((data.value / total) * 100) : 0;
                     return (
-                      <div className="bg-white p-2 rounded-lg shadow-lg border border-gray-100">
+                      <div className="bg-[var(--bg-surface)] p-2 rounded-lg shadow-lg border border-[var(--border-muted)]">
                         <p className="font-semibold text-sm">{data.name}</p>
-                        <p className="text-xs text-gray-600">{data.value} leads ({pct}%)</p>
+                        <p className="text-xs text-[var(--text-secondary)]">{data.value} leads ({pct}%)</p>
                       </div>
                     );
                   }
@@ -419,17 +419,17 @@ const SourceChart = ({ data, loading, leads = [] }) => {
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: source.fill }} />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700">{source.name}</span>
+                    <span className="text-sm text-[var(--text-secondary)]">{source.name}</span>
                     <span className="text-sm font-semibold text-gray-900">{source.leads}</span>
                   </div>
-                  <div className="w-full bg-gray-100 rounded-full h-1.5 mt-1">
+                  <div className="w-full bg-[var(--bg-overlay)] rounded-full h-1.5 mt-1">
                     <div
                       className="h-full rounded-full"
                       style={{ width: `${pct}%`, backgroundColor: source.fill }}
                     />
                   </div>
                 </div>
-                <span className="text-xs text-gray-500 w-8">{pct}%</span>
+                <span className="text-xs text-[var(--text-muted)] w-8">{pct}%</span>
               </div>
             );
           })}
@@ -474,7 +474,7 @@ const TrendChart = ({ data, loading }) => {
 
   if (!filteredData || filteredData.length === 0) {
     return (
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="bg-[var(--bg-surface)] rounded-xl p-6 shadow-sm border border-[var(--border-muted)]">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Monthly Trend</h3>
           <ChartDateFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
@@ -496,11 +496,11 @@ const TrendChart = ({ data, loading }) => {
   const totalWon = chartData.reduce((sum, d) => sum + d.won, 0);
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-[var(--bg-surface)] rounded-xl p-6 shadow-sm border border-[var(--border-muted)]">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Monthly Trend</h3>
-          <p className="text-sm text-gray-500 mt-1">{totalCreated} new · {totalWon} won</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">{totalCreated} new Ã‚Â· {totalWon} won</p>
         </div>
         <ChartDateFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
       </div>
@@ -518,24 +518,25 @@ const TrendChart = ({ data, loading }) => {
                 <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-base)" />
             <XAxis
               dataKey="month"
-              tick={{ fontSize: 11, fill: '#6b7280' }}
+              tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 11, fill: '#6b7280' }}
+              tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
               axisLine={false}
               tickLine={false}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border-base)',
                 borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                color: 'var(--text-primary)'
               }}
             />
             <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px' }} />
@@ -620,11 +621,11 @@ const AgentLeaderboard = ({ data, loading, leads = [] }) => {
   if (loading) return <SkeletonChart />;
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-[var(--bg-surface)] rounded-xl p-6 shadow-sm border border-[var(--border-muted)]">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Top Performers</h3>
-          <p className="text-sm text-gray-500 mt-1">By conversion rate</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">By conversion rate</p>
         </div>
         <ChartDateFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
       </div>
@@ -638,10 +639,10 @@ const AgentLeaderboard = ({ data, loading, leads = [] }) => {
           {agents.map((agent, index) => {
             const rankColors = [
               'bg-amber-100 text-amber-700',
-              'bg-gray-100 text-gray-700',
+              'bg-[var(--bg-overlay)] text-[var(--text-secondary)]',
               'bg-orange-100 text-orange-700'
             ];
-            const rankClass = index < 3 ? rankColors[index] : 'bg-gray-50 text-gray-500';
+            const rankClass = index < 3 ? rankColors[index] : 'bg-[var(--bg-elevated)] text-[var(--text-muted)]';
             const initial = agent.name.charAt(0).toUpperCase();
 
             return (
@@ -655,18 +656,18 @@ const AgentLeaderboard = ({ data, loading, leads = [] }) => {
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-gray-900">{agent.name}</p>
                   <div className="flex items-center gap-3 mt-1">
-                    <div className="flex-1 bg-gray-100 rounded-full h-2">
+                    <div className="flex-1 bg-[var(--bg-overlay)] rounded-full h-2">
                       <div
                         className="h-full bg-blue-500 rounded-full"
                         style={{ width: `${Math.min(agent.rate, 100)}%` }}
                       />
                     </div>
-                    <span className="text-xs text-gray-500">{agent.rate.toFixed(0)}%</span>
+                    <span className="text-xs text-[var(--text-muted)]">{agent.rate.toFixed(0)}%</span>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-bold text-gray-900">{agent.converted}</p>
-                  <p className="text-xs text-gray-500">won</p>
+                  <p className="text-xs text-[var(--text-muted)]">won</p>
                 </div>
               </div>
             );
@@ -773,19 +774,19 @@ const LeadCalendar = ({ leads, loading }) => {
     return (
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <div className="w-32 h-6 bg-gray-200 rounded animate-pulse" />
+          <div className="w-32 h-6 bg-[var(--skeleton-base)] rounded animate-pulse" />
           <div className="flex gap-2">
-            <div className="w-20 h-8 bg-gray-200 rounded animate-pulse" />
-            <div className="w-20 h-8 bg-gray-200 rounded animate-pulse" />
-            <div className="w-24 h-6 bg-gray-200 rounded animate-pulse" />
+            <div className="w-20 h-8 bg-[var(--skeleton-base)] rounded animate-pulse" />
+            <div className="w-20 h-8 bg-[var(--skeleton-base)] rounded animate-pulse" />
+            <div className="w-24 h-6 bg-[var(--skeleton-base)] rounded animate-pulse" />
           </div>
         </div>
         <div className="grid grid-cols-7 gap-2">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, i) => (
-            <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
+            <div key={i} className="h-10 bg-[var(--bg-overlay)] rounded animate-pulse" />
           ))}
           {Array(35).fill(0).map((_, i) => (
-            <div key={i} className="h-20 bg-gray-100 rounded animate-pulse" />
+            <div key={i} className="h-20 bg-[var(--bg-overlay)] rounded animate-pulse" />
           ))}
         </div>
       </div>
@@ -794,7 +795,7 @@ const LeadCalendar = ({ leads, loading }) => {
 
   const days = [];
   for (let i = 0; i < firstDay; i++) {
-    days.push(<div key={`empty-${i}`} className="h-20 bg-gray-50 rounded-lg" />);
+    days.push(<div key={`empty-${i}`} className="h-20 bg-[var(--bg-elevated)] rounded-lg" />);
   }
 
   for (let day = 1; day <= daysInMonth; day++) {
@@ -809,13 +810,13 @@ const LeadCalendar = ({ leads, loading }) => {
         className={`h-20 p-2 rounded-lg border-2 cursor-pointer transition-all overflow-hidden ${isSelected ? 'border-blue-500 bg-blue-50' :
           isToday ? 'border-orange-400 bg-orange-50' :
             hasLeads ? 'border-amber-300 bg-amber-50 hover:border-amber-400' :
-              'border-gray-200 bg-white hover:border-gray-300'
+              'border-[var(--border-base)] bg-[var(--bg-surface)] hover:border-gray-300'
           }`}
         onClick={() => setSelectedDate(isSelected ? null : day)}
       >
         <div className="flex items-center justify-between mb-1">
           <span className={`text-sm font-bold ${isToday ? 'text-orange-600' :
-            hasLeads ? 'text-amber-700' : 'text-gray-700'
+            hasLeads ? 'text-amber-700' : 'text-[var(--text-secondary)]'
             }`}>
             {day}
           </span>
@@ -828,12 +829,12 @@ const LeadCalendar = ({ leads, loading }) => {
 
         <div className="space-y-0.5">
           {dateLeads.slice(0, 2).map((lead, idx) => (
-            <div key={idx} className="text-xs truncate text-gray-600 bg-white/80 px-1 py-0.5 rounded">
+            <div key={idx} className="text-xs truncate text-[var(--text-secondary)] bg-[var(--bg-surface)]/80 px-1 py-0.5 rounded">
               {lead.name || lead.customerName || 'Lead'}
             </div>
           ))}
           {dateLeads.length > 2 && (
-            <div className="text-xs text-gray-500 px-1">
+            <div className="text-xs text-[var(--text-muted)] px-1">
               +{dateLeads.length - 2} more
             </div>
           )}
@@ -852,7 +853,7 @@ const LeadCalendar = ({ leads, loading }) => {
           <select
             value={quickFilter}
             onChange={handleQuickFilterChange}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-[var(--text-secondary)] bg-[var(--bg-surface)] focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">All Time</option>
             <option value="today">Today</option>
@@ -860,7 +861,7 @@ const LeadCalendar = ({ leads, loading }) => {
             <option value="month">This Month</option>
           </select>
           
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-[var(--text-muted)]">
             {totalLeadsThisMonth} records this month
           </span>
         </div>
@@ -893,7 +894,7 @@ const LeadCalendar = ({ leads, loading }) => {
 
       <div className="grid grid-cols-7 gap-2 mb-2">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="h-10 flex items-center justify-center text-sm font-bold text-gray-600 bg-gray-100 rounded-lg">
+          <div key={day} className="h-10 flex items-center justify-center text-sm font-bold text-[var(--text-secondary)] bg-[var(--bg-overlay)] rounded-lg">
             {day}
           </div>
         ))}
@@ -904,13 +905,13 @@ const LeadCalendar = ({ leads, loading }) => {
       </div>
 
       {selectedDate && selectedDateLeads.length > 0 && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+        <div className="mt-4 p-4 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border-base)]">
           <h4 className="text-sm font-bold text-gray-900 mb-3">
             Leads on {monthNames[month]} {selectedDate}, {year} ({selectedDateLeads.length})
           </h4>
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {selectedDateLeads.map((lead, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
+              <div key={idx} className="flex items-center justify-between p-3 bg-[var(--bg-surface)] rounded-lg shadow-sm">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold">
                     {(lead.name || lead.customerName || 'U').charAt(0).toUpperCase()}
@@ -919,8 +920,8 @@ const LeadCalendar = ({ leads, loading }) => {
                     <p className="text-sm font-medium text-gray-900">
                       {lead.name || lead.customerName || 'Unknown Lead'}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      {lead.statusKey || lead.status || 'new'} • {lead.phone || lead.mobile || 'No phone'}
+                    <p className="text-xs text-[var(--text-muted)]">
+                      {lead.statusKey || lead.status || 'new'} Ã¢â‚¬Â¢ {lead.phone || lead.mobile || 'No phone'}
                     </p>
                   </div>
                 </div>
@@ -940,14 +941,14 @@ const LeadCalendar = ({ leads, loading }) => {
 const SmartInsights = ({ insights, loading, finalKpis }) => {
   if (loading) {
     return (
-      <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+      <div className="bg-[var(--bg-surface)] rounded-xl p-5 shadow-sm border border-[var(--border-muted)]">
         <div className="flex items-center gap-2 mb-4">
           <Sparkles size={18} className="text-amber-500" />
           <h3 className="text-base font-semibold text-gray-900">Smart Insights</h3>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
           {Array(5).fill(0).map((_, i) => (
-            <div key={i} className="h-20 bg-gray-100 rounded-lg animate-pulse" />
+            <div key={i} className="h-20 bg-[var(--bg-overlay)] rounded-lg animate-pulse" />
           ))}
         </div>
       </div>
@@ -988,19 +989,19 @@ const SmartInsights = ({ insights, loading, finalKpis }) => {
   ];
 
   return (
-    <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+    <div className="bg-[var(--bg-surface)] rounded-xl p-5 shadow-sm border border-[var(--border-muted)]">
       <div className="flex items-center gap-2 mb-4">
         <Sparkles size={18} className="text-amber-500" />
         <h3 className="text-base font-semibold text-gray-900">Smart Insights</h3>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         {stats.map((stat, i) => (
-          <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+          <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-muted)]">
             <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center flex-shrink-0`}>
               <stat.icon size={20} className="text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-gray-500 uppercase tracking-wider">{stat.label}</p>
+              <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">{stat.label}</p>
               <p className="text-sm font-bold text-gray-900 truncate">{stat.value}</p>
             </div>
           </div>
@@ -1367,7 +1368,7 @@ const LeadAnalyticsDashboard = ({ onNavigate, onFilter, onFilterChange, dateFilt
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Lead Dashboard</h1>
-            <p className="text-sm text-gray-500 mt-1">Real-time sales analytics</p>
+            <p className="text-sm text-[var(--text-muted)] mt-1">Real-time sales analytics</p>
           </div>
           <LiveIndicator isLive={isLive} />
         </div>
@@ -1383,7 +1384,7 @@ const LeadAnalyticsDashboard = ({ onNavigate, onFilter, onFilterChange, dateFilt
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Lead Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Last updated: {lastUpdated.toLocaleTimeString()}
           </p>
         </div>

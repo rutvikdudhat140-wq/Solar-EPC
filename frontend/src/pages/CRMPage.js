@@ -1,5 +1,5 @@
 
-// Solar OS – Lead Management Module (Premium Enterprise Edition)
+// Solar OS � Lead Management Module (Premium Enterprise Edition)
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -83,7 +83,7 @@ const avatarColor = (name = '') => {
   return colors[(name.charCodeAt(0) || 0) % colors.length];
 };
 
-// ── Advanced Dashboard Components ──────────────────────────────────────────────
+//  Advanced Dashboard Components 
 const EmptyState = ({ onAddLead }) => (
   <div className="glass-card p-8 flex flex-col items-center justify-center text-center">
     <div className="w-16 h-16 rounded-full bg-[var(--bg-elevated)] border border-[var(--border-base)] flex items-center justify-center mb-4">
@@ -103,7 +103,7 @@ const EmptyState = ({ onAddLead }) => (
   </div>
 );
 
-// ── Standardized KPI Card using KPICard component ─────────────────────────────
+//  Standardized KPI Card using KPICard component 
 const DashboardKPI = ({ title, value, change, icon: Icon, color, subtitle, trend }) => {
   // Map color hex to variant names
   const colorMap = {
@@ -464,7 +464,7 @@ const ActivityHeatmap = () => {
   );
 };
 
-// ── Comprehensive Reports Components ───────────────────────────────────────────
+//  Comprehensive Reports Components 
 const PerformanceReport = () => {
   const { data: overviewRaw } = useQuery({
     queryKey: ['leads-dashboard-overview', 'reports'],
@@ -514,7 +514,7 @@ const PerformanceReport = () => {
                     item.current}
                 </span>
                 <span className={`text-[10px] font-bold ${item.change >= 0 ? 'text-[var(--green)]' : 'text-red-500'}`}>
-                  {item.change >= 0 ? '↑' : '↓'} {Math.abs(item.change)}%
+                  {item.change >= 0 ? '˜' : '�'} {Math.abs(item.change)}%
                 </span>
               </div>
             </div>
@@ -720,7 +720,7 @@ const SalesTeamReport = () => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-[var(--text-primary)]">{member.name}</p>
-              <p className="text-[9px] text-[var(--text-muted)]">{member.leads} leads • {member.converted} converted</p>
+              <p className="text-[9px] text-[var(--text-muted)]">{member.leads} leads  {member.converted} converted</p>
             </div>
             <div className="text-right">
               <p className="text-xs font-bold text-[var(--accent)]">{fmt(member.value)}</p>
@@ -1193,7 +1193,7 @@ const CRMPage = ({ onNavigate }) => {
       if (Array.isArray(filterValueRanges) && filterValueRanges.length === 1) {
         const r = filterValueRanges[0];
         if (r?.min !== '' && r?.min !== undefined) params.minValue = r.min;
-        if (r?.max !== '' && r?.max !== undefined && r?.max !== '∞') params.maxValue = r.max;
+        if (r?.max !== '' && r?.max !== undefined && r?.max !== '�†Å¾') params.maxValue = r.max;
       }
 
       // Add date range filter
@@ -2375,7 +2375,7 @@ const CRMPage = ({ onNavigate }) => {
 
   const addValueRange = () => {
     if (tempValueMin || tempValueMax) {
-      const newRange = { min: tempValueMin || '0', max: tempValueMax || '∞', id: Date.now() };
+      const newRange = { min: tempValueMin || '0', max: tempValueMax || '�†Å¾', id: Date.now() };
       setFilterValueRanges([...filterValueRanges, newRange]);
       setTempValueMin('');
       setTempValueMax('');
@@ -2482,7 +2482,7 @@ const CRMPage = ({ onNavigate }) => {
           val && val.length > 0 ? (
             <span className="text-[10px] text-amber-500 font-medium">{val.length} Active</span>
           ) : (
-            <span className="text-[10px] text-[var(--text-muted)]">—</span>
+            <span className="text-[10px] text-[var(--text-muted)]"></span>
           )
         )
       },
@@ -2509,7 +2509,7 @@ const CRMPage = ({ onNavigate }) => {
         width: '100px',
         render: (_val, row) => {
           const raw = row?.createdAt;
-          if (!raw) return <span className="text-[11px] text-[var(--text-muted)]">—</span>;
+          if (!raw) return <span className="text-[11px] text-[var(--text-muted)]"></span>;
           const date = new Date(raw);
           return (
             <span className="text-[11px] text-[var(--text-secondary)]">
@@ -2526,7 +2526,7 @@ const CRMPage = ({ onNavigate }) => {
         width: '80px',
         render: (_val, row) => {
           const raw = row?.createdAt;
-          if (!raw) return <span className="text-[11px] text-[var(--text-muted)]">—</span>;
+          if (!raw) return <span className="text-[11px] text-[var(--text-muted)]"></span>;
           const date = new Date(raw);
           return (
             <span className="text-[11px] text-[var(--text-secondary)]">
@@ -2544,7 +2544,7 @@ const CRMPage = ({ onNavigate }) => {
           const customValue = row.customFields?.[key];
           return (
             <span className="text-[11px] text-[var(--text-secondary)] truncate">
-              {customValue !== undefined && customValue !== null ? customValue : '—'}
+              {customValue !== undefined && customValue !== null ? customValue : ''}
             </span>
           );
         }
@@ -2651,7 +2651,7 @@ const CRMPage = ({ onNavigate }) => {
 
   return (
     <div className="animate-fade-in space-y-5">
-      {/* ── Header ── */}
+      {/*  Header  */}
       <PageHeader
         title="CRM Module"
         subtitle="Rulebook Compliant Lead Management"
@@ -2665,7 +2665,7 @@ const CRMPage = ({ onNavigate }) => {
         onTabChange={setView}
       />
 
-      {/* ── Date Filters ── */}
+      {/*  Date Filters  */}
       {view === 'dashboard' && crmFeatures.analytics && (
         <div className="glass-card p-3">
           <div className="flex flex-wrap gap-3 items-center">
@@ -2772,7 +2772,7 @@ const CRMPage = ({ onNavigate }) => {
         </div>
       )}
 
-      {/* ── Advanced Dashboard ── */}
+      {/*  Advanced Dashboard  */}
       {view === 'dashboard' && crmFeatures.analytics && (
         <LeadAnalyticsDashboard
           onNavigate={(nextView) => {
@@ -2836,7 +2836,7 @@ const CRMPage = ({ onNavigate }) => {
         />
       )}
 
-      {/* ── Customers View ── */}
+      {/*  Customers View  */}
       {view === 'customers' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -2904,12 +2904,12 @@ const CRMPage = ({ onNavigate }) => {
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">{customer.email || '—'}</td>
-                        <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">{customer.phone || '—'}</td>
-                        <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">{customer.city || '—'}</td>
+                        <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">{customer.email || ''}</td>
+                        <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">{customer.phone || ''}</td>
+                        <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">{customer.city || ''}</td>
                         <td className="px-4 py-3">
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20">
-                            {customer.source || '—'}
+                            {customer.source || ''}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">
@@ -2928,7 +2928,7 @@ const CRMPage = ({ onNavigate }) => {
                           })()}
                         </td>
                         <td className="px-4 py-3 text-[11px] text-[var(--text-secondary)]">
-                          {customer.createdAt ? format(new Date(customer.createdAt), 'MMM dd, yyyy') : '—'}
+                          {customer.createdAt ? format(new Date(customer.createdAt), 'MMM dd, yyyy') : ''}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-1">
@@ -2984,7 +2984,7 @@ const CRMPage = ({ onNavigate }) => {
         </div>
       )}
 
-      {/* ── Kanban Board View ── */}
+      {/*  Kanban Board View  */}
       {view === 'kanban' && crmFeatures.kanban && (
         <div className="h-[calc(100vh-180px)] flex flex-col">
           {(() => { console.log('[KANBAN DEBUG] statusOptions:', statusOptions); console.log('[KANBAN DEBUG] enhancedLeads first 3:', enhancedLeads.slice(0, 3).map(l => ({ name: l.name, statusKey: l.statusKey, status: l.status }))); return null; })()}
@@ -3248,7 +3248,7 @@ const CRMPage = ({ onNavigate }) => {
                                 {(lead.assignedTo?.name || lead.assignedTo || 'U')[0].toUpperCase()}
                               </div>
                               <span className="text-[10px] text-[var(--text-muted)]">
-                                {lead.nextFollowUp || lead.createdAt ? new Date(lead.nextFollowUp || lead.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : '—'}
+                                {lead.nextFollowUp || lead.createdAt ? new Date(lead.nextFollowUp || lead.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : ''}
                               </span>
                             </div>
                             {lead.slaBreached && (
@@ -3272,7 +3272,7 @@ const CRMPage = ({ onNavigate }) => {
         </div>
       )}
 
-      {/* ── Leads Table View ── */}
+      {/*  Leads Table View  */}
       {view === 'leads' && (
         <div className="space-y-4">
           {/* Action Buttons & Filter Toggle */}
@@ -3567,7 +3567,7 @@ const CRMPage = ({ onNavigate }) => {
 
                 {/* Value Range */}
                 <div className="space-y-1 flex-1 min-w-[200px]">
-                  <label className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider">Value ₹</label>
+                  <label className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wider">Value </label>
                   <div className="flex items-center gap-1.5">
                     <Input type="number" placeholder="Min" value={tempValueMin} onChange={(e) => setTempValueMin(e.target.value)} className="h-8 text-sm w-20 px-2" />
                     <span className="text-[var(--text-muted)] text-sm">-</span>
@@ -3774,7 +3774,7 @@ const CRMPage = ({ onNavigate }) => {
           <Modal
             open={!!selectedLead}
             onClose={() => setSelectedLead(null)}
-            title={`Lead Details — ${selectedLead.name || 'Unknown'}`}
+            title={`Lead Details  ${selectedLead.name || 'Unknown'}`}
             footer={
               <div className="flex gap-2 justify-end">
                 <Button variant="ghost" onClick={() => setSelectedLead(null)}>Close</Button>
@@ -3829,12 +3829,12 @@ const CRMPage = ({ onNavigate }) => {
               {/* Info grid - STRICT field mapping from selectedLead */}
               <div className="grid grid-cols-2 gap-2.5">
                 {[
-                  ['Email', selectedLead.email || '—', Mail, 'blue'],
-                  ['Phone', selectedLead.phone || '—', Phone, 'emerald'],
-                  ['City', `${selectedLead.city || '—'}${selectedLead.state ? `, ${selectedLead.state}` : ''}`, MapPin, 'purple'],
-                  ['Source', selectedLead.source || '—', BarChart2, 'amber'],
-                  ['Created Date', selectedLead.createdAt ? new Date(selectedLead.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—', Calendar, 'green'],
-                  ['Created Time', selectedLead.createdAt ? new Date(selectedLead.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false }) : '—', Clock, 'yellow'],
+                  ['Email', selectedLead.email || '', Mail, 'blue'],
+                  ['Phone', selectedLead.phone || '', Phone, 'emerald'],
+                  ['City', `${selectedLead.city || ''}${selectedLead.state ? `, ${selectedLead.state}` : ''}`, MapPin, 'purple'],
+                  ['Source', selectedLead.source || '', BarChart2, 'amber'],
+                  ['Created Date', selectedLead.createdAt ? new Date(selectedLead.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '', Calendar, 'green'],
+                  ['Created Time', selectedLead.createdAt ? new Date(selectedLead.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false }) : '', Clock, 'yellow'],
                 ].map(([label, val, Icon, colorKey]) => {
                   const colorMap = { blue: '#3b82f6', emerald: '#10b981', purple: '#a855f7', amber: '#f59e0b', green: '#22c55e', yellow: '#eab308', cyan: '#06b6d4', pink: '#ec4899' };
                   const c = colorMap[colorKey] || '#3b82f6';
@@ -3882,7 +3882,7 @@ const CRMPage = ({ onNavigate }) => {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-[var(--text-secondary)] leading-relaxed">{act.note || 'No description'}</p>
-                            <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{act.ts || act.timestamp || '—'} · {act.by || 'System'}</p>
+                            <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{act.ts || act.timestamp || ''}  {act.by || 'System'}</p>
                           </div>
                         </div>
                       ));
@@ -3906,7 +3906,7 @@ const CRMPage = ({ onNavigate }) => {
                             </div>
                             <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">{label}</span>
                           </div>
-                          <p className="text-xs font-semibold text-[var(--text-primary)] truncate" title={value}>{value !== undefined && value !== null ? value : '—'}</p>
+                          <p className="text-xs font-semibold text-[var(--text-primary)] truncate" title={value}>{value !== undefined && value !== null ? value : ''}</p>
                         </div>
                       );
                     })}
@@ -3923,7 +3923,7 @@ const CRMPage = ({ onNavigate }) => {
         <Modal
           open={showEditModal}
           onClose={() => { setShowEditModal(false); setEditingLead(null); }}
-          title={`Edit Lead — ${editingLead.name}`}
+          title={`Edit Lead  ${editingLead.name}`}
           footer={
             <div className="flex gap-2 justify-end">
               <Button variant="ghost" onClick={() => { setShowEditModal(false); setEditingLead(null); }}>Cancel</Button>
@@ -3982,7 +3982,7 @@ const CRMPage = ({ onNavigate }) => {
               </FormField>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="Value (₹)">
+              <FormField label="Value ()">
                 <Input
                   type="number"
                   value={editingLead.value || 0}
@@ -4071,7 +4071,7 @@ const CRMPage = ({ onNavigate }) => {
                       </div>
                       <div className="flex-1">
                         <p className="text-[var(--text-primary)]">{event.note}</p>
-                        <p className="text-[10px] text-[var(--text-muted)]">{formatTimeAgo(event.timestamp)} · {event.by}</p>
+                        <p className="text-[10px] text-[var(--text-muted)]">{formatTimeAgo(event.timestamp)}  {event.by}</p>
                       </div>
                     </div>
                   ))
@@ -4151,7 +4151,7 @@ const CRMPage = ({ onNavigate }) => {
         <Modal
           open={showScoreEditModal}
           onClose={() => { setShowScoreEditModal(false); setScoreEditingLead(null); }}
-          title={`Edit Score — ${scoreEditingLead.name}`}
+          title={`Edit Score  ${scoreEditingLead.name}`}
           footer={
             <div className="flex gap-2 justify-end">
               <Button variant="ghost" onClick={() => { setShowScoreEditModal(false); setScoreEditingLead(null); }}>Cancel</Button>
@@ -4306,7 +4306,7 @@ const CRMPage = ({ onNavigate }) => {
         <Modal
           open={showCreateProjectModal}
           onClose={handleCloseCreateProjectModal}
-          title={`Create Project — ${selectedCustomerForProject.name}`}
+          title={`Create Project  ${selectedCustomerForProject.name}`}
           footer={
             <div className="flex gap-2 justify-end">
               <Button variant="ghost" onClick={handleCloseCreateProjectModal}>Cancel</Button>
@@ -4328,7 +4328,7 @@ const CRMPage = ({ onNavigate }) => {
               </div>
               <div>
                 <p className="font-semibold text-[var(--green)]">{selectedCustomerForProject.name}</p>
-                <p className="text-xs text-[var(--green)]">{selectedCustomerForProject.email} · {selectedCustomerForProject.phone}</p>
+                <p className="text-xs text-[var(--green)]">{selectedCustomerForProject.email}  {selectedCustomerForProject.phone}</p>
               </div>
             </div>
 
@@ -4398,7 +4398,7 @@ const CRMPage = ({ onNavigate }) => {
 
             {/* Budget & Site Address */}
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="Budget (₹)">
+              <FormField label="Budget ()">
                 <Input
                   type="number"
                   value={projectForm.budget}

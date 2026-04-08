@@ -56,7 +56,9 @@ export class EmailService {
         };
       }
       
-      this.logger.log(`Sending email to: ${to}, subject: ${subject}, from: ${from || process.env.SMTP_USER}`);
+      this.logger.log(`[EmailService] Sending email to: ${to}, subject: ${subject}`);
+      this.logger.log(`[EmailService] From: ${from || process.env.SMTP_USER}`);
+      this.logger.log(`[EmailService] Attachments: ${attachments?.length || 0}`);
 
       // Ensure from address matches authenticated user (Gmail requirement)
       const fromAddress = from || process.env.SMTP_USER;
@@ -70,10 +72,11 @@ export class EmailService {
         attachments,
       });
 
-      this.logger.log(`Email sent successfully: ${info.messageId}`);
+      this.logger.log(`[EmailService] Email sent successfully: ${info.messageId}`);
       return { success: true, message: 'Email sent successfully', messageId: info.messageId };
     } catch (error: any) {
-      this.logger.error(`Error sending email: ${error?.message}`, error);
+      this.logger.error(`[EmailService] Error sending email: ${error?.message}`, error);
+      this.logger.error(`[EmailService] Stack: ${error?.stack}`);
       return { success: false, message: `Failed to send email: ${error?.message || 'Unknown error'}` };
     }
   }

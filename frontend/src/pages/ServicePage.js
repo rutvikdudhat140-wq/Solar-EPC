@@ -2386,7 +2386,7 @@ const TENANT_ID = 'solarcorp';
 
 
 
-/* ── Ticket stage defs ──────────────────────────────────────────────────────── */
+/*  Ticket stage defs  */
 
 
 
@@ -2962,7 +2962,7 @@ const TICKET_STAGES = [
 
 
 
-/* ── Priority helpers ───────────────────────────────────────────────────────── */
+/*  Priority helpers  */
 
 
 
@@ -3730,7 +3730,7 @@ const PriorityBadge = ({ value }) => {
 
 
 
-/* ── AMC badge ──────────────────────────────────────────────────────────────── */
+/*  AMC badge  */
 
 
 
@@ -4434,7 +4434,7 @@ const AmcBadge = ({ value }) => {
 
 
 
-/* ── Ticket card ────────────────────────────────────────────────────────────── */
+/*  Ticket card  */
 
 
 
@@ -6482,7 +6482,7 @@ const TicketCard = ({ ticket, onDragStart, onDragEnd, onClick }) => (
 
 
 
-/* ── Ticket Kanban board ─────────────────────────────────────────────────────── */
+/*  Ticket Kanban board  */
 
 
 
@@ -11898,7 +11898,7 @@ const TicketKanbanBoard = ({ tickets, onStageChange, onCardClick }) => {
 
 
 
-/* ── Table columns ──────────────────────────────────────────────────────────── */
+/*  Table columns  */
 
 
 
@@ -11930,7 +11930,7 @@ const TICKET_STATUS_FILTERS = ['All', 'Open', 'Scheduled', 'In Progress', 'Resol
 
 
 
-/* ══════════════════════════════════════════════════════════════════════════════
+/* 
 
 
 
@@ -11946,7 +11946,7 @@ const TICKET_STATUS_FILTERS = ['All', 'Open', 'Scheduled', 'In Progress', 'Resol
 
 
 
-══════════════════════════════════════════════════════════════════════════════ */
+ */
 
 
 
@@ -13266,7 +13266,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-    { key: 'amount', header: 'AMC Value', sortable: true, render: v => <span className="text-xs font-bold text-[var(--text-primary)]">₹{v?.toLocaleString?.('en-IN') ?? v}</span> },
+    { key: 'amount', header: 'AMC Value', sortable: true, render: v => <span className="text-xs font-bold text-[var(--text-primary)]">{v?.toLocaleString?.('en-IN') ?? v}</span> },
 
 
 
@@ -13394,7 +13394,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-      if (!v) return <span className="text-xs text-[var(--text-muted)]">—</span>;
+      if (!v) return <span className="text-xs text-[var(--text-muted)]"></span>;
 
 
 
@@ -13402,7 +13402,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-      if (isNaN(date.getTime())) return <span className="text-xs text-[var(--text-muted)]">—</span>;
+      if (isNaN(date.getTime())) return <span className="text-xs text-[var(--text-muted)]"></span>;
 
 
 
@@ -13494,7 +13494,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-        if (!nextVisit) return <span className="text-xs text-[var(--text-muted)]">—</span>; 
+        if (!nextVisit) return <span className="text-xs text-[var(--text-muted)]"></span>; 
 
 
 
@@ -13662,9 +13662,9 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
         
 
-        // Final fallback: show assignedTo value or '—'
+        // Final fallback: show assignedTo value or ''
 
-        return <span className="text-xs text-[var(--text-secondary)]">{engineerName || ticket.assignedTo || '—'}</span>;
+        return <span className="text-xs text-[var(--text-secondary)]">{engineerName || ticket.assignedTo || ''}</span>;
 
       }
 
@@ -55522,7 +55522,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-        subtitle={buttonView === 'dashboard' ? 'Real-time overview of tickets, AMC contracts, visits, and team performance' : 'Support tickets · maintenance · AMC contracts · warranty claims'}
+        subtitle={buttonView === 'dashboard' ? 'Real-time overview of tickets, AMC contracts, visits, and team performance' : 'Support tickets  maintenance  AMC contracts  warranty claims'}
 
 
 
@@ -60057,7 +60057,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <p className="text-[10px] text-gray-400 mt-1">{visit.customer || '—'}</p>
+                    <p className="text-[10px] text-gray-400 mt-1">{visit.customer || ''}</p>
 
 
 
@@ -60073,7 +60073,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <p className="text-[10px] text-gray-400">{visit.scheduled_date || visit.scheduledDate || '—'}</p>
+                    <p className="text-[10px] text-gray-400">{visit.scheduled_date || visit.scheduledDate || ''}</p>
 
 
 
@@ -60537,7 +60537,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <p className="text-[10px] text-gray-400 mt-1">{contract.customer || '—'}</p>
+                    <p className="text-[10px] text-gray-400 mt-1">{contract.customer || ''}</p>
 
 
 
@@ -60553,7 +60553,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <p className="text-[10px] text-gray-400">{contract.site || '—'}</p>
+                    <p className="text-[10px] text-gray-400">{contract.site || ''}</p>
 
 
 
@@ -61001,7 +61001,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                    <span className="text-[10px] text-emerald-500">●</span>
+                    <span className="text-[10px] text-emerald-500">�</span>
 
 
 
@@ -68439,7 +68439,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                          <td className="py-3 px-3 text-xs font-mono text-[var(--accent-light)]">{visit.contract_id || visit.contractId || '—'}</td>
+                          <td className="py-3 px-3 text-xs font-mono text-[var(--accent-light)]">{visit.contract_id || visit.contractId || ''}</td>
 
 
 
@@ -68509,7 +68509,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
                               // Priority 1: Visit's own customer field
 
-                              if (visit.customer && visit.customer !== 'Unknown' && visit.customer !== '—') return visit.customer;
+                              if (visit.customer && visit.customer !== 'Unknown' && visit.customer !== '') return visit.customer;
 
                               
 
@@ -68527,7 +68527,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
                               
 
-                              return '—';
+                              return '';
 
                             })()}
 
@@ -68601,7 +68601,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
                               // Priority 1: Visit's own site field
 
-                              if (visit.site && visit.site !== 'Unknown' && visit.site !== '—') return visit.site;
+                              if (visit.site && visit.site !== 'Unknown' && visit.site !== '') return visit.site;
 
                               
 
@@ -68631,7 +68631,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
                               
 
-                              return ticket?.site || '—';
+                              return ticket?.site || '';
 
                             })()}
 
@@ -68699,7 +68699,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                          <td className="py-3 px-3 text-xs text-[var(--text-primary)]">{visit.visit_type || visit.visitType || '—'}</td>
+                          <td className="py-3 px-3 text-xs text-[var(--text-primary)]">{visit.visit_type || visit.visitType || ''}</td>
 
 
 
@@ -68891,7 +68891,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                              <span>{visit.scheduled_date || visit.scheduledDate || '—'}</span>
+                              <span>{visit.scheduled_date || visit.scheduledDate || ''}</span>
 
 
 
@@ -68955,7 +68955,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                              <span className="text-[var(--text-muted)] text-[10px]">{visit.scheduled_time || visit.scheduledTime || '—'}</span>
+                              <span className="text-[var(--text-muted)] text-[10px]">{visit.scheduled_time || visit.scheduledTime || ''}</span>
 
 
 
@@ -69147,7 +69147,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                          <td className="py-3 px-3 text-xs text-[var(--text-primary)]">{visit.engineer_name || visit.engineerName || visit.engineer_id || visit.engineerId || '—'}</td>
+                          <td className="py-3 px-3 text-xs text-[var(--text-primary)]">{visit.engineer_name || visit.engineerName || visit.engineer_id || visit.engineerId || ''}</td>
 
 
 
@@ -75749,7 +75749,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-        <Modal open={!!selected} onClose={() => setSelected(null)} title={`Ticket — ${selected.id}`}
+        <Modal open={!!selected} onClose={() => setSelected(null)} title={`Ticket  ${selected.id}`}
 
 
 
@@ -76675,7 +76675,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
                   }
 
-                  return engineerName || selected.assignedTo || '—';
+                  return engineerName || selected.assignedTo || '';
 
                 })()],
 
@@ -76839,7 +76839,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  if (!nextVisit) return '—';
+                  if (!nextVisit) return '';
 
 
 
@@ -76983,7 +76983,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                ['Resolved', selected.resolved ?? '—'],
+                ['Resolved', selected.resolved ?? ''],
 
 
 
@@ -78327,7 +78327,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-          title={`Edit Ticket — ${editModal.ticket.id}`}
+          title={`Edit Ticket  ${editModal.ticket.id}`}
 
 
 
@@ -83241,7 +83241,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-          title={`Create Service Ticket — ${serviceTicketModal.contract.id}`}
+          title={`Create Service Ticket  ${serviceTicketModal.contract.id}`}
 
 
 
@@ -88475,7 +88475,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-          title={`Edit AMC Contract — ${amcEditModal.contract.id}`}
+          title={`Edit AMC Contract  ${amcEditModal.contract.id}`}
 
 
 
@@ -91483,7 +91483,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-              <FormField label="Amount (₹)">
+              <FormField label="Amount ()">
 
 
 
@@ -95711,7 +95711,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-            title={amcProjectData ? `Project — ${amcProjectData.id}` : 'Project Details'}
+            title={amcProjectData ? `Project  ${amcProjectData.id}` : 'Project Details'}
 
 
 
@@ -95781,11 +95781,11 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  {[['Customer', amcProjectData.customerName], ['Email', amcProjectData.email || '—'], ['Mobile', amcProjectData.mobileNumber || '—'], ['Site', amcProjectData.site], ['System Size', `${amcProjectData.systemSize} kW`], ['Project Manager', amcProjectData.pm],
+                  {[['Customer', amcProjectData.customerName], ['Email', amcProjectData.email || ''], ['Mobile', amcProjectData.mobileNumber || ''], ['Site', amcProjectData.site], ['System Size', `${amcProjectData.systemSize} kW`], ['Project Manager', amcProjectData.pm],
 
-                  ['Status', <StatusBadge domain="project" value={amcProjectData.status} />], ['Value', `₹${(amcProjectData.value / 100000).toFixed(1)}L`],
+                  ['Status', <StatusBadge domain="project" value={amcProjectData.status} />], ['Value', `${(amcProjectData.value / 100000).toFixed(1)}L`],
 
-                  ['Payment Terms %', amcProjectData.paymentTerms || '—'], ['Visit in Month', amcProjectData.visitsPerMonth || '—'], ['Total Visit', amcProjectData.totalVisits || '—'],
+                  ['Payment Terms %', amcProjectData.paymentTerms || ''], ['Visit in Month', amcProjectData.visitsPerMonth || ''], ['Total Visit', amcProjectData.totalVisits || ''],
 
 
 
@@ -95991,7 +95991,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                            <div className="text-[10px] text-[var(--text-muted)]">Qty: {m.quantity} | Issued: {m.issuedDate || '—'}</div>
+                            <div className="text-[10px] text-[var(--text-muted)]">Qty: {m.quantity} | Issued: {m.issuedDate || ''}</div>
 
 
 
@@ -96291,7 +96291,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                      scheduleVisitProjectData?.email || '—'
+                      scheduleVisitProjectData?.email || ''
 
 
 
@@ -96341,7 +96341,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                      scheduleVisitProjectData?.mobileNumber || '—'
+                      scheduleVisitProjectData?.mobileNumber || ''
 
 
 
@@ -96373,7 +96373,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div className="font-semibold text-[var(--text-primary)]">{scheduleVisitModal.contract.site || scheduleVisitProjectData?.site || '—'}</div>
+                  <div className="font-semibold text-[var(--text-primary)]">{scheduleVisitModal.contract.site || scheduleVisitProjectData?.site || ''}</div>
 
 
 
@@ -96395,7 +96395,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div className="font-semibold text-[var(--text-primary)]">{scheduleVisitModal.contract.customer || scheduleVisitModal.contract.customerName || scheduleVisitProjectData?.customerName || '—'}</div>
+                  <div className="font-semibold text-[var(--text-primary)]">{scheduleVisitModal.contract.customer || scheduleVisitModal.contract.customerName || scheduleVisitProjectData?.customerName || ''}</div>
 
 
 
@@ -96413,7 +96413,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                  <div className="font-semibold text-[var(--text-primary)]">{(scheduleVisitModal.contract.systemSize || scheduleVisitProjectData?.systemSize || '—')} kW</div>
+                  <div className="font-semibold text-[var(--text-primary)]">{(scheduleVisitModal.contract.systemSize || scheduleVisitProjectData?.systemSize || '')} kW</div>
 
 
 
@@ -96719,7 +96719,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.contract_id || selectedVisit.contractId || '—'}</p>
+                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.contract_id || selectedVisit.contractId || ''}</p>
 
 
 
@@ -96735,7 +96735,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.customer || '—'}</p>
+                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.customer || ''}</p>
 
 
 
@@ -96751,7 +96751,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.site || '—'}</p>
+                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.site || ''}</p>
 
 
 
@@ -96767,7 +96767,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.visit_type || selectedVisit.visitType || '—'}</p>
+                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.visit_type || selectedVisit.visitType || ''}</p>
 
 
 
@@ -96783,7 +96783,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.scheduled_date || selectedVisit.scheduledDate || '—'}</p>
+                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.scheduled_date || selectedVisit.scheduledDate || ''}</p>
 
 
 
@@ -96799,7 +96799,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.scheduled_time || selectedVisit.scheduledTime || '—'}</p>
+                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.scheduled_time || selectedVisit.scheduledTime || ''}</p>
 
 
 
@@ -96815,7 +96815,7 @@ const ServicePage = ({ onNavigate, initialTab }) => {
 
 
 
-                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.engineer_name || selectedVisit.engineerName || selectedVisit.engineer_id || selectedVisit.engineerId || '—'}</p>
+                <p className="text-sm font-medium text-[var(--text-primary)]">{selectedVisit.engineer_name || selectedVisit.engineerName || selectedVisit.engineer_id || selectedVisit.engineerId || ''}</p>
 
 
 

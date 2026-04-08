@@ -146,8 +146,8 @@ const ToastItem = ({ toast, onRemove, index }) => {
           <button
             onClick={(e) => { e.stopPropagation(); handleExit(); }}
             className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center
-              text-white/50 hover:text-white hover:bg-white/20
-              active:bg-white/30 transition-all duration-200
+              text-white/50 hover:text-white hover:bg-[var(--bg-surface)]/20
+              active:bg-[var(--bg-surface)]/30 transition-all duration-200
               focus:outline-none focus:ring-2 focus:ring-white/30"
             aria-label="Close notification"
           >
@@ -261,19 +261,19 @@ const createToastElement = (type, title, message, duration) => {
   const configs = {
     error: {
       gradient: 'linear-gradient(135deg, rgba(244,63,94,0.95) 0%, rgba(239,68,68,0.95) 50%, rgba(220,38,38,0.95) 100%)',
-      icon: '⚠️', iconBg: 'rgba(244,63,94,0.25)', progress: '#fb7185', border: 'rgba(244,63,94,0.4)',
+      icon: 'âš ï¸', iconBg: 'rgba(244,63,94,0.25)', progress: '#fb7185', border: 'rgba(244,63,94,0.4)',
     },
     warning: {
       gradient: 'linear-gradient(135deg, rgba(245,158,11,0.95) 0%, rgba(249,115,22,0.95) 50%, rgba(234,88,12,0.95) 100%)',
-      icon: '⚡', iconBg: 'rgba(245,158,11,0.25)', progress: '#fbbf24', border: 'rgba(245,158,11,0.4)',
+      icon: 'âš¡', iconBg: 'rgba(245,158,11,0.25)', progress: '#fbbf24', border: 'rgba(245,158,11,0.4)',
     },
     success: {
       gradient: 'linear-gradient(135deg, rgba(16,185,129,0.95) 0%, rgba(20,184,166,0.95) 50%, rgba(13,148,136,0.95) 100%)',
-      icon: '✓', iconBg: 'rgba(16,185,129,0.25)', progress: '#34d399', border: 'rgba(16,185,129,0.4)',
+      icon: 'âœ“', iconBg: 'rgba(16,185,129,0.25)', progress: '#34d399', border: 'rgba(16,185,129,0.4)',
     },
     info: {
       gradient: 'linear-gradient(135deg, rgba(59,130,246,0.95) 0%, rgba(99,102,241,0.95) 50%, rgba(79,70,229,0.95) 100%)',
-      icon: 'ℹ', iconBg: 'rgba(59,130,246,0.25)', progress: '#60a5fa', border: 'rgba(59,130,246,0.4)',
+      icon: 'â„¹', iconBg: 'rgba(59,130,246,0.25)', progress: '#60a5fa', border: 'rgba(59,130,246,0.4)',
     },
   };
   
@@ -298,7 +298,7 @@ const createToastElement = (type, title, message, duration) => {
         <div style="color: white; font-weight: 600; font-size: 15px; line-height: 1.3; letter-spacing: -0.01em; text-shadow: 0 1px 2px rgba(0,0,0,0.15);">${title}</div>
         <div style="color: rgba(255,255,255,0.85); font-size: 13px; line-height: 1.5; margin-top: 4px; font-weight: 500;">${message}</div>
       </div>
-      <button class="toast-close" style="flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.5); background: transparent; border: none; cursor: pointer; font-size: 18px; font-weight: 300; transition: all 0.2s ease;" aria-label="Close">×</button>
+      <button class="toast-close" style="flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.5); background: transparent; border: none; cursor: pointer; font-size: 18px; font-weight: 300; transition: all 0.2s ease;" aria-label="Close">Ã—</button>
     </div>
     <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: rgba(0,0,0,0.25); border-radius: 0 0 16px 16px; overflow: hidden;">
       <div class="premium-toast-progress" style="height: 100%; background: ${c.progress}; box-shadow: 0 0 8px ${c.progress}; animation-duration: ${duration}ms;"></div>

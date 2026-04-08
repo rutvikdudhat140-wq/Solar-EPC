@@ -3,15 +3,15 @@ import { X, Bell, Calendar, Clock, RotateCcw, Repeat, User, AlertCircle, Mail, M
 import { useReminders } from '../context/ReminderContext';
 
 const MODULES = [
-  { id: 'crm', label: 'CRM / Sales', icon: '👥' },
-  { id: 'hrm', label: 'HRM', icon: '👔' },
-  { id: 'finance', label: 'Finance', icon: '💰' },
-  { id: 'inventory', label: 'Inventory', icon: '📦' },
-  { id: 'procurement', label: 'Procurement', icon: '🛒' },
-  { id: 'project', label: 'Projects', icon: '📋' },
-  { id: 'service', label: 'Service', icon: '🔧' },
-  { id: 'installation', label: 'Installation', icon: '🏗️' },
-  { id: 'general', label: 'General', icon: '📌' },
+  { id: 'crm', label: 'CRM / Sales', icon: 'Ã°Å¸â€˜Â¥' },
+  { id: 'hrm', label: 'HRM', icon: 'Ã°Å¸â€˜â€' },
+  { id: 'finance', label: 'Finance', icon: 'Ã°Å¸â€™Â°' },
+  { id: 'inventory', label: 'Inventory', icon: 'Ã°Å¸â€œÂ¦' },
+  { id: 'procurement', label: 'Procurement', icon: 'Ã°Å¸â€ºâ€™' },
+  { id: 'project', label: 'Projects', icon: 'Ã°Å¸â€œâ€¹' },
+  { id: 'service', label: 'Service', icon: 'Ã°Å¸â€Â§' },
+  { id: 'installation', label: 'Installation', icon: 'Ã°Å¸Ââ€”Ã¯Â¸Â' },
+  { id: 'general', label: 'General', icon: 'Ã°Å¸â€œÅ’' },
 ];
 
 const PRIORITIES = [
@@ -246,14 +246,14 @@ export const CreateReminderModal = ({ isOpen, onClose, assignedUsers = [] }) => 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-[var(--bg-surface)] rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <div className="flex items-center gap-2">
             <Bell className="w-5 h-5 text-blue-600" />
             <h2 className="text-lg font-semibold">Create Custom Reminder</h2>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded">
+          <button onClick={onClose} className="p-1 hover:bg-[var(--bg-overlay)] rounded">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -341,12 +341,12 @@ export const CreateReminderModal = ({ isOpen, onClose, assignedUsers = [] }) => 
                     type="button"
                     onClick={() => handleInputChange('triggerType', type.id)}
                     className={`p-3 border rounded-lg text-left transition-colors ${
-                      isSelected ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'
+                      isSelected ? 'border-blue-500 bg-blue-50' : 'hover:bg-[var(--bg-elevated)]'
                     }`}
                   >
-                    <Icon className={`w-5 h-5 mb-2 ${isSelected ? 'text-blue-600' : 'text-gray-500'}`} />
+                    <Icon className={`w-5 h-5 mb-2 ${isSelected ? 'text-blue-600' : 'text-[var(--text-muted)]'}`} />
                     <div className={`font-medium ${isSelected ? 'text-blue-700' : ''}`}>{type.label}</div>
-                    <div className="text-xs text-gray-500 mt-1">{type.desc}</div>
+                    <div className="text-xs text-[var(--text-muted)] mt-1">{type.desc}</div>
                   </button>
                 );
               })}
@@ -354,7 +354,7 @@ export const CreateReminderModal = ({ isOpen, onClose, assignedUsers = [] }) => 
           </div>
 
           {/* Dynamic Trigger Configuration */}
-          <div className="border-t pt-4 bg-gray-50 rounded-lg p-4">
+          <div className="border-t pt-4 bg-[var(--bg-elevated)] rounded-lg p-4">
             {formData.triggerType === 'date' && (
               <div className="space-y-4">
                 <h4 className="font-medium flex items-center gap-2">
@@ -426,7 +426,7 @@ export const CreateReminderModal = ({ isOpen, onClose, assignedUsers = [] }) => 
                     </select>
                   </div>
                 </div>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-[var(--text-muted)]">
                   Example: Remind {formData.offsetValue} {formData.offsetUnit} {formData.offsetDirection} event
                 </p>
               </div>
@@ -466,7 +466,7 @@ export const CreateReminderModal = ({ isOpen, onClose, assignedUsers = [] }) => 
                               className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
                                 isSelected 
                                   ? 'bg-blue-600 text-white' 
-                                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                  : 'bg-gray-200 text-[var(--text-secondary)] hover:bg-gray-300'
                               }`}
                             >
                               {day.label}
@@ -501,7 +501,7 @@ export const CreateReminderModal = ({ isOpen, onClose, assignedUsers = [] }) => 
                 className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors ${
                   formData.notificationChannels.includes('in-app')
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'hover:bg-gray-50'
+                    : 'hover:bg-[var(--bg-elevated)]'
                 }`}
               >
                 <Bell className="w-4 h-4" />
@@ -513,7 +513,7 @@ export const CreateReminderModal = ({ isOpen, onClose, assignedUsers = [] }) => 
                 className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors ${
                   formData.notificationChannels.includes('email')
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'hover:bg-gray-50'
+                    : 'hover:bg-[var(--bg-elevated)]'
                 }`}
               >
                 <Mail className="w-4 h-4" />
@@ -525,7 +525,7 @@ export const CreateReminderModal = ({ isOpen, onClose, assignedUsers = [] }) => 
                 className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors ${
                   formData.notificationChannels.includes('sms')
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'hover:bg-gray-50'
+                    : 'hover:bg-[var(--bg-elevated)]'
                 }`}
               >
                 <Smartphone className="w-4 h-4" />
@@ -539,7 +539,7 @@ export const CreateReminderModal = ({ isOpen, onClose, assignedUsers = [] }) => 
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 border rounded-lg hover:bg-[var(--bg-elevated)]"
             >
               Cancel
             </button>

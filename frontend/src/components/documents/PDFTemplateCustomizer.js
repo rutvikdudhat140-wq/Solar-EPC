@@ -463,7 +463,7 @@ const PDFTemplateCustomizer = ({
               <Eye size={16} />
               Live Preview
             </h4>
-            <div className="aspect-[3/4] rounded-lg border border-[var(--border-base)] bg-white p-4 overflow-hidden">
+            <div className="aspect-[3/4] rounded-lg border border-[var(--border-base)] bg-[var(--bg-surface)] p-4 overflow-hidden">
               {/* Mini preview representation */}
               <div className="h-full flex flex-col gap-2 text-[8px]">
                 {/* Preview Header */}
@@ -502,7 +502,7 @@ const PDFTemplateCustomizer = ({
                       borderLeft: `3px solid rgb(${(config?.colors?.primary || [0, 102, 102]).join(',')})`
                     }}
                   >
-                    <div className="font-bold text-gray-600">BILL TO:</div>
+                    <div className="font-bold text-[var(--text-secondary)]">BILL TO:</div>
                     <div>ABC Corporation</div>
                     <div className="text-gray-400">Mumbai, Maharashtra</div>
                   </div>
@@ -517,12 +517,12 @@ const PDFTemplateCustomizer = ({
                     >
                       Items Table
                     </div>
-                    <div className="border border-gray-200">
-                      <div className="grid grid-cols-4 gap-1 p-1 bg-gray-50 text-gray-400">
+                    <div className="border border-[var(--border-base)]">
+                      <div className="grid grid-cols-4 gap-1 p-1 bg-[var(--bg-elevated)] text-gray-400">
                         <span>Sr</span><span>Item</span><span>Qty</span><span>Price</span>
                       </div>
-                      <div className="grid grid-cols-4 gap-1 p-1 text-gray-600">
-                        <span>1</span><span>Solar Panel</span><span>10</span><span>₹25,000</span>
+                      <div className="grid grid-cols-4 gap-1 p-1 text-[var(--text-secondary)]">
+                        <span>1</span><span>Solar Panel</span><span>10</span><span>Ã¢â€šÂ¹25,000</span>
                       </div>
                     </div>
                   </div>
@@ -540,14 +540,14 @@ const PDFTemplateCustomizer = ({
                       className="text-white p-1 rounded font-bold mt-1"
                       style={{ backgroundColor: `rgb(${(config?.colors?.primary || [0, 102, 102]).join(',')})` }}
                     >
-                      Total: ₹2,95,000
+                      Total: Ã¢â€šÂ¹2,95,000
                     </div>
                   </div>
                 )}
 
                 {/* Preview Footer */}
                 {config?.sections?.footer && (
-                  <div className="mt-auto pt-2 border-t border-gray-200">
+                  <div className="mt-auto pt-2 border-t border-[var(--border-base)]">
                     <div className="flex justify-between text-gray-400">
                       <span>Authorized Signature</span>
                       <span>Customer Acceptance</span>
@@ -582,12 +582,12 @@ const PDFTemplateCustomizer = ({
 
           {/* Tips */}
           <div className="glass-card p-3 bg-amber-500/5 border-amber-500/20">
-            <p className="text-xs text-amber-600 font-medium mb-1">💡 Tips:</p>
+            <p className="text-xs text-amber-600 font-medium mb-1">Ã°Å¸â€™Â¡ Tips:</p>
             <ul className="text-xs text-[var(--text-muted)] space-y-1">
-              <li>• Use light colors for better printing</li>
-              <li>• Keep header style consistent</li>
-              <li>• Disable unused sections to save space</li>
-              <li>• A4 format recommended for printing</li>
+              <li>Ã¢â‚¬Â¢ Use light colors for better printing</li>
+              <li>Ã¢â‚¬Â¢ Keep header style consistent</li>
+              <li>Ã¢â‚¬Â¢ Disable unused sections to save space</li>
+              <li>Ã¢â‚¬Â¢ A4 format recommended for printing</li>
             </ul>
           </div>
         </div>

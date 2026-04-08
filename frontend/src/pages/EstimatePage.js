@@ -16,7 +16,7 @@ import { CURRENCY } from '../config/app.config';
 import { cn } from '../lib/utils';
 import { EquipmentLibrary } from '../components/estimates/EquipmentLibrary';
 import { CompanyHeader, DocumentHeader } from '../components/documents/CompanyHeader';
-import { downloadEstimatePDF, downloadProposalPDF } from '../lib/pdfGenerator';
+import { downloadEstimatePDF, downloadProposalPDF, generateEstimatePDF } from '../lib/pdfGenerator';
 import { settingsApi } from '../services/settingsApi';
 import { toast } from '../components/ui/Toast';
 import api from '../lib/apiClient';
@@ -84,120 +84,6 @@ const EQUIPMENT_CATEGORIES = [
   { value: 'misc', label: 'Miscellaneous' },
 ];
 
-// ── Mock Estimates Data ────────────────────────────────────────────────────────
-const MOCK_ESTIMATES = [
-  {
-    id: 'EST-001',
-    estimateNumber: 'EST-2026-0001',
-    customerName: 'ABC Corporation',
-    companyName: 'ABC Corp Ltd',
-    customerEmail: 'contact@abccorp.com',
-    customerPhone: '+91 9876543210',
-    customerAddress: '123 Business Park, Mumbai',
-    projectLocation: 'Mumbai, Maharashtra',
-    projectName: '5kW Rooftop Solar Installation',
-    systemCapacity: 5,
-    projectType: 'commercial',
-    installationType: 'rooftop',
-    projectDescription: 'Grid-tied solar system for office building',
-    items: [
-      { name: 'Solar Panel 550W', description: 'High efficiency monocrystalline', category: 'solar_panel', brand: 'Waaree', model: 'WS-550', quantity: 10, unitPrice: 15000, total: 150000 },
-      { name: 'String Inverter 5kW', description: '3-phase grid-tied inverter', category: 'inverter', brand: 'Growatt', model: 'MAX 50KTL3 LV', quantity: 1, unitPrice: 65000, total: 65000 },
-      { name: 'Mounting Structure', description: 'Aluminum structure with clamps', category: 'structure', brand: 'Sterling', model: 'SS-RF-01', quantity: 1, unitPrice: 25000, total: 25000 },
-      { name: 'DC Cable 4mm', description: 'Solar DC cable 100m', category: 'cable_dc', brand: 'Polycab', model: 'PV-4MM', quantity: 1, unitPrice: 12000, total: 12000 },
-      { name: 'AC Cable 6mm', description: 'AC cable 50m', category: 'cable_ac', brand: 'Polycab', model: 'AC-6MM', quantity: 1, unitPrice: 8000, total: 8000 },
-      { name: 'Earthing Kit', description: 'Complete earthing system', category: 'earthing', brand: 'Generic', model: 'EARTH-01', quantity: 1, unitPrice: 15000, total: 15000 },
-      { name: 'Lightning Arrestor', description: 'Class B surge protection', category: 'lightning', brand: 'Phoenix', model: 'LA-100', quantity: 1, unitPrice: 10000, total: 10000 },
-    ],
-    equipmentCost: 285000,
-    installationCost: 45000,
-    engineeringCost: 15000,
-    transportationCost: 8000,
-    miscellaneousCost: 5000,
-    subtotal: 358000,
-    gstRate: 18,
-    gstAmount: 64440,
-    total: 422440,
-    status: 'accepted',
-    notes: 'Net metering application to be done by client',
-    terms: '50% advance, 50% on completion. 5 year warranty on installation.',
-    createdAt: '2026-01-15',
-    version: 1,
-  },
-  {
-    id: 'EST-002',
-    estimateNumber: 'EST-2026-0002',
-    customerName: 'Rajesh Sharma',
-    companyName: '',
-    customerEmail: 'r.sharma@email.com',
-    customerPhone: '+91 9876543212',
-    customerAddress: '45 Green Valley, Pune',
-    projectLocation: 'Pune, Maharashtra',
-    projectName: '3kW Home Solar System',
-    systemCapacity: 3,
-    projectType: 'residential',
-    installationType: 'rooftop',
-    projectDescription: 'Residential rooftop solar with battery backup',
-    items: [
-      { name: 'Solar Panel 440W', description: 'Monocrystalline panels', category: 'solar_panel', brand: 'Adani', model: 'AS-440', quantity: 7, unitPrice: 12000, total: 84000 },
-      { name: 'Hybrid Inverter 3kW', description: 'Solar hybrid inverter', category: 'inverter', brand: 'Luminous', model: 'NXT 3KW', quantity: 1, unitPrice: 45000, total: 45000 },
-      { name: 'Battery 5kWh', description: 'Lithium battery backup', category: 'battery', brand: 'Exide', model: 'Li-5KWH', quantity: 1, unitPrice: 85000, total: 85000 },
-      { name: 'Mounting Structure', description: 'GI structure for RCC roof', category: 'structure', brand: 'Tata', model: 'GI-RCC', quantity: 1, unitPrice: 18000, total: 18000 },
-      { name: 'Cables & Accessories', description: 'DC/AC cables, connectors', category: 'accessories', brand: 'Various', model: 'MIX', quantity: 1, unitPrice: 15000, total: 15000 },
-    ],
-    equipmentCost: 247000,
-    installationCost: 28000,
-    engineeringCost: 8000,
-    transportationCost: 5000,
-    miscellaneousCost: 3000,
-    subtotal: 291000,
-    gstRate: 18,
-    gstAmount: 52380,
-    total: 343380,
-    status: 'sent',
-    notes: 'Subsidy application assistance provided',
-    terms: '40% advance, 60% on commissioning.',
-    createdAt: '2026-02-10',
-    version: 1,
-  },
-  {
-    id: 'EST-003',
-    estimateNumber: 'EST-2026-0003',
-    customerName: 'Metro Industries',
-    companyName: 'Metro Industries Pvt Ltd',
-    customerEmail: 'projects@metroind.com',
-    customerPhone: '+91 9876543215',
-    customerAddress: '78 Industrial Area, Ahmedabad',
-    projectLocation: 'Ahmedabad, Gujarat',
-    projectName: '100kW Industrial Solar Plant',
-    systemCapacity: 100,
-    projectType: 'industrial',
-    installationType: 'ground_mounted',
-    projectDescription: 'Ground-mounted solar power plant for factory',
-    items: [
-      { name: 'Solar Panel 550W', description: 'High wattage panels', category: 'solar_panel', brand: 'Jinko', model: 'JKM550M', quantity: 182, unitPrice: 14000, total: 2548000 },
-      { name: 'Central Inverter 100kW', description: 'Industrial inverter', category: 'inverter', brand: 'SMA', model: 'Sunny Central 100', quantity: 1, unitPrice: 450000, total: 450000 },
-      { name: 'Ground Mount Structure', description: 'Hot-dip galvanized', category: 'structure', brand: 'Schletter', model: 'FixGrid-G', quantity: 1, unitPrice: 350000, total: 350000 },
-      { name: 'HT Cable 35mm', description: 'HT cable 500m', category: 'cable_ac', brand: 'KEI', model: 'HT-35MM', quantity: 1, unitPrice: 85000, total: 85000 },
-      { name: 'Transformers', description: 'Step-up transformer', category: 'misc', brand: 'Voltamp', model: 'VTR-500', quantity: 1, unitPrice: 180000, total: 180000 },
-      { name: 'SCADA System', description: 'Monitoring system', category: 'accessories', brand: 'Wonderware', model: 'SCADA-PRO', quantity: 1, unitPrice: 120000, total: 120000 },
-    ],
-    equipmentCost: 3733000,
-    installationCost: 280000,
-    engineeringCost: 95000,
-    transportationCost: 45000,
-    miscellaneousCost: 35000,
-    subtotal: 4188000,
-    gstRate: 18,
-    gstAmount: 753840,
-    total: 4941840,
-    status: 'draft',
-    notes: 'Awaiting site survey completion',
-    terms: '30% advance, 40% on material delivery, 30% on commissioning',
-    createdAt: '2026-03-01'
-  }
-];
-
 // ── Main Estimate Page Component ──────────────────────────────────────────────
 const EstimatePage = () => {
   const [estimates, setEstimates] = useState([]);
@@ -210,6 +96,7 @@ const EstimatePage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [actionMenuOpen, setActionMenuOpen] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [sendingEmailId, setSendingEmailId] = useState(null);
 
   const fetchEstimates = async () => {
     try {
@@ -227,7 +114,24 @@ const EstimatePage = () => {
           projectName: d.title || d.projectName,
           items: d.items || [],
           total: d.total || d.totalValue || 0,
+          subtotal: d.subtotal || d.totalBeforeTax || 0,
+          gstRate: d.taxRate || d.gstRate || 18,
+          gstAmount: d.taxAmount || d.gstAmount || 0,
+          discount: d.discount || 0,
+          discountType: d.discountType || 'percentage',
+          equipmentCost: d.equipmentCost || 0,
+          installationCost: d.installationCost || 0,
+          engineeringCost: d.engineeringCost || 0,
+          transportationCost: d.transportationCost || 0,
+          miscellaneousCost: d.miscellaneousCost || 0,
           customerName: d.customerName,
+          customerEmail: d.customerEmail,
+          customerPhone: d.customerPhone,
+          customerAddress: d.customerAddress,
+          projectLocation: d.projectLocation,
+          systemCapacity: d.systemCapacity,
+          projectType: d.projectType,
+          installationType: d.installationType,
           status: d.status?.toLowerCase() || 'draft',
           createdAt: d.createdAt
         }));
@@ -362,32 +266,76 @@ const EstimatePage = () => {
     downloadProposalPDF(estimate);
   };
 
-  const handleSendEstimate = (id) => {
+  const handleSendEstimate = async (id) => {
     const estimate = estimates.find((e) => e.id === id);
-    const to = estimate?.customerEmail || '';
-    const subject = `Estimate ${estimate?.estimateNumber || id}`;
-    const bodyLines = [
-      `Hello ${estimate?.customerName || ''},`,
-      '',
-      `Please find the estimate details below:`,
-      '',
-      `Estimate No: ${estimate?.estimateNumber || id}`,
-      `Project: ${estimate?.projectName || ''}`,
-      `Location: ${estimate?.projectLocation || ''}`,
-      `System Capacity: ${estimate?.systemCapacity || ''} kW`,
-      `Project Type: ${estimate?.projectType || ''}`,
-      `Installation Type: ${estimate?.installationType || ''}`,
-      `Total: ${fmt(estimate?.total || 0)}`,
-      '',
-      'Thanks,',
-    ];
-    const body = bodyLines.join('\n');
-    const mailto = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailto;
+    if (!estimate) {
+      toast.error('Estimate not found');
+      return;
+    }
 
-    setEstimates(estimates.map(e =>
-      e.id === id ? { ...e, status: 'sent', sentAt: new Date().toISOString() } : e
-    ));
+    console.log('[handleSendEstimate] Sending estimate:', estimate);
+    console.log('[handleSendEstimate] Estimate ID being used:', id);
+    console.log('[handleSendEstimate] Estimate documentId:', estimate.estimateNumber);
+
+    const recipientEmail = estimate.customerEmail;
+    if (!recipientEmail) {
+      toast.error('No customer email available');
+      return;
+    }
+
+    if (!window.confirm(`Send estimate PDF to ${recipientEmail}?`)) {
+      return;
+    }
+
+    setSendingEmailId(id);
+    try {
+      console.log('[handleSendEstimate] Step 1: Generating PDF...');
+      // Generate PDF blob
+      const pdfBlob = generateEstimatePDF(estimate);
+      console.log('[handleSendEstimate] Step 2: PDF generated, size:', pdfBlob.size);
+      
+      // Convert blob to base64
+      const reader = new FileReader();
+      const pdfBase64 = await new Promise((resolve, reject) => {
+        reader.onload = () => {
+          console.log('[handleSendEstimate] Step 3: Converted to base64');
+          resolve(reader.result.split(',')[1]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(pdfBlob);
+      });
+
+      // Try using the estimateNumber (documentId) first
+      const docId = estimate.estimateNumber || id;
+      console.log('[handleSendEstimate] Step 4: Calling API with docId:', docId);
+
+      // Call backend API to send email with PDF - use estimateNumber as documentId
+      const response = await api.post(`/documents/${docId}/send-pdf`, {
+        sendDto: {
+          email: recipientEmail,
+        },
+        pdfBase64: pdfBase64,
+      }, { timeout: 60000 });
+
+      console.log('[handleSendEstimate] API Response:', response);
+
+      if (response?.success) {
+        // Update local state
+        setEstimates(estimates.map(e =>
+          e.id === id ? { ...e, status: 'sent', sentAt: new Date().toISOString() } : e
+        ));
+        toast.success(`Estimate sent to ${recipientEmail}`);
+      } else {
+        throw new Error(response?.message || 'Failed to send email');
+      }
+    } catch (error) {
+      console.error('[handleSendEstimate] Error:', error);
+      console.error('[handleSendEstimate] Error response:', error.response?.data);
+      const errorMsg = error.response?.data?.message || error.response?.data?.error || error.message || 'Failed to send email';
+      toast.error(errorMsg);
+    } finally {
+      setSendingEmailId(null);
+    }
   };
 
   // Listen for custom event from DocumentPage to open modal
@@ -498,7 +446,7 @@ const EstimatePage = () => {
     {
       key: 'total',
       header: 'Total Cost',
-      render: v => <span className="text-xs font-bold text-[var(--green)]">{fmt(v)}</span>,
+      render: v => <span className="text-xs font-bold text-[var(--green)]">{CURRENCY.formatExact(v)}</span>,
     },
     {
       key: 'status',
@@ -1003,6 +951,8 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
     engineeringCost: 0,
     transportationCost: 0,
     miscellaneousCost: 0,
+    discount: 0,
+    discountType: 'percentage',
     subtotal: 0,
     gstRate: 18,
     gstAmount: 0,
@@ -1071,17 +1021,25 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
       (formData.engineeringCost || 0) +
       (formData.transportationCost || 0) +
       (formData.miscellaneousCost || 0);
-    const gstAmount = (subtotal * (formData.gstRate || 18)) / 100;
-    const total = subtotal + gstAmount;
+    
+    // Apply discount
+    const discountValue = formData.discountType === 'percentage'
+      ? (subtotal * (formData.discount || 0) / 100)
+      : (formData.discount || 0);
+    const subtotalAfterDiscount = subtotal - discountValue;
+    
+    const gstAmount = (subtotalAfterDiscount * (formData.gstRate || 18)) / 100;
+    const total = subtotalAfterDiscount + gstAmount;
 
     setFormData(prev => ({
       ...prev,
       equipmentCost,
       subtotal,
+      discountValue,
       gstAmount,
       total,
     }));
-  }, [formData.items, formData.installationCost, formData.engineeringCost, formData.transportationCost, formData.miscellaneousCost, formData.gstRate]);
+  }, [formData.items, formData.installationCost, formData.engineeringCost, formData.transportationCost, formData.miscellaneousCost, formData.gstRate, formData.discount, formData.discountType]);
 
   const handleAddItem = () => {
     // Validate required fields
@@ -1204,38 +1162,38 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
       <div className="space-y-2 text-xs">
         <div className="flex justify-between">
           <span className="text-[var(--text-muted)]">Equipment:</span>
-          <span className="font-medium">{fmt(formData.equipmentCost || 0)}</span>
+          <span className="font-medium">{CURRENCY.formatExact(formData.equipmentCost || 0)}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-[var(--text-muted)]">Installation:</span>
-          <span className="font-medium">{fmt(formData.installationCost || 0)}</span>
+          <span className="font-medium">{CURRENCY.formatExact(formData.installationCost || 0)}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-[var(--text-muted)]">Engineering:</span>
-          <span className="font-medium">{fmt(formData.engineeringCost || 0)}</span>
+          <span className="font-medium">{CURRENCY.formatExact(formData.engineeringCost || 0)}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-[var(--text-muted)]">Transport:</span>
-          <span className="font-medium">{fmt(formData.transportationCost || 0)}</span>
+          <span className="font-medium">{CURRENCY.formatExact(formData.transportationCost || 0)}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-[var(--text-muted)]">Misc:</span>
-          <span className="font-medium">{fmt(formData.miscellaneousCost || 0)}</span>
+          <span className="font-medium">{CURRENCY.formatExact(formData.miscellaneousCost || 0)}</span>
         </div>
         <div className="border-t border-[var(--border-base)] pt-2">
           <div className="flex justify-between">
             <span className="text-[var(--text-muted)]">Subtotal:</span>
-            <span className="font-bold">{fmt(formData.subtotal || 0)}</span>
+            <span className="font-bold">{CURRENCY.formatExact(formData.subtotal || 0)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-[var(--text-muted)]">GST ({formData.gstRate || 18}%):</span>
-            <span className="font-medium">{fmt(formData.gstAmount || 0)}</span>
+            <span className="font-medium">{CURRENCY.formatExact(formData.gstAmount || 0)}</span>
           </div>
         </div>
         <div className="border-t border-[var(--border-base)] pt-2">
           <div className="flex justify-between items-center">
             <span className="text-sm font-bold text-[var(--primary)]">Grand Total:</span>
-            <span className="text-lg font-black text-[var(--green)]">{fmt(formData.total || 0)}</span>
+            <span className="text-lg font-black text-[var(--green)]">{CURRENCY.formatExact(formData.total || 0)}</span>
           </div>
         </div>
       </div>
@@ -1441,7 +1399,7 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
                     <tfoot>
                       <tr className="border-t-2 border-[var(--border-base)]">
                         <td colSpan={6} className="text-right py-2 text-xs font-bold text-[var(--text-primary)]">Equipment Cost:</td>
-                        <td className="text-right py-2 text-xs font-bold text-[var(--green)]">{fmt(formData.equipmentCost)}</td>
+                        <td className="text-right py-2 text-xs font-bold text-[var(--green)]">{CURRENCY.formatExact(formData.equipmentCost)}</td>
                         <td></td>
                       </tr>
                     </tfoot>
@@ -1665,6 +1623,25 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
                     placeholder="0"
                   />
                 </FormField>
+                <FormField label="Discount">
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      value={formData.discount}
+                      onChange={(e) => setFormData({ ...formData, discount: parseFloat(e.target.value) || 0 })}
+                      placeholder="0"
+                      className="flex-1"
+                    />
+                    <select
+                      value={formData.discountType}
+                      onChange={(e) => setFormData({ ...formData, discountType: e.target.value })}
+                      className="px-2 py-2 rounded-lg border border-[var(--border-base)] bg-[var(--bg-surface)] text-[var(--text-primary)] text-sm"
+                    >
+                      <option value="percentage">%</option>
+                      <option value="fixed">₹</option>
+                    </select>
+                  </div>
+                </FormField>
                 <FormField label="GST Rate (%)">
                   <Input
                     type="number"
@@ -1688,35 +1665,43 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
               <div className="p-4 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-base)] space-y-3">
                 <div className="flex justify-between items-center py-2 border-b border-[var(--border-base)]/50">
                   <span className="text-xs text-[var(--text-muted)]">Equipment Cost</span>
-                  <span className="text-sm font-medium text-[var(--text-primary)]">{fmt(formData.equipmentCost)}</span>
+                  <span className="text-sm font-medium text-[var(--text-primary)]">{CURRENCY.formatExact(formData.equipmentCost)}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-[var(--border-base)]/50">
                   <span className="text-xs text-[var(--text-muted)]">Installation Cost</span>
-                  <span className="text-sm font-medium text-[var(--text-primary)]">{fmt(formData.installationCost || 0)}</span>
+                  <span className="text-sm font-medium text-[var(--text-primary)]">{CURRENCY.formatExact(formData.installationCost || 0)}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-[var(--border-base)]/50">
                   <span className="text-xs text-[var(--text-muted)]">Engineering Cost</span>
-                  <span className="text-sm font-medium text-[var(--text-primary)]">{fmt(formData.engineeringCost || 0)}</span>
+                  <span className="text-sm font-medium text-[var(--text-primary)]">{CURRENCY.formatExact(formData.engineeringCost || 0)}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-[var(--border-base)]/50">
                   <span className="text-xs text-[var(--text-muted)]">Transportation Cost</span>
-                  <span className="text-sm font-medium text-[var(--text-primary)]">{fmt(formData.transportationCost || 0)}</span>
+                  <span className="text-sm font-medium text-[var(--text-primary)]">{CURRENCY.formatExact(formData.transportationCost || 0)}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-[var(--border-base)]/50">
                   <span className="text-xs text-[var(--text-muted)]">Miscellaneous Cost</span>
-                  <span className="text-sm font-medium text-[var(--text-primary)]">{fmt(formData.miscellaneousCost || 0)}</span>
+                  <span className="text-sm font-medium text-[var(--text-primary)]">{CURRENCY.formatExact(formData.miscellaneousCost || 0)}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b-2 border-[var(--border-base)]">
                   <span className="text-sm font-bold text-[var(--text-primary)]">Subtotal</span>
-                  <span className="text-sm font-bold text-[var(--text-primary)]">{fmt(formData.subtotal)}</span>
+                  <span className="text-sm font-bold text-[var(--text-primary)]">{CURRENCY.formatExact(formData.subtotal)}</span>
                 </div>
+                {formData.discount > 0 && (
+                  <div className="flex justify-between items-center py-2 border-b border-[var(--border-base)]/50">
+                    <span className="text-xs text-[var(--text-muted)]">
+                      Discount ({formData.discountType === 'percentage' ? `${formData.discount}%` : 'Fixed'})
+                    </span>
+                    <span className="text-sm font-medium text-[var(--red)]">-{CURRENCY.formatExact(formData.discountValue || 0)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center py-2 border-b border-[var(--border-base)]/50">
                   <span className="text-xs text-[var(--text-muted)]">GST ({formData.gstRate || 18}%)</span>
-                  <span className="text-sm font-medium text-[var(--text-primary)]">{fmt(formData.gstAmount)}</span>
+                  <span className="text-sm font-medium text-[var(--text-primary)]">{CURRENCY.formatExact(formData.gstAmount)}</span>
                 </div>
                 <div className="flex justify-between items-center py-3 bg-[var(--primary)]/10 rounded-lg px-3">
                   <span className="text-sm font-bold text-[var(--primary)]">Grand Total</span>
-                  <span className="text-lg font-black text-[var(--primary)]">{fmt(formData.total)}</span>
+                  <span className="text-lg font-black text-[var(--primary)]">{CURRENCY.formatExact(formData.total)}</span>
                 </div>
               </div>
 
@@ -1826,10 +1811,10 @@ const EstimateDetail = ({ estimate, onEdit, onDelete, onDownload, onDownloadProp
           <h3 className="text-lg font-bold text-[var(--text-primary)]">{estimate.projectName}</h3>
           <p className="text-sm text-[var(--text-muted)]">{estimate.estimateNumber}</p>
         </div>
-        <div className="text-right">
-          <p className="text-2xl font-black text-[var(--green)]">{fmt(estimate.total)}</p>
-          <p className="text-xs text-[var(--text-muted)]">Grand Total</p>
-        </div>
+          <div className="text-right">
+            <p className="text-2xl font-black text-[var(--green)]">{CURRENCY.formatExact(estimate.total)}</p>
+            <p className="text-xs text-[var(--text-muted)]">Grand Total</p>
+          </div>
       </div>
 
       {/* Customer Info */}
@@ -1930,35 +1915,35 @@ const EstimateDetail = ({ estimate, onEdit, onDelete, onDownload, onDownloadProp
         <h4 className="text-sm font-bold text-[var(--text-primary)] mb-3">Cost Breakdown</h4>
         <div className="flex justify-between text-sm">
           <span className="text-[var(--text-muted)]">Equipment Cost</span>
-          <span className="font-medium">{fmt(estimate.equipmentCost)}</span>
+          <span className="font-medium">{CURRENCY.formatExact(estimate.equipmentCost)}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-[var(--text-muted)]">Installation</span>
-          <span className="font-medium">{fmt(estimate.installationCost || 0)}</span>
+          <span className="font-medium">{CURRENCY.formatExact(estimate.installationCost || 0)}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-[var(--text-muted)]">Engineering</span>
-          <span className="font-medium">{fmt(estimate.engineeringCost || 0)}</span>
+          <span className="font-medium">{CURRENCY.formatExact(estimate.engineeringCost || 0)}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-[var(--text-muted)]">Transportation</span>
-          <span className="font-medium">{fmt(estimate.transportationCost || 0)}</span>
+          <span className="font-medium">{CURRENCY.formatExact(estimate.transportationCost || 0)}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-[var(--text-muted)]">Miscellaneous</span>
-          <span className="font-medium">{fmt(estimate.miscellaneousCost || 0)}</span>
+          <span className="font-medium">{CURRENCY.formatExact(estimate.miscellaneousCost || 0)}</span>
         </div>
         <div className="flex justify-between text-sm pt-2 border-t border-[var(--border-base)]">
           <span className="font-medium">Subtotal</span>
-          <span className="font-medium">{fmt(estimate.subtotal)}</span>
+          <span className="font-medium">{CURRENCY.formatExact(estimate.subtotal)}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-[var(--text-muted)]">GST ({estimate.gstRate || 18}%)</span>
-          <span className="font-medium">{fmt(estimate.gstAmount)}</span>
+          <span className="font-medium">{CURRENCY.formatExact(estimate.gstAmount)}</span>
         </div>
         <div className="flex justify-between text-base font-bold pt-2 border-t-2 border-[var(--border-base)]">
           <span className="text-[var(--primary)]">Grand Total</span>
-          <span className="text-[var(--green)]">{fmt(estimate.total)}</span>
+          <span className="text-[var(--green)]">{CURRENCY.formatExact(estimate.total)}</span>
         </div>
       </div>
 

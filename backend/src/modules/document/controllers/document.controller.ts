@@ -12,6 +12,7 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  BadRequestException,
 } from '@nestjs/common';
 import { DocumentService } from '../services/document.service';
 import { CreateDocumentDto, UpdateDocumentDto, QueryDocumentDto, BulkActionDto, SendDocumentDto } from '../dto/document.dto';
@@ -310,10 +311,22 @@ export class DocumentController {
     @Request() req: any,
   ) {
     try {
-      const tenantId = req.tenant?.id;
+      this.logger.log(`[sendWithPdf] Request received for document: ${id}`);
+      const tenantId = req.tenant?.id || 'default';
+      this.logger.log(`[sendWithPdf] tenantId: ${tenantId}`);
+      this.logger.log(`[sendWithPdf] sendDto: ${JSON.stringify(body.sendDto)}`);
+      this.logger.log(`[sendWithPdf] pdfBase64 length: ${body.pdfBase64?.length}`);
+      
+      if (!body.pdfBase64) {
+        throw new BadRequestException('PDF base64 is required');
+      }
+      
       // Convert base64 PDF to buffer
       const pdfBuffer = Buffer.from(body.pdfBase64, 'base64');
+      this.logger.log(`[sendWithPdf] PDF buffer created, size: ${pdfBuffer.length}`);
+      
       const result = await this.documentService.sendWithPdf(id, body.sendDto, pdfBuffer, tenantId);
+      this.logger.log(`[sendWithPdf] Success! Document updated.`);
       return { success: true, data: result };
     } catch (error: any) {
       this.logger.error(`Send with PDF for document ${id} failed: ${error?.message || 'Unknown error'}`, error?.stack);

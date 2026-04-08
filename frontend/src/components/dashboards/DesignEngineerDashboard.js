@@ -1,4 +1,4 @@
-// DesignEngineerDashboard.js — Design Engineer role dashboard (redesigned)
+// DesignEngineerDashboard.js Ã¢â‚¬â€ Design Engineer role dashboard (redesigned)
 import React from 'react';
 import {
     BarChart, Bar, PieChart, Pie, Cell, LineChart, Line,
@@ -60,17 +60,17 @@ const DesignEngineerDashboard = () => {
     return (
         <div className="space-y-5 p-5">
             {/* Global Date Filter Bar */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between">
+            <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-600">Filter by Date:</span>
-                    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    <span className="text-sm font-medium text-[var(--text-secondary)]">Filter by Date:</span>
+                    <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                         {['Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'All Time', 'Custom Range'].map((filter) => (
                             <button 
                                 key={filter} 
                                 className={`px-3 py-1.5 text-xs rounded-md font-medium transition-all ${
                                     filter === 'All Time' 
                                         ? 'bg-orange-500 text-white' 
-                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                                        : 'text-[var(--text-secondary)] hover:text-gray-900 hover:bg-gray-200'
                                 }`}
                             >
                                 {filter}
@@ -78,12 +78,12 @@ const DesignEngineerDashboard = () => {
                         ))}
                     </div>
                 </div>
-                <span className="text-sm text-gray-500">Showing All Data</span>
+                <span className="text-sm text-[var(--text-muted)]">Showing All Data</span>
             </div>
 
             <SectionHeader
                 title="Design Engineer Dashboard"
-                subtitle="System design · BOQ generation · CAD approval workflow"
+                subtitle="System design Ã‚Â· BOQ generation Ã‚Â· CAD approval workflow"
                 icon={PenTool}
                 accent={C.primary}
                 badge="Design Studio"
@@ -103,9 +103,9 @@ const DesignEngineerDashboard = () => {
                     title="Design Status Breakdown" 
                     subtitle="Current design portfolio"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -188,7 +188,7 @@ const DesignEngineerDashboard = () => {
                                 <div className="w-2 h-8 rounded-full" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
                                 <div className="flex-1">
                                     <p className="text-[12.5px] font-semibold text-[var(--text-primary)]">{s.type}</p>
-                                    <p className="text-[10px] text-[var(--text-muted)]">{s.count} systems · {s.capacity} kWp total</p>
+                                    <p className="text-[10px] text-[var(--text-muted)]">{s.count} systems Ã‚Â· {s.capacity} kWp total</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[14px] font-bold tabular-nums" style={{ color: CHART_COLORS[i % CHART_COLORS.length] }}>{s.count}</p>
@@ -222,7 +222,7 @@ const DesignEngineerDashboard = () => {
                 {[
                     { icon: CheckCircle, title: 'CAD approved: Rajkot 100kW Industrial', meta: 'Client: TexTile Pvt Ltd', time: '1h ago', status: 'Approved', statusColor: '#10b981' },
                     { icon: PenTool, title: 'Design started: Surat Rooftop 50kW', meta: 'Residential system design', time: '3h ago', status: 'In Progress', statusColor: C.primary },
-                    { icon: Calculator, title: 'BOQ generated: Vadodara Factory 200kW', meta: 'Total value: ₹18.5L', time: '5h ago', status: 'Sent', statusColor: '#f59e0b' },
+                    { icon: Calculator, title: 'BOQ generated: Vadodara Factory 200kW', meta: 'Total value: Ã¢â€šÂ¹18.5L', time: '5h ago', status: 'Sent', statusColor: '#f59e0b' },
                     { icon: AlertCircle, title: 'Revision requested: Ahmedabad Mall', meta: 'Client requested panel layout', time: '1d ago', status: 'Revision', statusColor: '#ef4444' },
                     { icon: Archive, title: 'Design archived: Gandhinagar 25kW', meta: 'Project completed & closed', time: '2d ago', status: 'Closed', statusColor: 'var(--text-muted)' },
                 ].map((item, i) => (

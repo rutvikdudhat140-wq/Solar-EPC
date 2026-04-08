@@ -646,7 +646,7 @@ const QuotationBuilderPage = () => {
                         />
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <p className="text-sm font-bold text-[var(--text-primary)]">{CURRENCY.format(m.totalPrice)}</p>
+                        <p className="text-sm font-bold text-[var(--text-primary)]">{CURRENCY.formatExact(m.totalPrice)}</p>
                       </td>
                     </tr>
                   ))}
@@ -668,7 +668,7 @@ const QuotationBuilderPage = () => {
             <div className="space-y-4">
               <div className="flex justify-between text-sm">
                 <span className="text-[var(--text-muted)]">Material Total</span>
-                <span className="font-semibold">{CURRENCY.format(totals.materialTotal)}</span>
+                <span className="font-semibold">{CURRENCY.formatExact(totals.materialTotal)}</span>
               </div>
               
               <div className="space-y-3 pt-2">
@@ -701,22 +701,18 @@ const QuotationBuilderPage = () => {
 
               <div className="flex justify-between text-sm border-t border-[var(--border-muted)] pt-3">
                 <span className="text-[var(--text-secondary)] font-medium">Subtotal</span>
-                <span className="font-bold">{CURRENCY.format(totals.subtotal)}</span>
+                <span className="font-bold">{CURRENCY.formatExact(totals.subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-[var(--text-muted)]">GST ({quotation.gstPercentage}%)</span>
-                <span className="font-semibold text-[var(--amber)]">{CURRENCY.format(totals.tax)}</span>
+                <span className="font-semibold text-[var(--amber)]">{CURRENCY.formatExact(totals.tax)}</span>
               </div>
               
               <div className="pt-4 border-t border-dashed border-[var(--border-base)]">
                 <div className="flex justify-between items-end">
                   <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest">Grand Total</span>
                   <span className="text-2xl font-black text-[var(--primary)]">
-                    {new Intl.NumberFormat('en-IN', {
-                      style: 'currency',
-                      currency: 'INR',
-                      maximumFractionDigits: 0
-                    }).format(totals.finalPrice)}
+                    {CURRENCY.formatExact(totals.finalPrice)}
                   </span>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-// SurveyEngineerDashboard.js — Survey Engineer role dashboard (redesigned)
+// SurveyEngineerDashboard.js Ã¢â‚¬â€ Survey Engineer role dashboard (redesigned)
 import React from 'react';
 import {
     BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -51,17 +51,17 @@ const SurveyEngineerDashboard = () => {
     return (
         <div className="space-y-5 p-5">
             {/* Global Date Filter Bar */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between">
+            <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-600">Filter by Date:</span>
-                    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    <span className="text-sm font-medium text-[var(--text-secondary)]">Filter by Date:</span>
+                    <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                         {['Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'All Time', 'Custom Range'].map((filter) => (
                             <button 
                                 key={filter} 
                                 className={`px-3 py-1.5 text-xs rounded-md font-medium transition-all ${
                                     filter === 'All Time' 
                                         ? 'bg-orange-500 text-white' 
-                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                                        : 'text-[var(--text-secondary)] hover:text-gray-900 hover:bg-gray-200'
                                 }`}
                             >
                                 {filter}
@@ -69,12 +69,12 @@ const SurveyEngineerDashboard = () => {
                         ))}
                     </div>
                 </div>
-                <span className="text-sm text-gray-500">Showing All Data</span>
+                <span className="text-sm text-[var(--text-muted)]">Showing All Data</span>
             </div>
 
             <SectionHeader
                 title="Survey Engineer Dashboard"
-                subtitle="Site feasibility · Shadow analysis · Field reports"
+                subtitle="Site feasibility Ã‚Â· Shadow analysis Ã‚Â· Field reports"
                 icon={MapPin}
                 accent={C.primary}
                 badge="Field Mode"
@@ -94,9 +94,9 @@ const SurveyEngineerDashboard = () => {
                     title="Performance Radar" 
                     subtitle="Multi-dimensional quality score"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -116,9 +116,9 @@ const SurveyEngineerDashboard = () => {
                     title="Survey Status" 
                     subtitle="Current queue breakdown"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -152,9 +152,9 @@ const SurveyEngineerDashboard = () => {
                     title="Shadow Analysis Results" 
                     subtitle="Site shading categories"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -180,9 +180,9 @@ const SurveyEngineerDashboard = () => {
                     title="Feasibility Scores" 
                     subtitle="Recent site assessments"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -247,7 +247,7 @@ const SurveyEngineerDashboard = () => {
                         </span>,
                         r.feasibility != null
                             ? <span className="font-bold tabular-nums" style={{ color: r.feasibility >= 85 ? '#10b981' : '#f59e0b' }}>{r.feasibility}%</span>
-                            : <span className="text-[var(--text-muted)] italic text-[11px]">—</span>,
+                            : <span className="text-[var(--text-muted)] italic text-[11px]">Ã¢â‚¬â€</span>,
                         <button className="text-[11px] text-[var(--primary)] hover:underline">View Report</button>,
                     ])}
                 />
@@ -256,8 +256,8 @@ const SurveyEngineerDashboard = () => {
             {/* Activity */}
             <ChartCard title="Recent Field Activity" subtitle="Latest survey updates">
                 {[
-                    { icon: MapPin, title: 'Site survey completed: Rajkot Factory', meta: 'Feasibility: 92% — Optimal', time: '1h ago', status: 'Done', statusColor: '#10b981' },
-                    { icon: Camera, title: 'Photos uploaded: Green Valley Residency', meta: '48 images · shadow analysis', time: '3h ago', status: 'Review', statusColor: C.primary },
+                    { icon: MapPin, title: 'Site survey completed: Rajkot Factory', meta: 'Feasibility: 92% Ã¢â‚¬â€ Optimal', time: '1h ago', status: 'Done', statusColor: '#10b981' },
+                    { icon: Camera, title: 'Photos uploaded: Green Valley Residency', meta: '48 images Ã‚Â· shadow analysis', time: '3h ago', status: 'Review', statusColor: C.primary },
                     { icon: AlertTriangle, title: 'Obstruction found: West Wing Complex', meta: 'Adjacent building shadows', time: '5h ago', status: 'Issue', statusColor: '#ef4444' },
                     { icon: FileText, title: 'Report submitted: Surat Commercial Hub', meta: '85% feasibility approved', time: '1d ago', status: 'Approved', statusColor: '#10b981' },
                     { icon: Clock, title: 'Survey scheduled: Vadodara Warehouse', meta: 'Tomorrow 10:00 AM', time: '1d ago', status: 'Scheduled', statusColor: '#8b5cf6' },

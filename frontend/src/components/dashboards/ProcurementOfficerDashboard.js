@@ -1,4 +1,4 @@
-// ProcurementOfficerDashboard.js — Procurement Officer role dashboard (redesigned)
+// ProcurementOfficerDashboard.js Ã¢â‚¬â€ Procurement Officer role dashboard (redesigned)
 import React from 'react';
 import {
     BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
@@ -38,17 +38,17 @@ const ProcurementOfficerDashboard = () => {
     return (
         <div className="space-y-5 p-5">
             {/* Global Date Filter Bar */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between">
+            <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-600">Filter by Date:</span>
-                    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    <span className="text-sm font-medium text-[var(--text-secondary)]">Filter by Date:</span>
+                    <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                         {['Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'All Time', 'Custom Range'].map((filter) => (
                             <button 
                                 key={filter} 
                                 className={`px-3 py-1.5 text-xs rounded-md font-medium transition-all ${
                                     filter === 'All Time' 
                                         ? 'bg-orange-500 text-white' 
-                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                                        : 'text-[var(--text-secondary)] hover:text-gray-900 hover:bg-gray-200'
                                 }`}
                             >
                                 {filter}
@@ -56,12 +56,12 @@ const ProcurementOfficerDashboard = () => {
                         ))}
                     </div>
                 </div>
-                <span className="text-sm text-gray-500">Showing All Data</span>
+                <span className="text-sm text-[var(--text-muted)]">Showing All Data</span>
             </div>
 
             <SectionHeader
                 title="Procurement Officer Dashboard"
-                subtitle="Purchase orders · Vendor management · Cost optimization"
+                subtitle="Purchase orders Ã‚Â· Vendor management Ã‚Â· Cost optimization"
                 icon={ShoppingCart}
                 accent={C.primary}
                 badge="Procurement Hub"
@@ -81,9 +81,9 @@ const ProcurementOfficerDashboard = () => {
                     title="Monthly Cost Analysis" 
                     subtitle="Budget vs actual spend (INR)"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -115,9 +115,9 @@ const ProcurementOfficerDashboard = () => {
                     title="PO Status Distribution" 
                     subtitle="Purchase order pipeline"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -151,9 +151,9 @@ const ProcurementOfficerDashboard = () => {
                     title="Top Vendors" 
                     subtitle="Performance ratings"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -167,7 +167,7 @@ const ProcurementOfficerDashboard = () => {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-[12.5px] font-semibold text-[var(--text-primary)] truncate">{v.name}</p>
-                                    <p className="text-[10px] text-[var(--text-muted)]">{v.orders} orders · {v.onTime}% on-time</p>
+                                    <p className="text-[10px] text-[var(--text-muted)]">{v.orders} orders Ã‚Â· {v.onTime}% on-time</p>
                                 </div>
                                 <div className="flex items-center gap-1 shrink-0">
                                     <Star size={11} style={{ color: '#f59e0b' }} />
@@ -182,9 +182,9 @@ const ProcurementOfficerDashboard = () => {
                     title="Category Budget vs Actual" 
                     subtitle="Cost variance by category"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -206,9 +206,9 @@ const ProcurementOfficerDashboard = () => {
                     title="Logistics Status" 
                     subtitle="Delivery performance"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }

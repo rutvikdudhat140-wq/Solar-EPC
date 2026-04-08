@@ -10,7 +10,7 @@ import {
   FilePlus, ArrowLeft
 } from 'lucide-react';
 
-// ─── Custom Document Editor Component ────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Custom Document Editor Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const CustomDocumentEditor = ({ onBack }) => {
   const canvasRef = useRef(null);
   const [elements, setElements] = useState([]);
@@ -263,13 +263,13 @@ const CustomDocumentEditor = ({ onBack }) => {
   const selectedEl = elements.find(el => el.id === selectedElement);
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-[var(--bg-elevated)]">
       {/* Top Header */}
-      <div className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shadow-sm z-20">
+      <div className="h-16 bg-[var(--bg-surface)] border-b border-[var(--border-base)] flex items-center justify-between px-6 shadow-sm z-20">
         <div className="flex items-center gap-4">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-gray-900 transition-colors"
           >
             <ArrowLeft size={20} />
             <span className="font-medium">Back</span>
@@ -279,7 +279,7 @@ const CustomDocumentEditor = ({ onBack }) => {
             <FilePlus className="text-blue-600" size={24} />
             <div>
               <h1 className="text-lg font-bold text-gray-900">Custom Document Creator</h1>
-              <p className="text-xs text-gray-500">Create custom documents from scratch</p>
+              <p className="text-xs text-[var(--text-muted)]">Create custom documents from scratch</p>
             </div>
           </div>
         </div>
@@ -345,7 +345,7 @@ const CustomDocumentEditor = ({ onBack }) => {
                 saveHistory(templateElements);
               }
             }}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-[var(--bg-surface)] hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Choose Template...</option>
             <option value="blank">Blank Document</option>
@@ -370,10 +370,10 @@ const CustomDocumentEditor = ({ onBack }) => {
       {/* Main Editor Area */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Toolbar */}
-        <div className="w-16 bg-white border-r border-gray-200 flex flex-col items-center py-4 gap-2 z-10">
+        <div className="w-16 bg-[var(--bg-surface)] border-r border-[var(--border-base)] flex flex-col items-center py-4 gap-2 z-10">
           <button
             onClick={() => setSelectedElement(null)}
-            className={`p-3 rounded-lg transition-colors ${selectedElement ? 'hover:bg-gray-100 text-gray-600' : 'bg-blue-100 text-blue-600'}`}
+            className={`p-3 rounded-lg transition-colors ${selectedElement ? 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]' : 'bg-blue-100 text-blue-600'}`}
             title="Select"
           >
             <MousePointer size={20} />
@@ -383,7 +383,7 @@ const CustomDocumentEditor = ({ onBack }) => {
 
           <button
             onClick={() => addElement('text')}
-            className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            className="p-3 rounded-lg hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)] transition-colors"
             title="Add Text"
           >
             <Type size={20} />
@@ -391,7 +391,7 @@ const CustomDocumentEditor = ({ onBack }) => {
 
           <button
             onClick={() => addElement('table')}
-            className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            className="p-3 rounded-lg hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)] transition-colors"
             title="Add Table"
           >
             <Table size={20} />
@@ -399,7 +399,7 @@ const CustomDocumentEditor = ({ onBack }) => {
 
           <button
             onClick={() => addElement('image')}
-            className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            className="p-3 rounded-lg hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)] transition-colors"
             title="Add Image"
           >
             <ImageIcon size={20} />
@@ -407,7 +407,7 @@ const CustomDocumentEditor = ({ onBack }) => {
 
           <button
             onClick={() => addElement('shape')}
-            className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            className="p-3 rounded-lg hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)] transition-colors"
             title="Add Shape"
           >
             <Shapes size={20} />
@@ -415,7 +415,7 @@ const CustomDocumentEditor = ({ onBack }) => {
 
           <button
             onClick={() => addElement('sticky')}
-            className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            className="p-3 rounded-lg hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)] transition-colors"
             title="Add Sticky Note"
           >
             <StickyNote size={20} />
@@ -425,7 +425,7 @@ const CustomDocumentEditor = ({ onBack }) => {
 
           <button
             onClick={() => setShowLayers(!showLayers)}
-            className={`p-3 rounded-lg transition-colors ${showLayers ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'}`}
+            className={`p-3 rounded-lg transition-colors ${showLayers ? 'bg-blue-100 text-blue-600' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'}`}
             title="Layers"
           >
             <Layers size={20} />
@@ -435,14 +435,14 @@ const CustomDocumentEditor = ({ onBack }) => {
         {/* Canvas Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Top Toolbar */}
-          <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 shadow-sm z-10">
+          <div className="h-14 bg-[var(--bg-surface)] border-b border-[var(--border-base)] flex items-center justify-between px-4 shadow-sm z-10">
             <div className="flex items-center gap-3">
               {/* Undo/Redo */}
-              <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+              <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                 <button
                   onClick={handleUndo}
                   disabled={historyIndex <= 0}
-                  className="p-2 rounded hover:bg-white hover:shadow-sm disabled:opacity-30 text-gray-600 transition-all"
+                  className="p-2 rounded hover:bg-[var(--bg-surface)] hover:shadow-sm disabled:opacity-30 text-[var(--text-secondary)] transition-all"
                   title="Undo"
                 >
                   <Undo size={18} />
@@ -450,7 +450,7 @@ const CustomDocumentEditor = ({ onBack }) => {
                 <button
                   onClick={handleRedo}
                   disabled={historyIndex >= history.length - 1}
-                  className="p-2 rounded hover:bg-white hover:shadow-sm disabled:opacity-30 text-gray-600 transition-all"
+                  className="p-2 rounded hover:bg-[var(--bg-surface)] hover:shadow-sm disabled:opacity-30 text-[var(--text-secondary)] transition-all"
                   title="Redo"
                 >
                   <Redo size={18} />
@@ -460,19 +460,19 @@ const CustomDocumentEditor = ({ onBack }) => {
               <div className="w-px h-6 bg-gray-300" />
 
               {/* Zoom Controls */}
-              <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+              <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                 <button
                   onClick={() => setScale(s => Math.max(0.25, s - 0.1))}
-                  className="p-2 rounded hover:bg-white hover:shadow-sm text-gray-600 transition-all"
+                  className="p-2 rounded hover:bg-[var(--bg-surface)] hover:shadow-sm text-[var(--text-secondary)] transition-all"
                 >
                   <Minus size={16} />
                 </button>
-                <span className="text-sm text-gray-600 w-14 text-center font-medium">
+                <span className="text-sm text-[var(--text-secondary)] w-14 text-center font-medium">
                   {Math.round(scale * 100)}%
                 </span>
                 <button
                   onClick={() => setScale(s => Math.min(3, s + 0.1))}
-                  className="p-2 rounded hover:bg-white hover:shadow-sm text-gray-600 transition-all"
+                  className="p-2 rounded hover:bg-[var(--bg-surface)] hover:shadow-sm text-[var(--text-secondary)] transition-all"
                 >
                   <Plus size={16} />
                 </button>
@@ -483,7 +483,7 @@ const CustomDocumentEditor = ({ onBack }) => {
               {/* Grid Toggle */}
               <button
                 onClick={() => setShowGrid(!showGrid)}
-                className={`p-2 rounded-lg transition-all ${showGrid ? 'bg-blue-100 text-blue-600 shadow-sm' : 'hover:bg-gray-100 text-gray-600'}`}
+                className={`p-2 rounded-lg transition-all ${showGrid ? 'bg-blue-100 text-blue-600 shadow-sm' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'}`}
                 title="Toggle Grid"
               >
                 <Grid3X3 size={18} />
@@ -491,7 +491,7 @@ const CustomDocumentEditor = ({ onBack }) => {
 
               <button
                 onClick={() => setSnapToGrid(!snapToGrid)}
-                className={`p-2 rounded-lg transition-all ${snapToGrid ? 'bg-blue-100 text-blue-600 shadow-sm' : 'hover:bg-gray-100 text-gray-600'}`}
+                className={`p-2 rounded-lg transition-all ${snapToGrid ? 'bg-blue-100 text-blue-600 shadow-sm' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'}`}
                 title="Snap to Grid"
               >
                 <Frame size={18} />
@@ -499,16 +499,16 @@ const CustomDocumentEditor = ({ onBack }) => {
             </div>
 
             {/* Element Count */}
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-[var(--text-muted)]">
               {elements.length} elements
             </div>
           </div>
 
           {/* Canvas */}
-          <div className="flex-1 overflow-auto bg-gray-100 p-8">
+          <div className="flex-1 overflow-auto bg-[var(--bg-overlay)] p-8">
             <div
               ref={canvasRef}
-              className="relative mx-auto bg-white shadow-lg"
+              className="relative mx-auto bg-[var(--bg-surface)] shadow-lg"
               style={{
                 width: canvasSize.width,
                 height: canvasSize.height,
@@ -553,8 +553,8 @@ const CustomDocumentEditor = ({ onBack }) => {
 
         {/* Right Panel - Layers */}
         {showLayers && (
-          <div className="w-64 bg-white border-l border-gray-200 flex flex-col shadow-sm z-20">
-            <div className="p-4 border-b border-gray-200 bg-gray-50">
+          <div className="w-64 bg-[var(--bg-surface)] border-l border-[var(--border-base)] flex flex-col shadow-sm z-20">
+            <div className="p-4 border-b border-[var(--border-base)] bg-[var(--bg-elevated)]">
               <h3 className="font-semibold text-gray-800 flex items-center gap-2">
                 <Layers size={16} />
                 Layers
@@ -567,19 +567,19 @@ const CustomDocumentEditor = ({ onBack }) => {
                   <div
                     key={el.id}
                     onClick={() => setSelectedElement(el.id)}
-                    className={`p-3 border-b border-gray-100 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors ${
+                    className={`p-3 border-b border-[var(--border-muted)] flex items-center gap-3 cursor-pointer hover:bg-[var(--bg-elevated)] transition-colors ${
                       selectedElement === el.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
                     }`}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
-                      {el.type === 'text' && <Type size={14} className="text-gray-500" />}
-                      {el.type === 'table' && <Table size={14} className="text-gray-500" />}
-                      {el.type === 'image' && <ImageIcon size={14} className="text-gray-500" />}
-                      {el.type === 'shape' && <Square size={14} className="text-gray-500" />}
+                    <div className="w-8 h-8 rounded-lg bg-[var(--bg-overlay)] flex items-center justify-center">
+                      {el.type === 'text' && <Type size={14} className="text-[var(--text-muted)]" />}
+                      {el.type === 'table' && <Table size={14} className="text-[var(--text-muted)]" />}
+                      {el.type === 'image' && <ImageIcon size={14} className="text-[var(--text-muted)]" />}
+                      {el.type === 'shape' && <Square size={14} className="text-[var(--text-muted)]" />}
                       {el.type === 'sticky' && <StickyNote size={14} className="text-yellow-500" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className="text-sm text-gray-700 font-medium block truncate capitalize">
+                      <span className="text-sm text-[var(--text-secondary)] font-medium block truncate capitalize">
                         {el.type} {index + 1}
                       </span>
                       <span className="text-xs text-gray-400">z-index: {el.zIndex}</span>
@@ -590,7 +590,7 @@ const CustomDocumentEditor = ({ onBack }) => {
                           e.stopPropagation();
                           changeZIndex(el.id, 'up');
                         }}
-                        className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-gray-600 transition-colors"
+                        className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-[var(--text-secondary)] transition-colors"
                       >
                         <ChevronUp size={14} />
                       </button>
@@ -599,7 +599,7 @@ const CustomDocumentEditor = ({ onBack }) => {
                           e.stopPropagation();
                           changeZIndex(el.id, 'down');
                         }}
-                        className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-gray-600 transition-colors"
+                        className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-[var(--text-secondary)] transition-colors"
                       >
                         <ChevronDown size={14} />
                       </button>
@@ -614,7 +614,7 @@ const CustomDocumentEditor = ({ onBack }) => {
   );
 };
 
-// ── Canvas Element Component ───────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Canvas Element Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const CanvasElement = ({
   element,
   isSelected,
@@ -687,7 +687,7 @@ const CanvasElement = ({
                   {element.headers?.map((header, i) => (
                     <th
                       key={i}
-                      className="border border-gray-300 p-2 text-sm font-semibold bg-gray-50 text-left"
+                      className="border border-gray-300 p-2 text-sm font-semibold bg-[var(--bg-elevated)] text-left"
                     >
                       {header}
                     </th>
@@ -754,7 +754,7 @@ const CanvasElement = ({
 
         return (
           <div
-            className="w-full h-full flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden cursor-pointer"
+            className="w-full h-full flex items-center justify-center bg-[var(--bg-overlay)] rounded-lg overflow-hidden cursor-pointer"
             onDoubleClick={handleImageDoubleClick}
             onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
             onDrop={handleImageDrop}
@@ -769,7 +769,7 @@ const CanvasElement = ({
             ) : (
               <div className="text-center p-4">
                 <ImageIcon size={32} className="mx-auto text-gray-400 mb-2" />
-                <p className="text-xs text-gray-500">Double click to add image</p>
+                <p className="text-xs text-[var(--text-muted)]">Double click to add image</p>
                 <p className="text-[10px] text-gray-400 mt-1">or drag & drop</p>
               </div>
             )}
@@ -839,7 +839,7 @@ const CanvasElement = ({
   );
 };
 
-// ── Selection Box Component ─────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Selection Box Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const SelectionBox = ({
   element,
   onBringToFront,
@@ -871,28 +871,28 @@ const SelectionBox = ({
       <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 flex gap-1 pointer-events-auto">
         <button
           onClick={onBringToFront}
-          className="p-1.5 bg-white rounded shadow-md hover:bg-gray-100 text-gray-600"
+          className="p-1.5 bg-[var(--bg-surface)] rounded shadow-md hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]"
           title="Bring to front"
         >
           <ChevronUp size={14} />
         </button>
         <button
           onClick={onSendToBack}
-          className="p-1.5 bg-white rounded shadow-md hover:bg-gray-100 text-gray-600"
+          className="p-1.5 bg-[var(--bg-surface)] rounded shadow-md hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]"
           title="Send to back"
         >
           <ChevronDown size={14} />
         </button>
         <button
           onClick={onDuplicate}
-          className="p-1.5 bg-white rounded shadow-md hover:bg-gray-100 text-blue-600"
+          className="p-1.5 bg-[var(--bg-surface)] rounded shadow-md hover:bg-[var(--bg-overlay)] text-blue-600"
           title="Duplicate"
         >
           <Copy size={14} />
         </button>
         <button
           onClick={onDelete}
-          className="p-1.5 bg-white rounded shadow-md hover:bg-red-50 text-red-500"
+          className="p-1.5 bg-[var(--bg-surface)] rounded shadow-md hover:bg-red-50 text-red-500"
           title="Delete"
         >
           <Trash2 size={14} />

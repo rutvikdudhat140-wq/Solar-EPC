@@ -223,7 +223,7 @@ const LeadTracker = ({ leadId, statusOptions, currentStage, onStageChange, onNav
               <div className="flex-1 min-w-0">
                 <p className={`text-sm font-medium truncate
                   ${isCurrent ? 'text-[var(--primary)]' : 
-                    isAboveCurrent ? 'text-gray-500 line-through decoration-gray-600' : 'text-[var(--text-primary)]'}
+                    isAboveCurrent ? 'text-[var(--text-muted)] line-through decoration-gray-600' : 'text-[var(--text-primary)]'}
                 `}>
                   {stage.label}
                 </p>

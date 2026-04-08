@@ -11,7 +11,7 @@ import {
   TextCursor, Highlighter, StickyNote, Shapes, X, Loader2, Send
 } from 'lucide-react';
 
-// ── Canva-Style Visual Proposal Editor ─────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Canva-Style Visual Proposal Editor Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const ProposalCanvasEditor = ({
   initialData,
   onSave,
@@ -731,8 +731,8 @@ const ProposalCanvasEditor = ({
         String(idx + 1),
         item.name || item.component || '',
         String(item.quantity || 1),
-        `₹${(item.unitPrice || 0).toLocaleString()}`,
-        `₹${((item.quantity || 1) * (item.unitPrice || 0)).toLocaleString()}`
+        `Ã¢â€šÂ¹${(item.unitPrice || 0).toLocaleString()}`,
+        `Ã¢â€šÂ¹${((item.quantity || 1) * (item.unitPrice || 0)).toLocaleString()}`
       ])
       : []; // Empty if no items
 
@@ -801,7 +801,7 @@ const ProposalCanvasEditor = ({
         id: 'company-address',
         type: 'text',
         x: 40, y: 180, width: 350, height: 140,
-        content: `<div style="font-size: 12px; color: #4b5563; line-height: 1.7;">${companyAddress}<br>Opp. Sarthana Nature Park, ${companyCity} - ${companyZip}<br>${companyState} - India<br>📞 ${companyPhone}<br>✉️ ${companyEmail}</div>`,
+        content: `<div style="font-size: 12px; color: #4b5563; line-height: 1.7;">${companyAddress}<br>Opp. Sarthana Nature Park, ${companyCity} - ${companyZip}<br>${companyState} - India<br>Ã°Å¸â€œÅ¾ ${companyPhone}<br>Ã¢Å“â€°Ã¯Â¸Â ${companyEmail}</div>`,
         style: { fontSize: 12, color: '#4b5563', fontFamily: 'Inter, system-ui, sans-serif', lineHeight: 1.7 },
         zIndex: 2
       },
@@ -964,7 +964,7 @@ const ProposalCanvasEditor = ({
         id: 'subtotal-value',
         type: 'text',
         x: 670, y: 795, width: 100, height: 20,
-        content: `<div style="font-size: 12px; color: #1f2937; text-align: right; font-weight: 600;">₹${subtotal.toLocaleString()}</div>`,
+        content: `<div style="font-size: 12px; color: #1f2937; text-align: right; font-weight: 600;">Ã¢â€šÂ¹${subtotal.toLocaleString()}</div>`,
         style: { fontSize: 12, fontWeight: '600', color: '#1f2937', textAlign: 'right', fontFamily: 'Inter, system-ui, sans-serif' },
         zIndex: 1
       },
@@ -980,7 +980,7 @@ const ProposalCanvasEditor = ({
         id: 'gst-value',
         type: 'text',
         x: 670, y: 820, width: 100, height: 20,
-        content: `<div style="font-size: 12px; color: #1f2937; text-align: right; font-weight: 600;">₹${gstAmount.toLocaleString()}</div>`,
+        content: `<div style="font-size: 12px; color: #1f2937; text-align: right; font-weight: 600;">Ã¢â€šÂ¹${gstAmount.toLocaleString()}</div>`,
         style: { fontSize: 12, fontWeight: '600', color: '#1f2937', textAlign: 'right', fontFamily: 'Inter, system-ui, sans-serif' },
         zIndex: 1
       },
@@ -1004,7 +1004,7 @@ const ProposalCanvasEditor = ({
         id: 'total-value',
         type: 'text',
         x: 670, y: 860, width: 100, height: 25,
-        content: `<div style="font-size: 18px; color: #059669; text-align: right; font-weight: 800;">₹${total.toLocaleString()}</div>`,
+        content: `<div style="font-size: 18px; color: #059669; text-align: right; font-weight: 800;">Ã¢â€šÂ¹${total.toLocaleString()}</div>`,
         style: { fontSize: 18, fontWeight: '800', color: '#059669', textAlign: 'right', fontFamily: 'Inter, system-ui, sans-serif' },
         zIndex: 1
       },
@@ -1046,7 +1046,7 @@ const ProposalCanvasEditor = ({
         id: 'signature-label-right',
         type: 'text',
         x: 580, y: 1010, width: 190, height: 20,
-        content: '<div style="font-size: 12px; color: #ef4444; text-align: right;">✕ Signature (Customer)</div>',
+        content: '<div style="font-size: 12px; color: #ef4444; text-align: right;">Ã¢Å“â€¢ Signature (Customer)</div>',
         style: { fontSize: 12, color: '#ef4444', textAlign: 'right', fontFamily: 'Inter, system-ui, sans-serif' },
         zIndex: 1
       },
@@ -1071,7 +1071,7 @@ const ProposalCanvasEditor = ({
         id: 'footer-text',
         type: 'text',
         x: 40, y: 1120, width: 730, height: 40,
-        content: `<div style="font-size: 10px; color: #9ca3af; text-align: center; line-height: 1.5;"><strong>${companyName}</strong> | ${companyAddress}, ${companyCity}, ${companyState} - ${companyZip}<br>📞 ${companyPhone} | ✉️ ${companyEmail} | 🌐 ${companyWebsite}</div>`,
+        content: `<div style="font-size: 10px; color: #9ca3af; text-align: center; line-height: 1.5;"><strong>${companyName}</strong> | ${companyAddress}, ${companyCity}, ${companyState} - ${companyZip}<br>Ã°Å¸â€œÅ¾ ${companyPhone} | Ã¢Å“â€°Ã¯Â¸Â ${companyEmail} | Ã°Å¸Å’Â ${companyWebsite}</div>`,
         style: { fontSize: 10, color: '#9ca3af', textAlign: 'center', fontFamily: 'Inter, system-ui, sans-serif' },
         zIndex: 1
       }
@@ -1083,10 +1083,10 @@ const ProposalCanvasEditor = ({
   return (
     <div className="flex h-screen bg-[#f0f2f5]">
       {/* Left Sidebar - Tools */}
-      <div className="w-16 bg-white border-r border-gray-200 flex flex-col items-center py-4 gap-2 shadow-sm z-20">
+      <div className="w-16 bg-[var(--bg-surface)] border-r border-[var(--border-base)] flex flex-col items-center py-4 gap-2 shadow-sm z-20">
         <button
           onClick={() => setActiveTool('select')}
-          className={`p-3 rounded-lg transition-colors ${activeTool === 'select' ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+          className={`p-3 rounded-lg transition-colors ${activeTool === 'select' ? 'bg-blue-100 text-blue-600' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'
             }`}
           title="Select"
         >
@@ -1097,7 +1097,7 @@ const ProposalCanvasEditor = ({
 
         <button
           onClick={() => addElement('text')}
-          className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+          className="p-3 rounded-lg hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)] transition-colors"
           title="Add Text"
         >
           <Type size={20} />
@@ -1105,7 +1105,7 @@ const ProposalCanvasEditor = ({
 
         <button
           onClick={() => addElement('table')}
-          className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+          className="p-3 rounded-lg hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)] transition-colors"
           title="Add Table"
         >
           <Table size={20} />
@@ -1113,7 +1113,7 @@ const ProposalCanvasEditor = ({
 
         <button
           onClick={() => addElement('image')}
-          className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+          className="p-3 rounded-lg hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)] transition-colors"
           title="Add Image"
         >
           <ImageIcon size={20} />
@@ -1121,7 +1121,7 @@ const ProposalCanvasEditor = ({
 
         <button
           onClick={() => addElement('shape')}
-          className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+          className="p-3 rounded-lg hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)] transition-colors"
           title="Add Shape"
         >
           <Shapes size={20} />
@@ -1129,7 +1129,7 @@ const ProposalCanvasEditor = ({
 
         <button
           onClick={() => addElement('sticky')}
-          className="p-3 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+          className="p-3 rounded-lg hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)] transition-colors"
           title="Add Sticky Note"
         >
           <StickyNote size={20} />
@@ -1155,7 +1155,7 @@ const ProposalCanvasEditor = ({
 
         <button
           onClick={() => setShowLayers(!showLayers)}
-          className={`p-3 rounded-lg transition-colors ${showLayers ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+          className={`p-3 rounded-lg transition-colors ${showLayers ? 'bg-blue-100 text-blue-600' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'
             }`}
           title="Layers"
         >
@@ -1166,7 +1166,7 @@ const ProposalCanvasEditor = ({
       {/* Main Canvas Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Toolbar */}
-        <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 shadow-sm z-10">
+        <div className="h-14 bg-[var(--bg-surface)] border-b border-[var(--border-base)] flex items-center justify-between px-4 shadow-sm z-10">
           <div className="flex items-center gap-3">
             {/* Custom Document Button */}
             <button
@@ -1187,11 +1187,11 @@ const ProposalCanvasEditor = ({
             <div className="w-px h-6 bg-gray-300" />
 
             {/* File Actions */}
-            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
               <button
                 onClick={handleUndo}
                 disabled={historyIndex <= 0}
-                className="p-2 rounded hover:bg-white hover:shadow-sm disabled:opacity-30 text-gray-600 transition-all"
+                className="p-2 rounded hover:bg-[var(--bg-surface)] hover:shadow-sm disabled:opacity-30 text-[var(--text-secondary)] transition-all"
                 title="Undo"
               >
                 <Undo size={18} />
@@ -1199,7 +1199,7 @@ const ProposalCanvasEditor = ({
               <button
                 onClick={handleRedo}
                 disabled={historyIndex >= history.length - 1}
-                className="p-2 rounded hover:bg-white hover:shadow-sm disabled:opacity-30 text-gray-600 transition-all"
+                className="p-2 rounded hover:bg-[var(--bg-surface)] hover:shadow-sm disabled:opacity-30 text-[var(--text-secondary)] transition-all"
                 title="Redo"
               >
                 <Redo size={18} />
@@ -1209,19 +1209,19 @@ const ProposalCanvasEditor = ({
             <div className="w-px h-6 bg-gray-300" />
 
             {/* View Controls */}
-            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
               <button
                 onClick={() => setScale(s => Math.max(0.25, s - 0.1))}
-                className="p-2 rounded hover:bg-white hover:shadow-sm text-gray-600 transition-all"
+                className="p-2 rounded hover:bg-[var(--bg-surface)] hover:shadow-sm text-[var(--text-secondary)] transition-all"
               >
                 <Minus size={16} />
               </button>
-              <span className="text-sm text-gray-600 w-14 text-center font-medium">
+              <span className="text-sm text-[var(--text-secondary)] w-14 text-center font-medium">
                 {Math.round(scale * 100)}%
               </span>
               <button
                 onClick={() => setScale(s => Math.min(3, s + 0.1))}
-                className="p-2 rounded hover:bg-white hover:shadow-sm text-gray-600 transition-all"
+                className="p-2 rounded hover:bg-[var(--bg-surface)] hover:shadow-sm text-[var(--text-secondary)] transition-all"
               >
                 <Plus size={16} />
               </button>
@@ -1232,7 +1232,7 @@ const ProposalCanvasEditor = ({
             {/* Grid Toggle */}
             <button
               onClick={() => setShowGrid(!showGrid)}
-              className={`p-2 rounded-lg transition-all ${showGrid ? 'bg-blue-100 text-blue-600 shadow-sm' : 'hover:bg-gray-100 text-gray-600'
+              className={`p-2 rounded-lg transition-all ${showGrid ? 'bg-blue-100 text-blue-600 shadow-sm' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'
                 }`}
               title="Toggle Grid"
             >
@@ -1241,7 +1241,7 @@ const ProposalCanvasEditor = ({
 
             <button
               onClick={() => setSnapToGrid(!snapToGrid)}
-              className={`p-2 rounded-lg transition-all ${snapToGrid ? 'bg-blue-100 text-blue-600 shadow-sm' : 'hover:bg-gray-100 text-gray-600'
+              className={`p-2 rounded-lg transition-all ${snapToGrid ? 'bg-blue-100 text-blue-600 shadow-sm' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'
                 }`}
               title="Snap to Grid"
             >
@@ -1254,7 +1254,7 @@ const ProposalCanvasEditor = ({
             <h1 className="text-sm font-semibold text-gray-800">
               {initialData?.proposalNumber || 'New Proposal'}
             </h1>
-            <p className="text-xs text-gray-500">Visual Proposal Designer</p>
+            <p className="text-xs text-[var(--text-muted)]">Visual Proposal Designer</p>
           </div>
 
           {/* Right Actions */}
@@ -1278,7 +1278,7 @@ const ProposalCanvasEditor = ({
                 </button>
                 <button
                   onClick={() => setShowEmailInput(false)}
-                  className="p-1.5 text-gray-500 hover:text-gray-700"
+                  className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
                 >
                   <X size={16} />
                 </button>
@@ -1288,7 +1288,7 @@ const ProposalCanvasEditor = ({
               <button
                 onClick={() => setShowEmailInput(true)}
                 disabled={sending}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-overlay)] rounded-lg transition-all"
               >
                 <Send size={16} />
                 Send Email
@@ -1297,14 +1297,14 @@ const ProposalCanvasEditor = ({
             <button
               onClick={handleExport}
               disabled={exporting}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-all disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-overlay)] rounded-lg transition-all disabled:opacity-50"
             >
               {exporting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
               Export
             </button>
             <button
               onClick={onCancel}
-              className="px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+              className="px-4 py-1.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-overlay)] rounded-lg transition-all"
             >
               Cancel
             </button>
@@ -1320,11 +1320,11 @@ const ProposalCanvasEditor = ({
 
         {/* Text Formatting Toolbar (shown when text selected) */}
         {selectedEl?.type === 'text' && !readOnly && (
-          <div className="h-12 bg-gray-50 border-b border-gray-200 flex items-center gap-2 px-4">
-            <div className="flex items-center gap-1 bg-white rounded-lg p-1 shadow-sm border border-gray-200">
+          <div className="h-12 bg-[var(--bg-elevated)] border-b border-[var(--border-base)] flex items-center gap-2 px-4">
+            <div className="flex items-center gap-1 bg-[var(--bg-surface)] rounded-lg p-1 shadow-sm border border-[var(--border-base)]">
               <button
                 onClick={() => toggleTextFormat('bold')}
-                className={`p-1.5 rounded transition-all ${textFormat.bold ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+                className={`p-1.5 rounded transition-all ${textFormat.bold ? 'bg-blue-100 text-blue-600' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'
                   }`}
                 title="Bold"
               >
@@ -1332,7 +1332,7 @@ const ProposalCanvasEditor = ({
               </button>
               <button
                 onClick={() => toggleTextFormat('italic')}
-                className={`p-1.5 rounded transition-all ${textFormat.italic ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+                className={`p-1.5 rounded transition-all ${textFormat.italic ? 'bg-blue-100 text-blue-600' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'
                   }`}
                 title="Italic"
               >
@@ -1340,7 +1340,7 @@ const ProposalCanvasEditor = ({
               </button>
               <button
                 onClick={() => toggleTextFormat('underline')}
-                className={`p-1.5 rounded transition-all ${textFormat.underline ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+                className={`p-1.5 rounded transition-all ${textFormat.underline ? 'bg-blue-100 text-blue-600' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'
                   }`}
                 title="Underline"
               >
@@ -1350,24 +1350,24 @@ const ProposalCanvasEditor = ({
 
             <div className="w-px h-5 bg-gray-300" />
 
-            <div className="flex items-center gap-1 bg-white rounded-lg p-1 shadow-sm border border-gray-200">
+            <div className="flex items-center gap-1 bg-[var(--bg-surface)] rounded-lg p-1 shadow-sm border border-[var(--border-base)]">
               <button
                 onClick={() => applyTextFormat({ align: 'left' })}
-                className={`p-1.5 rounded transition-all ${textFormat.align === 'left' ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+                className={`p-1.5 rounded transition-all ${textFormat.align === 'left' ? 'bg-blue-100 text-blue-600' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'
                   }`}
               >
                 <AlignLeft size={16} />
               </button>
               <button
                 onClick={() => applyTextFormat({ align: 'center' })}
-                className={`p-1.5 rounded transition-all ${textFormat.align === 'center' ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+                className={`p-1.5 rounded transition-all ${textFormat.align === 'center' ? 'bg-blue-100 text-blue-600' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'
                   }`}
               >
                 <AlignCenter size={16} />
               </button>
               <button
                 onClick={() => applyTextFormat({ align: 'right' })}
-                className={`p-1.5 rounded transition-all ${textFormat.align === 'right' ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
+                className={`p-1.5 rounded transition-all ${textFormat.align === 'right' ? 'bg-blue-100 text-blue-600' : 'hover:bg-[var(--bg-overlay)] text-[var(--text-secondary)]'
                   }`}
               >
                 <AlignRight size={16} />
@@ -1377,8 +1377,8 @@ const ProposalCanvasEditor = ({
             <div className="w-px h-5 bg-gray-300" />
 
             {/* Highlight Colors */}
-            <div className="flex items-center gap-1 bg-white rounded-lg p-1 shadow-sm border border-gray-200">
-              <span className="text-xs text-gray-500 px-2">Highlight:</span>
+            <div className="flex items-center gap-1 bg-[var(--bg-surface)] rounded-lg p-1 shadow-sm border border-[var(--border-base)]">
+              <span className="text-xs text-[var(--text-muted)] px-2">Highlight:</span>
               <button
                 onClick={() => applyTextFormat({ highlight: '#fef3c7' })}
                 className="w-5 h-5 rounded bg-yellow-200 border border-gray-300 hover:scale-110 transition-transform"
@@ -1401,7 +1401,7 @@ const ProposalCanvasEditor = ({
               />
               <button
                 onClick={() => applyTextFormat({ highlight: null })}
-                className="w-5 h-5 rounded bg-white border border-gray-300 flex items-center justify-center hover:scale-110 transition-transform"
+                className="w-5 h-5 rounded bg-[var(--bg-surface)] border border-gray-300 flex items-center justify-center hover:scale-110 transition-transform"
                 title="None"
               >
                 <X size={10} />
@@ -1413,7 +1413,7 @@ const ProposalCanvasEditor = ({
             {/* Font Size */}
             <select
               onChange={(e) => applyTextFormat({ fontSize: parseInt(e.target.value) })}
-              className="text-sm border border-gray-300 rounded-lg px-2 py-1 bg-white shadow-sm"
+              className="text-sm border border-gray-300 rounded-lg px-2 py-1 bg-[var(--bg-surface)] shadow-sm"
               defaultValue={14}
             >
               <option value="10">10px</option>
@@ -1442,7 +1442,7 @@ const ProposalCanvasEditor = ({
         <div className="flex-1 overflow-auto bg-[#e5e7eb] p-8">
           <div
             ref={canvasRef}
-            className="relative mx-auto bg-white"
+            className="relative mx-auto bg-[var(--bg-surface)]"
             style={{
               width: canvasSize.width,
               height: canvasSize.height,
@@ -1492,10 +1492,10 @@ const ProposalCanvasEditor = ({
         </div>
 
         {/* Bottom Status Bar */}
-        <div className="h-8 bg-white border-t border-gray-200 flex items-center justify-between px-4 text-xs text-gray-500">
+        <div className="h-8 bg-[var(--bg-surface)] border-t border-[var(--border-base)] flex items-center justify-between px-4 text-xs text-[var(--text-muted)]">
           <div className="flex items-center gap-4">
             <span className="font-medium">{elements.length} elements</span>
-            <span>Canvas: {canvasSize.width} × {canvasSize.height}px</span>
+            <span>Canvas: {canvasSize.width} Ãƒâ€” {canvasSize.height}px</span>
           </div>
           <div className="flex items-center gap-4">
             <span>{selectedElement ? `Selected: ${selectedEl?.type}` : 'No selection'}</span>
@@ -1506,8 +1506,8 @@ const ProposalCanvasEditor = ({
 
       {/* Right Panel - Properties & Layers */}
       {showLayers && (
-        <div className="w-64 bg-white border-l border-gray-200 flex flex-col shadow-sm z-20">
-          <div className="p-4 border-b border-gray-200 bg-gray-50">
+        <div className="w-64 bg-[var(--bg-surface)] border-l border-[var(--border-base)] flex flex-col shadow-sm z-20">
+          <div className="p-4 border-b border-[var(--border-base)] bg-[var(--bg-elevated)]">
             <h3 className="font-semibold text-gray-800 flex items-center gap-2">
               <Layers size={16} />
               Layers
@@ -1520,18 +1520,18 @@ const ProposalCanvasEditor = ({
                 <div
                   key={el.id}
                   onClick={() => setSelectedElement(el.id)}
-                  className={`p-3 border-b border-gray-100 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors ${selectedElement === el.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                  className={`p-3 border-b border-[var(--border-muted)] flex items-center gap-3 cursor-pointer hover:bg-[var(--bg-elevated)] transition-colors ${selectedElement === el.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
                     }`}
                 >
-                  <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
-                    {el.type === 'text' && <Type size={14} className="text-gray-500" />}
-                    {el.type === 'table' && <Table size={14} className="text-gray-500" />}
-                    {el.type === 'image' && <ImageIcon size={14} className="text-gray-500" />}
-                    {el.type === 'shape' && <Square size={14} className="text-gray-500" />}
+                  <div className="w-8 h-8 rounded-lg bg-[var(--bg-overlay)] flex items-center justify-center">
+                    {el.type === 'text' && <Type size={14} className="text-[var(--text-muted)]" />}
+                    {el.type === 'table' && <Table size={14} className="text-[var(--text-muted)]" />}
+                    {el.type === 'image' && <ImageIcon size={14} className="text-[var(--text-muted)]" />}
+                    {el.type === 'shape' && <Square size={14} className="text-[var(--text-muted)]" />}
                     {el.type === 'sticky' && <StickyNote size={14} className="text-yellow-500" />}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-sm text-gray-700 font-medium block truncate capitalize">
+                    <span className="text-sm text-[var(--text-secondary)] font-medium block truncate capitalize">
                       {el.type} {index + 1}
                     </span>
                     <span className="text-xs text-gray-400">z-index: {el.zIndex}</span>
@@ -1542,7 +1542,7 @@ const ProposalCanvasEditor = ({
                         e.stopPropagation();
                         changeZIndex(el.id, 'up');
                       }}
-                      className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-gray-600 transition-colors"
+                      className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-[var(--text-secondary)] transition-colors"
                     >
                       <ChevronUp size={14} />
                     </button>
@@ -1551,7 +1551,7 @@ const ProposalCanvasEditor = ({
                         e.stopPropagation();
                         changeZIndex(el.id, 'down');
                       }}
-                      className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-gray-600 transition-colors"
+                      className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-[var(--text-secondary)] transition-colors"
                     >
                       <ChevronDown size={14} />
                     </button>
@@ -1565,7 +1565,7 @@ const ProposalCanvasEditor = ({
   );
 };
 
-// ── Canvas Element Component ───────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Canvas Element Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const CanvasElement = ({
   element,
   isSelected,
@@ -1638,7 +1638,7 @@ const CanvasElement = ({
                   {element.headers?.map((header, i) => (
                     <th
                       key={i}
-                      className="border border-gray-300 p-2 text-sm font-semibold bg-gray-50 text-left"
+                      className="border border-gray-300 p-2 text-sm font-semibold bg-[var(--bg-elevated)] text-left"
                     >
                       {header}
                     </th>
@@ -1706,7 +1706,7 @@ const CanvasElement = ({
 
         return (
           <div
-            className="w-full h-full flex items-center justify-center bg-gray-100 rounded-lg overflow-hidden cursor-pointer"
+            className="w-full h-full flex items-center justify-center bg-[var(--bg-overlay)] rounded-lg overflow-hidden cursor-pointer"
             onDoubleClick={handleImageDoubleClick}
             onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
             onDrop={handleImageDrop}
@@ -1721,7 +1721,7 @@ const CanvasElement = ({
             ) : (
               <div className="text-center p-4">
                 <ImageIcon size={32} className="mx-auto text-gray-400 mb-2" />
-                <p className="text-xs text-gray-500">Double click to add image</p>
+                <p className="text-xs text-[var(--text-muted)]">Double click to add image</p>
                 <p className="text-[10px] text-gray-400 mt-1">or drag & drop</p>
               </div>
             )}
@@ -1790,7 +1790,7 @@ const CanvasElement = ({
   );
 };
 
-// ── Selection Box Component ─────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Selection Box Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const SelectionBox = ({
   element,
   onBringToFront,
@@ -1815,34 +1815,34 @@ const SelectionBox = ({
 
       {/* Resize handles */}
       <div
-        className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-sm cursor-nw-resize pointer-events-auto"
+        className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-[var(--bg-surface)] border-2 border-blue-500 rounded-sm cursor-nw-resize pointer-events-auto"
         onMouseDown={(e) => onResizeStart?.(e, 'nw')}
       />
       <div
-        className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-sm cursor-ne-resize pointer-events-auto"
+        className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-[var(--bg-surface)] border-2 border-blue-500 rounded-sm cursor-ne-resize pointer-events-auto"
         onMouseDown={(e) => onResizeStart?.(e, 'ne')}
       />
       <div
-        className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-sm cursor-sw-resize pointer-events-auto"
+        className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-[var(--bg-surface)] border-2 border-blue-500 rounded-sm cursor-sw-resize pointer-events-auto"
         onMouseDown={(e) => onResizeStart?.(e, 'sw')}
       />
       <div
-        className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-sm cursor-se-resize pointer-events-auto"
+        className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-[var(--bg-surface)] border-2 border-blue-500 rounded-sm cursor-se-resize pointer-events-auto"
         onMouseDown={(e) => onResizeStart?.(e, 'se')}
       />
 
       {/* Action buttons */}
-      <div className="absolute -top-10 left-0 flex items-center gap-1 bg-white rounded-lg shadow-lg border border-gray-200 p-1 pointer-events-auto">
+      <div className="absolute -top-10 left-0 flex items-center gap-1 bg-[var(--bg-surface)] rounded-lg shadow-lg border border-[var(--border-base)] p-1 pointer-events-auto">
         <button
           onClick={onBringToFront}
-          className="p-1.5 hover:bg-gray-100 rounded text-gray-600 transition-colors"
+          className="p-1.5 hover:bg-[var(--bg-overlay)] rounded text-[var(--text-secondary)] transition-colors"
           title="Bring to front"
         >
           <ChevronUp size={16} />
         </button>
         <button
           onClick={onSendToBack}
-          className="p-1.5 hover:bg-gray-100 rounded text-gray-600 transition-colors"
+          className="p-1.5 hover:bg-[var(--bg-overlay)] rounded text-[var(--text-secondary)] transition-colors"
           title="Send to back"
         >
           <ChevronDown size={16} />
@@ -1850,7 +1850,7 @@ const SelectionBox = ({
         <div className="w-px h-4 bg-gray-300 mx-1" />
         <button
           onClick={onDuplicate}
-          className="p-1.5 hover:bg-gray-100 rounded text-gray-600 transition-colors"
+          className="p-1.5 hover:bg-[var(--bg-overlay)] rounded text-[var(--text-secondary)] transition-colors"
           title="Duplicate"
         >
           <Copy size={16} />

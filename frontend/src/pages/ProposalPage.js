@@ -924,7 +924,7 @@ const ProposalPage = () => {
     {
       key: 'total',
       header: 'Total',
-      render: v => <span className="text-xs font-medium text-[var(--text-primary)]">{fmt(v)}</span>,
+      render: v => <span className="text-xs font-medium text-[var(--text-primary)]">{CURRENCY.formatExact(v)}</span>,
     },
     {
       key: 'createdAt',
@@ -961,10 +961,10 @@ const ProposalPage = () => {
         return (
           <span
             className={`px-3 py-1 rounded-full text-[11px] font-medium ${isAccepted
-              ? 'bg-green-100 text-green-700 border border-green-200'
+              ? 'bg-green-500/20 text-green-400 border border-green-500/30'
               : isOpen
-                ? 'bg-white text-gray-600 border border-gray-300'
-                : 'bg-gray-100 text-gray-700'
+                ? 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border-base)]'
+                : 'bg-[var(--bg-elevated)] text-[var(--text-muted)]'
               }`}
           >
             {config.label}
@@ -1204,7 +1204,7 @@ const ProposalPage = () => {
                     {filteredProposals.map((proposal, index) => (
                       <tr
                         key={proposal.id}
-                        className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${selectedProposal?.id === proposal.id ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''}`}
+                        className={`border-b border-[var(--border-base)] hover:bg-[var(--bg-elevated)] cursor-pointer ${selectedProposal?.id === proposal.id ? 'bg-[var(--primary)]/10 border-l-4 border-l-[var(--primary)]' : ''}`}
                       >
                         <td className="py-3 px-4 group">
                           <div className="relative">
@@ -1251,7 +1251,7 @@ const ProposalPage = () => {
                           <span className="text-xs text-[var(--text-secondary)] hover:text-[var(--primary)] cursor-pointer">{proposal.customerName}</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="text-xs font-medium text-[var(--text-primary)]">{fmt(proposal.total)}</span>
+                          <span className="text-xs font-medium text-[var(--text-primary)]">{CURRENCY.formatExact(proposal.total)}</span>
                         </td>
                         <td className="py-3 px-4">
                           <span className="text-xs text-[var(--text-secondary)]">{new Date(proposal.createdAt).toISOString().split('T')[0]}</span>
@@ -1276,10 +1276,10 @@ const ProposalPage = () => {
                             return (
                               <span
                                 className={`px-3 py-1 rounded-full text-[11px] font-medium ${isAccepted
-                                  ? 'bg-green-100 text-green-700 border border-green-200'
+                                  ? 'bg-green-500/20 text-green-400 border border-green-500/30'
                                   : isOpen
-                                    ? 'bg-white text-gray-600 border border-gray-300'
-                                    : 'bg-gray-100 text-gray-700'
+                                    ? 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border-base)]'
+                                    : 'bg-[var(--bg-elevated)] text-[var(--text-muted)]'
                                   }`}
                               >
                                 {config.label}
@@ -1292,8 +1292,8 @@ const ProposalPage = () => {
                             onClick={(e) => { e.stopPropagation(); handleSendEmail(proposal); }}
                             disabled={!proposal.customerEmail}
                             className={`p-1 transition-colors ${proposal.customerEmail
-                              ? 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
-                              : 'text-gray-600 cursor-not-allowed'
+                              ? 'text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--bg-elevated)]'
+                              : 'text-[var(--text-muted)]/50 cursor-not-allowed'
                               }`}
                             title={proposal.customerEmail ? `Send PDF to ${proposal.customerEmail}` : 'No email available'}
                           >
@@ -1329,7 +1329,7 @@ const ProposalPage = () => {
 
         {/* Right Side - Detail Panel */}
         {showDetailPanel && selectedProposal && (
-          <div className="w-[45%] bg-white border-l border-gray-200 min-h-[calc(100vh-200px)]">
+          <div className="w-[45%] bg-[var(--bg-surface)] border-l border-[var(--border-base)] min-h-[calc(100vh-200px)]">
             <ProposalSidePanel
               proposal={selectedProposal}
               activeTab={detailTab}
@@ -1731,7 +1731,7 @@ const ConvertFromEstimate = ({ estimates, onConvert, onCancel }) => {
                 <p className="text-sm text-[var(--text-muted)]">{estimate.customerName}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-[var(--green)]">{fmt(estimate.total)}</p>
+                <p className="text-sm font-bold text-[var(--green)]">{CURRENCY.formatExact(estimate.total)}</p>
                 <p className="text-xs text-[var(--text-muted)]">{estimate.systemCapacity} kW</p>
               </div>
             </div>
@@ -1811,11 +1811,28 @@ const CreateProposalWizard = ({
         isOptional: item.isOptional || false
       })),
 
-      // Totals
-      subtotal: data.subtotal || 0,
+      // Cost Fields
+      equipmentCost: data.equipmentCost || 0,
+      installationCost: data.installationCost || 0,
+      engineeringCost: data.engineeringCost || 0,
+      transportationCost: data.transportationCost || 0,
+      miscellaneousCost: data.miscellaneousCost || 0,
+      gstRate: data.gstRate || data.taxRate || 18,
+      gstAmount: data.gstAmount || data.taxAmount || 0,
+
+      // Financial Summary
+      subtotal: data.subtotal || data.total || 0,
       discount: data.discount || 0,
+      discountType: data.discountType || 'percentage',
       adjustment: data.adjustment || 0,
       total: data.total || 0,
+
+      // Project Details
+      systemCapacity: data.systemCapacity || '',
+      projectType: data.projectType || 'residential',
+      installationType: data.installationType || 'rooftop',
+      projectLocation: data.projectLocation || '',
+      companyName: data.companyName || '',
 
       // Terms
       terms: data.terms || data.notes || '',
@@ -1850,11 +1867,28 @@ const CreateProposalWizard = ({
     // Items
     items: [],
 
+    // Cost Fields
+    equipmentCost: 0,
+    installationCost: 0,
+    engineeringCost: 0,
+    transportationCost: 0,
+    miscellaneousCost: 0,
+    gstRate: 18,
+    gstAmount: 0,
+
     // Totals
     subtotal: 0,
     discount: 0,
+    discountType: 'percentage',
     adjustment: 0,
     total: 0,
+
+    // Project Details
+    systemCapacity: '',
+    projectType: 'residential',
+    installationType: 'rooftop',
+    projectLocation: '',
+    companyName: '',
 
     // Terms
     terms: '',
@@ -2009,8 +2043,8 @@ const CreateProposalWizard = ({
 
   // Base classes for inputs - changes based on readOnly mode
   const inputBaseClass = readOnly
-    ? "w-full px-3 py-2 border border-gray-200 rounded text-sm bg-gray-50 text-gray-700 cursor-default"
-    : "w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-blue-500";
+    ? "w-full px-3 py-2 border border-[var(--border-base)] rounded text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)] cursor-default"
+    : "w-full px-3 py-2 border border-[var(--border-base)] rounded text-sm focus:outline-none focus:border-[var(--primary)] bg-[var(--bg-surface)] text-[var(--text-primary)]";
 
   const selectBaseClass = readOnly
     ? "w-full px-3 py-2 border border-[var(--border-base)] rounded text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)] cursor-default appearance-none"
@@ -2047,10 +2081,10 @@ const CreateProposalWizard = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${initialData.status === 'accepted' ? 'bg-green-100 text-green-700' :
-              initialData.status === 'sent' ? 'bg-blue-100 text-blue-700' :
-                initialData.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                  'bg-gray-100 text-gray-700'
+            <span className={`px-3 py-1 rounded-full text-xs font-medium ${initialData.status === 'accepted' ? 'bg-green-500/20 text-green-400' :
+              initialData.status === 'sent' ? 'bg-blue-500/20 text-blue-400' :
+                initialData.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                  'bg-[var(--bg-elevated)] text-[var(--text-muted)]'
               }`}>
               {initialData.status?.toUpperCase() || 'DRAFT'}
             </span>
@@ -2637,7 +2671,7 @@ const CreateProposalWizard = ({
             />
           </div>
 
-          <div className="flex justify-between text-base font-bold border-t border-gray-200 pt-2">
+          <div className="flex justify-between text-base font-bold border-t border-[var(--border-base)] pt-2">
             <span>Total:</span>
             <span>${total.toFixed(2)}</span>
           </div>
@@ -2742,7 +2776,7 @@ const ProposalDetail = ({ proposal, onEdit, onDelete, onDownload, onCustomizePDF
           <span className="text-xs text-[var(--text-muted)]">{statusConfig.description}</span>
         </div>
         <div className="text-right">
-          <p className="text-3xl font-black text-[var(--green)]">{fmt(proposal.total)}</p>
+          <p className="text-3xl font-black text-[var(--green)]">{CURRENCY.formatExact(proposal.total)}</p>
           <p className="text-xs text-[var(--text-muted)]">Total Project Value</p>
         </div>
       </div>
@@ -2848,43 +2882,43 @@ const ProposalDetail = ({ proposal, onEdit, onDelete, onDownload, onCustomizePDF
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-[var(--text-muted)]">Equipment Cost</span>
-              <span className="font-medium">{fmt(proposal.equipmentCost || 0)}</span>
+              <span className="font-medium">{CURRENCY.formatExact(proposal.equipmentCost || 0)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-muted)]">Installation Cost</span>
-              <span>{fmt(proposal.installationCost || 0)}</span>
+              <span>{CURRENCY.formatExact(proposal.installationCost || 0)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-muted)]">Engineering Cost</span>
-              <span>{fmt(proposal.engineeringCost || 0)}</span>
+              <span>{CURRENCY.formatExact(proposal.engineeringCost || 0)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-muted)]">Transportation</span>
-              <span>{fmt(proposal.transportationCost || 0)}</span>
+              <span>{CURRENCY.formatExact(proposal.transportationCost || 0)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-muted)]">Miscellaneous</span>
-              <span>{fmt(proposal.miscellaneousCost || 0)}</span>
+              <span>{CURRENCY.formatExact(proposal.miscellaneousCost || 0)}</span>
             </div>
             {proposal.discount > 0 && (
               <div className="flex justify-between text-green-500">
                 <span>Discount</span>
-                <span>-{fmt(proposal.discount)}</span>
+                <span>-{CURRENCY.formatExact(proposal.discount)}</span>
               </div>
             )}
           </div>
           <div className="space-y-2">
             <div className="flex justify-between pt-4 border-t border-[var(--border-base)]">
               <span className="font-medium">Subtotal</span>
-              <span className="font-medium">{fmt(proposal.subtotal)}</span>
+              <span className="font-medium">{CURRENCY.formatExact(proposal.subtotal)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-muted)]">GST ({proposal.gstRate || 18}%)</span>
-              <span>{fmt(proposal.gstAmount)}</span>
+              <span>{CURRENCY.formatExact(proposal.gstAmount)}</span>
             </div>
             <div className="flex justify-between text-lg font-bold pt-2 border-t-2 border-[var(--border-base)]">
               <span className="text-[var(--green)]">Grand Total</span>
-              <span className="text-[var(--green)]">{fmt(proposal.total)}</span>
+              <span className="text-[var(--green)]">{CURRENCY.formatExact(proposal.total)}</span>
             </div>
           </div>
         </div>
@@ -3084,8 +3118,8 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={`px-4 py-3 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${activeTab === tab.id
-                ? 'border-blue-500 text-blue-600 bg-white'
-                : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--bg-surface)]'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]'
                 }`}
             >
               {tab.label}
@@ -3115,7 +3149,7 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
       <div className="bg-[var(--bg-hover)] border-l-4 border-[var(--primary)] p-3 m-4 rounded">
         <div className="flex items-center justify-between">
           <span className="text-sm text-[var(--text-primary)]">
-            This proposal is {proposal.status} by {proposal.customerName} on {new Date(proposal.createdAt).toISOString().split('T')[0]} from IP address 49.200.152.110
+            This proposal is {proposal.status} by {proposal.customerName} on {new Date(proposal.createdAt).toISOString().split('T')[0]}
           </span>
           <button className="text-[var(--text-muted)] hover:text-[var(--primary)]">
             <X size={14} />
@@ -3128,9 +3162,9 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
         {activeTab === 'proposal' && (
           <div className="space-y-6">
             {/* Proposal Header */}
-            <div className="border-b border-gray-200 pb-4">
-              <h2 className="text-xl font-bold text-blue-600 mb-1">{proposal.proposalNumber}</h2>
-              <p className="text-sm text-gray-600 mb-3">{proposal.projectName}</p>
+            <div className="border-b border-[var(--border-base)] pb-4">
+              <h2 className="text-xl font-bold text-[var(--primary)] mb-1">{proposal.proposalNumber}</h2>
+              <p className="text-sm text-[var(--text-secondary)] mb-3">{proposal.projectName}</p>
 
               {/* Action Buttons */}
               <div className="flex items-center gap-2 mb-4">
@@ -3157,10 +3191,10 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
 
               <span
                 className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${proposal.status === 'accepted'
-                  ? 'bg-green-100 text-green-700 border border-green-200'
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/30'
                   : proposal.status === 'sent' || proposal.status === 'viewed'
-                    ? 'bg-white text-gray-600 border border-gray-300'
-                    : 'bg-gray-100 text-gray-700'
+                    ? 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border-base)]'
+                    : 'bg-[var(--bg-elevated)] text-[var(--text-muted)]'
                   }`}
               >
                 {statusConfig.label}
@@ -3183,8 +3217,8 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
               <div className="text-right">
                 <p className="text-xs text-[var(--text-muted)] mb-1">To:</p>
                   <h4 className="text-sm font-bold text-[var(--primary)] mb-1">{proposal.customerName}</h4>
-                  <p className="text-xs text-[var(--primary)] mt-2">{proposal.customerPhone || '207-858-2043 x6555'}</p>
-                  <p className="text-xs text-[var(--primary)]">{proposal.customerEmail || 'pulinch@example.net'}</p>
+                  <p className="text-xs text-[var(--primary)] mt-2">{proposal.customerPhone || '-'}</p>
+                  <p className="text-xs text-[var(--primary)]">{proposal.customerEmail || '-'}</p>
               </div>
             </div>
 
@@ -3198,7 +3232,7 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
             {/* Content Area */}
             <div className="border border-[var(--border-base)] rounded p-4 min-h-[150px]">
               <p className="text-sm text-[var(--text-secondary)]">
-                {proposal.projectDescription || 'vdsegretreykjsjhhuji'}
+                {proposal.projectDescription || proposal.description || 'No description available'}
               </p>
             </div>
 
@@ -3208,12 +3242,12 @@ const ProposalSidePanel = ({ proposal, activeTab, onTabChange, onClose, onEdit, 
                 <div className="text-xs text-[var(--text-secondary)] space-y-1">
                   <p>Signer Name: {proposal.customerName}</p>
                   <p>Signed Date: {new Date(proposal.createdAt).toISOString().split('T')[0]} 07:52:52</p>
-                  <p>IP Address: 49.200.152.110</p>
+                  <p>IP Address: -</p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-red-500 mb-2">✕ Signature (Customer)</p>
-                  <div className="w-32 h-16 border border-gray-300 rounded flex items-center justify-center">
-                    <span className="text-2xl font-cursive italic text-gray-600" style={{ fontFamily: 'cursive' }}>
+                  <div className="w-32 h-16 border border-[var(--border-base)] rounded flex items-center justify-center">
+                    <span className="text-2xl font-cursive italic text-[var(--text-muted)]" style={{ fontFamily: 'cursive' }}>
                       {proposal.customerName?.charAt(0) || 'R'}
                     </span>
                   </div>
@@ -3357,7 +3391,7 @@ const KanbanView = ({ proposals, onCardClick }) => {
                 <p className="text-xs font-medium text-[var(--text-primary)] line-clamp-1">{proposal.projectName}</p>
                 <p className="text-[10px] text-[var(--text-muted)]">{proposal.customerName}</p>
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs font-bold text-[var(--green)]">{(proposal.total / 100000).toFixed(1)}L</span>
+                  <span className="text-xs font-bold text-[var(--green)]">{CURRENCY.formatExact(proposal.total)}</span>
                   <span className="text-[10px] text-[var(--text-muted)]">{proposal.systemCapacity} kW</span>
                 </div>
               </div>

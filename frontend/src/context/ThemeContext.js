@@ -50,6 +50,8 @@ const THEMES = {
             '--cyan': '#22d3ee', '--cyan-bg': 'rgba(34,211,238,0.10)',
             '--chart-grid': 'rgba(255,255,255,0.05)',
             '--tab-active-overlay': 'rgba(255,255,255,0.18)',
+            '--skeleton-base': 'rgba(255,255,255,0.05)',
+            '--skeleton-shine': 'rgba(255,255,255,0.10)',
         },
     },
 
@@ -91,6 +93,8 @@ const THEMES = {
             '--cyan': '#0e7490', '--cyan-bg': 'rgba(14,116,144,0.08)',
             '--chart-grid': 'rgba(15,23,42,0.07)',
             '--tab-active-overlay': 'rgba(0,0,0,0.08)',
+            '--skeleton-base': 'rgba(0,0,0,0.06)',
+            '--skeleton-shine': 'rgba(255,255,255,0.50)',
         },
     },
 
@@ -132,6 +136,8 @@ const THEMES = {
             '--cyan': '#06b6d4', '--cyan-bg': 'rgba(6,182,212,0.10)',
             '--chart-grid': 'rgba(245,158,11,0.06)',
             '--tab-active-overlay': 'rgba(255,255,255,0.15)',
+            '--skeleton-base': 'rgba(255,255,255,0.04)',
+            '--skeleton-shine': 'rgba(255,255,255,0.08)',
         },
     },
 };
