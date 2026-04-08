@@ -184,14 +184,14 @@ const SiteSurveyDashboard = ({ surveys = [], loading = false, onRefresh }) => {
           size: '70%',
           labels: {
             show: true,
-            name: { show: true, fontSize: '14px', color: '#6b7280' },
-            value: { show: true, fontSize: '24px', fontWeight: 600, color: '#111827' },
+            name: { show: true, fontSize: '14px', color: 'var(--text-muted)' },
+            value: { show: true, fontSize: '24px', fontWeight: 600, color: 'var(--text-primary)' },
             total: {
               show: true,
               label: 'Total',
               fontSize: '14px',
               fontWeight: 400,
-              color: '#6b7280',
+              color: 'var(--text-muted)',
               formatter: () => stats.total.toString()
             }
           }
@@ -207,7 +207,7 @@ const SiteSurveyDashboard = ({ surveys = [], loading = false, onRefresh }) => {
       horizontalAlign: 'center',
       fontSize: '12px',
       fontFamily: 'inherit',
-      labels: { colors: '#6b7280', useSeriesColors: true },
+      labels: { colors: 'var(--text-muted)', useSeriesColors: true },
       markers: { width: 10, height: 10, radius: 12 },
       itemMargin: { horizontal: 15, vertical: 5 }
     },
@@ -215,7 +215,7 @@ const SiteSurveyDashboard = ({ surveys = [], loading = false, onRefresh }) => {
     labels: ['Pending', 'Active', 'Completed'],
     stroke: { show: true, colors: ['transparent'], width: 3 },
     tooltip: {
-      theme: 'light',
+      theme: 'dark',
       y: { formatter: val => `${val} surveys` }
     }
   };
@@ -264,7 +264,7 @@ const SiteSurveyDashboard = ({ surveys = [], loading = false, onRefresh }) => {
       style: {
         fontSize: '12px',
         fontWeight: 600,
-        colors: ['#374151']
+        colors: ['var(--text-primary)']
       },
       background: {
         enabled: true,
@@ -277,7 +277,7 @@ const SiteSurveyDashboard = ({ surveys = [], loading = false, onRefresh }) => {
       categories: weeklyTrendData.map(d => d.day),
       labels: {
         style: {
-          colors: '#6b7280',
+          colors: 'var(--text-muted)',
           fontSize: '12px',
           fontWeight: 500
         },
@@ -291,7 +291,7 @@ const SiteSurveyDashboard = ({ surveys = [], loading = false, onRefresh }) => {
     },
     yaxis: {
       labels: {
-        style: { colors: '#6b7280', fontSize: '11px' },
+        style: { colors: 'var(--text-muted)', fontSize: '11px' },
         formatter: val => Math.round(val)
       },
       axisBorder: { show: false },
@@ -299,7 +299,7 @@ const SiteSurveyDashboard = ({ surveys = [], loading = false, onRefresh }) => {
     },
     colors: [COLORS.primary, COLORS.success],
     grid: {
-      borderColor: '#e5e7eb',
+      borderColor: 'var(--border-base)',
       strokeDashArray: 4,
       yaxis: { lines: { show: true } },
       xaxis: { lines: { show: false } },
@@ -310,7 +310,7 @@ const SiteSurveyDashboard = ({ surveys = [], loading = false, onRefresh }) => {
       horizontalAlign: 'right',
       fontSize: '12px',
       fontFamily: 'inherit',
-      labels: { colors: '#6b7280' },
+      labels: { colors: 'var(--text-muted)' },
       markers: { width: 10, height: 10, radius: 12 },
       itemMargin: { horizontal: 15 }
     },
@@ -498,10 +498,10 @@ const SiteSurveyDashboard = ({ surveys = [], loading = false, onRefresh }) => {
                     <stop offset="100%" stopColor={COLORS.cyan} stopOpacity={1} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" horizontal={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-base)" horizontal={false} />
                 <XAxis 
                   type="number" 
-                  stroke="#9ca3af" 
+                  stroke="var(--text-muted)" 
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
@@ -509,21 +509,22 @@ const SiteSurveyDashboard = ({ surveys = [], loading = false, onRefresh }) => {
                 <YAxis 
                   type="category" 
                   dataKey="city" 
-                  stroke="#6b7280" 
+                  stroke="var(--text-muted)" 
                   fontSize={11}
                   width={70}
                   tickLine={false}
                   axisLine={false}
                 />
                 <Tooltip 
-                  cursor={{ fill: '#f3f4f6', radius: 4 }}
+                  cursor={{ fill: 'var(--bg-elevated)', radius: 4 }}
                   contentStyle={{ 
-                    backgroundColor: 'rgba(255,255,255,0.95)', 
-                    border: '1px solid #e5e7eb', 
+                    backgroundColor: 'var(--bg-surface)', 
+                    border: '1px solid var(--border-base)', 
                     borderRadius: '8px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    color: 'var(--text-primary)'
                   }}
-                  labelStyle={{ color: '#374151', fontWeight: 600 }}
+                  labelStyle={{ color: 'var(--text-primary)', fontWeight: 600 }}
                 />
                 <Bar 
                   dataKey="count" 
@@ -552,7 +553,7 @@ const SiteSurveyDashboard = ({ surveys = [], loading = false, onRefresh }) => {
                   </linearGradient>
                 </defs>
                 <PolarGrid 
-                  stroke="#e5e7eb" 
+                  stroke="var(--border-base)" 
                   radialLines={true}
                   gridType="polygon"
                 />

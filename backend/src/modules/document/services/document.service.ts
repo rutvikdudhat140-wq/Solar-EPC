@@ -41,22 +41,33 @@ export class DocumentService {
   // ============================================
   private calculateTotals(data: any): any {
     const items = data.items || [];
-    const equipmentCost = items.reduce((sum: number, item: any) => sum + (item.total || 0), 0);
-    const installationCost = data.installationCost || 0;
-    const engineeringCost = data.engineeringCost || 0;
-    const transportationCost = data.transportationCost || 0;
-    const miscellaneousCost = data.miscellaneousCost || 0;
+    const equipmentCost = data.equipmentCost !== undefined ? data.equipmentCost : items.reduce((sum: number, item: any) => sum + (item.total || 0), 0);
+    const installationCost = data.installationCost !== undefined ? data.installationCost : 0;
+    const engineeringCost = data.engineeringCost !== undefined ? data.engineeringCost : 0;
+    const transportationCost = data.transportationCost !== undefined ? data.transportationCost : 0;
+    const miscellaneousCost = data.miscellaneousCost !== undefined ? data.miscellaneousCost : 0;
+    const discount = data.discount !== undefined ? data.discount : 0;
     
-    const subtotal = equipmentCost + installationCost + engineeringCost + transportationCost + miscellaneousCost;
-    const taxRate = data.gstRate || data.taxRate || 18;
-    const taxAmount = data.gstAmount || data.taxAmount || Math.round((subtotal * taxRate) / 100);
-    const total = subtotal + taxAmount;
+    let subtotal = data.subtotal;
+    if (subtotal === undefined) {
+      subtotal = equipmentCost + installationCost + engineeringCost + transportationCost + miscellaneousCost - discount;
+    }
+    
+    const taxRate = data.gstRate !== undefined ? data.gstRate : (data.taxRate !== undefined ? data.taxRate : 18);
+    
+    let taxAmount = data.gstAmount !== undefined ? data.gstAmount : data.taxAmount;
+    if (taxAmount === undefined) {
+      taxAmount = Math.round((subtotal * taxRate) / 100);
+    }
+    
+    const total = data.total !== undefined ? data.total : (subtotal + taxAmount);
 
     return {
       equipmentCost,
       subtotal,
       taxRate,
       taxAmount,
+      discount,
       total,
     };
   }
@@ -74,11 +85,12 @@ export class DocumentService {
       tenantId: tid,
       createdBy: 'system',
       // Map gst fields to tax fields
-      taxRate: createDto.gstRate || createDto.taxRate || calculatedTotals.taxRate,
-      taxAmount: createDto.gstAmount || createDto.taxAmount || calculatedTotals.taxAmount,
-      subtotal: createDto.subtotal || calculatedTotals.subtotal,
-      total: createDto.total || calculatedTotals.total,
-      equipmentCost: createDto.equipmentCost || calculatedTotals.equipmentCost,
+      taxRate: createDto.gstRate !== undefined ? createDto.gstRate : (createDto.taxRate !== undefined ? createDto.taxRate : calculatedTotals.taxRate),
+      taxAmount: createDto.gstAmount !== undefined ? createDto.gstAmount : (createDto.taxAmount !== undefined ? createDto.taxAmount : calculatedTotals.taxAmount),
+      subtotal: createDto.subtotal !== undefined ? createDto.subtotal : calculatedTotals.subtotal,
+      total: createDto.total !== undefined ? createDto.total : calculatedTotals.total,
+      discount: createDto.discount !== undefined ? createDto.discount : calculatedTotals.discount,
+      equipmentCost: createDto.equipmentCost !== undefined ? createDto.equipmentCost : calculatedTotals.equipmentCost,
     };
 
     const created = new this.documentModel(mappedData);
@@ -198,11 +210,12 @@ export class DocumentService {
       ...(updateDto.gstRate !== undefined && { taxRate: updateDto.gstRate }),
       ...(updateDto.gstAmount !== undefined && { taxAmount: updateDto.gstAmount }),
       ...(Object.keys(calculatedTotals).length > 0 && {
-        taxRate: calculatedTotals.taxRate,
-        taxAmount: calculatedTotals.taxAmount,
-        subtotal: calculatedTotals.subtotal,
-        total: calculatedTotals.total,
-        equipmentCost: calculatedTotals.equipmentCost,
+        taxRate: updateDto.gstRate !== undefined ? updateDto.gstRate : (updateDto.taxRate !== undefined ? updateDto.taxRate : calculatedTotals.taxRate),
+        taxAmount: updateDto.gstAmount !== undefined ? updateDto.gstAmount : (updateDto.taxAmount !== undefined ? updateDto.taxAmount : calculatedTotals.taxAmount),
+        subtotal: updateDto.subtotal !== undefined ? updateDto.subtotal : calculatedTotals.subtotal,
+        total: updateDto.total !== undefined ? updateDto.total : calculatedTotals.total,
+        discount: updateDto.discount !== undefined ? updateDto.discount : calculatedTotals.discount,
+        equipmentCost: updateDto.equipmentCost !== undefined ? updateDto.equipmentCost : calculatedTotals.equipmentCost,
       }),
     };
 
@@ -405,10 +418,17 @@ export class DocumentService {
     }
 
     // Update document status
+    const docIdQuery: any = {};
+    try {
+      docIdQuery._id = this.toObjectId(id);
+    } catch (e) {
+      docIdQuery.documentId = id;
+    }
+
     const updatedDoc = await this.documentModel
       .findOneAndUpdate(
         {
-          $or: [{ _id: this.toObjectId(id) }, { documentId: id }],
+          ...docIdQuery,
           ...(tid && { tenantId: tid }),
           isDeleted: false,
         },
@@ -567,20 +587,51 @@ export class DocumentService {
     pdfBuffer: Buffer,
     tenantId?: string,
   ): Promise<DocumentEntity> {
-    const tid = this.toObjectId(tenantId);
+    const tid = tenantId ? this.toObjectId(tenantId) : null;
+
+    console.log(`[sendWithPdf] Received ID: ${id}, tenantId: ${tenantId}`);
+    console.log(`[sendWithPdf] sendDto:`, sendDto);
 
     // First find the document to get email info
-    const doc = await this.findOne(id, tenantId);
+    let doc: DocumentEntity | null = null;
+    
+    // Try to find by ID or documentId
+    try {
+      const objectId = this.toObjectId(id);
+      doc = await this.documentModel.findOne({
+        _id: objectId,
+        ...(tid && { tenantId: tid }),
+        isDeleted: false,
+      }).lean() as DocumentEntity;
+    } catch (e) {
+      // Not a valid ObjectId, try by documentId
+      console.log(`[sendWithPdf] Not a valid ObjectId, trying by documentId`);
+    }
+    
+    if (!doc) {
+      doc = await this.documentModel.findOne({
+        documentId: id,
+        ...(tid && { tenantId: tid }),
+        isDeleted: false,
+      }).lean() as DocumentEntity;
+    }
+
+    console.log(`[sendWithPdf] Found document:`, doc);
 
     if (!doc) {
       throw new NotFoundException(`Document with id ${id} not found`);
     }
 
-    // Determine the recipient email
-    const recipientEmail = sendDto.email || doc.customerEmail;
+    // Determine the recipient email - prefer sendDto.email
+    let recipientEmail = sendDto.email;
+    if (!recipientEmail && doc.customerEmail) {
+      recipientEmail = doc.customerEmail;
+    }
+
+    console.log(`[sendWithPdf] Recipient email: ${recipientEmail}`);
 
     if (!recipientEmail) {
-      throw new BadRequestException('No recipient email available');
+      throw new BadRequestException('No recipient email available. Please add customer email to the estimate.');
     }
 
     // Send email with PDF attachment
@@ -588,8 +639,13 @@ export class DocumentService {
       const emailSubject = `${doc.type.charAt(0).toUpperCase() + doc.type.slice(1)}: ${doc.title || doc.documentId}`;
       const emailBody = `Dear ${doc.customerName || 'Customer'},\n\nPlease find attached your ${doc.type} document.\n\nDocument ID: ${doc.documentId}\nTotal Amount: ₹${doc.total || 'N/A'}\n\nRegards,\nSolar EPC Team`;
 
+      console.log('[sendWithPdf] Calling emailService.sendEmail...');
+      console.log('[sendWithPdf] To:', recipientEmail);
+      console.log('[sendWithPdf] Subject:', emailSubject);
+      console.log('[sendWithPdf] PDF buffer length:', pdfBuffer.length);
+
       // Send email with PDF attachment
-      await this.emailService.sendEmail(
+      const emailResult = await this.emailService.sendEmail(
         recipientEmail,
         emailSubject,
         emailBody,
@@ -611,16 +667,33 @@ export class DocumentService {
           },
         ],
       );
+
+      console.log('[sendWithPdf] Email result:', emailResult);
+
+      // Check if email was sent successfully
+      if (!emailResult.success) {
+        console.error('[sendWithPdf] Email sending failed:', emailResult.message);
+        throw new BadRequestException(emailResult.message);
+      }
+
+      console.log('[sendWithPdf] Email sent successfully:', emailResult.messageId);
     } catch (error: any) {
-      console.error('Failed to send email with PDF:', error);
+      console.error('[sendWithPdf] Failed to send email with PDF:', error);
       throw new BadRequestException('Failed to send email: ' + (error?.message || 'Unknown error'));
     }
 
     // Update document status
+    const docIdQuery: any = {};
+    try {
+      docIdQuery._id = this.toObjectId(id);
+    } catch (e) {
+      docIdQuery.documentId = id;
+    }
+
     const updatedDoc = await this.documentModel
       .findOneAndUpdate(
         {
-          $or: [{ _id: this.toObjectId(id) }, { documentId: id }],
+          ...docIdQuery,
           ...(tid && { tenantId: tid }),
           isDeleted: false,
         },

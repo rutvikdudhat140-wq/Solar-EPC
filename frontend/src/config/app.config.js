@@ -36,6 +36,11 @@ export const CURRENCY = {
         }
         return `₹${n.toLocaleString('en-IN')}`;
     },
+    // Exact format - shows actual number without conversion
+    formatExact: (n) => {
+        if (!n || n === 0) return '₹0';
+        return `₹${parseFloat(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    },
 };
 
 export const DATE_FORMAT = {

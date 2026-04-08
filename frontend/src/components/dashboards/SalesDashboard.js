@@ -1,4 +1,4 @@
-// SalesDashboard.js — Sales role dashboard with lead status cards and workflow
+// SalesDashboard.js Ã¢â‚¬â€ Sales role dashboard with lead status cards and workflow
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     Users, Activity, CheckCircle, MapPin, ArrowRight,
@@ -18,7 +18,7 @@ import { toast } from '../../components/ui/Toast';
 
 const C = ROLE_COLORS.sales;
 
-// ── Lead Status KPI Card ───────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Lead Status KPI Card Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const LeadStatusCard = ({ title, value, change, icon: Icon, color, subtitle, trend, onClick }) => (
     <div 
         onClick={onClick}
@@ -51,7 +51,7 @@ const LeadStatusCard = ({ title, value, change, icon: Icon, color, subtitle, tre
     </div>
 );
 
-// ── CRM Lead Card (for Site Survey Scheduled section) ─────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ CRM Lead Card (for Site Survey Scheduled section) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const CRMLeadCard = ({ lead, onMoveToPending }) => (
     <div 
         onClick={() => onMoveToPending(lead)}
@@ -67,13 +67,13 @@ const CRMLeadCard = ({ lead, onMoveToPending }) => (
             </div>
             <div className="text-right">
                 <p className="text-[10px] font-bold text-amber-500">{lead.kw || '0kW'}</p>
-                <p className="text-[9px] text-[var(--text-muted)]">{lead.city || '—'}</p>
+                <p className="text-[9px] text-[var(--text-muted)]">{lead.city || 'Ã¢â‚¬â€'}</p>
             </div>
         </div>
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--border-subtle)]">
             <div className="flex items-center gap-1 text-[9px] text-[var(--text-muted)]">
                 <Calendar size={10} />
-                <span>Due: {lead.nextFollowUp || '—'}</span>
+                <span>Due: {lead.nextFollowUp || 'Ã¢â‚¬â€'}</span>
             </div>
             <span className="text-[9px] text-amber-500 font-medium flex items-center gap-1">
                 Click to Move Pending <ArrowRight size={10} />
@@ -82,7 +82,7 @@ const CRMLeadCard = ({ lead, onMoveToPending }) => (
     </div>
 );
 
-// ── Survey Card (for Active/In Progress section) ──────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Survey Card (for Active/In Progress section) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const SurveyCard = ({ survey, onComplete, onFillForm }) => (
     <div className="p-3 rounded-xl bg-[var(--bg-elevated)] border border-emerald-500/30 hover:border-emerald-500/60 transition-all">
         <div className="flex items-center gap-3">
@@ -91,7 +91,7 @@ const SurveyCard = ({ survey, onComplete, onFillForm }) => (
             </div>
             <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-[var(--text-primary)] truncate">{survey.customerName}</p>
-                <p className="text-[10px] text-[var(--text-muted)] truncate">{survey.site || '—'}</p>
+                <p className="text-[10px] text-[var(--text-muted)] truncate">{survey.site || 'Ã¢â‚¬â€'}</p>
             </div>
             <div className="text-right">
                 <p className="text-[10px] font-bold text-emerald-500">{survey.estimatedKw}kW</p>
@@ -107,7 +107,7 @@ const SurveyCard = ({ survey, onComplete, onFillForm }) => (
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--border-subtle)]">
             <div className="flex items-center gap-1 text-[9px] text-[var(--text-muted)]">
                 <Calendar size={10} />
-                <span>{survey.scheduledDate || '—'}</span>
+                <span>{survey.scheduledDate || 'Ã¢â‚¬â€'}</span>
             </div>
             {survey.status === 'pending' && onFillForm && (
                 <button
@@ -131,7 +131,7 @@ const SurveyCard = ({ survey, onComplete, onFillForm }) => (
     </div>
 );
 
-// ── Main Dashboard Component ───────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Main Dashboard Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const SalesDashboard = () => {
     const { data, loading } = useRoleDashboard();
     const [crmLeads, setCrmLeads] = useState([]);
@@ -263,17 +263,17 @@ const SalesDashboard = () => {
     return (
         <div className="space-y-6 p-6">
             {/* Global Date Filter Bar */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between">
+            <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-600">Filter by Date:</span>
-                    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    <span className="text-sm font-medium text-[var(--text-secondary)]">Filter by Date:</span>
+                    <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                         {['Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'All Time', 'Custom Range'].map((filter) => (
                             <button 
                                 key={filter} 
                                 className={`px-3 py-1.5 text-xs rounded-md font-medium transition-all ${
                                     filter === 'All Time' 
                                         ? 'bg-orange-500 text-white' 
-                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                                        : 'text-[var(--text-secondary)] hover:text-gray-900 hover:bg-gray-200'
                                 }`}
                             >
                                 {filter}
@@ -281,13 +281,13 @@ const SalesDashboard = () => {
                         ))}
                     </div>
                 </div>
-                <span className="text-sm text-gray-500">Showing All Data</span>
+                <span className="text-sm text-[var(--text-muted)]">Showing All Data</span>
             </div>
 
             <div className="flex items-center justify-between">
                 <SectionHeader
                     title="Sales Dashboard"
-                    subtitle="Lead management · Pipeline tracking · Site surveys"
+                    subtitle="Lead management Ã‚Â· Pipeline tracking Ã‚Â· Site surveys"
                     icon={Target}
                     accent={C.primary}
                     badge="Sales Hub"
@@ -302,7 +302,7 @@ const SalesDashboard = () => {
                 </button>
             </div>
 
-            {/* ── Lead Status Cards ─────────────────────────────────────────── */}
+            {/* Ã¢â€â‚¬Ã¢â€â‚¬ Lead Status Cards Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */}
             <Grid4>
                 <LeadStatusCard
                     title="Active Leads"
@@ -342,7 +342,7 @@ const SalesDashboard = () => {
                 />
             </Grid4>
 
-            {/* ── Site Survey Scheduled (From CRM) Section ───────────────────── */}
+            {/* Ã¢â€â‚¬Ã¢â€â‚¬ Site Survey Scheduled (From CRM) Section Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */}
             <div className="glass-card p-5">
                 <div className="flex items-center justify-between mb-4">
                     <div>
@@ -396,7 +396,7 @@ const SalesDashboard = () => {
                 )}
             </div>
 
-            {/* ── Survey Workflow Sections ───────────────────────────────────── */}
+            {/* Ã¢â€â‚¬Ã¢â€â‚¬ Survey Workflow Sections Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Pending Surveys */}
                 <div className="glass-card p-5">
@@ -479,14 +479,14 @@ const SalesDashboard = () => {
                 </div>
             </div>
 
-            {/* ── Recent Leads Table ────────────────────────────────────────── */}
+            {/* Ã¢â€â‚¬Ã¢â€â‚¬ Recent Leads Table Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */}
             <ChartCard 
                 title="Recent Leads" 
                 subtitle="Latest lead activity"
                 headerRight={
-                    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                         {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                            <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                            <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                         ))}
                     </div>
                 }
@@ -500,7 +500,7 @@ const SalesDashboard = () => {
                             </div>
                             <span className="font-medium text-[var(--text-primary)]">{lead.name}</span>
                         </div>,
-                        <span key={`comp-${lead._id || lead.id}`} className="text-[var(--text-secondary)]">{lead.company || '—'}</span>,
+                        <span key={`comp-${lead._id || lead.id}`} className="text-[var(--text-secondary)]">{lead.company || 'Ã¢â‚¬â€'}</span>,
                         <span key={`stage-${lead._id || lead.id}`} className={`text-[10px] px-2 py-0.5 rounded-full ${
                             lead.stage === 'won' ? 'bg-emerald-500/10 text-emerald-500' :
                             lead.stage === 'lost' ? 'bg-red-500/10 text-red-500' :

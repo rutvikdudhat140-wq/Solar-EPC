@@ -1,4 +1,4 @@
-// FinanceDashboard.js — Finance role dashboard (redesigned)
+// FinanceDashboard.js Ã¢â‚¬â€ Finance role dashboard (redesigned)
 import React, { useMemo } from 'react';
 import {
     AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line,
@@ -61,7 +61,7 @@ const FinanceDashboard = ({
             return true;
         });
         
-        console.log('📊 CashFlow Filter:', { 
+        console.log('Ã°Å¸â€œÅ  CashFlow Filter:', { 
             calendarFilterYear, 
             calendarFilterMonth, 
             invoiceCount: filteredInvoices.length,
@@ -89,9 +89,9 @@ const FinanceDashboard = ({
             console.log('  Invoice:', inv.id || inv._id, '| Amount:', paidAmount, '| Month:', monthKey);
         });
         
-        console.log('💰 CashFlow Calculated Total:', calculatedTotal);
-        console.log('🎯 Expected Total (totalCollected prop):', totalCollected);
-        console.log('📊 Difference:', calculatedTotal - totalCollected);
+        console.log('Ã°Å¸â€™Â° CashFlow Calculated Total:', calculatedTotal);
+        console.log('Ã°Å¸Å½Â¯ Expected Total (totalCollected prop):', totalCollected);
+        console.log('Ã°Å¸â€œÅ  Difference:', calculatedTotal - totalCollected);
         
         return Array.from(monthlyMap.values());
     }, [invoices, manualAdjustments, calendarFilterYear, calendarFilterMonth, calendarFilterDay, totalCollected]);
@@ -174,17 +174,17 @@ const FinanceDashboard = ({
     return (
         <div className="space-y-6 p-6">
             {/* Global Date Filter Bar */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between">
+            <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-600">Filter by Date:</span>
-                    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    <span className="text-sm font-medium text-[var(--text-secondary)]">Filter by Date:</span>
+                    <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                         {['Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'All Time', 'Custom Range'].map((filter) => (
                             <button 
                                 key={filter} 
                                 className={`px-3 py-1.5 text-xs rounded-md font-medium transition-all ${
                                     filter === 'All Time' 
                                         ? 'bg-orange-500 text-white' 
-                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                                        : 'text-[var(--text-secondary)] hover:text-gray-900 hover:bg-gray-200'
                                 }`}
                             >
                                 {filter}
@@ -192,12 +192,12 @@ const FinanceDashboard = ({
                         ))}
                     </div>
                 </div>
-                <span className="text-sm text-gray-500">Showing All Data</span>
+                <span className="text-sm text-[var(--text-muted)]">Showing All Data</span>
             </div>
 
             <SectionHeader
                 title="Finance Dashboard"
-                subtitle="Cash flow · Invoicing · Payables · Compliance"
+                subtitle="Cash flow Ã‚Â· Invoicing Ã‚Â· Payables Ã‚Â· Compliance"
                 icon={DollarSign}
                 accent={C.primary}
                 badge="Financial Hub"
@@ -225,9 +225,9 @@ const FinanceDashboard = ({
                     title="Cash Flow Analysis" 
                     subtitle="Monthly inflow vs outflow vs net (INR)"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -264,9 +264,9 @@ const FinanceDashboard = ({
                     title="Invoice Status" 
                     subtitle="Billing portfolio breakdown"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -300,9 +300,9 @@ const FinanceDashboard = ({
                     title="Accounts Receivable" 
                     subtitle="Outstanding collections"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -328,9 +328,9 @@ const FinanceDashboard = ({
                     title="Accounts Payable" 
                     subtitle="Vendor payment obligations"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -356,11 +356,11 @@ const FinanceDashboard = ({
 
                 <ChartCard 
                     title="Compliance Status" 
-                    subtitle="GST · TDS · Audit filings"
+                    subtitle="GST Ã‚Â· TDS Ã‚Â· Audit filings"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -400,9 +400,9 @@ const FinanceDashboard = ({
                     title="Profit & Margin Trends" 
                     subtitle="Monthly gross vs net profit with margin %"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -436,9 +436,9 @@ const FinanceDashboard = ({
                     title="Budget vs Actual Analysis" 
                     subtitle="Department-wise variance tracking"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }

@@ -151,7 +151,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
     return { ...section, items };
   }).filter(s => (s.items || []).length > 0);
 
-  /* ── Derive layout dimensions from customization ── */
+  /* â”€â”€ Derive layout dimensions from customization â”€â”€ */
   const c = customization || {};
   const isHorizontal = c.layout === 'horizontal';
   const isMini = c.layout === 'mini' || c.sidebarSize === 'compact';
@@ -202,18 +202,18 @@ const Layout = ({ currentPage, onNavigate, children }) => {
   // Card layout class
   const cardClass = c.cardLayout === 'borderless' ? 'card-borderless' : c.cardLayout === 'shadow' ? 'card-shadow' : '';
 
-  // Topbar has custom color → use white text
+  // Topbar has custom color â†’ use white text
   const topbarHasCustomColor = c.topbarColor && c.topbarColor !== 'white';
   const topbarTextCls = topbarHasCustomColor ? 'text-white/80' : 'text-[var(--text-faint)]';
   const topbarTextPrimaryCls = topbarHasCustomColor ? 'text-white' : 'text-[var(--text-primary)]';
 
-  // Sidebar has custom color → use custom text
+  // Sidebar has custom color â†’ use custom text
   const sidebarHasCustomColor = (c.sidebarColor && c.sidebarColor !== 'default') || c.sidebarBg;
 
   return (
     <div className={cn('min-h-screen bg-[var(--bg-page)]', isBoxed && 'max-w-[1440px] mx-auto shadow-2xl', cardClass)}>
 
-      {/* ════════════════ TOP BAR ════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TOP BAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <header
         className={cn(
           'fixed top-0 left-0 right-0 z-[60] h-14 flex items-center gap-3 px-4 border-b transition-all duration-300 w-full',
@@ -275,11 +275,11 @@ const Layout = ({ currentPage, onNavigate, children }) => {
           <input
             value={searchVal}
             onChange={e => setSearchVal(e.target.value)}
-            placeholder="Search projects, leads, invoices…"
+            placeholder="Search projects, leads, invoicesâ€¦"
             className={cn(
               'w-full h-8 pl-8 pr-3 text-xs rounded-xl focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all',
               topbarHasCustomColor
-                ? 'bg-white/10 border border-white/15 text-white placeholder:text-white/40'
+                ? 'bg-[var(--bg-surface)]/10 border border-white/15 text-white placeholder:text-white/40'
                 : 'bg-[var(--bg-elevated)] border border-[var(--border-base)] text-[var(--text-secondary)] placeholder:text-[var(--text-faint)] focus:border-[var(--border-active)]'
             )}
           />
@@ -291,7 +291,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         <div className={cn(
           'hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg',
           topbarHasCustomColor
-            ? 'bg-white/10 border border-white/15'
+            ? 'bg-[var(--bg-surface)]/10 border border-white/15'
             : 'bg-[var(--primary)]/10 border border-[var(--primary)]/20'
         )}>
           <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse-dot" />
@@ -304,7 +304,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
           className={cn(
             'relative w-8 h-8 rounded-lg flex items-center justify-center border transition-colors',
             topbarHasCustomColor
-              ? 'text-white/70 hover:text-white border-white/15 hover:border-white/30 bg-white/10'
+              ? 'text-white/70 hover:text-white border-white/15 hover:border-white/30 bg-[var(--bg-surface)]/10'
               : 'text-[var(--text-faint)] hover:text-[var(--text-primary)] border-[var(--border-base)] hover:border-[var(--border-muted)] bg-[var(--bg-elevated)]'
           )}
           title="Reminders"
@@ -324,7 +324,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
             className={cn(
               'w-8 h-8 rounded-lg flex items-center justify-center border transition-colors',
               topbarHasCustomColor
-                ? 'text-white/70 hover:text-white border-white/15 hover:border-white/30 bg-white/10'
+                ? 'text-white/70 hover:text-white border-white/15 hover:border-white/30 bg-[var(--bg-surface)]/10'
                 : 'text-[var(--text-faint)] hover:text-[var(--text-primary)] border-[var(--border-base)] hover:border-[var(--border-muted)] bg-[var(--bg-elevated)]'
             )}>
             <BellRing size={14} />
@@ -413,7 +413,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
               currentPage === 'settings'
                 ? 'text-[var(--accent)] border-[var(--accent)]/40 bg-[var(--accent)]/8'
                 : topbarHasCustomColor
-                  ? 'text-white/70 hover:text-white border-white/15 hover:border-white/30 bg-white/10'
+                  ? 'text-white/70 hover:text-white border-white/15 hover:border-white/30 bg-[var(--bg-surface)]/10'
                   : 'text-[var(--text-faint)] hover:text-[var(--text-primary)] border-[var(--border-base)] hover:border-[var(--border-muted)] bg-[var(--bg-elevated)]'
             )}>
             <Settings size={14} />
@@ -428,7 +428,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
             className={cn(
               'w-8 h-8 rounded-lg flex items-center justify-center border transition-colors',
               topbarHasCustomColor
-                ? 'text-white/70 hover:text-white border-white/15 hover:border-white/30 bg-white/10'
+                ? 'text-white/70 hover:text-white border-white/15 hover:border-white/30 bg-[var(--bg-surface)]/10'
                 : 'text-[var(--text-faint)] hover:text-[var(--primary-light)] border-[var(--border-base)] hover:border-[var(--primary)]/40 bg-[var(--bg-elevated)]'
             )}
           >
@@ -459,7 +459,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
                       t.key === 'solar' && 'bg-[#181200] border-amber-500/60',
                     )} />
                     {t.label}
-                    {theme === t.key && <span className="ml-auto text-[10px] text-[var(--primary-light)]">✓</span>}
+                    {theme === t.key && <span className="ml-auto text-[10px] text-[var(--primary-light)]">âœ“</span>}
                   </button>
                 ))}
               </div>
@@ -474,7 +474,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
             className={cn(
               'flex items-center gap-2 h-8 px-2 rounded-lg border transition-all cursor-pointer',
               topbarHasCustomColor
-                ? 'bg-white/10 border-white/15 hover:border-white/30'
+                ? 'bg-[var(--bg-surface)]/10 border-white/15 hover:border-white/30'
                 : 'bg-[var(--bg-elevated)] border-[var(--border-base)] hover:border-[var(--border-muted)]'
             )}
           >
@@ -530,7 +530,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         </div>
       </header>
 
-      {/* ════════════════ MOBILE OVERLAY ════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MOBILE OVERLAY â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {(sidebarOpen || (isOverlay && sidebarHovered)) && (
         <div
           className={cn(
@@ -542,7 +542,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         />
       )}
 
-      {/* ════════════════ HORIZONTAL NAV BAR ════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HORIZONTAL NAV BAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {isHorizontal && (
         <div
           className="fixed top-14 left-0 right-0 z-30 h-11 flex items-center gap-1 px-4 border-b border-[var(--border-base)] overflow-x-auto"
@@ -560,7 +560,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
                   active
                     ? 'bg-[var(--primary)]/15 text-[var(--primary-light)] font-semibold'
                     : sidebarHasCustomColor
-                      ? 'text-white/60 hover:text-white/90 hover:bg-white/10'
+                      ? 'text-white/60 hover:text-white/90 hover:bg-[var(--bg-surface)]/10'
                       : 'text-[var(--text-faint)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                 )}
               >
@@ -572,7 +572,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         </div>
       )}
 
-      {/* ════════════════ SIDEBAR ════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SIDEBAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {!isHorizontal && (
         <aside
           className={cn(
@@ -604,7 +604,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
           onMouseLeave={() => { if (isHoverView || isOverlay) setSidebarHovered(false); }}
         >
 
-          {/* ════════════════ SIDEBAR LOGO ════════════════ */}
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SIDEBAR LOGO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           <div className={cn(
             'relative z-50 flex items-center border-b border-[var(--border-base)] bg-[var(--bg-sidebar)] shrink-0',
             showLabels ? 'px-4 h-14 gap-3' : 'justify-center h-10'
@@ -633,10 +633,10 @@ const Layout = ({ currentPage, onNavigate, children }) => {
                 }}
               >
                 <div className="w-2.5 h-2.5 grid grid-cols-2 gap-px">
-                  <div className="bg-white/90 rounded-sm" />
-                  <div className="bg-white/90 rounded-sm" />
-                  <div className="bg-white/90 rounded-sm" />
-                  <div className="bg-white/90 rounded-sm" />
+                  <div className="bg-[var(--bg-surface)]/90 rounded-sm" />
+                  <div className="bg-[var(--bg-surface)]/90 rounded-sm" />
+                  <div className="bg-[var(--bg-surface)]/90 rounded-sm" />
+                  <div className="bg-[var(--bg-surface)]/90 rounded-sm" />
                 </div>
               </div>
             </div>
@@ -662,7 +662,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
                   <span className={cn(
                     'text-[8px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded',
                     sidebarHasCustomColor
-                      ? 'bg-white/10 text-white/60'
+                      ? 'bg-[var(--bg-surface)]/10 text-white/60'
                       : 'bg-amber-500/10 text-amber-600'
                   )}>
                     {APP_CONFIG.edition}
@@ -708,10 +708,10 @@ const Layout = ({ currentPage, onNavigate, children }) => {
                           'w-full flex items-center transition-all duration-150',
                           showLabels ? 'nav-item' : 'justify-center py-2 px-1 rounded-lg my-0.5',
                           (isActive || isChildActive) && showLabels && !sidebarHasCustomColor && 'nav-item-active',
-                          (isActive || isChildActive) && showLabels && sidebarHasCustomColor && 'bg-white/15 text-white font-semibold',
+                          (isActive || isChildActive) && showLabels && sidebarHasCustomColor && 'bg-[var(--bg-surface)]/15 text-white font-semibold',
                           (isActive || isChildActive) && !showLabels && 'bg-[var(--primary)]/15',
                           !isActive && !showLabels && 'hover:bg-[var(--bg-hover)]',
-                          !isActive && sidebarHasCustomColor && showLabels && 'text-white/60 hover:text-white/90 hover:bg-white/10',
+                          !isActive && sidebarHasCustomColor && showLabels && 'text-white/60 hover:text-white/90 hover:bg-[var(--bg-surface)]/10',
                         )}
                       >
                         <Icon
@@ -778,7 +778,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
             ))}
           </nav>
 
-          {/* AI Engine badge — only when sidebar is expanded */}
+          {/* AI Engine badge â€” only when sidebar is expanded */}
           {showLabels && (
             <div className="m-3 p-3.5 rounded-xl border border-[var(--primary)]/20"
               style={{ background: 'linear-gradient(135deg, var(--primary-glow) 0%, rgba(34,211,238,0.05) 100%)' }}>
@@ -802,7 +802,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         </aside>
       )}
 
-      {/* ════════════════ OVERLAY / HOVER TRIGGER ZONE ════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• OVERLAY / HOVER TRIGGER ZONE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {(isOverlay || isHoverView) && !sidebarOpen && !sidebarHovered && !isHorizontal && (
         <div
           className="fixed top-14 left-0 bottom-0 w-3 z-40 hidden lg:block"
@@ -810,7 +810,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         />
       )}
 
-      {/* ════════════════ MAIN CONTENT ════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MAIN CONTENT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <main
         className={cn(
           'min-h-[calc(100vh-56px)] p-5 bg-[var(--bg-page)] transition-all duration-300',
@@ -827,14 +827,14 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         </div>
       </main>
 
-      {/* ════════════════ REMINDER SIDEBAR ════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• REMINDER SIDEBAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <ReminderSidebar
         isOpen={reminderSidebarOpen}
         onClose={() => setReminderSidebarOpen(false)}
         onNavigate={onNavigate}
       />
 
-      {/* ════════════════ THEME CUSTOMIZER ════════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• THEME CUSTOMIZER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <ThemeCustomizer />
     </div>
   );

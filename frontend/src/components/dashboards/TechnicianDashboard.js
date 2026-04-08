@@ -1,4 +1,4 @@
-// TechnicianDashboard.js — Technician role dashboard (redesigned)
+// TechnicianDashboard.js Ã¢â‚¬â€ Technician role dashboard (redesigned)
 import React from 'react';
 import {
     BarChart, Bar, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid,
@@ -53,17 +53,17 @@ const TechnicianDashboard = () => {
     return (
         <div className="space-y-5 p-5">
             {/* Global Date Filter Bar */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between">
+            <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-600">Filter by Date:</span>
-                    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    <span className="text-sm font-medium text-[var(--text-secondary)]">Filter by Date:</span>
+                    <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                         {['Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'All Time', 'Custom Range'].map((filter) => (
                             <button 
                                 key={filter} 
                                 className={`px-3 py-1.5 text-xs rounded-md font-medium transition-all ${
                                     filter === 'All Time' 
                                         ? 'bg-orange-500 text-white' 
-                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                                        : 'text-[var(--text-secondary)] hover:text-gray-900 hover:bg-gray-200'
                                 }`}
                             >
                                 {filter}
@@ -71,12 +71,12 @@ const TechnicianDashboard = () => {
                         ))}
                     </div>
                 </div>
-                <span className="text-sm text-gray-500">Showing All Data</span>
+                <span className="text-sm text-[var(--text-muted)]">Showing All Data</span>
             </div>
 
             <SectionHeader
                 title="Technician Dashboard"
-                subtitle="Field tasks · Installation progress · Service activities"
+                subtitle="Field tasks Ã‚Â· Installation progress Ã‚Â· Service activities"
                 icon={Wrench}
                 accent={C.primary}
                 badge="Field Ops"
@@ -96,9 +96,9 @@ const TechnicianDashboard = () => {
                     title="Task Status Breakdown" 
                     subtitle="Current workload distribution"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -129,9 +129,9 @@ const TechnicianDashboard = () => {
                     title="Skills Radar" 
                     subtitle="Technical proficiency scores"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -226,7 +226,7 @@ const TechnicianDashboard = () => {
                         key={i}
                         icon={Wrench}
                         accent={log.status === 'Resolved' || log.status === 'Completed' ? '#10b981' : C.primary}
-                        title={`${log.issue} — ${log.site}`}
+                        title={`${log.issue} Ã¢â‚¬â€ ${log.site}`}
                         meta={log.date}
                         status={log.status}
                         statusColor={log.status === 'Resolved' || log.status === 'Completed' ? '#10b981' : C.primary}
@@ -236,9 +236,9 @@ const TechnicianDashboard = () => {
                 )}
                 {/* Static fallback logs */}
                 {serviceLogData.length === 0 && [
-                    { icon: Zap, title: 'Inverter fault resolved: Site A', meta: 'Grid sync issue — replaced fuse', time: '2h ago', status: 'Resolved', statusColor: '#10b981' },
+                    { icon: Zap, title: 'Inverter fault resolved: Site A', meta: 'Grid sync issue Ã¢â‚¬â€ replaced fuse', time: '2h ago', status: 'Resolved', statusColor: '#10b981' },
                     { icon: Battery, title: 'Panel cleaning done: Site B', meta: '40 panels cleaned, efficiency +8%', time: '4h ago', status: 'Done', statusColor: '#10b981' },
-                    { icon: AlertTriangle, title: 'Mounting issue flagged: Site C', meta: 'Corrosion on clamps — ordered parts', time: '6h ago', status: 'Pending', statusColor: '#f59e0b' },
+                    { icon: AlertTriangle, title: 'Mounting issue flagged: Site C', meta: 'Corrosion on clamps Ã¢â‚¬â€ ordered parts', time: '6h ago', status: 'Pending', statusColor: '#f59e0b' },
                     { icon: Settings, title: 'MPPT calibration: Factory D', meta: 'Optimized for summer irradiance', time: '1d ago', status: 'Done', statusColor: '#10b981' },
                 ].map((item, i) => (
                     <ActivityItem key={i} {...item} accent={item.statusColor} />

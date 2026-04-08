@@ -1,4 +1,4 @@
-// ProjectManagerDashboard.js — Professional Project Management Control Center
+// ProjectManagerDashboard.js Ã¢â‚¬â€ Professional Project Management Control Center
 import React, { useState, useEffect } from 'react';
 import {
     BarChart, Bar, LineChart, Line, ComposedChart, Area,
@@ -165,24 +165,24 @@ const ProjectManagerDashboard = ({ onNavigate }) => {
 
                 <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30">
+                        <div className="p-3 rounded-xl bg-[var(--bg-surface)]/20 backdrop-blur-sm border border-white/30">
                             <Briefcase size={28} className="text-white" />
                         </div>
                         <div>
                             <div className="flex items-center gap-3 mb-1">
                                 <h1 className="text-2xl font-bold text-white">Project Control Center</h1>
-                                <span className="text-xs font-bold px-3 py-1 rounded-full bg-white/20 border border-white/30 backdrop-blur-sm">
+                                <span className="text-xs font-bold px-3 py-1 rounded-full bg-[var(--bg-surface)]/20 border border-white/30 backdrop-blur-sm">
                                     PROJECT MANAGER
                                 </span>
                             </div>
                             <p className="text-white/80 text-sm">
-                                Project Tracking • Team Management • Milestone Monitoring
+                                Project Tracking Ã¢â‚¬Â¢ Team Management Ã¢â‚¬Â¢ Milestone Monitoring
                             </p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30">
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--bg-surface)]/20 backdrop-blur-sm border border-white/30">
                             <Calendar size={16} className="text-white/80" />
                             <select
                                 value={selectedTimeRange}
@@ -197,11 +197,11 @@ const ProjectManagerDashboard = ({ onNavigate }) => {
                         </div>
                         <button
                             onClick={() => setRefreshing(!refreshing)}
-                            className={`p-3 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 transition-all ${refreshing ? 'animate-spin' : ''}`}
+                            className={`p-3 rounded-xl bg-[var(--bg-surface)]/20 backdrop-blur-sm border border-white/30 hover:bg-[var(--bg-surface)]/30 transition-all ${refreshing ? 'animate-spin' : ''}`}
                         >
                             <RefreshCw size={16} className="text-white" />
                         </button>
-                        <button className="p-3 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 transition-all">
+                        <button className="p-3 rounded-xl bg-[var(--bg-surface)]/20 backdrop-blur-sm border border-white/30 hover:bg-[var(--bg-surface)]/30 transition-all">
                             <Download size={16} className="text-white" />
                         </button>
                     </div>
@@ -242,9 +242,9 @@ const ProjectManagerDashboard = ({ onNavigate }) => {
                     title="Project Timeline Performance" 
                     subtitle="Planned vs actual project completion"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -275,9 +275,9 @@ const ProjectManagerDashboard = ({ onNavigate }) => {
                     title="Project Portfolio Status" 
                     subtitle="Current project distribution"
                     headerRight={
-                        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                        <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                                <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                             ))}
                         </div>
                     }
@@ -321,9 +321,9 @@ const ProjectManagerDashboard = ({ onNavigate }) => {
                 title="Milestone Progress Tracking" 
                 subtitle="Phase-wise completion status across all projects"
                 headerRight={
-                    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                    <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                         {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (
-                            <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-gray-600 hover:text-gray-900 transition-all">{filter}</button>
+                            <button key={filter} className="px-2 py-1 text-xs rounded-md font-medium text-[var(--text-secondary)] hover:text-gray-900 transition-all">{filter}</button>
                         ))}
                     </div>
                 }

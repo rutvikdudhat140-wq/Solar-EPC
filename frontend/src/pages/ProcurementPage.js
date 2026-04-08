@@ -1,4 +1,4 @@
-// Solar OS – EPC Edition — ProcurementPage.js
+// Solar OS � EPC Edition  ProcurementPage.js
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   ShoppingCart, Plus, Truck, Package, CheckCircle, LayoutGrid, List, Calendar, Zap, Phone, Mail, Star, Edit, BarChart3,
@@ -23,7 +23,7 @@ import CanAccess, { CanCreate } from '../components/CanAccess';
 const fmt = CURRENCY.format;
 const fmtFull = CURRENCY.formatFull;
 
-// ── PO Stage Kanban definitions ────────────────────────────────────────────────
+//  PO Stage Kanban definitions 
 const PO_KANBAN_STAGES = [
   { id: 'Draft', label: 'Draft', color: '#6b7280', bg: 'rgba(107,114,128,0.12)' },
   { id: 'Ordered', label: 'Ordered', color: '#7c5cfc', bg: 'rgba(124,92,252,0.12)' },
@@ -40,12 +40,12 @@ const PO_COLUMNS = [
   { key: 'status', header: 'Status', render: v => <StatusBadge domain="purchaseOrder" value={v} /> },
   { key: 'orderedDate', header: 'Ordered', render: v => <span className="text-xs text-[var(--text-muted)]">{v}</span> },
   { key: 'expectedDate', header: 'Expected', render: v => <span className="text-xs text-[var(--text-muted)]">{v}</span> },
-  { key: 'deliveredDate', header: 'Delivered', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? '—'}</span> },
+  { key: 'deliveredDate', header: 'Delivered', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? ''}</span> },
 ];
 
 const PO_STATUS_FILTERS = ['All', 'Draft', 'Ordered', 'In Transit', 'Delivered', 'Cancelled'];
 
-/* ── PO Kanban Card ── */
+/*  PO Kanban Card  */
 const POCard = ({ po, onDragStart, onClick }) => {
   return (
     <div draggable onDragStart={onDragStart} onClick={onClick}
@@ -70,7 +70,7 @@ const POCard = ({ po, onDragStart, onClick }) => {
   );
 };
 
-/* ── PO Kanban Board ── */
+/*  PO Kanban Board  */
 const POKanbanBoard = ({ pos, onStageChange, onCardClick }) => {
   const draggingId = useRef(null);
   const [dragOver, setDragOver] = useState(null);
@@ -92,7 +92,7 @@ const POKanbanBoard = ({ pos, onStageChange, onCardClick }) => {
                   <span className="text-xs font-semibold text-[var(--text-primary)]">{stage.label}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  {total > 0 && <span className="text-[10px] text-[var(--text-muted)]">{fmt(total).replace('₹', '₹')}</span>}
+                  {total > 0 && <span className="text-[10px] text-[var(--text-muted)]">{fmt(total).replace('', '')}</span>}
                   <span className="min-w-[20px] h-5 rounded-full text-[10px] font-bold flex items-center justify-center"
                     style={{ background: stage.bg, color: stage.color }}>{cards.length}</span>
                 </div>
@@ -133,7 +133,7 @@ const MONTHS = [
   { value: 11, label: 'December' }
 ];
 
-/* ── PO Visualization View ── */
+/*  PO Visualization View  */
 const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
   const [animateChart, setAnimateChart] = useState(false);
   
@@ -422,7 +422,7 @@ const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-2">
               <IndianRupee size={14} className="text-[var(--green)]" />
-              Monthly Spend (₹ Lakhs)
+              Monthly Spend ( Lakhs)
             </h4>
             <div className="flex items-center gap-1">
               <button 
@@ -503,11 +503,11 @@ const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
                             ? 'bg-[var(--green)]/20 hover:bg-[var(--green)]/30' 
                             : 'bg-[var(--bg-elevated)] hover:bg-[var(--border-base)]'
                       } ${isToday ? 'ring-1 ring-[var(--accent-light)]' : ''}`}
-                      title={hasData ? `₹${dayData.amount.toFixed(1)}L - ${dayData.count} POs` : 'No data'}
+                      title={hasData ? `${dayData.amount.toFixed(1)}L - ${dayData.count} POs` : 'No data'}
                     >
                       <span className={`font-medium ${hasData ? 'text-[var(--green)]' : 'text-[var(--text-muted)]'}`}>{day}</span>
                       {hasData && (
-                        <span className="text-[8px] text-[var(--green)]">₹{dayData.amount.toFixed(0)}</span>
+                        <span className="text-[8px] text-[var(--green)]">{dayData.amount.toFixed(0)}</span>
                       )}
                     </div>
                   );
@@ -520,7 +520,7 @@ const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
                   {calendarData.reduce((sum, d) => sum + d.count, 0)} POs this month
                 </span>
                 <span className="text-sm font-bold text-[var(--green)]">
-                  ₹{(calendarData.reduce((sum, d) => sum + d.amount, 0)).toFixed(1)}L
+                  {(calendarData.reduce((sum, d) => sum + d.amount, 0)).toFixed(1)}L
                 </span>
               </div>
             </div>
@@ -529,9 +529,9 @@ const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
             <div className="relative h-40">
               {/* Y-axis labels */}
               <div className="absolute left-0 top-0 bottom-6 w-8 flex flex-col justify-between text-[9px] text-[var(--text-primary)] font-medium">
-                <span>₹{maxSpend.toFixed(0)}L</span>
-                <span>₹{(maxSpend / 2).toFixed(0)}L</span>
-                <span>₹0</span>
+                <span>{maxSpend.toFixed(0)}L</span>
+                <span>{(maxSpend / 2).toFixed(0)}L</span>
+                <span>0</span>
               </div>
               
               {/* Chart area */}
@@ -541,7 +541,7 @@ const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
                     <div className="relative w-full flex justify-center">
                       {/* Tooltip on hover */}
                       <div className="absolute -top-8 opacity-0 group-hover:opacity-100 transition-all text-[9px] text-white bg-[var(--bg-elevated)] px-2 py-1 rounded shadow-lg whitespace-nowrap z-10 border border-[var(--border-base)]">
-                        {data.month}: ₹{data.amount.toFixed(1)}L
+                        {data.month}: {data.amount.toFixed(1)}L
                       </div>
                       
                       {/* Bar with gradient */}
@@ -571,7 +571,7 @@ const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
           {!showCalendarView && (
             <div className="mt-2 pt-2 border-t border-[var(--border-base)] flex justify-between items-center">
               <span className="text-[10px] text-[var(--text-muted)]">Total Spend</span>
-              <span className="text-sm font-bold text-[var(--green)]">₹{(totalAmount / 100000).toFixed(1)}L</span>
+              <span className="text-sm font-bold text-[var(--green)]">{(totalAmount / 100000).toFixed(1)}L</span>
             </div>
           )}
         </div>
@@ -637,7 +637,7 @@ const POVisualizationView = ({ pos, filterMonth, filterYear }) => {
   );
 };
 
-/* ── Main Page ── */
+/*  Main Page  */
 const ProcurementPage = () => {
   const { can } = usePermissions();
   const { logCreate, logUpdate, logDelete, logStatusChange } = useAuditLog('procurement');
@@ -1297,7 +1297,7 @@ const ProcurementPage = () => {
                 ))}
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <Input placeholder="Search POs…" value={poSearch}
+                <Input placeholder="Search POs" value={poSearch}
                   onChange={e => { setPoSearch(e.target.value); setPoPage(1); }} className="h-8 text-xs w-44" />
               </div>
             </div>
@@ -1382,7 +1382,7 @@ const ProcurementPage = () => {
               })}
             </Select>
             {vendors.length === 0 && (
-              <p className="text-xs text-red-400 mt-1">Please add vendors in Logistics → Vendors tab first</p>
+              <p className="text-xs text-red-400 mt-1">Please add vendors in Logistics �� Vendors tab first</p>
             )}
           </FormField>
           <FormField label="Items Description">
@@ -1472,7 +1472,7 @@ const ProcurementPage = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <FormField label="Total Amount (₹)">
+            <FormField label="Total Amount ()">
               <Input type="number" value={newPO.totalAmount} onChange={e => setNewPO({ ...newPO, totalAmount: e.target.value })} placeholder="2900000" />
             </FormField>
             <FormField label="Expected Delivery">
@@ -1583,7 +1583,7 @@ const ProcurementPage = () => {
         <Modal
           open={!!selectedPO}
           onClose={() => { setSelectedPO(null); setIsEditingPO(false); setEditedPO(null); }}
-          title={isEditingPO ? `Edit PO — ${selectedPO.id}` : `PO — ${selectedPO.id}`}
+          title={isEditingPO ? `Edit PO  ${selectedPO.id}` : `PO  ${selectedPO.id}`}
           footer={
             <div className="flex gap-2 justify-end">
               {isEditingPO ? (
@@ -1674,7 +1674,7 @@ const ProcurementPage = () => {
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <FormField label="Total Amount (₹)">
+                <FormField label="Total Amount ()">
                   <Input type="number" value={editedPO.totalAmount} onChange={e => setEditedPO({ ...editedPO, totalAmount: e.target.value })} />
                 </FormField>
                 <FormField label="Ordered Date">
@@ -1788,14 +1788,14 @@ const ProcurementPage = () => {
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   {[['PO Number', selectedPO.id], ['Vendor', selectedPO.vendorName], ['Items Description', selectedPO.items],
                 ['Ordered Date', selectedPO.orderedDate], ['Expected Date', selectedPO.expectedDate],
-                ['Delivered Date', selectedPO.deliveredDate ?? '—'],
-                ['Category', selectedPO.categoryName || '—'],
-                ['Item Name', selectedPO.itemName || '—'],
-                ['Unit', selectedPO.unit || '—'],
-                ['Required Quantity', selectedPO.requiredQuantity || '—'],
+                ['Delivered Date', selectedPO.deliveredDate ?? ''],
+                ['Category', selectedPO.categoryName || ''],
+                ['Item Name', selectedPO.itemName || ''],
+                ['Unit', selectedPO.unit || ''],
+                ['Required Quantity', selectedPO.requiredQuantity || ''],
                 ['Related Project', (() => {
                   const project = projects.find(p => (p.id || p._id) === selectedPO.relatedProjectId);
-                  if (!project) return selectedPO.relatedProjectId || '—';
+                  if (!project) return selectedPO.relatedProjectId || '';
                   const customerName = getProjectDisplayName(project);
                   return (
                     <span className="flex items-center gap-2">
@@ -1816,7 +1816,7 @@ const ProcurementPage = () => {
 
       {/* Vendor Detail Modal */}
       {selectedVendor && (
-        <Modal open={!!selectedVendor} onClose={() => setSelectedVendor(null)} title={`Vendor — ${selectedVendor.name}`}
+        <Modal open={!!selectedVendor} onClose={() => setSelectedVendor(null)} title={`Vendor  ${selectedVendor.name}`}
           footer={<div className="flex gap-2 justify-end">
             <Button variant="ghost" onClick={() => setSelectedVendor(null)}>Close</Button>
             <Button variant="secondary" onClick={() => handleCallVendor(selectedVendor)}><Phone size={13} /> Call</Button>
@@ -1862,7 +1862,7 @@ const ProcurementPage = () => {
                       <div>
                         <div className="font-semibold text-sm">{po?.id}</div>
                         <div className="text-xs text-[var(--text-muted)]">{po?.items}</div>
-                        <div className="text-xs mt-1">{fmt(po?.totalAmount)} • {po?.orderedDate}</div>
+                        <div className="text-xs mt-1">{fmt(po?.totalAmount)}  {po?.orderedDate}</div>
                       </div>
                       <StatusBadge domain="purchaseOrder" value={po?.status} />
                     </div>
@@ -1891,7 +1891,7 @@ const ProcurementPage = () => {
                         <div className="text-xs font-semibold">PO {po?.id} - {po?.status}</div>
                         <div className="text-xs text-[var(--text-muted)] ml-auto">{po?.orderedDate}</div>
                       </div>
-                      <div className="text-xs text-[var(--text-muted)] mt-1 ml-4">{po?.items} • {fmt(po?.totalAmount)}</div>
+                      <div className="text-xs text-[var(--text-muted)] mt-1 ml-4">{po?.items}  {fmt(po?.totalAmount)}</div>
                     </div>
                   ))}
                 <div className="glass-card p-3">

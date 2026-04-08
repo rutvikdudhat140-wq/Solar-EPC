@@ -428,12 +428,34 @@ export const generateEstimatePDF = (estimate, company = SUNVORA_COMPANY, headerC
   doc.setDrawColor(...borderColor);
   doc.roundedRect(summaryX, summaryY + 12, summaryWidth, 85, 2, 2, 'FD');
 
+  // Format number with proper decimal places
+  const fmtMoney = (val) => {
+    if (val === null || val === undefined) return '0';
+    const num = parseFloat(val);
+    return isNaN(num) ? '0' : num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  // Debug: Log estimate values being used
+  console.log('[generateEstimatePDF] Estimate data:', {
+    equipmentCost: estimate.equipmentCost,
+    installationCost: estimate.installationCost,
+    engineeringCost: estimate.engineeringCost,
+    transportationCost: estimate.transportationCost,
+    miscellaneousCost: estimate.miscellaneousCost,
+    subtotal: estimate.subtotal,
+    discount: estimate.discount,
+    discountType: estimate.discountType,
+    gstRate: estimate.gstRate,
+    gstAmount: estimate.gstAmount,
+    total: estimate.total,
+  });
+
   const costs = [
-    { label: 'Equipment Cost:', value: estimate.equipmentCost || 0 },
-    { label: 'Installation Cost:', value: estimate.installationCost || 0 },
-    { label: 'Engineering Cost:', value: estimate.engineeringCost || 0 },
-    { label: 'Transportation:', value: estimate.transportationCost || 0 },
-    { label: 'Miscellaneous:', value: estimate.miscellaneousCost || 0 },
+    { label: 'Equipment Cost:', value: parseFloat(estimate.equipmentCost) || 0 },
+    { label: 'Installation Cost:', value: parseFloat(estimate.installationCost) || 0 },
+    { label: 'Engineering Cost:', value: parseFloat(estimate.engineeringCost) || 0 },
+    { label: 'Transportation:', value: parseFloat(estimate.transportationCost) || 0 },
+    { label: 'Miscellaneous:', value: parseFloat(estimate.miscellaneousCost) || 0 },
   ];
 
   let costY = summaryY + 20;
@@ -445,12 +467,12 @@ export const generateEstimatePDF = (estimate, company = SUNVORA_COMPANY, headerC
       doc.text(cost.label, summaryX + 6, costY);
 
       doc.setTextColor(...textColor);
-      doc.text(`₹${cost.value?.toLocaleString('en-IN')}`, summaryX + summaryWidth - 6, costY, { align: 'right' });
+      doc.text(`₹${fmtMoney(cost.value)}`, summaryX + summaryWidth - 6, costY, { align: 'right' });
       costY += 8;
     }
   });
 
-  // Subtotal line
+  // Subtotal line (already includes discount if applied, as calculated by backend)
   costY += 3;
   doc.setDrawColor(...borderColor);
   doc.line(summaryX + 5, costY - 3, summaryX + summaryWidth - 5, costY - 3);
@@ -458,7 +480,23 @@ export const generateEstimatePDF = (estimate, company = SUNVORA_COMPANY, headerC
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(...textColor);
   doc.text('Subtotal:', summaryX + 6, costY + 4);
-  doc.text(`₹${estimate.subtotal?.toLocaleString('en-IN')}`, summaryX + summaryWidth - 6, costY + 4, { align: 'right' });
+  doc.text(`₹${fmtMoney(estimate.subtotal)}`, summaryX + summaryWidth - 6, costY + 4, { align: 'right' });
+
+  // Show discount separately if it was applied (to display in PDF)
+  if (estimate.discount && estimate.discount > 0) {
+    costY += 8;
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(80, 80, 80);
+    const discountLabel = estimate.discountType === 'percentage' 
+      ? `Discount (${estimate.discount}%):` 
+      : `Discount:`;
+    doc.text(discountLabel, summaryX + 8, costY);
+    doc.setTextColor(...textColor);
+    const discountAmount = estimate.discountType === 'percentage'
+      ? (estimate.subtotal * estimate.discount / (100 + estimate.discount))
+      : estimate.discount;
+    doc.text(`₹${fmtMoney(discountAmount)}`, summaryX + summaryWidth - 8, costY, { align: 'right' });
+  }
 
   // GST
   costY += 8;
@@ -466,7 +504,7 @@ export const generateEstimatePDF = (estimate, company = SUNVORA_COMPANY, headerC
   doc.setTextColor(80, 80, 80);
   doc.text(`GST (${estimate.gstRate || 18}%):`, summaryX + 8, costY);
   doc.setTextColor(...textColor);
-  doc.text(`₹${estimate.gstAmount?.toLocaleString('en-IN')}`, summaryX + summaryWidth - 8, costY, { align: 'right' });
+  doc.text(`₹${fmtMoney(estimate.gstAmount)}`, summaryX + summaryWidth - 8, costY, { align: 'right' });
 
   // Grand Total - Highlighted
   costY += 10;
@@ -478,7 +516,7 @@ export const generateEstimatePDF = (estimate, company = SUNVORA_COMPANY, headerC
   doc.setFontSize(10);
   doc.text('GRAND TOTAL:', summaryX + 8, costY + 3);
   doc.setFontSize(11);
-  doc.text(`₹${estimate.total?.toLocaleString('en-IN')}`, summaryX + summaryWidth - 8, costY + 3, { align: 'right' });
+  doc.text(`₹${fmtMoney(estimate.total)}`, summaryX + summaryWidth - 8, costY + 3, { align: 'right' });
 
   y += 100;
 
