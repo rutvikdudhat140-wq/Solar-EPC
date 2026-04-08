@@ -141,6 +141,9 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         return { ...item, children: visibleChildren };
       }
 
+      // Bypass permission check for tasks module - always show it
+      if (item.id === 'tasks') return item;
+
       if (resolvePermission(item.id, 'view') !== true) return null;
       return item;
     }).filter(Boolean);
