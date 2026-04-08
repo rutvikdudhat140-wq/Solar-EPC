@@ -5,7 +5,8 @@ import {
   User, Building2, MapPin, Sun, Zap,
   Edit, CheckCircle, XCircle, Clock,
   Calculator, LayoutGrid, List, Kanban,
-  ChevronLeft, Save, Printer, Check, ArrowRight, MoreVertical, Mail, FileCheck
+  ChevronLeft, Save, Printer, Check, ArrowRight, MoreVertical, Mail, FileCheck,
+  Package, RefreshCw
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
@@ -21,6 +22,7 @@ import { toast } from '../components/ui/Toast';
 import api from '../lib/apiClient';
 
 import { documentsApi } from '../services/documentsApi';
+import { inventoryApi } from '../services/inventoryApi';
 
 const fmt = CURRENCY.format;
 
@@ -496,7 +498,7 @@ const EstimatePage = () => {
     {
       key: 'total',
       header: 'Total Cost',
-      render: v => <span className="text-xs font-bold text-emerald-500">{fmt(v)}</span>,
+      render: v => <span className="text-xs font-bold text-[var(--green)]">{fmt(v)}</span>,
     },
     {
       key: 'status',
@@ -542,7 +544,7 @@ const EstimatePage = () => {
                 }}
                 className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-hover)] transition-colors"
               >
-                <CheckCircle size={14} className="text-emerald-500" />
+                <CheckCircle size={14} className="text-[var(--green)]" />
                 <span>Approve & Create Project</span>
               </button>
               
@@ -553,7 +555,7 @@ const EstimatePage = () => {
                 }}
                 className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-hover)] transition-colors"
               >
-                <Mail size={14} className="text-blue-500" />
+                              <Mail size={14} className="text-[var(--primary)]" />
                 <span>Send Email</span>
               </button>
               
@@ -574,7 +576,7 @@ const EstimatePage = () => {
                   handleDeleteEstimate(doc.id);
                   setActionMenuOpen(null);
                 }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-red-400/10 text-red-400 transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-hover)] text-[var(--red)] transition-colors"
               >
                 <Trash2 size={14} />
                 <span>Delete</span>
@@ -592,8 +594,8 @@ const EstimatePage = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="glass-card p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-              <FileText size={20} className="text-blue-500" />
+              <div className="w-10 h-10 rounded-lg bg-[var(--blue-bg)] flex items-center justify-center">
+                <FileText size={20} className="text-[var(--blue)]" />
             </div>
             <div>
               <p className="text-lg font-bold text-[var(--text-primary)]">{stats.total}</p>
@@ -749,7 +751,7 @@ const EstimatePage = () => {
                     <td className="py-2 px-3 text-xs font-mono text-[var(--primary)]">{estimate.estimateNumber}</td>
                     <td className="py-2 px-3 text-xs">{estimate.customerName}</td>
                     <td className="py-2 px-3 text-xs text-[var(--text-muted)]">{estimate.projectName}</td>
-                    <td className="py-2 px-3 text-xs text-right font-bold text-emerald-500">{(estimate.total / 100000).toFixed(1)}L</td>
+                    <td className="py-2 px-3 text-xs text-right font-bold text-[var(--green)]">{(estimate.total / 100000).toFixed(1)}L</td>
                     <td className="py-2 px-3 text-xs">
                       <span 
                         className="px-2 py-0.5 rounded-full text-[10px] font-medium"
@@ -782,7 +784,7 @@ const EstimatePage = () => {
                               }}
                               className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--bg-hover)] transition-colors"
                             >
-                              <CheckCircle size={14} className="text-emerald-500" />
+                              <CheckCircle size={14} className="text-[var(--green)]" />
                               <span>Approve & Create Project</span>
                             </button>
                             
@@ -793,7 +795,7 @@ const EstimatePage = () => {
                               }}
                               className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--bg-hover)] transition-colors"
                             >
-                              <Mail size={14} className="text-blue-500" />
+                              <Mail size={14} className="text-[var(--primary)]" />
                               <span>Send Email</span>
                             </button>
                             
@@ -814,7 +816,7 @@ const EstimatePage = () => {
                                 handleDeleteEstimate(estimate.id);
                                 setActionMenuOpen(null);
                               }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-red-400/10 text-red-400 transition-colors"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-[var(--bg-hover)] text-[var(--red)] transition-colors"
                             >
                               <Trash2 size={14} />
                               <span>Delete</span>
@@ -907,7 +909,7 @@ const EstimateCard = ({ estimate, onView, onEdit, onDuplicate, onDelete, onDownl
         </div>
         <div className="glass-card p-2 text-center">
           <p className="text-[10px] text-[var(--text-muted)]">Total</p>
-          <p className="text-sm font-bold text-emerald-500">{(estimate.total / 100000).toFixed(1)}L</p>
+          <p className="text-sm font-bold text-[var(--green)]">{(estimate.total / 100000).toFixed(1)}L</p>
         </div>
       </div>
 
@@ -948,7 +950,7 @@ const EstimateCard = ({ estimate, onView, onEdit, onDuplicate, onDelete, onDownl
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          className="flex items-center justify-center p-1.5 rounded-lg bg-[var(--bg-elevated)] text-red-400 hover:bg-red-400/10 transition-colors"
+          className="flex items-center justify-center p-1.5 rounded-lg bg-[var(--bg-elevated)] text-[var(--red)] hover:bg-[var(--bg-hover)] transition-colors"
         >
           <Trash2 size={14} />
         </button>
@@ -1012,16 +1014,52 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
   const [activeSection, setActiveSection] = useState('equipment');
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [isEquipmentLibraryOpen, setIsEquipmentLibraryOpen] = useState(false);
+  
+  // Inventory items state for dropdown
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedInventoryItem, setSelectedInventoryItem] = useState('');
+  const [isLoadingInventory, setIsLoadingInventory] = useState(false);
+
+  // Fetch inventory items and categories
+  const fetchInventoryData = async () => {
+    setIsLoadingInventory(true);
+    try {
+      const [itemsRes, catsRes] = await Promise.all([
+        inventoryApi.getAll(),
+        inventoryApi.getCategories()
+      ]);
+      
+      const items = itemsRes?.data ?? itemsRes ?? [];
+      const cats = catsRes?.data ?? catsRes ?? [];
+      
+      setInventoryItems(Array.isArray(items) ? items : []);
+      setCategories(Array.isArray(cats) ? cats : []);
+    } catch (err) {
+      console.error('Failed to fetch inventory data:', err);
+    } finally {
+      setIsLoadingInventory(false);
+    }
+  };
+
+  // Fetch on mount and set up polling every 30 seconds
+  useEffect(() => {
+    fetchInventoryData();
+    const interval = setInterval(fetchInventoryData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const [newItem, setNewItem] = useState({
     name: '',
     description: '',
-    category: 'solar_panel',
+    category: 'Solar Panel',
     brand: '',
     model: '',
     quantity: 1,
     unit: 'Piece',
     unitPrice: 0,
     total: 0,
+    inventoryItemId: null,
   });
 
   // Calculate totals whenever costs or items change
@@ -1077,14 +1115,16 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
     setNewItem({
       name: '',
       description: '',
-      category: 'solar_panel',
+      category: 'Solar Panel',
       brand: '',
       model: '',
       quantity: 1,
       unit: 'Piece',
       unitPrice: 0,
       total: 0,
+      inventoryItemId: null,
     });
+    setSelectedInventoryItem('');
     setIsAddingItem(false);
     toast.success('Item added successfully');
   };
@@ -1195,7 +1235,7 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
         <div className="border-t border-[var(--border-base)] pt-2">
           <div className="flex justify-between items-center">
             <span className="text-sm font-bold text-[var(--primary)]">Grand Total:</span>
-            <span className="text-lg font-black text-emerald-500">{fmt(formData.total || 0)}</span>
+            <span className="text-lg font-black text-[var(--green)]">{fmt(formData.total || 0)}</span>
           </div>
         </div>
       </div>
@@ -1377,7 +1417,7 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
                             <p className="text-[10px] text-[var(--text-muted)]">{item.description}</p>
                           </td>
                           <td className="py-2 text-xs text-[var(--text-muted)]">
-                            {EQUIPMENT_CATEGORIES.find(c => c.value === item.category)?.label || item.category}
+                            {item.category || '-'}
                           </td>
                           <td className="py-2 text-xs text-[var(--text-muted)]">
                             {item.brand} {item.model}
@@ -1385,12 +1425,12 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
                           <td className="py-2 text-center text-xs text-[var(--text-primary)]">{item.quantity}</td>
                           <td className="py-2 text-center text-xs text-[var(--text-muted)]">{item.unit || 'Piece'}</td>
                           <td className="py-2 text-right text-xs text-[var(--text-primary)]">{fmt(item.unitPrice)}</td>
-                          <td className="py-2 text-right text-xs font-bold text-emerald-500">{fmt(item.total)}</td>
+                          <td className="py-2 text-right text-xs font-bold text-[var(--green)]">{fmt(item.total)}</td>
                           <td className="py-2 text-center">
                             <button
                               type="button"
                               onClick={() => handleRemoveItem(index)}
-                              className="p-1 rounded text-red-400 hover:bg-red-400/10"
+                              className="p-1 rounded text-[var(--red)] hover:bg-[var(--bg-hover)]"
                             >
                               <Trash2 size={14} />
                             </button>
@@ -1401,7 +1441,7 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
                     <tfoot>
                       <tr className="border-t-2 border-[var(--border-base)]">
                         <td colSpan={6} className="text-right py-2 text-xs font-bold text-[var(--text-primary)]">Equipment Cost:</td>
-                        <td className="text-right py-2 text-xs font-bold text-emerald-500">{fmt(formData.equipmentCost)}</td>
+                        <td className="text-right py-2 text-xs font-bold text-[var(--green)]">{fmt(formData.equipmentCost)}</td>
                         <td></td>
                       </tr>
                     </tfoot>
@@ -1418,6 +1458,77 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
               {/* Add Item Form */}
               {isAddingItem && (
                 <div className="p-4 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-base)] space-y-3">
+                  
+                  {/* Select from Inventory Section */}
+                  <div className="p-3 rounded-lg border border-[var(--border-base)] bg-[var(--bg-overlay)] space-y-2">
+                    <h5 className="text-xs font-bold text-[var(--primary)] flex items-center gap-2">
+                      <Package size={14} />
+                      Select from Inventory
+                    </h5>
+                    
+                    <div className="flex gap-2">
+                      <select
+                        value={selectedInventoryItem}
+                        onChange={(e) => {
+                          const selectedId = e.target.value;
+                          setSelectedInventoryItem(selectedId);
+                          if (selectedId) {
+                            const item = inventoryItems.find(i => (i.itemId || i._id || i.id) === selectedId);
+                            if (item) {
+                              setNewItem({
+                                name: item.description || item.name || '',
+                                description: item.longDescription || '',
+                                category: item.category || 'Solar Panel',
+                                unit: item.unit || 'Piece',
+                                brand: item.brand || '',
+                                model: item.model || '',
+                                quantity: 1,
+                                unitPrice: item.rate || 0,
+                                total: 0,
+                                inventoryItemId: item.itemId || item._id || item.id,
+                                stock: item.stock,
+                                available: item.available
+                              });
+                            }
+                          }
+                        }}
+                        className="flex-1 px-3 py-2 rounded-lg border border-[var(--border-base)] text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)]"
+                      >
+                        <option value="">-- Select an inventory item --</option>
+                        {inventoryItems.map(item => {
+                          const itemId = item.itemId || item._id || item.id;
+                          const itemName = item.description || item.name || 'Unnamed Item';
+                          const categoryName = item.category || '';
+                          const stock = item.available ?? item.stock ?? 0;
+                          const isOutOfStock = stock <= 0;
+                          return (
+                              <option key={itemId} value={itemId} className={isOutOfStock ? 'text-[var(--red)]' : ''}>
+                              {itemName} {categoryName ? `(${categoryName})` : ''} {isOutOfStock ? ' ⚠️ Out of Stock' : ''}
+                            </option>
+                          );
+                        })}
+                      </select>
+                      
+                      <button
+                        onClick={fetchInventoryData}
+                        className="px-3 py-2 rounded-lg border border-[var(--border-base)] text-[var(--primary)] hover:bg-[var(--bg-hover)] transition-colors"
+                        title="Refresh inventory"
+                      >
+                        <RefreshCw size={16} className={isLoadingInventory ? 'animate-spin' : ''} />
+                      </button>
+                    </div>
+                    
+                    {isLoadingInventory && <p className="text-xs text-[var(--primary)]">Loading inventory...</p>}
+                    
+                    {selectedInventoryItem && newItem.stock !== undefined && newItem.stock <= 0 && (
+                      <p className="text-xs text-[var(--red)] flex items-center gap-1">
+                        ⚠️ Warning: This item is out of stock
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="text-center text-xs text-[var(--text-muted)] font-medium">or</div>
+
                   <h5 className="text-xs font-bold text-[var(--text-primary)]">Add Custom Equipment</h5>
                   <div className="grid grid-cols-2 gap-3">
                     <FormField label="Item Name *" className="col-span-2">
@@ -1439,9 +1550,17 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
                         value={newItem.category}
                         onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
                       >
-                        {EQUIPMENT_CATEGORIES.map(cat => (
-                          <option key={cat.value} value={cat.value}>{cat.label}</option>
-                        ))}
+                        {categories.length > 0 ? (
+                          categories.map(cat => (
+                            <option key={cat.code || cat._id} value={cat.name || cat.code}>
+                              {cat.name || cat.code}
+                            </option>
+                          ))
+                        ) : (
+                          EQUIPMENT_CATEGORIES.map(cat => (
+                            <option key={cat.value} value={cat.label}>{cat.label}</option>
+                          ))
+                        )}
                       </Select>
                     </FormField>
                     <FormField label="Brand">
@@ -1510,7 +1629,7 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
           {activeSection === 'costs' && (
             <div className="space-y-4">
               <h4 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <DollarSign size={16} className="text-emerald-500" />
+                <DollarSign size={16} className="text-[var(--green)]" />
                 Additional Costs
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1562,7 +1681,7 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
           {activeSection === 'summary' && (
             <div className="space-y-4">
               <h4 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <FileText size={16} className="text-blue-500" />
+                <FileText size={16} className="text-[var(--primary)]" />
                 Estimate Summary
               </h4>
 
@@ -1708,7 +1827,7 @@ const EstimateDetail = ({ estimate, onEdit, onDelete, onDownload, onDownloadProp
           <p className="text-sm text-[var(--text-muted)]">{estimate.estimateNumber}</p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-black text-emerald-500">{fmt(estimate.total)}</p>
+          <p className="text-2xl font-black text-[var(--green)]">{fmt(estimate.total)}</p>
           <p className="text-xs text-[var(--text-muted)]">Grand Total</p>
         </div>
       </div>
@@ -1839,7 +1958,7 @@ const EstimateDetail = ({ estimate, onEdit, onDelete, onDownload, onDownloadProp
         </div>
         <div className="flex justify-between text-base font-bold pt-2 border-t-2 border-[var(--border-base)]">
           <span className="text-[var(--primary)]">Grand Total</span>
-          <span className="text-emerald-500">{fmt(estimate.total)}</span>
+          <span className="text-[var(--green)]">{fmt(estimate.total)}</span>
         </div>
       </div>
 
@@ -1877,7 +1996,7 @@ const EstimateDetail = ({ estimate, onEdit, onDelete, onDownload, onDownloadProp
         </button>
         <button
           onClick={onDelete}
-          className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-red-400/10 text-red-400 text-sm font-medium hover:bg-red-400/20 transition-colors"
+          className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--red-bg)] text-[var(--red)] text-sm font-medium hover:bg-[var(--red-bg)]/50 transition-colors"
         >
           <Trash2 size={16} />
           Delete
@@ -1922,7 +2041,7 @@ const KanbanView = ({ estimates, onCardClick }) => {
                 <p className="text-xs font-medium text-[var(--text-primary)] line-clamp-1">{estimate.projectName}</p>
                 <p className="text-[10px] text-[var(--text-muted)]">{estimate.customerName}</p>
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs font-bold text-emerald-500">{(estimate.total / 100000).toFixed(1)}L</span>
+                  <span className="text-xs font-bold text-[var(--green)]">{(estimate.total / 100000).toFixed(1)}L</span>
                   <span className="text-[10px] text-[var(--text-muted)]">{estimate.systemCapacity} kW</span>
                 </div>
               </div>

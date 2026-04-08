@@ -163,6 +163,16 @@ export class CreateDocumentDto {
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
+  gstRate?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  gstAmount?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
   discount?: number;
 
   @IsOptional()
@@ -289,6 +299,16 @@ export class UpdateDocumentDto {
   @IsNumber()
   @Type(() => Number)
   taxAmount?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  gstRate?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  gstAmount?: number;
 
   @IsOptional()
   @IsNumber()

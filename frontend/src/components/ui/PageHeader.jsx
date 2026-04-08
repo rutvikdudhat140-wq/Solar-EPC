@@ -63,7 +63,7 @@ export const PageHeader = ({
                         onClick={action.onToggle}
                         className={cn(
                           'w-9 h-5 rounded-full transition-colors relative',
-                          action.value ? 'bg-emerald-500' : 'bg-[var(--border-muted)]'
+                          action.value ? 'bg-[var(--green)]' : 'bg-[var(--border-muted)]'
                         )}
                       >
                         <span className={cn(

@@ -14,7 +14,10 @@ export class AttendancePolicyService {
     if (!tenantId || !Types.ObjectId.isValid(tenantId)) {
       return null;
     }
-    return this.policyModel.findOne({ tenantId: new Types.ObjectId(tenantId) }).exec();
+    const tenantObjectId = new Types.ObjectId(tenantId);
+    return this.policyModel
+      .findOne({ tenantId: { $in: [tenantObjectId as any, tenantId as any] } })
+      .exec();
   }
 
   async getOrCreateDefaultPolicy(tenantId: string): Promise<CompanyAttendancePolicy> {
@@ -51,13 +54,67 @@ export class AttendancePolicyService {
       throw new NotFoundException('Valid tenant ID is required');
     }
 
-    const policy = await this.policyModel.findOneAndUpdate(
-      { tenantId: new Types.ObjectId(tenantId) },
-      { ...updateData, updatedAt: new Date() },
-      { new: true, upsert: true },
-    ).exec();
+    const tenantObjectId = new Types.ObjectId(tenantId);
 
-    return policy;
+    // Prevent accidental tenantId override from request body which can cause upsert duplicate key errors
+    // when an existing record has tenantId stored as a string.
+    const {
+      _id: _ignoredId,
+      id: _ignoredVirtualId,
+      tenantId: _ignoredTenantId,
+      createdAt: _ignoredCreatedAt,
+      updatedAt: _ignoredUpdatedAt,
+      ...safeUpdateData
+    } = (updateData || {}) as any;
+
+    const filter = { tenantId: tenantObjectId };
+    const update = {
+      $set: {
+        ...safeUpdateData,
+        tenantId: tenantObjectId,
+      },
+    };
+
+    try {
+      console.log('[AttendancePolicyService] Updating policy for tenant:', tenantId);
+      const policy = await this.policyModel
+        .findOneAndUpdate(filter, update, { 
+          new: true, 
+          upsert: true, 
+          setDefaultsOnInsert: true,
+          runValidators: true 
+        })
+        .exec();
+
+      console.log('[AttendancePolicyService] Policy updated successfully');
+      return policy;
+    } catch (err: any) {
+      console.error('[AttendancePolicyService] Error during update:', err.message);
+      
+      // In case of a race condition where two requests try to upsert simultaneously,
+      // one may fail with duplicate key. Retry as a normal update.
+      if (err?.code === 11000) {
+        console.log('[AttendancePolicyService] Duplicate key detected, retrying without upsert');
+        const policy = await this.policyModel
+          .findOneAndUpdate(filter, update, { 
+            new: true, 
+            upsert: false,
+            runValidators: true 
+          })
+          .exec();
+
+        if (!policy) {
+          console.error('[AttendancePolicyService] Policy not found after duplicate key error');
+          throw err;
+        }
+
+        console.log('[AttendancePolicyService] Policy updated successfully after retry');
+        return policy;
+      }
+
+      console.error('[AttendancePolicyService] Unexpected error:', err);
+      throw err;
+    }
   }
 
   async deletePolicy(tenantId: string): Promise<boolean> {

@@ -67,10 +67,10 @@ export class PermissionEngineService {
     survey: ['view', 'create', 'edit', 'delete', 'export', 'assign'],
     design: ['view', 'create', 'edit', 'delete', 'export', 'approve'],
     documents: ['view', 'create', 'edit', 'delete', 'export'],
-    inventory: ['view', 'create', 'edit', 'delete'],
+    inventory: ['view', 'create', 'edit', 'delete', 'export', 'approve', 'assign'],
     procurement: ['view', 'create', 'approve'],
-    projects: ['view', 'create', 'edit', 'delete'],
-    project: ['view', 'create', 'edit', 'delete'],
+    projects: ['view', 'create', 'edit', 'delete', 'export', 'approve', 'assign'],
+    project: ['view', 'create', 'edit', 'delete', 'export', 'approve', 'assign'],
     logistics: ['view', 'create', 'edit', 'delete', 'assign', 'approve', 'export'],
     installation: ['view', 'assign', 'update'],
     commissioning: ['view', 'assign', 'update', 'approve', 'export'],
@@ -84,6 +84,7 @@ export class PermissionEngineService {
     quotation: ['view', 'create', 'edit', 'delete', 'export', 'approve'],
     quotations: ['view', 'create', 'edit', 'delete', 'export', 'approve'],
     leads: ['view', 'create', 'edit', 'delete', 'export', 'assign', 'convert'],
+    tasks: ['view', 'create', 'edit', 'delete', 'export', 'assign'],
   };
 
   constructor(
@@ -322,7 +323,12 @@ export class PermissionEngineService {
     }
 
     if (customRoleDoc) {
-      const nested = this.normalizeNestedPermissions((customRoleDoc as any).permissions);
+      const rawPermissions = (customRoleDoc as any).permissions;
+      this.logger.log(`[CUSTOM_ROLE_DEBUG] roleId=${effectiveRoleId} rawPermissions type=${typeof rawPermissions} isMap=${rawPermissions instanceof Map} keys=${rawPermissions ? Object.keys(rawPermissions) : 'null'}`);
+      
+      const nested = this.normalizeNestedPermissions(rawPermissions);
+      this.logger.log(`[CUSTOM_ROLE_DEBUG] normalized permissions keys=${Object.keys(nested)} project=${JSON.stringify(nested.projects)}`);
+      
       for (const [moduleId, actions] of Object.entries(nested)) {
         for (const [actionId, val] of Object.entries(actions)) {
           this.setPermission(permissions, moduleId, actionId, val === true);
@@ -392,6 +398,23 @@ export class PermissionEngineService {
     const hrmChildren = Object.keys(hrmSidebarMap);
     const anyHrmVisible = hrmChildren.some(m => permissions?.[m]?.view === true);
     this.setPermission(permissions, 'hrm', 'view', anyHrmVisible);
+
+    // Keep Projects module IDs in sync (some pages use 'project' while RBAC preset uses 'projects')
+    // Bidirectional sync: whichever exists, copy to the other
+    this.ensureModuleShape(permissions, 'projects');
+    this.ensureModuleShape(permissions, 'project');
+
+    for (const actionId of this.getAllowedActions('projects')) {
+      // projects -> project
+      const v1 = permissions?.projects?.[actionId] === true;
+      if (v1) this.setPermission(permissions, 'project', actionId, true);
+      // project -> projects  
+      const v2 = permissions?.project?.[actionId] === true;
+      if (v2) this.setPermission(permissions, 'projects', actionId, true);
+    }
+
+    if (dataScope.projects) dataScope.project = dataScope.projects;
+    if (dataScope.project) dataScope.projects = dataScope.project;
 
     try {
       const permKey = this.permissionKey(tenantId, userId);

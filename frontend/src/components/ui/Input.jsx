@@ -30,6 +30,6 @@ export const FormField = ({ label, error, children, className }) => (
   <div className={cn('flex flex-col gap-1', className)}>
     {label && <Label>{label}</Label>}
     {children}
-    {error && <p className="text-[11px] text-red-400 mt-0.5">{error}</p>}
+    {error && <p className="text-[11px] text-[var(--red)] mt-0.5">{error}</p>}
   </div>
 );

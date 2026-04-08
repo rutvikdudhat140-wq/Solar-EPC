@@ -16,15 +16,41 @@ interface SendDocumentEmailDto {
   documentId: string;
   documentType: string;
   customerName: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  customerAddress?: string;
+  projectName?: string;
+  projectLocation?: string;
+  systemCapacity?: number;
+  projectType?: string;
+  installationType?: string;
+  inverterType?: string;
+  batteryOption?: string;
   items: Array<{
-    name: string;
+    name?: string;
+    description?: string;
     quantity: number;
     unitPrice: number;
     total: number;
+    category?: string;
+    unit?: string;
+    brand?: string;
+    model?: string;
   }>;
+  subtotal?: number;
+  gstAmount?: number;
+  taxAmount?: number;
   total: number;
+  gstRate?: number;
+  taxRate?: number;
+  installationCost?: number;
+  engineeringCost?: number;
+  transportationCost?: number;
+  transportCost?: number;
+  miscellaneousCost?: number;
   notes?: string;
-  from?: string; // Dynamic sender email
+  terms?: string;
+  from?: string;
 }
 
 @Controller('email')
@@ -49,34 +75,62 @@ export class EmailController {
   @Post('send-document')
   async sendDocumentEmail(@Body() dto: SendDocumentEmailDto) {
     try {
-      // Generate PDF from document data
+      // Use provided totals or fallback to calculations
+      const subtotal = dto.subtotal || dto.total;
+      const taxRate = dto.gstRate || dto.taxRate || 18;
+      const taxAmount = dto.gstAmount || dto.taxAmount || Math.round((subtotal) * taxRate / 100);
+      const finalTotal = dto.total || (subtotal + taxAmount);
+
+      // Calculate valid until date (30 days from now)
+      const validDate = new Date();
+      validDate.setDate(validDate.getDate() + 30);
+
+      // Generate PDF from document data with ALL details
       const pdfData = {
         quotationId: dto.documentId,
-        date: new Date().toLocaleDateString(),
-        validUntil: '30 days from date',
+        date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+        validUntil: validDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
         status: dto.documentType === 'quotation' ? 'Quotation' : 'Estimate',
-        customerName: dto.customerName,
-        materials: dto.items.map(item => ({
-          name: item.name,
-          quantity: item.quantity,
-          unitPrice: item.unitPrice,
-          totalPrice: item.total,
-          category: 'Solar Equipment',
-          unit: 'pcs'
-        })),
-        materialTotal: dto.total,
-        installationCost: 0,
-        transportCost: 0,
-        gstPercentage: 18,
-        tax: Math.round(dto.total * 0.18),
-        finalQuotationPrice: Math.round(dto.total * 1.18),
+        customerName: dto.customerName || 'N/A',
+        customerEmail: dto.customerEmail || '',
+        customerPhone: dto.customerPhone || '',
+        customerAddress: dto.customerAddress || '',
+        projectName: dto.projectName || '',
+        projectLocation: dto.projectLocation || '',
+        systemCapacity: dto.systemCapacity || 0,
+        projectType: dto.projectType || 'Residential',
+        installationType: dto.installationType || 'Rooftop',
+        materials: dto.items && dto.items.length > 0 ? dto.items.map(item => ({
+          name: item.name || item.description || 'Item',
+          description: item.description || '',
+          quantity: item.quantity || 1,
+          unitPrice: item.unitPrice || 0,
+          totalPrice: item.total || (item.quantity * item.unitPrice),
+          category: item.category || 'Solar Equipment',
+          unit: item.unit || 'Piece',
+          brand: item.brand || '',
+          model: item.model || ''
+        })) : [
+          { name: 'Solar Panel 550W', quantity: 10, unitPrice: 14500, totalPrice: 145000, category: 'Solar Panel', unit: 'Piece' }
+        ],
+        materialTotal: subtotal,
+        installationCost: dto.installationCost || 0,
+        engineeringCost: dto.engineeringCost || 0,
+        transportCost: dto.transportCost || dto.transportationCost || 0,
+        miscellaneousCost: dto.miscellaneousCost || 0,
+        gstPercentage: taxRate,
+        tax: taxAmount,
+        subtotal: subtotal,
+        finalQuotationPrice: finalTotal,
         notes: dto.notes || '',
+        terms: dto.terms || '',
         systemConfig: {
-          systemSize: 5,
-          panelCount: 10,
-          inverterType: 'String Inverter',
-          batteryOption: 'Grid-Tied (No Battery)',
-          mountingStructure: 'Rooftop Mount'
+          systemSize: dto.systemCapacity || 5,
+          panelCount: Math.ceil((dto.systemCapacity || 5) * 2) || 10,
+          inverterType: dto.inverterType || 'String Inverter',
+          batteryOption: dto.batteryOption || 'Grid-Tied (No Battery)',
+          mountingStructure: dto.installationType === 'ground_mounted' ? 'Ground Mount' : 'Rooftop Mount',
+          projectType: dto.projectType || 'Residential'
         }
       };
 
@@ -86,9 +140,26 @@ export class EmailController {
       // Send email with PDF attachment
       const subject = dto.documentType === 'quotation' 
         ? `Solar Quotation - ${dto.documentId}` 
-        : `Estimate - ${dto.documentId}`;
+        : `Solar Estimate - ${dto.documentId}`;
       
-      const text = `Dear ${dto.customerName},\n\nPlease find attached your ${dto.documentType} from our company.\n\nTotal Amount: ₹${dto.total.toLocaleString()}\n\nIf you have any questions, please don't hesitate to contact us.\n\nBest regards,\nSolar Company Team`;
+      const text = `Dear ${dto.customerName || 'Customer'},
+
+Thank you for your interest in our solar solutions!
+
+Please find attached your ${dto.documentType} for:
+${dto.projectName ? `Project: ${dto.projectName}` : ''}
+${dto.projectLocation ? `Location: ${dto.projectLocation}` : ''}
+${dto.systemCapacity ? `System Capacity: ${dto.systemCapacity} kW` : ''}
+
+Estimate Total: ₹${finalTotal.toLocaleString('en-IN')}
+Validity: ${validDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+
+This estimate includes GST (${taxRate}%).
+
+If you have any questions or would like to proceed, please don't hesitate to contact us.
+
+Best regards,
+Solar EPC Team`;
 
       const result = await this.emailService.sendEmail(
         dto.to,

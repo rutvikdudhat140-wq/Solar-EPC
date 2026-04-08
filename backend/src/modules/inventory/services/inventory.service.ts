@@ -735,81 +735,26 @@ async getCategories(tenantCode: string, user?: UserWithVisibility): Promise<stri
 
       item = await this.inventoryModel.findOne({ tenantId, itemId: itemName }).exec();
     }
-
     if (!item) {
-
-
-
       throw new NotFoundException(`Inventory item "${itemName}" not found`);
-
     }
-
     if (item.available < quantity) {
-
-
-
       throw new BadRequestException(`Insufficient stock for "${itemName}". Available: ${item.available}, Requested: ${quantity}`);
-
-
-
     }
-
-
-
-
-
-
-
     const newStock = item.stock - quantity;
-
-
-
     const newAvailable = newStock - item.reserved;
-
-
-
-
-
-
-
     return this.inventoryModel.findOneAndUpdate(
-
-
-
       { tenantId, _id: item._id },
-
-
-
       {
-
-
-
         $set: {
-
-
-
           stock: newStock,
-
-
-
           available: newAvailable,
-
-
-
           lastUpdated: new Date().toISOString().split('T')[0],
-
-
-
         }
       },
-
       { new: true },
     ).exec();
-
-
-
   }
-
 }
 */
 }

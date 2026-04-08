@@ -371,17 +371,22 @@ const StockMovements = () => {
             { type: 'RESERVE', label: 'Reserve', color: 'indigo', icon: Lock, gradient: 'from-indigo-100 to-purple-200', border: 'border-indigo-200', iconBg: 'bg-indigo-200', text: 'text-indigo-700' },
             { type: 'RELEASE', label: 'PROJECT RETURNED (RELEASE)', color: 'cyan', icon: Unlock, gradient: 'from-cyan-100 to-teal-200', border: 'border-cyan-200', iconBg: 'bg-cyan-200', text: 'text-cyan-700' },
             { type: 'TRANSFER', label: 'Transfer', color: 'violet', icon: ArrowRightLeft, gradient: 'from-violet-100 to-purple-200', border: 'border-violet-200', iconBg: 'bg-violet-200', text: 'text-violet-700' },
-          ].map(({ type, label, icon: Icon, gradient, border, iconBg, text }) => {
+          ].map(({ type, label, icon: Icon, color, gradient, border, iconBg, text }) => {
             const stat = stats.byType?.find(s => s._id === type);
             const count = stat?.count || 0;
+            const isActive = filterType === type;
             return (
-              <div key={type} className={`relative overflow-hidden bg-gradient-to-br ${gradient} border ${border} rounded-xl p-4`}>
+              <div 
+                key={type} 
+                onClick={() => setFilterType(isActive ? '' : type)}
+                className={`relative overflow-hidden bg-gradient-to-br ${gradient} border ${border} rounded-xl p-4 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${isActive ? 'ring-2 ring-offset-2 ring-' + color + '-400' : ''}`}
+              >
                 <div className="relative flex items-center justify-between">
                   <div>
                     <p className={`text-xs font-bold ${text} uppercase tracking-wider`}>{label}</p>
                     <p className="text-2xl font-bold text-gray-800 mt-1">{count}</p>
                   </div>
-                  <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center shadow-sm`}>
+                  <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform`}>
                     <Icon size={20} className={text} />
                   </div>
                 </div>
@@ -401,9 +406,11 @@ const StockMovements = () => {
             className="px-2 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-lg w-28 flex-shrink-0"
           >
             <option value="">All Types</option>
-            {Object.entries(MOVEMENT_TYPES).map(([type, config]) => (
-              <option key={type} value={type}>{config.label}</option>
-            ))}
+            {Object.entries(MOVEMENT_TYPES)
+              .filter(([type]) => !['DISPATCH', 'CONSUME', 'ADJUSTMENT'].includes(type))
+              .map(([type, config]) => (
+                <option key={type} value={type}>{config.label}</option>
+              ))}
           </select>
           <input
             type="text"

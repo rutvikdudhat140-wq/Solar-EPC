@@ -5,6 +5,8 @@ import { LeadStatus, LeadStatusSchema } from '../settings/schemas/lead-status.sc
 import { User, UserSchema } from '../../core/auth/schemas/user.schema';
 import { Project, ProjectSchema } from '../projects/schemas/project.schema';
 import { LeadsService } from './services/leads.service';
+import { ExportQueueService } from './services/export-queue.service';
+import { ExportWorker } from './workers/export-worker';
 import { LeadsController } from './controllers/leads.controller';
 import { SettingsModule } from '../settings/settings.module';
 import { SurveyModule } from '../survey/survey.module';
@@ -23,7 +25,7 @@ import { CustomersModule } from '../customers/customers.module';
     CustomersModule,
   ],
   controllers: [LeadsController],
-  providers: [LeadsService],
-  exports: [MongooseModule, LeadsService]
+  providers: [LeadsService, ExportQueueService, ExportWorker],
+  exports: [MongooseModule, LeadsService, ExportQueueService]
 })
 export class LeadsModule {}

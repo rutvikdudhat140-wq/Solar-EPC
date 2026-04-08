@@ -1,19 +1,19 @@
 import api from '../lib/apiClient';
 
 export const inventoryApi = {
-  // Get all inventory items
+  // Get all items from Items module (equipment catalog)
   getAll: (params = {}) => {
-    return api.get('/inventory', { params });
+    return api.get('/items', { params });
   },
 
-  // Get categories
+  // Get categories from Lookups module
   getCategories: () => {
-    return api.get('/inventory/categories');
+    return api.get('/lookups/categories');
   },
 
-  // Get units
+  // Get units from Lookups module
   getUnits: () => {
-    return api.get('/inventory/units');
+    return api.get('/lookups/units');
   },
 
   // Get items by category

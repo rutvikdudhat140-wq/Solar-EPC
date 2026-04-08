@@ -1,5 +1,5 @@
 // Solar OS – Document Management Module
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Plus, FileText, Send, DollarSign,
   LayoutGrid, List, Search, Filter,
@@ -13,7 +13,7 @@ import {
   Activity, PieChart as PieChartIcon,
   BarChart3, Target, Zap,
   Sun, Hammer,
-  MoreVertical, CheckCircle, Eye,
+  MoreVertical, CheckCircle, Eye, RefreshCw,
 } from 'lucide-react';
 import {
   BarChart, Bar, PieChart, Pie, Cell,
@@ -37,6 +37,46 @@ import ProposalPage from './ProposalPage';
 import { toast } from '../components/ui/Toast';
 import { documentsApi } from '../services/documentsApi';
 
+// ── Live Counts Component ────────────────────────────────────────────────────
+const LiveCountCard = ({ label, count, color = 'blue', onClick, isLoading }) => {
+  const [displayCount, setDisplayCount] = useState(count);
+  const [isPulsing, setIsPulsing] = useState(false);
+
+  useEffect(() => {
+    if (count !== displayCount) {
+      setIsPulsing(true);
+      setDisplayCount(count);
+      setTimeout(() => setIsPulsing(false), 500);
+    }
+  }, [count]);
+
+  const colorClasses = {
+    blue: 'bg-blue-50 border-blue-200 text-blue-700',
+    green: 'bg-green-50 border-green-200 text-green-700',
+    orange: 'bg-orange-50 border-orange-200 text-orange-700',
+    purple: 'bg-purple-50 border-purple-200 text-purple-700',
+    red: 'bg-red-50 border-red-200 text-red-700',
+    teal: 'bg-teal-50 border-teal-200 text-teal-700',
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={isLoading}
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all ${colorClasses[color]
+        } ${isPulsing ? 'scale-105 shadow-lg' : 'hover:shadow-md'} ${isLoading ? 'opacity-70' : ''
+        }`}
+    >
+      <div className="text-left">
+        <p className="text-xs font-medium opacity-80 uppercase tracking-wide">{label}</p>
+        <p className={`text-2xl font-bold ${isPulsing ? 'animate-pulse' : ''}`}>
+          {isLoading ? <RefreshCw className="animate-spin" size={24} /> : displayCount}
+        </p>
+      </div>
+    </button>
+  );
+};
+
 const fmt = CURRENCY.format;
 
 // ── Mock Data for Documents ───────────────────────────────────────────────────
@@ -59,7 +99,7 @@ const DOCUMENT_STATUS = {
 const StatusCell = ({ status, doc, isProcessing, onUpdateStatus }) => {
   const [statusMenuOpen, setStatusMenuOpen] = useState(false);
   const config = DOCUMENT_STATUS[status] || DOCUMENT_STATUS.draft;
-  
+
   return (
     <div className="relative">
       <button
@@ -73,9 +113,9 @@ const StatusCell = ({ status, doc, isProcessing, onUpdateStatus }) => {
       >
         {config.label}
       </button>
-      
+
       {statusMenuOpen && (
-        <div className="absolute left-0 mt-1 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1">
+        <div className="absolute left-0 mt-1 w-32 bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg shadow-lg z-50 py-1">
           {Object.entries(DOCUMENT_STATUS).map(([statusKey, statusConfig]) => (
             <button
               key={statusKey}
@@ -85,10 +125,10 @@ const StatusCell = ({ status, doc, isProcessing, onUpdateStatus }) => {
                 setStatusMenuOpen(false);
               }}
               disabled={isProcessing || status === statusKey}
-              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
             >
-              <span 
-                className="w-2 h-2 rounded-full" 
+              <span
+                className="w-2 h-2 rounded-full"
                 style={{ background: statusConfig.color }}
               />
               <span>{statusConfig.label}</span>
@@ -117,7 +157,7 @@ const DashboardKPI = ({ title, value, change, icon: Icon, color, subtitle }) => 
       <p className="text-xl font-black text-[var(--text-primary)]">{value}</p>
       {subtitle && <p className="text-[9px] text-[var(--text-muted)]">{subtitle}</p>}
       {change !== undefined && (
-        <p className={`text-[10px] font-bold ${change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+        <p className={`text-[10px] font-bold ${change >= 0 ? 'text-[var(--green)]' : 'text-red-500'}`}>
           {change >= 0 ? '↑' : '↓'} {Math.abs(change)}%
         </p>
       )}
@@ -217,6 +257,66 @@ const DocumentPage = () => {
   const [actionMenuOpen, setActionMenuOpen] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+
+  // Live counts state
+  const [liveCounts, setLiveCounts] = useState({
+    estimates: 0,
+    proposals: 0,
+    quotations: 0,
+    total: 0,
+    draft: 0,
+    sent: 0,
+    accepted: 0
+  });
+
+  // Fetch live counts function
+  const fetchLiveCounts = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      const [statsRes, quotRes, docsRes] = await Promise.all([
+        documentsApi.getDashboardStats(),
+        api.get('/quotations'),
+        api.get('/documents/all')
+      ]);
+
+      const statsData = statsRes?.data?.data || statsRes?.data;
+
+      const rawQuots = quotRes?.data || quotRes || [];
+      const quotationsCount = Array.isArray(rawQuots) ? rawQuots.length : 0;
+
+      const rawDocs = docsRes?.data?.data || docsRes?.data || [];
+      const estimates = rawDocs.filter(d => d.type === 'estimate').length;
+      const proposals = rawDocs.filter(d => d.type === 'proposal').length;
+      const draft = [...rawDocs, ...(Array.isArray(rawQuots) ? rawQuots : [])]
+        .filter(d => (d.status || 'draft').toString().toLowerCase() === 'draft').length;
+      const sent = [...rawDocs, ...(Array.isArray(rawQuots) ? rawQuots : [])]
+        .filter(d => (d.status || '').toString().toLowerCase() === 'sent').length;
+      const accepted = [...rawDocs, ...(Array.isArray(rawQuots) ? rawQuots : [])]
+        .filter(d => ['accepted', 'approved'].includes((d.status || '').toString().toLowerCase())).length;
+
+      setLiveCounts({
+        estimates,
+        proposals,
+        quotations: quotationsCount,
+        total: estimates + proposals + quotationsCount,
+        draft,
+        sent,
+        accepted
+      });
+
+      setLastUpdated(new Date());
+      setDashboardStats(statsData);
+    } catch (err) {
+      console.error('Error fetching live counts:', err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  // Initial load
   useEffect(() => {
     let cancelled = false;
     const loadData = async () => {
@@ -226,7 +326,7 @@ const DocumentPage = () => {
           api.get('/quotations'),
           api.get('/documents/all')
         ]);
-        
+
         const statsData = statsRes?.data?.data || statsRes?.data;
         if (!cancelled) setDashboardStats(statsData);
 
@@ -248,6 +348,9 @@ const DocumentPage = () => {
             status,
             createdAt: q.createdAt,
             validUntil: q.validUntil,
+            paymentTerms: q.paymentTerms || '',
+            visitInMonth: q.visitInMonth || '',
+            totalVisit: q.totalVisit || '',
             items: (q.materials || []).map(m => ({
               name: m.name,
               quantity: m.quantity,
@@ -275,6 +378,9 @@ const DocumentPage = () => {
             status,
             createdAt: d.createdAt,
             validUntil: d.validUntil,
+            paymentTerms: d.paymentTerms || '',
+            visitInMonth: d.visitInMonth || '',
+            totalVisit: d.totalVisit || '',
             items: (d.items || []).map(i => ({
               name: i.name,
               quantity: i.quantity,
@@ -283,10 +389,29 @@ const DocumentPage = () => {
             }))
           });
         });
-        
+
         if (!cancelled) {
           setRealQuotations(formattedQuots);
           setDocuments(formattedDocs);
+
+          // Update live counts
+          const estimates = formattedDocs.filter(d => d.type === 'estimate').length;
+          const proposals = formattedDocs.filter(d => d.type === 'proposal').length;
+          const quotationsCount = formattedQuots.length;
+          const draft = [...formattedDocs, ...formattedQuots].filter(d => d.status === 'draft').length;
+          const sent = [...formattedDocs, ...formattedQuots].filter(d => d.status === 'sent').length;
+          const accepted = [...formattedDocs, ...formattedQuots].filter(d => d.status === 'accepted').length;
+
+          setLiveCounts({
+            estimates,
+            proposals,
+            quotations: quotationsCount,
+            total: estimates + proposals + quotationsCount,
+            draft,
+            sent,
+            accepted
+          });
+          setLastUpdated(new Date());
         }
       } catch (err) {
         console.error('Error loading documents data:', err);
@@ -298,10 +423,21 @@ const DocumentPage = () => {
     };
   }, [solarQuoteKey]);
 
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    if (!autoRefresh) return;
+
+    const interval = setInterval(() => {
+      fetchLiveCounts();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [autoRefresh, fetchLiveCounts]);
+
   // Merge real documents with real quotations for the 'All' view
   const allDocuments = useMemo(() => {
     console.log('[DocumentPage] Merging documents for All view:', { documents, realQuotations });
-    return [...documents, ...realQuotations].sort((a, b) => 
+    return [...documents, ...realQuotations].sort((a, b) =>
       new Date(b.createdAt) - new Date(a.createdAt)
     );
   }, [documents, realQuotations]);
@@ -401,10 +537,10 @@ const DocumentPage = () => {
       } else {
         endpoint = `/documents/${doc.dbId || doc.id}`;
       }
-      
+
       // API call to update document/quotation status
       await api.put(endpoint, { status: newStatus });
-      
+
       // Update local state
       setDocuments(docs => docs.map(d =>
         d.id === doc.id ? { ...d, status: newStatus } : d
@@ -412,7 +548,7 @@ const DocumentPage = () => {
       setRealQuotations(quots => quots.map(q =>
         q.id === doc.id ? { ...q, status: newStatus } : q
       ));
-      
+
       toast.success(`Status updated to ${newStatus}`);
     } catch (error) {
       console.error('Error updating status:', error);
@@ -426,7 +562,7 @@ const DocumentPage = () => {
   // ── New Action Handlers ──────────────────────────────────────────────────────
   const handleApproveDocument = async (doc) => {
     if (!window.confirm(`Approve ${doc.id} and create project?`)) return;
-    
+
     setIsProcessing(true);
     try {
       // Create project from document/quotation
@@ -450,20 +586,24 @@ const DocumentPage = () => {
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           totalPrice: item.total
-        })) || []
+        })) || [],
+        // Copy payment terms and visit details from quotation
+        paymentTerms: doc.paymentTerms || '',
+        visitsPerMonth: doc.visitInMonth || '',
+        totalVisits: doc.totalVisit || '',
       };
-      
+
       console.log('Creating project with data:', projectData);
-      
+
       // API call to create project
       const response = await api.post('/projects', projectData);
-      
+
       if (response.data) {
         // Update document status to approved
         setDocuments(docs => docs.map(d =>
           d.id === doc.id ? { ...d, status: 'accepted', approvedAt: new Date().toISOString() } : d
         ));
-        
+
         alert(`✅ Project created successfully from ${doc.id}!`);
       }
     } catch (error) {
@@ -477,7 +617,7 @@ const DocumentPage = () => {
 
   const handleSendEmailAndComplete = async (doc) => {
     if (!window.confirm(`Send email to ${doc.customerEmail} and mark as completed?`)) return;
-    
+
     setIsProcessing(true);
     try {
       // Prepare document data for PDF generation
@@ -495,32 +635,32 @@ const DocumentPage = () => {
         total: doc.total,
         notes: doc.notes || `Document sent from Documents module`,
       };
-      
+
       console.log('Sending email with data:', emailData);
-      
+
       // Send email with PDF attachment
       const response = await api.post('/email/send-document', emailData);
-      
+
       console.log('Email API response:', response);
-      
+
       // Check if response has data and success flag
       const result = response.data || response;
-      
+
       if (!result.success) {
         throw new Error(result.message || 'Failed to send email');
       }
-      
+
       // Mark document as completed after successful email send
       setDocuments(docs => docs.map(d =>
-        d.id === doc.id ? { 
-          ...d, 
-          status: 'completed', 
+        d.id === doc.id ? {
+          ...d,
+          status: 'completed',
           completedAt: new Date().toISOString(),
           emailSent: true,
           emailSentAt: new Date().toISOString()
         } : d
       ));
-      
+
       alert(`✅ Email with PDF sent to ${doc.customerEmail} successfully!`);
     } catch (error) {
       console.error('Error sending email:', error);
@@ -535,12 +675,12 @@ const DocumentPage = () => {
 
   const handleMarkAsCompleted = async (doc) => {
     if (!window.confirm(`Mark ${doc.id} as completed and create project?`)) return;
-    
+
     setIsProcessing(true);
     try {
       // Reuse handleApproveDocument logic as /projects/quotations endpoint doesn't exist
       await handleApproveDocument(doc);
-      
+
       // The local state update is handled within handleApproveDocument
     } catch (error) {
       console.error('Error marking as completed:', error);
@@ -576,11 +716,11 @@ const DocumentPage = () => {
       key: 'status',
       header: 'Status',
       render: (v, doc) => (
-        <StatusCell 
-          status={v} 
-          doc={doc} 
-          isProcessing={isProcessing} 
-          onUpdateStatus={handleUpdateStatus} 
+        <StatusCell
+          status={v}
+          doc={doc}
+          isProcessing={isProcessing}
+          onUpdateStatus={handleUpdateStatus}
         />
       ),
     },
@@ -595,15 +735,15 @@ const DocumentPage = () => {
               setActionMenuOpen(actionMenuOpen === doc.id ? null : doc.id);
             }}
             disabled={isProcessing}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
           >
             <MoreVertical size={16} />
           </button>
-          
+
           {actionMenuOpen === doc.id && (
             <>
               {/* Backdrop to close menu when clicking outside */}
-              <div 
+              <div
                 className="fixed inset-0 z-[9998]"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -611,7 +751,7 @@ const DocumentPage = () => {
                 }}
               />
               <div 
-                className="action-menu-container fixed z-[9999] w-56 bg-white border border-gray-200 rounded-lg shadow-2xl py-2"
+                className="action-menu-container fixed z-[9999] w-56 bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg shadow-2xl py-2"
                 style={{
                   right: '20px',
                   top: '50%',
@@ -619,7 +759,7 @@ const DocumentPage = () => {
                 }}
               >
                 {/* Status Update Submenu */}
-                <div className="px-3 py-2 text-[11px] font-bold text-gray-600 uppercase tracking-wider border-b border-gray-100">
+                <div className="px-3 py-2 text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider border-b border-[var(--border-base)]">
                   Change Status
                 </div>
                 <div className="py-1">
@@ -631,74 +771,74 @@ const DocumentPage = () => {
                         handleUpdateStatus(doc, statusKey);
                       }}
                       disabled={isProcessing || doc.status === statusKey}
-                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
                     >
-                      <span 
-                        className="w-3 h-3 rounded-full flex-shrink-0" 
+                      <span
+                        className="w-3 h-3 rounded-full flex-shrink-0"
                         style={{ background: statusConfig.color }}
                       />
                       <span className="flex-1">{statusConfig.label}</span>
                       {doc.status === statusKey && (
-                        <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded">Current</span>
+                        <span className="text-[10px] text-[var(--text-muted)] bg-[var(--bg-elevated)] px-2 py-0.5 rounded">Current</span>
                       )}
                     </button>
                   ))}
                 </div>
-              
-              <div className="border-t border-gray-200 my-1" />
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleApproveDocument(doc);
-                }}
-                disabled={isProcessing || doc.status === 'accepted'}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
-              >
-                <CheckCircle size={14} className="text-emerald-500" />
-                <span>Approve & Create Project</span>
-              </button>
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleSendEmailAndComplete(doc);
-                }}
-                disabled={isProcessing || !doc.customerEmail}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
-              >
-                <Mail size={14} className="text-blue-500" />
-                <span>Send Email & Complete</span>
-              </button>
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleMarkAsCompleted(doc);
-                }}
-                disabled={isProcessing}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
-              >
-                <FileCheck size={14} className="text-purple-500" />
-                <span>Mark as Completed</span>
-              </button>
-              
-              <div className="border-t border-gray-200 my-1" />
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteDocument(doc);
-                  setActionMenuOpen(null);
-                }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-red-50 text-red-500 transition-colors"
-              >
-                <Trash2 size={14} />
-                <span>Delete</span>
-              </button>
-            </div>
-          </>
-        )}
+
+                <div className="border-t border-gray-200 my-1" />
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleApproveDocument(doc);
+                  }}
+                  disabled={isProcessing || doc.status === 'accepted'}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  <CheckCircle size={14} className="text-emerald-500" />
+                  <span>Approve & Create Project</span>
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSendEmailAndComplete(doc);
+                  }}
+                  disabled={isProcessing || !doc.customerEmail}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  <Mail size={14} className="text-blue-500" />
+                  <span>Send Email & Complete</span>
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleMarkAsCompleted(doc);
+                  }}
+                  disabled={isProcessing}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  <FileCheck size={14} className="text-purple-500" />
+                  <span>Mark as Completed</span>
+                </button>
+
+                <div className="border-t border-gray-200 my-1" />
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteDocument(doc);
+                    setActionMenuOpen(null);
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-red-50 text-red-500 transition-colors"
+                >
+                  <Trash2 size={14} />
+                  <span>Delete</span>
+                </button>
+              </div>
+            </>
+          )}
         </div>
       ),
     },
@@ -714,7 +854,7 @@ const DocumentPage = () => {
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       const currentMonth = new Date().getMonth();
       const last6Months = [];
-      
+
       for (let i = 5; i >= 0; i--) {
         const monthIndex = (currentMonth - i + 12) % 12;
         last6Months.push({
@@ -731,7 +871,7 @@ const DocumentPage = () => {
         const date = new Date(doc.createdAt);
         const monthName = months[date.getMonth()];
         const entry = last6Months.find(m => m.month === monthName);
-        
+
         if (entry) {
           if (doc.type === 'estimate') entry.estimates++;
           else if (doc.type === 'proposal') entry.proposals++;
@@ -788,6 +928,87 @@ const DocumentPage = () => {
 
     return (
       <div className="space-y-4 animate-fade-in">
+        {/* Live Counts Section */}
+        <div className="glass-card p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Activity size={18} className="text-blue-500" />
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">Live Document Counts</h3>
+              <span className="text-[10px] text-[var(--text-muted)]">
+                Last updated: {lastUpdated.toLocaleTimeString()}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] transition-colors ${autoRefresh ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                  }`}
+                title={autoRefresh ? 'Auto-refresh ON (30s)' : 'Auto-refresh OFF'}
+              >
+                <div className={`w-1.5 h-1.5 rounded-full ${autoRefresh ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                {autoRefresh ? 'Live' : 'Paused'}
+              </button>
+              <button
+                onClick={fetchLiveCounts}
+                disabled={isRefreshing}
+                className="p-1.5 rounded hover:bg-[var(--bg-hover)] text-[var(--text-muted)] transition-colors disabled:opacity-50"
+                title="Refresh Now"
+              >
+                <RefreshCw size={14} className={isRefreshing ? 'animate-spin' : ''} />
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+            <LiveCountCard
+              label="Total"
+              count={liveCounts.total}
+              color="blue"
+              isLoading={isRefreshing}
+              onClick={() => setActiveTab('all')}
+            />
+            <LiveCountCard
+              label="Estimates"
+              count={liveCounts.estimates}
+              color="purple"
+              isLoading={isRefreshing}
+              onClick={() => setActiveTab('estimate')}
+            />
+            <LiveCountCard
+              label="Proposals"
+              count={liveCounts.proposals}
+              color="orange"
+              isLoading={isRefreshing}
+              onClick={() => setActiveTab('proposal')}
+            />
+            <LiveCountCard
+              label="Quotations"
+              count={liveCounts.quotations}
+              color="green"
+              isLoading={isRefreshing}
+              onClick={() => setActiveTab('quotation')}
+            />
+            <LiveCountCard
+              label="Draft"
+              count={liveCounts.draft}
+              color="red"
+              isLoading={isRefreshing}
+            />
+            <LiveCountCard
+              label="Sent"
+              count={liveCounts.sent}
+              color="teal"
+              isLoading={isRefreshing}
+            />
+            <LiveCountCard
+              label="Accepted"
+              count={liveCounts.accepted}
+              color="green"
+              isLoading={isRefreshing}
+            />
+          </div>
+        </div>
+
         {/* Filter Bar */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -818,8 +1039,8 @@ const DocumentPage = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="glass-card p-3">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <FolderOpen size={16} className="text-blue-500" />
+              <div className="w-8 h-8 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center">
+                <FolderOpen size={16} className="text-[var(--primary)]" />
               </div>
               <div>
                 <p className="text-lg font-bold text-[var(--text-primary)]">{dashboardStats?.totalDocuments ?? stats.total.documents}</p>
@@ -827,8 +1048,8 @@ const DocumentPage = () => {
               </div>
             </div>
             <div className="flex items-center gap-1 mt-2">
-              <TrendingUp size={10} className="text-emerald-500" />
-              <span className="text-[10px] text-emerald-500">{`${dashboardStats?.documentsMoMPercent ?? 0}%`}</span>
+              <TrendingUp size={10} className="text-[var(--green)]" />
+              <span className="text-[10px] text-[var(--green)]">{`${dashboardStats?.documentsMoMPercent ?? 0}%`}</span>
               <span className="text-[10px] text-[var(--text-muted)]">vs last month</span>
             </div>
           </div>
@@ -877,14 +1098,14 @@ const DocumentPage = () => {
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-bold text-[var(--text-primary)]">Monthly Document Flow</h3>
               <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1 text-[10px] text-blue-500">
+                <span className="flex items-center gap-1 text-[10px] text-[var(--primary)]">
                   <div className="w-2 h-2 rounded-full bg-blue-500" /> Estimates
                 </span>
                 <span className="flex items-center gap-1 text-[10px] text-purple-500">
                   <div className="w-2 h-2 rounded-full bg-purple-500" /> Proposals
                 </span>
-                <span className="flex items-center gap-1 text-[10px] text-emerald-500">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500" /> Quotations
+                <span className="flex items-center gap-1 text-[10px] text-[var(--green)]">
+                  <div className="w-2 h-2 rounded-full bg-[var(--green)]" /> Quotations
                 </span>
               </div>
             </div>
@@ -997,7 +1218,7 @@ const DocumentPage = () => {
                 {topCustomers.map((customer, index) => (
                   <tr key={customer.name} className="border-b border-[var(--border-base)]/50">
                     <td className="py-2">
-                      <span className="w-5 h-5 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-bold flex items-center justify-center">
+                      <span className="w-5 h-5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] text-[10px] font-bold flex items-center justify-center">
                         {index + 1}
                       </span>
                     </td>
@@ -1005,7 +1226,7 @@ const DocumentPage = () => {
                       <p className="text-xs font-medium text-[var(--text-primary)] truncate max-w-[150px]">{customer.name}</p>
                     </td>
                     <td className="py-2 text-right text-xs text-[var(--text-muted)]">{customer.count}</td>
-                    <td className="py-2 text-right text-xs font-bold text-emerald-500">{(customer.value / 100000).toFixed(1)}L</td>
+                    <td className="py-2 text-right text-xs font-bold text-[var(--green)]">{(customer.value / 100000).toFixed(1)}L</td>
                   </tr>
                 ))}
               </tbody>
@@ -1031,7 +1252,7 @@ const DocumentPage = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-bold text-emerald-500">{(doc.total / 100000).toFixed(1)}L</p>
+                    <p className="text-xs font-bold text-[var(--green)]">{(doc.total / 100000).toFixed(1)}L</p>
                     <p className="text-[9px] text-[var(--text-muted)]">
                       {i === 0 ? 'Just now' : i === 1 ? '2m' : i === 2 ? '5m' : i === 3 ? '15m' : i === 4 ? '1h' : '2h'}
                     </p>
@@ -1099,12 +1320,12 @@ const DocumentPage = () => {
                 setSelectedDocForView(doc);
               }}
               disabled={isProcessing}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
               title="View Document"
             >
               <Eye size={16} />
             </button>
-            
+
             {/* Email Button */}
             <button
               onClick={(e) => {
@@ -1112,12 +1333,12 @@ const DocumentPage = () => {
                 handleSendEmailAndComplete(doc);
               }}
               disabled={isProcessing || !doc.customerEmail}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors disabled:opacity-40"
+              className="p-1.5 rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors disabled:opacity-40"
               title={doc.customerEmail ? `Send PDF to ${doc.customerEmail}` : 'No email available'}
             >
               <Mail size={16} />
             </button>
-            
+
             {/* More Options Dropdown */}
             <div className="relative">
               <button
@@ -1126,49 +1347,49 @@ const DocumentPage = () => {
                   setActionMenuOpen(actionMenuOpen === doc.id ? null : doc.id);
                 }}
                 disabled={isProcessing}
-                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
               >
                 <MoreVertical size={16} />
               </button>
-              
+
               {actionMenuOpen === doc.id && (
-                <div className="action-menu-container absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1">
+                <div className="action-menu-container absolute right-0 mt-1 w-48 bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg shadow-lg z-50 py-1">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleApproveDocument(doc);
                     }}
                     disabled={isProcessing || doc.status === 'approved'}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
                   >
-                    <CheckCircle size={14} className="text-emerald-500" />
+                    <CheckCircle size={14} className="text-[var(--green)]" />
                     <span>Approve & Create Project</span>
                   </button>
-                  
+
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleSendEmailAndComplete(doc);
                     }}
                     disabled={isProcessing || !doc.customerEmail}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
                   >
-                    <Mail size={14} className="text-blue-500" />
+                    <Mail size={14} className="text-[var(--primary)]" />
                     <span>Send Email & Complete</span>
                   </button>
-                  
+
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleMarkAsCompleted(doc);
                     }}
                     disabled={isProcessing}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50"
                   >
                     <FileCheck size={14} className="text-purple-500" />
                     <span>Mark as Completed</span>
                   </button>
-                  
+
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -1196,17 +1417,17 @@ const DocumentPage = () => {
     return (
       <div className="space-y-4 animate-fade-in">
         {/* Clean Toolbar - Matching Proposal Page */}
-        <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-lg border border-gray-200">
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-[var(--bg-surface)] p-3 rounded-lg border border-[var(--border-base)]">
           <div className="flex items-center gap-3">
             {/* Search */}
             <div className="relative">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
                 type="text"
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-[200px] pl-10 pr-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:border-gray-300"
+                className="w-[200px] pl-10 pr-4 py-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-base)] text-sm text-[var(--text-secondary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--border-base)]"
               />
             </div>
 
@@ -1214,7 +1435,7 @@ const DocumentPage = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700 focus:outline-none focus:border-gray-300"
+              className="px-4 py-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-base)] text-sm text-[var(--text-secondary)] focus:outline-none focus:border-[var(--border-base)]"
             >
               <option value="all">All Status</option>
               <option value="draft">Draft</option>
@@ -1226,12 +1447,12 @@ const DocumentPage = () => {
 
           <div className="flex items-center gap-2">
             {/* View Toggle */}
-            <div className="flex items-center p-1 rounded-lg bg-gray-100 border border-gray-200">
+            <div className="flex items-center p-1 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-base)]">
               <button
                 onClick={() => setViewMode('list')}
                 className={cn(
                   'p-1.5 rounded-md transition-colors',
-                  viewMode === 'list' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  viewMode === 'list' ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
                 )}
               >
                 <List size={16} />
@@ -1240,7 +1461,7 @@ const DocumentPage = () => {
                 onClick={() => setViewMode('grid')}
                 className={cn(
                   'p-1.5 rounded-md transition-colors',
-                  viewMode === 'grid' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  viewMode === 'grid' ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
                 )}
               >
                 <LayoutGrid size={16} />
@@ -1256,7 +1477,7 @@ const DocumentPage = () => {
                   setIsCreateModalOpen(true);
                 }
               }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white text-sm font-medium transition-colors"
             >
               <span>Convert from Estimate</span>
             </button>
@@ -1274,12 +1495,12 @@ const DocumentPage = () => {
 
         {/* Documents Display */}
         {filteredByStatus.length === 0 ? (
-          <div className="bg-white p-12 text-center rounded-lg border border-gray-200">
-            <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center mx-auto mb-4">
-              <FileText size={32} className="text-gray-400" />
+          <div className="bg-[var(--bg-surface)] p-12 text-center rounded-lg border border-[var(--border-base)]">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--bg-elevated)] flex items-center justify-center mx-auto mb-4">
+              <FileText size={32} className="text-[var(--text-muted)]" />
             </div>
-            <h3 className="text-lg font-bold text-gray-800 mb-1">No proposals found</h3>
-            <p className="text-sm text-gray-500 mb-4">Create your first proposal to get started</p>
+            <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">No proposals found</h3>
+            <p className="text-sm text-[var(--text-muted)] mb-4">Create your first proposal to get started</p>
             <button
               onClick={() => setIsCreateModalOpen(true)}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors mx-auto"
@@ -1303,9 +1524,9 @@ const DocumentPage = () => {
           </div>
         ) : (
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <DataTable 
-              columns={tableColumns} 
-              data={filteredByStatus} 
+            <DataTable
+              columns={tableColumns}
+              data={filteredByStatus}
               onRowClick={(doc) => setSelectedDocForView(doc)}
             />
           </div>
@@ -1676,7 +1897,7 @@ const DocumentDetail = ({ document, onClose, onSend, onDuplicate, onDelete }) =>
           {document.type === 'quotation' && (
             <button
               onClick={() => downloadQuotationPDF(document)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--green)] text-white text-sm font-medium hover:bg-[var(--green)] transition-colors"
             >
               <FileSpreadsheet size={14} />
               Download PDF
@@ -1777,7 +1998,7 @@ const DocumentDetail = ({ document, onClose, onSend, onDuplicate, onDelete }) =>
           )}
           {document.acceptedAt && (
             <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <div className="w-2 h-2 rounded-full bg-[var(--green)]" />
               <span className="text-sm text-[var(--text-primary)]">Accepted on {new Date(document.acceptedAt).toLocaleDateString()}</span>
             </div>
           )}

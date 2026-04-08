@@ -1013,7 +1013,7 @@ const ItemsPage = () => {
                 <div className="flex items-center gap-2">
                   <span className={`w-2 h-2 rounded-full ${(selectedItem.stock || 0) === 0 ? 'bg-red-500' :
                       ((selectedItem.stock || 0) - (selectedItem.reserved || 0)) <= (selectedItem.minStock || 0) ? 'bg-amber-500' :
-                        (selectedItem.reserved || 0) > 0 ? 'bg-cyan-500' : 'bg-emerald-500'
+                        (selectedItem.reserved || 0) > 0 ? 'bg-[var(--blue)]' : 'bg-[var(--green)]'
                     }`} />
                   <span className="text-sm font-semibold text-[var(--text-primary)]">
                     {(selectedItem.stock || 0) === 0 ? 'Out of Stock' :
@@ -1132,7 +1132,7 @@ const ItemsPage = () => {
                       />
                       <button
                         onClick={() => handleEditCategory(cat)}
-                        className="p-0.5 text-emerald-500 hover:bg-emerald-500/10 rounded"
+                        className="p-0.5 text-[var(--green)] hover:bg-[var(--green)]/10 rounded"
                       >
                         <Check size={12} />
                       </button>

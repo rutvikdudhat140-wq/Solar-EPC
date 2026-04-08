@@ -6,8 +6,9 @@ import {
   CheckCircle, XCircle, AlertCircle, ChevronDown, MoreVertical,
   FileText, CheckSquare, XSquare, RefreshCw, Building2, Building,
   LayoutGrid, List, IndianRupee, LogIn, LogOut, Timer, ShieldCheck,
-  Settings, BadgeCheck, Mail, Phone, MapPin
+  Settings, BadgeCheck, Mail, Phone, MapPin, Layers, Flame, Target, Zap, BarChart3
 } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { PageHeader } from '../components/ui/PageHeader';
 import { KPICard } from '../components/ui/KPICard';
 import { Button } from '../components/ui/Button';
@@ -23,6 +24,7 @@ import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext'; // Fix component usage to match import name
 import HrmPermissionsPage from './HrmPermissionsPage';
 import AttendancePolicySettings from './AttendancePolicySettings';
+// import AdminReportDashboard from './AdminReportDashboard'; // TODO: Create this component
 import { toast } from '../components/ui/Toast';
 import { CURRENCY } from '../config/app.config';
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
@@ -96,7 +98,8 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
   const canViewDepartments = isAdmin || can('departments', 'view');
   const canManageDepartments = isAdmin || can('departments', 'edit') || can('departments', 'create');
 
-  const canViewHrDashboard = isAdmin || can('hrm', 'view');
+  // KPI cards visible to all users (both admin and employees)
+  const canViewHrDashboard = true; // All users can see dashboard KPIs
 
   // Get data scope for attendance - single source of truth
   const attendanceDataScope = getDataScope('attendance');
@@ -191,6 +194,11 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
     managerId: '',
   });
 
+  // ==================== DASHBOARD METRICS STATE ====================
+  const [dashboardMetrics, setDashboardMetrics] = useState(null);
+  const [alerts, setAlerts] = useState([]);
+  const [showCards, setShowCards] = useState(true);
+
   // Fetch HRM roles from backend (created in Permission Matrix)
   const { data: hrmRoles = [] } = useQuery({
     queryKey: ['hrm-roles'],
@@ -203,7 +211,38 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
   useEffect(() => {
     fetchEmployees();
     fetchProjectManagers();
+    fetchDashboardMetrics();
+    fetchAlerts();
   }, []);
+
+  // ==================== FETCH DASHBOARD METRICS ====================
+  const fetchDashboardMetrics = async () => {
+    try {
+      const response = await api.get('/hrm/dashboard-metrics');
+      console.log('[DEBUG] Dashboard metrics API response:', response.data);
+      const metrics = response.data?.data || response.data;
+      console.log('[DEBUG] Extracted metrics:', metrics);
+      setDashboardMetrics(metrics || null);
+    } catch (error) {
+      console.error('Failed to fetch dashboard metrics:', error);
+      setDashboardMetrics({
+        attendance: { percentage: 0, presentToday: 0, totalToday: 0 },
+        leaves: { pending: 0 },
+        payroll: { totalPayroll: 0, unpaidCount: 0 },
+        employees: { atRiskCount: 0 }
+      });
+    }
+  };
+
+  // ==================== FETCH ALERTS ====================
+  const fetchAlerts = async () => {
+    try {
+      const response = await api.get('/hrm/alerts');
+      setAlerts(response.data?.data || []);
+    } catch (error) {
+      console.error('Failed to fetch alerts:', error);
+    }
+  };
 
   useEffect(() => {
     if (isAttendanceOwnScope) {
@@ -247,10 +286,10 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
       const response = await employeeApi.getAll();
       // API returns {success: true, data: [...employees]}
       const employeesData = response.data?.data || response.data || [];
-      console.log('[DEBUG] Employee data from API:', employeesData.map(e => ({ 
-        id: e.employeeId, 
+      console.log('[DEBUG] Employee data from API:', employeesData.map(e => ({
+        id: e.employeeId,
         joiningDate: e.joiningDate,
-        roleId: e.roleId 
+        roleId: e.roleId
       })));
       setEmployees(employeesData);
     } catch (error) {
@@ -454,11 +493,40 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
       toast.error('Please select an employee');
       return;
     }
+
+    // Get precise location before check-in
+    let locationText = '';
+    try {
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        });
+      });
+
+      const { latitude, longitude } = position.coords;
+
+      // Try to get address from reverse geocoding
+      try {
+        const response = await attendanceApi.reverseGeocode(latitude, longitude);
+        locationText = response.data?.address || `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+      } catch (geoError) {
+        // Fallback to coordinates if reverse geocoding fails
+        locationText = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+      }
+    } catch (locationError) {
+      console.error('Location error:', locationError);
+      toast.error('Please enable location access for accurate check-in');
+      return;
+    }
+
     try {
       await attendanceApi.checkIn({
         employeeId: attendanceForm.employeeId,
         type: attendanceForm.type,
         notes: attendanceForm.notes,
+        location: locationText,
       });
       toast.success('Check-in successful');
       setShowAttendanceModal(false);
@@ -470,8 +538,34 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
   };
 
   const handleCheckOut = async (employeeId) => {
+    // Get precise location before check-out
+    let locationText = '';
     try {
-      await attendanceApi.checkOut({ employeeId });
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        });
+      });
+
+      const { latitude, longitude } = position.coords;
+
+      // Try to get address from reverse geocoding
+      try {
+        const response = await attendanceApi.reverseGeocode(latitude, longitude);
+        locationText = response.data?.data?.address || `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+      } catch (geoError) {
+        locationText = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+      }
+    } catch (locationError) {
+      console.error('Location error:', locationError);
+      toast.error('Please enable location access for accurate check-out');
+      return;
+    }
+
+    try {
+      await attendanceApi.checkOut({ employeeId, location: locationText });
       toast.success('Check-out successful');
       fetchAttendance();
     } catch (error) {
@@ -613,20 +707,127 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
     }
   };
 
-  // ==================== KPIs ====================
+  // ==================== DYNAMIC ROLE-BASED KPIs ====================
   const kpis = useMemo(() => {
-    const totalEmployees = employees.length;
-    const activeEmployees = employees.filter(e => e.status === 'active').length;
-    const pendingLeaves = leaves.filter(l => l.status === 'pending').length;
-    const totalPayroll = payrolls.reduce((sum, p) => sum + (p.netSalary || 0), 0);
+    // Fallback to static data if dashboardMetrics not loaded yet
+    if (!dashboardMetrics) {
+      const totalEmployees = employees.length;
+      const activeEmployees = employees.filter(e => e.status === 'active').length;
+      const pendingLeaves = leaves.filter(l => l.status === 'pending').length;
+      const totalPayroll = payrolls.reduce((sum, p) => sum + (p.netSalary || 0), 0);
 
+      return [
+        {
+          value: totalEmployees,
+          label: 'Total Employees',
+          trend: `${activeEmployees} active`,
+          emotion: '👥 Team',
+          color: 'blue',
+          icon: UserCircle,
+        },
+        {
+          value: `${activeEmployees > 0 ? Math.round((activeEmployees / totalEmployees) * 100) : 0}%`,
+          label: 'Active Rate',
+          trend: `${activeEmployees} of ${totalEmployees}`,
+          emotion: activeEmployees === totalEmployees ? '🔥 Full' : '📊',
+          color: activeEmployees === totalEmployees ? 'green' : 'yellow',
+          icon: CheckCircle,
+        },
+        {
+          value: pendingLeaves,
+          label: 'Pending Leaves',
+          trend: 'Awaiting approval',
+          emotion: pendingLeaves > 0 ? '⚠️ Action' : '✅ Clear',
+          color: pendingLeaves > 0 ? 'amber' : 'green',
+          icon: AlertCircle,
+        },
+        {
+          value: fmt(totalPayroll),
+          label: 'Monthly Payroll',
+          trend: `${payrolls.length} employees`,
+          emotion: '💰 Budget',
+          color: 'purple',
+          icon: Wallet,
+        },
+      ];
+    }
+
+    const { attendance, employees: empMetrics, leaves: leaveMetrics, payroll: payrollMetrics, role } = dashboardMetrics;
+
+    // Employee-specific cards
+    if (role === 'employee') {
+      return [
+        {
+          value: `${attendance?.percentage || 0}%`,
+          label: 'Your Attendance',
+          trend: `${attendance?.presentMonth || 0} days present`,
+          emotion: attendance?.percentage >= 90 ? '🔥 Excellent' : attendance?.percentage >= 75 ? '👍 Good' : '⚠️ Needs focus',
+          color: attendance?.percentage >= 90 ? 'green' : attendance?.percentage >= 75 ? 'yellow' : 'red',
+          icon: Calendar,
+        },
+        {
+          value: `${100 - (attendance?.lateMonth || 0) * 2}%`,
+          label: 'Punctuality',
+          trend: `${attendance?.lateMonth || 0} late arrivals`,
+          emotion: '⏰ On time',
+          color: 'blue',
+          icon: Clock,
+        },
+        {
+          value: leaves?.pending || 0,
+          label: 'Pending Leaves',
+          trend: 'Awaiting approval',
+          emotion: '📋 Review',
+          color: 'amber',
+          icon: AlertCircle,
+        },
+        {
+          value: payrollMetrics?.totalPayroll ? fmt(payrollMetrics.totalPayroll) : '—',
+          label: 'Your Salary',
+          trend: 'This month',
+          emotion: '💰',
+          color: 'purple',
+          icon: Wallet,
+        },
+      ];
+    }
+
+    // Admin cards (full system overview)
     return [
-      { label: 'Total Employees', value: totalEmployees, icon: UserCircle, variant: 'blue' },
-      { label: 'Active Employees', value: activeEmployees, icon: BadgeCheck, variant: 'emerald' },
-      { label: 'Pending Leaves', value: pendingLeaves, icon: AlertCircle, variant: 'amber' },
-      { label: 'Monthly Payroll', value: fmt(totalPayroll), icon: Wallet, variant: 'purple' },
+      {
+        value: empMetrics?.total || 0,
+        label: 'Total Employees',
+        trend: `${empMetrics?.active || 0} active`,
+        emotion: '👥 Team size',
+        color: 'blue',
+        icon: UserCircle,
+      },
+      {
+        value: `${attendance?.percentage || 0}%`,
+        label: 'Attendance Rate',
+        trend: `${attendance?.presentToday || 0} present today`,
+        emotion: attendance?.percentage >= 90 ? '🔥 Great' : '📊 Average',
+        color: attendance?.percentage >= 90 ? 'green' : 'yellow',
+        icon: Calendar,
+      },
+      {
+        value: leaveMetrics?.pending || 0,
+        label: 'Pending Leaves',
+        trend: 'Awaiting approval',
+        emotion: '⚠️ Action needed',
+        color: 'amber',
+        icon: AlertCircle,
+      },
+      {
+        value: payrollMetrics?.totalPayroll ? fmt(payrollMetrics.totalPayroll) : '—',
+        label: 'Monthly Payroll',
+        trend: `${payrollMetrics?.employeeCount || 0} employees`,
+        emotion: '💰 Budget',
+        color: 'purple',
+        icon: Wallet,
+      },
     ];
-  }, [employees, leaves, payrolls]);
+  }, [dashboardMetrics, employees, leaves, payrolls]);
 
   // ==================== FILTERED DATA ====================
   const filteredEmployees = useMemo(() => {
@@ -781,22 +982,22 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
         }
 
         // Convert customRoles to array if it's an object (dictionary)
-        const customRolesArray = Array.isArray(customRoles) 
-          ? customRoles 
+        const customRolesArray = Array.isArray(customRoles)
+          ? customRoles
           : Object.values(customRoles || {});
-        
+
         // Check custom roles first - try exact key match first for dictionary format
         let customRole = null;
         if (customRoles && !Array.isArray(customRoles)) {
           // Dictionary format: { roleId: { id, label, ... } }
           customRole = customRoles[val];
         }
-        
+
         if (!customRole) {
           // Try array search
           customRole = customRolesArray.find(r => r.id === val || r._id === val || r.roleId === val);
         }
-        
+
         if (customRole) {
           return (
             <span className="px-2 py-1 rounded-full text-xs font-medium bg-[var(--primary)]/10 text-[var(--primary)]">
@@ -977,66 +1178,7 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
       key: 'deductions',
       header: 'Deductions',
       render: (val) => <span className="text-sm text-red-500">-{fmt(val || 0)}</span>,
-    },
-    {
-      key: 'netSalary',
-      header: 'Net Salary',
-      render: (val) => <span className="font-semibold text-sm text-[var(--accent)]">{fmt(val)}</span>,
-    },
-    {
-      key: 'isPaid',
-      header: 'Status',
-      render: (val, row) =>
-        val ? (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-500">
-            Paid
-          </span>
-        ) : (
-          <button
-            onClick={() => handleMarkAsPaid(row._id)}
-            className="px-2 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"
-          >
-            Mark Paid
-          </button>
-        ),
-    },
-    {
-      key: 'actions',
-      header: 'Actions',
-      render: (_, row) => (
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => handleDeletePayroll(row._id)}
-            className="p-1.5 rounded hover:bg-red-500/10 text-[var(--text-muted)] hover:text-red-500"
-            title="Delete"
-          >
-            <Trash2 size={14} />
-          </button>
-        </div>
-      ),
-    },
-  ];
 
-  const incrementColumns = [
-    {
-      key: 'employeeId',
-      header: 'Employee',
-      render: (val) => (
-        <div>
-          <p className="font-medium text-sm">{val?.firstName} {val?.lastName}</p>
-          <p className="text-xs text-[var(--text-muted)]">{val?.employeeId}</p>
-        </div>
-      ),
-    },
-    {
-      key: 'previousSalary',
-      header: 'Previous',
-      render: (val) => <span className="text-sm">{fmt(val)}</span>,
-    },
-    {
-      key: 'newSalary',
-      header: 'New Salary',
-      render: (val) => <span className="font-semibold text-sm text-emerald-500">{fmt(val)}</span>,
     },
     {
       key: 'increment',
@@ -1117,6 +1259,43 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
     },
   ];
 
+  const incrementColumns = [
+    {
+      key: 'employeeId',
+      header: 'Employee',
+      render: (_, record) => (
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-[var(--primary)] text-white flex items-center justify-center text-xs font-bold">
+            {record.employeeId?.firstName?.[0]}{record.employeeId?.lastName?.[0]}
+          </div>
+          <span className="font-medium">
+            {record.employeeId?.firstName} {record.employeeId?.lastName}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: 'previousSalary',
+      header: 'Previous Salary',
+      render: (val) => <span>{fmt(val || 0)}</span>,
+    },
+    {
+      key: 'newSalary',
+      header: 'New Salary',
+      render: (val) => <span className="font-semibold text-emerald-600">{fmt(val || 0)}</span>,
+    },
+    {
+      key: 'incrementPercentage',
+      header: 'Increment %',
+      render: (val) => <span className="text-blue-600">+{val || 0}%</span>,
+    },
+    {
+      key: 'effectiveFrom',
+      header: 'Effective From',
+      render: (val) => val ? format(new Date(val), 'dd MMM yyyy') : '-',
+    },
+  ];
+
   return (
     <div className="animate-fade-in space-y-5">
       {/* ── Header ── */}
@@ -1175,22 +1354,197 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
       />
 
       {/* ── HRM Overview KPI Cards ── */}
-      {canViewHrDashboard && (
-        <div className="mb-2">
-          <p className="text-xs text-[var(--text-muted)] mb-2 flex items-center gap-2">
-            <UserCircle size={12} className="text-[var(--accent-light)]" />
-            <span>HRM Overview - Employee statistics and payroll summary</span>
-          </p>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {canViewHrDashboard && showCards && (
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs text-[var(--text-muted)] flex items-center gap-2">
+              <UserCircle size={12} className="text-[var(--accent-light)]" />
+              <span>{dashboardMetrics?.role === 'employee' ? 'Your Dashboard' : 'HRM Overview - Employee statistics and payroll summary'}</span>
+            </p>
+            <button
+              onClick={() => setShowCards(false)}
+              className="flex items-center gap-1.5 px-2 py-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded transition-colors"
+            >
+              <Layers size={14} />
+              Hide Cards
+            </button>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {kpis.map((kpi, index) => (
-              <KPICard
+              <div
                 key={index}
-                label={kpi.label}
-                value={kpi.value}
-                icon={kpi.icon}
-                variant={kpi.variant}
-              />
+                className={`relative overflow-hidden rounded-xl p-4 transition-all duration-300 hover:scale-[1.03] hover:shadow-xl hover:-translate-y-1 cursor-pointer group ${kpi.color === 'green' ? 'bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 hover:from-emerald-500/15 hover:to-emerald-600/10 hover:border-emerald-500/40' :
+                    kpi.color === 'red' ? 'bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-500/20 hover:from-red-500/15 hover:to-red-600/10 hover:border-red-500/40' :
+                      kpi.color === 'yellow' ? 'bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 hover:from-amber-500/15 hover:to-amber-600/10 hover:border-amber-500/40' :
+                        kpi.color === 'blue' ? 'bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 hover:from-blue-500/15 hover:to-blue-600/10 hover:border-blue-500/40' :
+                          kpi.color === 'purple' ? 'bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 hover:from-purple-500/15 hover:to-purple-600/10 hover:border-purple-500/40' :
+                            kpi.color === 'amber' ? 'bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 hover:from-amber-500/15 hover:to-amber-600/10 hover:border-amber-500/40' :
+                              'bg-[var(--bg-elevated)] border border-[var(--border)]'
+                  }`}
+              >
+                {/* Animated background glow effect */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 bg-gradient-to-br from-white to-transparent pointer-events-none"></div>
+
+                {/* Big Number */}
+                <div className="text-3xl font-bold text-[var(--text-primary)] mb-1 group-hover:text-[var(--primary)] transition-colors duration-300">
+                  {kpi.value}
+                </div>
+
+                {/* Label */}
+                <div className="text-sm font-medium text-[var(--text-secondary)] mb-2">
+                  {kpi.label}
+                </div>
+
+                {/* Trend - Micro text */}
+                {kpi.trend && (
+                  <div className="text-xs text-[var(--text-muted)] flex items-center gap-1 group-hover:text-[var(--text-secondary)] transition-colors duration-300">
+                    <TrendingUp size={10} />
+                    {kpi.trend}
+                  </div>
+                )}
+
+                {/* Emotion Badge */}
+                {kpi.emotion && (
+                  <div className="absolute top-3 right-3 text-xs group-hover:scale-110 transition-transform duration-300">
+                    {kpi.emotion}
+                  </div>
+                )}
+
+                {/* Icon */}
+                <div className="absolute bottom-3 right-3 opacity-10 group-hover:opacity-20 transition-opacity duration-300 group-hover:scale-110 group-hover:-rotate-6 transition-transform">
+                  {kpi.icon && <kpi.icon size={24} />}
+                </div>
+              </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Show Cards button when hidden */}
+      {canViewHrDashboard && !showCards && (
+        <div className="mb-4">
+          <button
+            onClick={() => setShowCards(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded transition-colors"
+          >
+            <Layers size={14} />
+            Show Cards
+          </button>
+        </div>
+      )}
+
+      {/* ── ALERT SYSTEM ── */}
+      {alerts.length > 0 && (
+        <div className="mb-4 space-y-2">
+          {alerts.map((alert, index) => (
+            <div
+              key={index}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${alert.type === 'critical' ? 'bg-red-500/10 border border-red-500/20 text-red-400' :
+                  alert.type === 'warning' ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400' :
+                    alert.type === 'positive' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' :
+                      'bg-blue-500/10 border border-blue-500/20 text-blue-400'
+                }`}
+            >
+              <span className="text-lg">{alert.emoji}</span>
+              <span>{alert.message}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── CHARTS SECTION ── */}
+      {dashboardMetrics && showCards && (
+        <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Attendance Trend Chart */}
+          <div className="bg-[var(--bg-elevated)] rounded-xl p-4 border border-[var(--border)]">
+            <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3 flex items-center gap-2">
+              <TrendingUp size={16} className="text-[var(--primary)]" />
+              Attendance Trend (Last 7 Days)
+            </h3>
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={dashboardMetrics?.attendance?.weeklyTrend || []}>
+                  <defs>
+                    <linearGradient id="colorPercentage" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="day" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
+                  <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'var(--bg-elevated)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      fontSize: '12px'
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="percentage"
+                    stroke="#3b82f6"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorPercentage)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Present vs Absent Chart */}
+          <div className="bg-[var(--bg-elevated)] rounded-xl p-4 border border-[var(--border)]">
+            <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3 flex items-center gap-2">
+              <Calendar size={16} className="text-[var(--primary)]" />
+              Today's Attendance
+            </h3>
+            <div className="h-48 flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={[
+                      { name: 'Present', value: dashboardMetrics?.attendance?.presentToday || 0, color: '#22c55e' },
+                      { name: 'Absent', value: dashboardMetrics?.attendance?.absentToday || 0, color: '#ef4444' },
+                      { name: 'Late', value: dashboardMetrics?.attendance?.lateToday || 0, color: '#f59e0b' },
+                    ]}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={70}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    <Cell fill="#22c55e" />
+                    <Cell fill="#ef4444" />
+                    <Cell fill="#f59e0b" />
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'var(--bg-elevated)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '8px',
+                      fontSize: '12px'
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex justify-center gap-4 mt-2">
+              <div className="flex items-center gap-1.5 text-xs">
+                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                <span className="text-[var(--text-muted)]">Present ({dashboardMetrics?.attendance?.presentToday || 0})</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs">
+                <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                <span className="text-[var(--text-muted)]">Absent ({dashboardMetrics?.attendance?.absentToday || 0})</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs">
+                <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                <span className="text-[var(--text-muted)]">Late ({dashboardMetrics?.attendance?.lateToday || 0})</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -1286,32 +1640,29 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
               </button>
             )}
 
-            {/* Attendance Policy Link for Admins */}
-            {(user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin') && (
+            {/* Reports Dashboard Link for Admins */}
+            {(isAdmin || true) && (
               <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log('[DEBUG] Attendance Policy clicked');
-                  if (onNavigate && typeof onNavigate === 'function') {
-                    onNavigate('hrm-attendance-policy');
-                    console.log('[DEBUG] onNavigate called with hrm-attendance-policy');
-                  } else {
-                    console.log('[DEBUG] Calling setActiveTab with attendance-policy');
-                    setActiveTab('attendance-policy');
-                    console.log('[DEBUG] setActiveTab called, activeTab will update async');
-                  }
-                }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${activeTab === 'attendance-policy' || activeTab === 'hrm-attendance-policy'
+                onClick={() => setActiveTab('reports')}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'reports'
                   ? 'bg-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/20'
                   : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]'
                   }`}
               >
-                <Clock size={18} />
-                Attendance Policy
+                <BarChart3 size={18} />
+                Reports
               </button>
             )}
+            <button
+              onClick={() => (onNavigate ? onNavigate('hrm-attendance-policy') : setActiveTab('attendance-policy'))}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${activeTab === 'attendance-policy' || activeTab === 'hrm-attendance-policy'
+                ? 'bg-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/20'
+                : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]'
+                }`}
+            >
+              <Clock size={18} />
+              Attendance Policy
+            </button>
           </div>
         </div>
 
@@ -1607,6 +1958,18 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
                         render: (val) => <span className="font-medium">{val || 0} hrs</span>,
                       },
                       {
+                        key: 'checkInLocation',
+                        header: 'Location',
+                        render: (_, row) => (
+                          <div className="flex items-center gap-1">
+                            <MapPin size={12} className="text-[var(--text-muted)]" />
+                            <span className="text-xs text-[var(--text-secondary)] truncate max-w-[150px]" title={row.checkInLocation}>
+                              {row.checkInLocation || '-'}
+                            </span>
+                          </div>
+                        ),
+                      },
+                      {
                         key: 'type',
                         header: 'Type',
                         render: (val) => (
@@ -1731,6 +2094,16 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
                 data={filteredDepartments}
                 emptyText="No departments found."
               />
+            </div>
+          )}
+
+          {/* ── Reports Tab ── */}
+          {activeTab === 'reports' && (
+            <div className="space-y-4 animate-fade-in">
+              {/* <AdminReportDashboard onNavigate={setActiveTab} /> */}
+              <div className="p-8 text-center text-[var(--text-muted)]">
+                Reports dashboard coming soon...
+              </div>
             </div>
           )}
         </div>
@@ -1901,6 +2274,22 @@ const HRMPage = ({ activeTab: initialTab = 'employees', onNavigate }) => {
         >
           <div className="space-y-6">
             {/* Profile Card Header */}
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowViewEmployeeModal(false);
+                  if (onNavigate && typeof onNavigate === 'function') {
+                    onNavigate(`hrm-reports-employee-${selectedEmployee._id}`);
+                  } else {
+                    window.location.href = `/pages/reports/employee/${selectedEmployee._id}`;
+                  }
+                }}
+              >
+                <FileText size={13} /> View Full Report
+              </Button>
+            </div>
+
             <div className="relative bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] rounded-2xl p-6 text-white overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>

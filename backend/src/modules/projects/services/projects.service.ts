@@ -42,16 +42,42 @@ export class ProjectsService {
     const tenantId = await this.resolveTenantObjectId(tenantCode);
     const query: any = { tenantId, isDeleted: false };
     
+    console.log('[PROJECTS VISIBILITY] ===== FIND ALL CALLED =====');
+    console.log('[PROJECTS VISIBILITY] user:', JSON.stringify(user));
+    console.log('[PROJECTS VISIBILITY] user?.dataScope:', user?.dataScope);
+    
     // Apply visibility filter based on user's dataScope
     if (user?.dataScope === 'ASSIGNED') {
       const userId = user._id || user.id;
+      // Build user identifiers from email, firstName, lastName
+      const userEmail = (user as any).email || '';
+      const userNameFromEmail = userEmail.split('@')[0];
+      const firstName = (user as any).firstName || '';
+      const lastName = (user as any).lastName || '';
+      const fullName = `${firstName} ${lastName}`.trim().toLowerCase();
+      const firstNameLower = firstName.toLowerCase();
+      console.log('[PROJECTS VISIBILITY] userId:', userId, 'emailPrefix:', userNameFromEmail, 'fullName:', fullName);
       if (userId) {
         const objectId = typeof userId === 'string' && Types.ObjectId.isValid(userId)
           ? new Types.ObjectId(userId)
           : userId;
-        query.assignedTo = objectId;
+        const pmOrConditions: any[] = [];
+        if (userNameFromEmail) pmOrConditions.push({ pm: { $regex: userNameFromEmail, $options: 'i' } });
+        if (firstNameLower) pmOrConditions.push({ pm: { $regex: firstNameLower, $options: 'i' } });
+        if (fullName) pmOrConditions.push({ pm: { $regex: fullName, $options: 'i' } });
+        // Filter by assignedTo OR pm field matching email prefix, firstName, or full name
+        query.$or = [
+          { assignedTo: objectId },
+          ...pmOrConditions,
+        ];
+        console.log('[PROJECTS VISIBILITY] Applied $or filter with name matching');
       }
+    } else {
+      console.log('[PROJECTS VISIBILITY] No filter applied - ALL scope or no user');
     }
+    
+    console.log('[PROJECTS VISIBILITY] Final query (stringified):', JSON.stringify(query));
+    console.log('[PROJECTS VISIBILITY] Query assignedTo type:', typeof query.assignedTo, 'instance:', query.assignedTo instanceof Types.ObjectId);
     
     if (status && status !== 'All') {
       query.status = status;
@@ -62,6 +88,7 @@ export class ProjectsService {
     }
 
     const result = await this.projectModel.find(query).sort({ createdAt: -1 }).exec();
+    console.log('[PROJECTS VISIBILITY] Query returned', result.length, 'records');
     return result;
   }
 
@@ -575,11 +602,13 @@ export class ProjectsService {
   async getStats(tenantCode: string, user?: UserWithVisibility) {
     const tenantId = await this.resolveTenantObjectId(tenantCode);
     
+    const allowedStatuses = ['Logistics', 'Installation', 'Commissioned', 'On Hold', 'Cancelled'];
+    
     // Build match conditions for aggregation
     const matchConditions: any = {
       tenantId,
       isDeleted: false,
-      status: { $ne: 'Cancelled' }, // Exclude cancelled projects from stats
+      status: { $in: allowedStatuses }, // Only include the 5 allowed statuses
     };
     
     // Apply visibility filter based on user's dataScope
@@ -626,12 +655,14 @@ export class ProjectsService {
 
   async getProjectsByStage(tenantCode: string) {
     const tenantId = await this.resolveTenantObjectId(tenantCode);
+    const allowedStatuses = ['Logistics', 'Installation', 'Commissioned', 'On Hold', 'Cancelled'];
+    
     return this.projectModel.aggregate([
       {
         $match: {
           tenantId,
           isDeleted: false,
-          // Include ALL statuses including Cancelled for the graph
+          status: { $in: allowedStatuses }, // Only include the 5 allowed statuses
         },
       },
       {
@@ -716,6 +747,9 @@ export class ProjectsService {
       estEndDate: '',
       progress: 0,
       value: quotation.total,
+      paymentTerms: String((quotation as any).paymentTerms || ''),
+      visitsPerMonth: String((quotation as any).visitInMonth || ''),
+      totalVisits: String((quotation as any).totalVisit || ''),
       items: quotation.items.map((item, index) => ({
         itemId: `ITEM-${Date.now()}-${index}`,
         category: this.extractCategoryFromItem(item),

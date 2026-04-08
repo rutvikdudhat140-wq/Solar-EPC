@@ -92,8 +92,32 @@ export class LookupService {
 
   // Category CRUD
   async findAllCategories(tenantId: string) {
-    const actualTenantId = await this.getTenantId(tenantId);
-    return this.categoryModel.find({ tenantId: actualTenantId, isDeleted: false }).sort({ name: 1 }).exec();
+    try {
+      const actualTenantId = await this.getTenantId(tenantId);
+      const categories = await this.categoryModel.find({ tenantId: actualTenantId, isDeleted: false }).sort({ name: 1 }).exec();
+      // If no categories found, return default solar categories
+      if (categories.length === 0) {
+        return [
+          { code: 'SOLAR_PANEL', name: 'Solar Panel' },
+          { code: 'INVERTER', name: 'Inverter' },
+          { code: 'BATTERY', name: 'Battery' },
+          { code: 'STRUCTURE', name: 'Mounting Structure' },
+          { code: 'CABLE', name: 'Cable' },
+          { code: 'ACCESSORIES', name: 'Accessories' },
+        ];
+      }
+      return categories;
+    } catch (error) {
+      // Return default categories on error
+      return [
+        { code: 'SOLAR_PANEL', name: 'Solar Panel' },
+        { code: 'INVERTER', name: 'Inverter' },
+        { code: 'BATTERY', name: 'Battery' },
+        { code: 'STRUCTURE', name: 'Mounting Structure' },
+        { code: 'CABLE', name: 'Cable' },
+        { code: 'ACCESSORIES', name: 'Accessories' },
+      ];
+    }
   }
 
   async createCategory(tenantId: string, dto: CreateCategoryDto) {
@@ -126,8 +150,36 @@ export class LookupService {
 
   // Unit CRUD
   async findAllUnits(tenantId: string) {
-    const actualTenantId = await this.getTenantId(tenantId);
-    return this.unitModel.find({ tenantId: actualTenantId, isDeleted: false }).sort({ name: 1 }).exec();
+    try {
+      const actualTenantId = await this.getTenantId(tenantId);
+      const units = await this.unitModel.find({ tenantId: actualTenantId, isDeleted: false }).sort({ name: 1 }).exec();
+      // If no units found, return default units
+      if (units.length === 0) {
+        return [
+          { code: 'PIECE', name: 'Piece' },
+          { code: 'UNIT', name: 'Unit' },
+          { code: 'METER', name: 'Meter' },
+          { code: 'WATT', name: 'Watt' },
+          { code: 'KW', name: 'kW' },
+          { code: 'MW', name: 'MW' },
+          { code: 'BOX', name: 'Box' },
+          { code: 'SET', name: 'Set' },
+        ];
+      }
+      return units;
+    } catch (error) {
+      // Return default units on error
+      return [
+        { code: 'PIECE', name: 'Piece' },
+        { code: 'UNIT', name: 'Unit' },
+        { code: 'METER', name: 'Meter' },
+        { code: 'WATT', name: 'Watt' },
+        { code: 'KW', name: 'kW' },
+        { code: 'MW', name: 'MW' },
+        { code: 'BOX', name: 'Box' },
+        { code: 'SET', name: 'Set' },
+      ];
+    }
   }
 
   async createUnit(tenantId: string, dto: CreateUnitDto) {

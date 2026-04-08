@@ -39,17 +39,49 @@ export class DocumentService {
   // ============================================
   // CRUD Operations
   // ============================================
+  private calculateTotals(data: any): any {
+    const items = data.items || [];
+    const equipmentCost = items.reduce((sum: number, item: any) => sum + (item.total || 0), 0);
+    const installationCost = data.installationCost || 0;
+    const engineeringCost = data.engineeringCost || 0;
+    const transportationCost = data.transportationCost || 0;
+    const miscellaneousCost = data.miscellaneousCost || 0;
+    
+    const subtotal = equipmentCost + installationCost + engineeringCost + transportationCost + miscellaneousCost;
+    const taxRate = data.gstRate || data.taxRate || 18;
+    const taxAmount = data.gstAmount || data.taxAmount || Math.round((subtotal * taxRate) / 100);
+    const total = subtotal + taxAmount;
+
+    return {
+      equipmentCost,
+      subtotal,
+      taxRate,
+      taxAmount,
+      total,
+    };
+  }
+
   async create(createDto: CreateDocumentDto, tenantId?: string): Promise<DocumentEntity> {
     const tid = this.toObjectId(tenantId);
 
-    const documentData = {
+    // Calculate totals if not provided
+    const calculatedTotals = this.calculateTotals(createDto);
+    
+    // Map gstRate/gstAmount to taxRate/taxAmount for compatibility
+    const mappedData = {
       ...createDto,
       documentId: createDto.documentId || this.generateDocumentId(createDto.type),
       tenantId: tid,
       createdBy: 'system',
+      // Map gst fields to tax fields
+      taxRate: createDto.gstRate || createDto.taxRate || calculatedTotals.taxRate,
+      taxAmount: createDto.gstAmount || createDto.taxAmount || calculatedTotals.taxAmount,
+      subtotal: createDto.subtotal || calculatedTotals.subtotal,
+      total: createDto.total || calculatedTotals.total,
+      equipmentCost: createDto.equipmentCost || calculatedTotals.equipmentCost,
     };
 
-    const created = new this.documentModel(documentData);
+    const created = new this.documentModel(mappedData);
     return created.save();
   }
 
@@ -136,6 +168,44 @@ export class DocumentService {
   async update(id: string, updateDto: UpdateDocumentDto, tenantId?: string): Promise<DocumentEntity> {
     const tid = this.toObjectId(tenantId);
 
+    // Calculate totals if items or costs are being updated
+    let calculatedTotals: any = {};
+    if (updateDto.items || updateDto.installationCost !== undefined || 
+        updateDto.engineeringCost !== undefined || updateDto.transportationCost !== undefined ||
+        updateDto.miscellaneousCost !== undefined || updateDto.gstRate !== undefined ||
+        updateDto.taxRate !== undefined) {
+      
+      // Get current doc to merge with updateDto for calculation
+      const currentDoc = await this.documentModel.findOne({
+        $or: [{ _id: this.toObjectId(id) }, { documentId: id }],
+        ...(tid && { tenantId: tid }),
+        isDeleted: false,
+      }).lean().exec();
+      
+      if (currentDoc) {
+        const mergedData = {
+          ...currentDoc,
+          ...updateDto,
+          items: updateDto.items || currentDoc.items,
+        };
+        calculatedTotals = this.calculateTotals(mergedData);
+      }
+    }
+
+    // Map gst fields to tax fields
+    const mappedUpdateDto = {
+      ...updateDto,
+      ...(updateDto.gstRate !== undefined && { taxRate: updateDto.gstRate }),
+      ...(updateDto.gstAmount !== undefined && { taxAmount: updateDto.gstAmount }),
+      ...(Object.keys(calculatedTotals).length > 0 && {
+        taxRate: calculatedTotals.taxRate,
+        taxAmount: calculatedTotals.taxAmount,
+        subtotal: calculatedTotals.subtotal,
+        total: calculatedTotals.total,
+        equipmentCost: calculatedTotals.equipmentCost,
+      }),
+    };
+
     const doc = await this.documentModel
       .findOneAndUpdate(
         {
@@ -143,7 +213,7 @@ export class DocumentService {
           ...(tid && { tenantId: tid }),
           isDeleted: false,
         },
-        { $set: updateDto },
+        { $set: mappedUpdateDto },
         { new: true },
       )
       .lean()

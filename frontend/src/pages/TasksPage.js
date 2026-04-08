@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Plus, Search, RefreshCw, CheckCircle, XCircle, Clock, Calendar,
   MoreVertical, Edit, Trash2, User, Check, X, Filter,
@@ -37,9 +37,9 @@ const STATUS_CONFIG = {
   completed: {
     label: 'Completed',
     color: '#22c55e',
-    bgColor: 'bg-emerald-500/10',
-    textColor: 'text-emerald-500',
-    borderColor: 'border-emerald-500/20',
+    bgColor: 'bg-[var(--green)]/10',
+    textColor: 'text-[var(--green)]',
+    borderColor: 'border-[var(--green)]/20',
     icon: CheckSquare,
   },
 };

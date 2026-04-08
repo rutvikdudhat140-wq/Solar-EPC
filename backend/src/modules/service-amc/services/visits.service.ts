@@ -15,9 +15,7 @@ import { Visit, VisitDocument } from '../schemas/visit.schema';
 
 
 import { CreateVisitDto, UpdateVisitDto, QueryVisitDto } from '../dto/visit.dto';
-
-
-
+import { UserWithVisibility } from '../../../common/utils/visibility-filter';
 import { EmailService } from '../../email/email.service';
 
 
@@ -494,14 +492,8 @@ Solar EPC Team
 
 
 
-  async findAll(query: QueryVisitDto, tenantId?: string): Promise<{ data: Visit[]; total: number }> {
-
-
-
+  async findAll(query: QueryVisitDto, tenantId?: string, user?: UserWithVisibility): Promise<{ data: Visit[]; total: number }> {
     const { page = 1, limit = 25, contract_id, status, engineer_id, search } = query;
-
-
-
     const filter: any = { isDeleted: { $ne: true } };
 
 
@@ -533,6 +525,35 @@ Solar EPC Team
     }
 
 
+
+    // Apply visibility filter based on user's dataScope
+    if (user?.dataScope === 'ASSIGNED') {
+      const userId = user._id || user.id;
+      const userEmail = (user as any).email || '';
+      const firstName = (user as any).firstName || '';
+      const lastName = (user as any).lastName || '';
+      const fullName = `${firstName} ${lastName}`.trim();
+
+      const visibilityOr: any[] = [];
+
+      // Match by engineerId (employee ID or auth User ID)
+      if (userId) {
+        visibilityOr.push({ engineerId: String(userId) });
+      }
+
+      // Match by engineerName (name matching)
+      if (fullName) {
+        visibilityOr.push({ engineerName: { $regex: fullName, $options: 'i' } });
+      }
+      if (firstName && firstName !== fullName) {
+        visibilityOr.push({ engineerName: { $regex: firstName, $options: 'i' } });
+      }
+
+      if (visibilityOr.length > 0) {
+        filter.$and = [...(filter.$and || []), { $or: visibilityOr }];
+        console.log(`[VISITS VISIBILITY] Applied ASSIGNED visibility for user: ${fullName || userId}`);
+      }
+    }
 
     if (contract_id) filter.contractId = contract_id;
 
@@ -810,10 +831,8 @@ Solar EPC Team
 
 
 
-  async getStats(tenantId?: string): Promise<any> {
-
+  async getStats(tenantId?: string, user?: UserWithVisibility): Promise<any> {
     console.log('DEBUG - Visits getStats called, tenantId:', tenantId);
-
     const filter: any = { isDeleted: { $ne: true } };
 
 
@@ -833,6 +852,31 @@ Solar EPC Team
     }
 
 
+
+    // Apply visibility filter based on user's dataScope
+    if (user?.dataScope === 'ASSIGNED') {
+      const userId = user._id || user.id;
+      const firstName = (user as any).firstName || '';
+      const lastName = (user as any).lastName || '';
+      const fullName = `${firstName} ${lastName}`.trim();
+
+      const visibilityOr: any[] = [];
+
+      if (userId) {
+        visibilityOr.push({ engineerId: String(userId) });
+      }
+      if (fullName) {
+        visibilityOr.push({ engineerName: { $regex: fullName, $options: 'i' } });
+      }
+      if (firstName && firstName !== fullName) {
+        visibilityOr.push({ engineerName: { $regex: firstName, $options: 'i' } });
+      }
+
+      if (visibilityOr.length > 0) {
+        filter.$and = [...(filter.$and || []), { $or: visibilityOr }];
+        console.log(`[VISITS STATS VISIBILITY] Applied ASSIGNED visibility for user: ${fullName || userId}`);
+      }
+    }
 
     const [totalVisits, scheduled, completed, cancelled] = await Promise.all([
 

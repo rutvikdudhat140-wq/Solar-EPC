@@ -58,7 +58,7 @@ const InstallBadge = ({ value }) => {
     'Pending Assign': 'bg-indigo-100 text-indigo-600',
     'In Progress': 'bg-amber-100 text-amber-600',
     'Delayed': 'bg-red-100 text-red-600',
-    'Completed': 'bg-emerald-100 text-emerald-600',
+    'Completed': 'bg-[var(--green)]/10 text-[var(--green)]',
   };
   return <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${map[value]||''}`}>{value}</span>;
 };
@@ -782,8 +782,8 @@ const InstallationDashboard = ({ logs }) => {
         {/* 7-Day Trend - Area Chart with Gradient */}
         <div className="glass-card p-6 rounded-2xl border border-[var(--border-base)] animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-              <TrendingUp size={20} className="text-emerald-600" />
+            <div className="w-10 h-10 rounded-xl bg-[var(--green)]/20 flex items-center justify-center">
+              <TrendingUp size={20} className="text-[var(--green)]" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-[var(--text-primary)]">Weekly Trend</h3>
@@ -910,7 +910,7 @@ const InstallationDashboard = ({ logs }) => {
                   <p className="text-[10px] text-[var(--text-muted)] mt-1">Active Techs</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-emerald-600">{stats.technicianStats.filter(t => t.completionRate === 100).length}</p>
+                  <p className="text-2xl font-bold text-[var(--green)]">{stats.technicianStats.filter(t => t.completionRate === 100).length}</p>
                   <p className="text-[10px] text-[var(--text-muted)] mt-1">100% Complete</p>
                 </div>
               </div>
@@ -1908,14 +1908,14 @@ const InstallationPage = () => {
                           }}
                           className={`w-5 h-5 rounded border-2 flex items-center justify-center relative transition-all duration-200 ${
                             t.done 
-                              ? 'bg-emerald-500 border-emerald-500' 
-                              : 'border-[var(--border-base)] bg-white hover:border-[var(--primary)]'
+                              ? 'bg-[var(--green)] border-[var(--green)]' 
+                              : 'border-[var(--border-base)] bg-[var(--bg-surface)] hover:border-[var(--primary)]'
                           }`}
                         >
                           {t.done && <CheckCircle size={14} className="text-white" />}
                         </button>
                       ) : (
-                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${t.done?'bg-emerald-500 border-emerald-500':'border-[var(--border-base)] bg-white'}`}>
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${t.done?'bg-[var(--green)] border-[var(--green)]':'border-[var(--border-base)] bg-[var(--bg-surface)]'}`}>
                           {t.done && <CheckCircle size={14} className="text-white" />}
                         </div>
                       )}
@@ -1937,10 +1937,10 @@ const InstallationPage = () => {
                         disabled={!canUpdateTask}
                         className={`p-1.5 rounded transition-colors ${
                           getTaskPhotoCount(t.name) > 0 
-                            ? 'text-emerald-500 hover:bg-emerald-500/10' 
+                            ? 'text-[var(--green)] hover:bg-[var(--green)]/10' 
                             : canUpdateTask 
                               ? 'text-amber-500 hover:bg-amber-500/10' 
-                              : 'text-gray-400 cursor-not-allowed'
+                              : 'text-[var(--text-muted)] cursor-not-allowed'
                         }`}
                         title={getTaskPhotoCount(t.name) > 0 
                           ? `${getTaskPhotoCount(t.name)} photo(s) uploaded` 
@@ -1955,7 +1955,7 @@ const InstallationPage = () => {
                         <Camera size={16} />
                       </button>
                       <label className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
-                        <div className={`w-3 h-3 rounded border ${t.photoRequired?'bg-emerald-500 border-emerald-500':'border-[var(--border-base)]'}`} />
+                        <div className={`w-3 h-3 rounded border ${t.photoRequired?'bg-[var(--green)] border-[var(--green)]':'border-[var(--border-base)]'}`} />
                         Photo
                       </label>
                     </div>
@@ -1994,8 +1994,8 @@ const InstallationPage = () => {
                       disabled={!allTasksDone || isCompleted || !canComplete}
                       className={`w-full mt-3 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
                         allTasksDone && !isCompleted && canComplete
-                          ? 'bg-emerald-500 hover:bg-emerald-600 text-white cursor-pointer'
-                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          ? 'bg-[var(--green)] hover:bg-[var(--green)] text-white cursor-pointer'
+                          : 'bg-[var(--bg-hover)] text-[var(--text-muted)] cursor-not-allowed'
                       }`}
                     >
                       {isCompleted && allTasksDone 
@@ -2055,7 +2055,7 @@ const InstallationPage = () => {
                         <div className="text-[10px] text-white truncate">
                           {photo.taskName || 'General'}
                         </div>
-                        <div className="text-[9px] text-gray-300">
+                        <div className="text-[9px] text-[var(--text-muted)]">
                           {photo.uploadedAt ? new Date(photo.uploadedAt).toLocaleDateString() : ''}
                         </div>
                       </div>
@@ -2251,7 +2251,7 @@ const InstallationPage = () => {
                           }
                           setEditForm(p=>({...p, tasks: newTasks}));
                         }}
-                        className={`w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer ${t.done?'bg-emerald-500 border-emerald-500':'border-[var(--border-base)]'}`}
+                        className={`w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer ${t.done?'bg-[var(--green)] border-[var(--green)]':'border-[var(--border-base)]'}`}
                       >
                         {t.done && <CheckCircle size={14} className="text-white" />}
                       </div>

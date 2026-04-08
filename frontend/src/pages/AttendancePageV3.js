@@ -17,7 +17,7 @@ import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfDay, e
 import { cn } from '../lib/utils';
 
 import { PageHeader } from '../components/ui/PageHeader';
-import { KPICard } from '../components/ui/KPICard';
+import KpiCards from '../components/hrm/KpiCards';
 import DataTable from '../components/ui/DataTable';
 import { Button } from '../components/ui/Button';
 import { Input, FormField, Select, Textarea } from '../components/ui/Input';
@@ -28,6 +28,7 @@ import { attendanceApi, employeeApi } from '../services/hrmApi';
 import { useAuth } from '../context/AuthContext';
 import { useDataScope } from '../hooks/useDataScope';
 import { usePermissions } from '../hooks/usePermissions';
+import { api } from '../lib/apiClient';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -120,15 +121,15 @@ const AttendanceViewModal = ({ record, onClose, onEdit }) => {
 
       {/* Time Cards */}
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-center">
-          <div className="flex items-center justify-center gap-1.5 mb-1"><LogIn size={14} className="text-emerald-500" /><span className="text-xs text-emerald-500 font-medium">Check-In</span></div>
-          <p className="text-2xl font-bold text-emerald-500">{record.checkIn ? format(new Date(record.checkIn), 'hh:mm') : '--:--'}</p>
-          <p className="text-[10px] text-emerald-500/70">{record.checkIn ? format(new Date(record.checkIn), 'a') : ''}</p>
+        <div className="p-4 rounded-xl border border-[var(--green)]/20 bg-[var(--green)]/5 text-center">
+          <div className="flex items-center justify-center gap-1.5 mb-1"><LogIn size={14} className="text-[var(--green)]" /><span className="text-xs text-[var(--green)] font-medium">Check-In</span></div>
+          <p className="text-2xl font-bold text-[var(--green)]">{record.checkIn ? format(new Date(record.checkIn), 'hh:mm') : '--:--'}</p>
+          <p className="text-[10px] text-[var(--green)]/70">{record.checkIn ? format(new Date(record.checkIn), 'a') : ''}</p>
         </div>
-        <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5 text-center">
-          <div className="flex items-center justify-center gap-1.5 mb-1"><LogOut size={14} className="text-blue-500" /><span className="text-xs text-blue-500 font-medium">Check-Out</span></div>
-          <p className="text-2xl font-bold text-blue-500">{record.checkOut ? format(new Date(record.checkOut), 'hh:mm') : '--:--'}</p>
-          <p className="text-[10px] text-blue-500/70">{record.checkOut ? format(new Date(record.checkOut), 'a') : 'Not checked out'}</p>
+        <div className="p-4 rounded-xl border border-[var(--primary)]/20 bg-[var(--primary)]/5 text-center">
+          <div className="flex items-center justify-center gap-1.5 mb-1"><LogOut size={14} className="text-[var(--primary)]" /><span className="text-xs text-[var(--primary)] font-medium">Check-Out</span></div>
+          <p className="text-2xl font-bold text-[var(--primary)]">{record.checkOut ? format(new Date(record.checkOut), 'hh:mm') : '--:--'}</p>
+          <p className="text-[10px] text-[var(--primary)]/70">{record.checkOut ? format(new Date(record.checkOut), 'a') : 'Not checked out'}</p>
         </div>
       </div>
 
@@ -225,6 +226,28 @@ const AttendancePageV3 = () => {
   // ==================== VIEW STATE ====================
   const [viewAttendance, setViewAttendance] = useState(null);
 
+  // ==================== DASHBOARD METRICS ====================
+  const [dashboardMetrics, setDashboardMetrics] = useState(null);
+  const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin' || user?.isSuperAdmin === true;
+
+  const fetchDashboardMetrics = async () => {
+    try {
+      const response = await api.get('/hrm/dashboard-metrics');
+      console.log('[DEBUG] Dashboard metrics API response:', response.data);
+      const metrics = response.data?.data || response.data;
+      console.log('[DEBUG] Extracted metrics:', metrics);
+      setDashboardMetrics(metrics || null);
+    } catch (error) {
+      console.error('Failed to fetch dashboard metrics:', error);
+      setDashboardMetrics({
+        attendance: { percentage: 0, presentToday: 0, totalToday: 0 },
+        leaves: { pending: 0 },
+        payroll: { totalPayroll: 0, unpaidCount: 0 },
+        employees: { atRiskCount: 0 }
+      });
+    }
+  };
+
   // ==================== GEOLOCATION (MANDATORY) ====================
   const [geoLoading, setGeoLoading] = useState(false);
   const [geoEnabled, setGeoEnabled] = useState(false);
@@ -299,6 +322,7 @@ const AttendancePageV3 = () => {
     fetchEmployees();
     fetchTodaySummary();
     fetchAttendance();
+    fetchDashboardMetrics();
   }, []);
 
   useEffect(() => {
@@ -826,7 +850,7 @@ const AttendancePageV3 = () => {
 
       <div className="flex items-center justify-between gap-2 p-3 rounded-xl border border-[var(--border-base)] bg-[var(--bg-elevated)]">
         <div className="flex items-center gap-2 min-w-0">
-          <MapPin size={14} className={geoEnabled ? 'text-emerald-500' : 'text-amber-500'} />
+          <MapPin size={14} className={geoEnabled ? 'text-[var(--green)]' : 'text-[var(--amber)]'} />
           <div className="min-w-0">
             <p className="text-xs font-semibold text-[var(--text-primary)]">Location</p>
             <p className="text-[11px] text-[var(--text-muted)] truncate">
@@ -852,17 +876,11 @@ const AttendancePageV3 = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-        {kpiData.map((kpi) => (
-          <KPICard
-            key={kpi.label}
-            label={kpi.label}
-            value={kpi.value}
-            icon={kpi.icon}
-            variant={kpi.variant}
-          />
-        ))}
-      </div>
+      {/* KPI Cards - Dynamic Role-Based */}
+      <KpiCards 
+        role={isAdmin ? 'admin' : 'employee'} 
+        metrics={dashboardMetrics} 
+      />
 
       <div className="p-3 rounded-xl border border-[var(--border-base)] bg-[var(--bg-surface)] space-y-3">
         <div className="grid grid-cols-1 lg:grid-cols-6 gap-2">

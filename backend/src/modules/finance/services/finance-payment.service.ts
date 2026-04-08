@@ -388,7 +388,7 @@ export class FinancePaymentService {
       if (remainingPayment <= 0) break;
 
       const poTotal = Number(po.totalAmount || 0);
-      const poPaid = Number(po.amountPaid || 0);
+      const poPaid = Number(po.paidAmount || 0);
       const poOutstanding = poTotal - poPaid;
 
       if (poOutstanding > 0) {
@@ -397,7 +397,7 @@ export class FinancePaymentService {
 
         await this.purchaseOrderModel.findOneAndUpdate(
           { _id: po._id },
-          { $set: { amountPaid: newPaid } }
+          { $set: { paidAmount: newPaid } }
         );
 
         remainingPayment -= paymentForThisPO;

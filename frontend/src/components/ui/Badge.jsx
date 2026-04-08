@@ -26,12 +26,12 @@ const BADGE_VARIANTS = {
   default: 'bg-[var(--bg-elevated)] text-[var(--text-muted)] border-[var(--border-muted)]',
   blue: 'text-[var(--primary-light)] border-[var(--border-active)]',
   primary: 'text-[var(--primary-light)] border-[var(--border-active)]',
-  green: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',
-  red: 'bg-red-500/15 text-red-400 border-red-500/25',
-  yellow: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
-  amber: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
-  cyan: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/25',
-  orange: 'bg-orange-500/15 text-orange-400 border-orange-500/25',
+  green: 'bg-[var(--green)]/15 text-[var(--green)] border-[var(--green)]/25',
+  red: 'bg-[var(--red)]/15 text-[var(--red)] border-[var(--red)]/25',
+  yellow: 'bg-[var(--amber)]/15 text-[var(--amber)] border-[var(--amber)]/25',
+  amber: 'bg-[var(--amber)]/15 text-[var(--amber)] border-[var(--amber)]/25',
+  cyan: 'bg-[var(--blue)]/15 text-[var(--blue)] border-[var(--blue)]/25',
+  orange: 'bg-[var(--primary)]/15 text-[var(--primary)] border-[var(--primary)]/25',
   purple: 'text-[var(--primary-light)] border-[var(--border-active)]',
 };
 

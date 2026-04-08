@@ -10,6 +10,7 @@ import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { Input, FormField, Textarea, Select } from '../components/ui/Input';
 import { toast } from '../components/ui/Toast';
+import { KPICard } from '../components/ui/KPICard';
 import { useAuditLog } from '../hooks/useAuditLog';
 import { usePermissions } from '../hooks/usePermissions';
 
@@ -157,7 +158,7 @@ const SurveyPage = () => {
     const styles = {
       pending: 'bg-amber-50 text-amber-700 border-amber-200',
       active: 'bg-blue-50 text-blue-700 border-blue-200',
-      completed: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      completed: 'bg-[var(--green)]/10 text-[var(--green)] border-[var(--green)]/20'
     };
     const labels = { pending: 'Pending', active: 'Active', completed: 'Completed' };
     return (
@@ -167,29 +168,35 @@ const SurveyPage = () => {
     );
   };
 
-  const SummaryCard = ({ title, value, icon: Icon, color }) => (
-    <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-500 mb-1">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-        </div>
-        <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}>
-          <Icon size={24} className="text-white" />
-        </div>
-      </div>
-    </div>
-  );
+  const SummaryCard = ({ title, value, icon: Icon, color }) => {
+    const colorMap = {
+      'bg-blue-500': { variant: 'blue', tag: 'Surveys' },
+      'bg-amber-500': { variant: 'amber', tag: 'Pending' },
+      'bg-[var(--green)]/100': { variant: 'emerald', tag: 'Active' },
+      'bg-purple-500': { variant: 'purple', tag: 'Completed' },
+    };
+    const config = colorMap[color] || { variant: 'blue', tag: 'Status' };
+    
+    return (
+      <KPICard
+        label={title}
+        value={value}
+        icon={Icon}
+        variant={config.variant}
+        tags={[config.tag]}
+      />
+    );
+  };
 
   const TabButton = ({ id, label, count }) => (
     <button
       onClick={() => setActiveTab(id)}
       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-        activeTab === id ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+        activeTab === id ? 'bg-[var(--primary)] text-white' : 'bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] border border-[var(--border-base)]'
       }`}
     >
       {label}
-      <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${activeTab === id ? 'bg-white/20' : 'bg-gray-100'}`}>
+      <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${activeTab === id ? 'bg-[var(--bg-surface)]/20' : 'bg-[var(--bg-elevated)]'}`}>
         {count}
       </span>
     </button>
@@ -197,42 +204,42 @@ const SurveyPage = () => {
 
   // ── Views ───────────────────────────────────────────────────
   const TableView = () => (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] overflow-hidden">
       <table className="w-full">
-        <thead className="bg-gray-50 border-b border-gray-200">
+        <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border-base)]">
           <tr>
-            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Client Name</th>
-            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Location</th>
-            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Capacity</th>
-            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Engineer</th>
-            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Survey ID</th>
-            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
-            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Actions</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase">Client Name</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase">Location</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase">Capacity</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase">Engineer</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase">Survey ID</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase">Date</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase">Status</th>
+            <th className="px-6 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
           {filteredSurveys.length === 0 ? (
-            <tr><td colSpan={8} className="px-6 py-12 text-center text-gray-500">No surveys found</td></tr>
+            <tr><td colSpan={8} className="px-6 py-12 text-center text-[var(--text-muted)]">No surveys found</td></tr>
           ) : filteredSurveys.map((survey) => (
-            <tr key={survey.id} className="hover:bg-gray-50">
+            <tr key={survey.id} className="hover:bg-[var(--bg-elevated)]">
               <td className="px-6 py-4">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center text-white font-semibold text-sm">
                     {survey.customerName?.charAt(0).toUpperCase()}
                   </div>
-                  <span className="font-medium text-gray-900">{survey.customerName}</span>
+                  <span className="font-medium text-[var(--text-primary)]">{survey.customerName}</span>
                 </div>
               </td>
-              <td className="px-6 py-4 text-gray-600"><MapPin size={14} className="inline mr-1"/>{survey.site}</td>
-              <td className="px-6 py-4 text-gray-600">{survey.estimatedKw ? `${survey.estimatedKw} kW` : 'To be determined'}</td>
-              <td className="px-6 py-4 text-gray-600">{survey.engineer}</td>
-              <td className="px-6 py-4 text-gray-500 text-sm">{survey.id}</td>
-              <td className="px-6 py-4 text-gray-600">{survey.scheduledDate ? format(new Date(survey.scheduledDate), 'dd MMM') : '-'}</td>
+              <td className="px-6 py-4 text-[var(--text-secondary)]"><MapPin size={14} className="inline mr-1"/>{survey.site}</td>
+              <td className="px-6 py-4 text-[var(--text-secondary)]">{survey.estimatedKw ? `${survey.estimatedKw} kW` : 'To be determined'}</td>
+              <td className="px-6 py-4 text-[var(--text-secondary)]">{survey.engineer}</td>
+              <td className="px-6 py-4 text-[var(--text-muted)] text-sm">{survey.id}</td>
+              <td className="px-6 py-4 text-[var(--text-secondary)]">{survey.scheduledDate ? format(new Date(survey.scheduledDate), 'dd MMM') : '-'}</td>
               <td className="px-6 py-4"><StatusBadge status={survey.status} /></td>
               <td className="px-6 py-4">
                 <div className="flex items-center gap-2">
-                  <button onClick={() => setSelectedSurvey(survey)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-600" title="View">
+                  <button onClick={() => setSelectedSurvey(survey)} className="p-2 rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)]" title="View">
                     <Eye size={16} />
                   </button>
                   {survey.status === 'pending' && (
@@ -255,27 +262,27 @@ const SurveyPage = () => {
   const ListView = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {filteredSurveys.map((survey) => (
-        <div key={survey.id} className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
+        <div key={survey.id} className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-5 hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center text-white font-semibold">
                 {survey.customerName?.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">{survey.customerName}</h3>
-                <p className="text-sm text-gray-500 flex items-center gap-1"><MapPin size={12} />{survey.site}</p>
+                <h3 className="font-semibold text-[var(--text-primary)]">{survey.customerName}</h3>
+                <p className="text-sm text-[var(--text-muted)] flex items-center gap-1"><MapPin size={12} />{survey.site}</p>
               </div>
             </div>
             <StatusBadge status={survey.status} />
           </div>
           <div className="space-y-2 mb-4 text-sm">
-            <div className="flex justify-between"><span className="text-gray-500">Capacity</span><span className="text-gray-700">{survey.estimatedKw ? `${survey.estimatedKw} kW` : 'To be determined'}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Engineer</span><span className="text-gray-700">{survey.engineer}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Survey ID</span><span className="text-gray-500 text-xs">{survey.id}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Date</span><span className="text-gray-700">{survey.scheduledDate ? format(new Date(survey.scheduledDate), 'dd MMM yyyy') : '-'}</span></div>
+            <div className="flex justify-between"><span className="text-[var(--text-muted)]">Capacity</span><span className="text-[var(--text-secondary)]">{survey.estimatedKw ? `${survey.estimatedKw} kW` : 'To be determined'}</span></div>
+            <div className="flex justify-between"><span className="text-[var(--text-muted)]">Engineer</span><span className="text-[var(--text-secondary)]">{survey.engineer}</span></div>
+            <div className="flex justify-between"><span className="text-[var(--text-muted)]">Survey ID</span><span className="text-[var(--text-muted)] text-xs">{survey.id}</span></div>
+            <div className="flex justify-between"><span className="text-[var(--text-muted)]">Date</span><span className="text-[var(--text-secondary)]">{survey.scheduledDate ? format(new Date(survey.scheduledDate), 'dd MMM yyyy') : '-'}</span></div>
           </div>
-          <div className="flex items-center gap-2 pt-4 border-t border-gray-100">
-            <button onClick={() => setSelectedSurvey(survey)} className="flex-1 px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium">
+          <div className="flex items-center gap-2 pt-4 border-t border-[var(--border-base)]">
+            <button onClick={() => setSelectedSurvey(survey)} className="flex-1 px-4 py-2 rounded-lg border border-[var(--border-base)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] text-sm font-medium">
               <Eye size={14} className="inline mr-1" />View
             </button>
             {survey.status === 'pending' && (
@@ -294,18 +301,18 @@ const SurveyPage = () => {
 
   // ── Render ───────────────────────────────────────────────────
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-[var(--bg-elevated)] min-h-screen">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Site Survey Management</h1>
-        <p className="text-gray-500 mt-1">Manage site surveys from lead to completion</p>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Site Survey Management</h1>
+        <p className="text-[var(--text-muted)] mt-1">Manage site surveys from lead to completion</p>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <SummaryCard title="Total Surveys" value={stats.total} icon={MapPin} color="bg-blue-500" />
         <SummaryCard title="Pending" value={stats.pending} icon={Clock} color="bg-amber-500" />
-        <SummaryCard title="Active" value={stats.active} icon={Zap} color="bg-emerald-500" />
+        <SummaryCard title="Active" value={stats.active} icon={Zap} color="bg-[var(--green)]/100" />
         <SummaryCard title="Completed" value={stats.completed} icon={CheckCircle} color="bg-purple-500" />
       </div>
 
@@ -319,14 +326,14 @@ const SurveyPage = () => {
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
             <Input placeholder="Search by client name..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 w-64" />
           </div>
-          <div className="flex items-center bg-white rounded-lg border border-gray-200 p-1">
-            <button onClick={() => setViewMode('table')} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'table' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'}`}>
+          <div className="flex items-center bg-[var(--bg-surface)] rounded-lg border border-[var(--border-base)] p-1">
+            <button onClick={() => setViewMode('table')} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'table' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'}`}>
               <List size={16} className="inline mr-1" />Table
             </button>
-            <button onClick={() => setViewMode('list')} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'list' ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50'}`}>
+            <button onClick={() => setViewMode('list')} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'list' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'}`}>
               <LayoutGrid size={16} className="inline mr-1" />List
             </button>
           </div>
@@ -335,7 +342,7 @@ const SurveyPage = () => {
       </div>
 
       {/* Content */}
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> : viewMode === 'table' ? <TableView /> : <ListView />}
+      {loading ? <div className="text-center py-12 text-[var(--text-muted)]">Loading...</div> : viewMode === 'table' ? <TableView /> : <ListView />}
 
       {/* Add Survey Modal */}
       <Modal open={showAddModal} onClose={() => setShowAddModal(false)} title="Schedule New Survey" footer={
@@ -382,15 +389,15 @@ const SurveyPage = () => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold">{selectedSurvey.customerName}</h3>
-                <p className="text-gray-500">{selectedSurvey.site}</p>
+                <p className="text-[var(--text-muted)]">{selectedSurvey.site}</p>
               </div>
               <StatusBadge status={selectedSurvey.status} />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-gray-50 rounded-lg"><span className="text-xs text-gray-500">Survey ID</span><p className="font-medium">{selectedSurvey.id}</p></div>
-              <div className="p-3 bg-gray-50 rounded-lg"><span className="text-xs text-gray-500">Engineer</span><p className="font-medium">{selectedSurvey.engineer}</p></div>
-              <div className="p-3 bg-gray-50 rounded-lg"><span className="text-xs text-gray-500">Capacity</span><p className="font-medium">{selectedSurvey.estimatedKw || 'TBD'} kW</p></div>
-              <div className="p-3 bg-gray-50 rounded-lg"><span className="text-xs text-gray-500">Date</span><p className="font-medium">{selectedSurvey.scheduledDate ? format(new Date(selectedSurvey.scheduledDate), 'dd MMM yyyy') : 'Not scheduled'}</p></div>
+              <div className="p-3 bg-[var(--bg-elevated)] rounded-lg"><span className="text-xs text-[var(--text-muted)]">Survey ID</span><p className="font-medium">{selectedSurvey.id}</p></div>
+              <div className="p-3 bg-[var(--bg-elevated)] rounded-lg"><span className="text-xs text-[var(--text-muted)]">Engineer</span><p className="font-medium">{selectedSurvey.engineer}</p></div>
+              <div className="p-3 bg-[var(--bg-elevated)] rounded-lg"><span className="text-xs text-[var(--text-muted)]">Capacity</span><p className="font-medium">{selectedSurvey.estimatedKw || 'TBD'} kW</p></div>
+              <div className="p-3 bg-[var(--bg-elevated)] rounded-lg"><span className="text-xs text-[var(--text-muted)]">Date</span><p className="font-medium">{selectedSurvey.scheduledDate ? format(new Date(selectedSurvey.scheduledDate), 'dd MMM yyyy') : 'Not scheduled'}</p></div>
             </div>
           </div>
         )}

@@ -229,7 +229,7 @@ const ProfilePage = () => {
                   src={profile.profileImage}
                   alt="Profile"
                   onError={handleImageError}
-                  className="w-32 h-32 rounded-full object-cover border-4 border-[var(--bg-elevated)] bg-gray-100"
+                  className="w-32 h-32 rounded-full object-cover border-4 border-[var(--bg-elevated)] bg-[var(--bg-elevated)]"
                   crossOrigin="anonymous"
                 />
               ) : (

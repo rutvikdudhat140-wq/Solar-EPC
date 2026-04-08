@@ -10,12 +10,26 @@ export class PdfService {
     try {
       const templatePath = path.join(process.cwd(), 'templates', 'quotation-template.html');
       const templateHtml = fs.readFileSync(templatePath, 'utf-8');
+      
+      // Register Handlebars helper for formatting numbers
+      handlebars.registerHelper('formatNumber', function(number) {
+        return Number(number || 0).toLocaleString('en-IN');
+      });
+      
       const template = handlebars.compile(templateHtml);
       const html = template(data);
 
       const browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--disable-remote-fonts',
+          '--disable-clipboard',
+          '--disable-floating-point-decimal',
+        ],
       });
       const page = await browser.newPage();
       await page.setContent(html, { waitUntil: 'networkidle0' });
@@ -32,9 +46,9 @@ export class PdfService {
 
       await browser.close();
       return Buffer.from(pdfBuffer);
-    } catch (error) {
+    } catch (error: any) {
       console.error('PDF Generation Error:', error);
-      throw new InternalServerErrorException('Failed to generate PDF');
+      throw new InternalServerErrorException('Failed to generate PDF: ' + (error?.message || error));
     }
   }
 }

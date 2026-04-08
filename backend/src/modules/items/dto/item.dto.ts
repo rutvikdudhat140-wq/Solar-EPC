@@ -64,7 +64,15 @@ export class CreateItemDto {
 
   @IsOptional()
   @IsString()
-  itemGroupName?: string;
+  poReference?: string;
+
+  @IsOptional()
+  @IsString()
+  receivedDate?: string;
+
+  @IsOptional()
+  @IsString()
+  remarks?: string;
 }
 
 export class UpdateItemDto extends PartialType(CreateItemDto) {}

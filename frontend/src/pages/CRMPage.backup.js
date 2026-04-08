@@ -326,7 +326,7 @@ const TableRow = ({ lead, onSelect, selected, onToggle }) => {
             title="View"><Eye size={12} /></button>
           <button
             onClick={e => e.stopPropagation()}
-            className="p-1.5 rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-faint)] hover:text-emerald-400 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-faint)] hover:text-[var(--green)] transition-colors"
             title="Call"><Phone size={12} /></button>
           <button
             onClick={e => e.stopPropagation()}
@@ -1192,7 +1192,7 @@ const LeadsDashboard = ({ leads, onSelectLead, onNavigate }) => {
                 style={{ background: `${kpi.color}18`, border: `1px solid ${kpi.color}30` }}>
                 <Icon size={16} style={{ color: kpi.color }} />
               </div>
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${kpi.positive ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${kpi.positive ? 'bg-[var(--green)]/15 text-[var(--green)]' : 'bg-red-500/15 text-red-400'}`}>
                 {kpi.delta}
               </span>
             </div>

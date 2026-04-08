@@ -45,6 +45,9 @@ export interface JwtPayload {
   isSuperAdmin?: boolean;
   department?: string;
   isEmployee?: boolean;
+  dataScope?: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 @Injectable()
@@ -64,6 +67,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
+    console.log('[JWT STRATEGY] ===== VALIDATE CALLED =====');
+    console.log('[JWT STRATEGY] payload:', JSON.stringify(payload));
+    
     const userId = (payload.sub || payload.id) as string | undefined;
     const tenantId = payload.tenantId as string | undefined;
 
@@ -77,6 +83,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const roleId = typeof roleIdRaw === 'string' ? roleIdRaw : (roleIdRaw?.roleId || roleIdRaw?._id || roleIdRaw);
 
     const customRoleId = payload.customRoleId;
+    const dataScope = payload.dataScope || 'ALL';
+
+    console.log('[JWT STRATEGY] Extracted userId:', userId);
+    console.log('[JWT STRATEGY] Extracted dataScope:', dataScope);
+    console.log('[JWT STRATEGY] Returning user object with dataScope:', dataScope);
 
     return {
       id: userId,
@@ -90,6 +101,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       isSuperAdmin: isSuperAdmin,
       department: payload.department,
       isEmployee: payload.isEmployee || false,
+      dataScope: dataScope,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
     };
   }
 }

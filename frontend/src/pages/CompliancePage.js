@@ -24,24 +24,24 @@ const NEUTRAL = 'bg-[var(--bg-elevated)] text-[var(--text-muted)] border-[var(--
 const NM_STATUS = {
     Draft: { label: 'Draft', color: NEUTRAL },
     Applied: { label: 'Applied', color: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
-    Approved: { label: 'Approved', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+    Approved: { label: 'Approved', color: 'bg-[var(--green)]/15 text-[var(--green)] border-[var(--green)]/30' },
     Rejected: { label: 'Rejected', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
-    Connected: { label: 'Connected', color: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30' },
+    Connected: { label: 'Connected', color: 'bg-[var(--blue)]/15 text-[var(--blue)] border-[var(--blue)]/30' },
 };
 const SUB_STATUS = {
     Applied: { label: 'Applied', color: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
     Sanctioned: { label: 'Sanctioned', color: 'bg-[var(--bg-hover)] text-[var(--primary-light)] border-[var(--border-active)]' },
-    Disbursed: { label: 'Disbursed', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+    Disbursed: { label: 'Disbursed', color: 'bg-[var(--green)]/15 text-[var(--green)] border-[var(--green)]/30' },
     Rejected: { label: 'Rejected', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
 };
 const INS_STATUS = {
     Pending: { label: 'Pending', color: NEUTRAL },
     Scheduled: { label: 'Scheduled', color: 'bg-[var(--bg-hover)] text-[var(--primary-light)] border-[var(--border-active)]' },
-    Passed: { label: 'Passed', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+    Passed: { label: 'Passed', color: 'bg-[var(--green)]/15 text-[var(--green)] border-[var(--green)]/30' },
     Failed: { label: 'Failed', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
 };
 const DOC_STATUS = {
-    Uploaded: { label: 'Uploaded', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+    Uploaded: { label: 'Uploaded', color: 'bg-[var(--green)]/15 text-[var(--green)] border-[var(--green)]/30' },
     Pending: { label: 'Pending', color: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
     Rejected: { label: 'Rejected', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
 };
@@ -96,7 +96,7 @@ const NM_COLUMNS = [
     { key: 'applicationNo', header: 'App No.', render: v => <span className="text-xs font-mono text-[var(--text-secondary)]">{v ?? '—'}</span> },
     { key: 'appliedDate', header: 'Applied', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? '—'}</span> },
     { key: 'approvalDate', header: 'Approved', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? '—'}</span> },
-    { key: 'compensationRate', header: 'Rate', render: v => <span className="text-xs text-emerald-400">{v}</span> },
+    { key: 'compensationRate', header: 'Rate', render: v => <span className="text-xs text-[var(--green)]">{v}</span> },
     { key: 'status', header: 'Status', render: v => <NMBadge value={v} /> },
 ];
 
@@ -181,7 +181,7 @@ const NMCard = ({ item, onDragStart, onClick }) => {
                 <p className="text-[9px] font-mono text-[var(--text-muted)] truncate">{item.applicationNo}</p>
             )}
             {item.bidirectionalMeter && (
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">Meter Installed ✓</span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--blue)]/10 border border-[var(--blue)]/20 text-[var(--blue)]">Meter Installed ✓</span>
             )}
         </div>
     );
@@ -205,7 +205,7 @@ const SubCard = ({ item, onDragStart, onClick }) => {
             <div className="grid grid-cols-2 gap-1 text-[10px]">
                 <div className="glass-card p-1.5">
                     <p className="text-[var(--text-muted)]">Claim</p>
-                    <p className="font-bold text-emerald-400">₹{item.claimAmount.toLocaleString('en-IN')}</p>
+                    <p className="font-bold text-[var(--green)]">₹{item.claimAmount.toLocaleString('en-IN')}</p>
                 </div>
                 <div className="glass-card p-1.5">
                     <p className="text-[var(--text-muted)]">Size</p>
@@ -642,8 +642,8 @@ const CompliancePage = () => {
                     icon={CheckCircle}
                     color="emerald"
                     style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)' }}
-                    iconBgColor="bg-emerald-100"
-                    iconColor="text-emerald-600"
+                    iconBgColor="bg-[var(--green)]/10"
+                    iconColor="text-[var(--green)]"
                 />
                 <KPICard
                     label={<span className="text-xs font-medium text-[var(--text-muted)]">Docs Pending</span>}
@@ -675,7 +675,7 @@ const CompliancePage = () => {
                 </div>
                 <Progress value={docProgress} className="h-2.5 mb-2" />
                 <div className="flex gap-4 text-xs text-[var(--text-muted)]">
-                    <span className="text-emerald-400 font-semibold">{uploadedDocs} Uploaded</span>
+                    <span className="text-[var(--green)] font-semibold">{uploadedDocs} Uploaded</span>
                     <span className="text-amber-400 font-semibold">{pendingDocs} Pending</span>
                     <span>{documents.length} Total Required</span>
                 </div>

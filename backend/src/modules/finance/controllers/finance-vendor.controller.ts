@@ -13,6 +13,14 @@ export class FinanceVendorController {
   @Get()
   async getAllVendors(@Req() req: Request) {
     const tenantId = this.getTenantId(req);
+    
+    // Auto-sync all procurement vendors and their POs on every GET request
+    try {
+      await this.financeVendorService.syncAllVendorsFromProcurement(tenantId);
+    } catch (syncErr) {
+      console.error('[FINANCE] Auto-sync failed:', syncErr);
+    }
+    
     return this.financeVendorService.findAll(tenantId);
   }
 
@@ -30,8 +38,21 @@ export class FinanceVendorController {
     totalPayable?: number;
     totalPaid?: number;
     totalPurchaseOrders?: number;
+    procurementVendor?: any;
+    purchaseOrders?: any[];
   }) {
     const tenantId = this.getTenantId(req);
+    
+    // If procurementVendor and purchaseOrders are provided, use the full sync method
+    if (body.procurementVendor && body.purchaseOrders) {
+      return this.financeVendorService.syncVendorFromProcurement(
+        tenantId,
+        body.procurementVendor,
+        body.purchaseOrders
+      );
+    }
+    
+    // Otherwise, use the simple createOrUpdate method
     return this.financeVendorService.createOrUpdateVendor(tenantId, body);
   }
 
@@ -56,5 +77,25 @@ export class FinanceVendorController {
     const tenantId = this.getTenantId(req);
     await this.financeVendorService.deleteVendor(tenantId, vendorId);
     return { success: true, message: 'Vendor deleted successfully' };
+  }
+
+  // ==================== FINANCE PURCHASE ORDERS ENDPOINTS ====================
+
+  @Get('purchase-orders')
+  async getAllPurchaseOrders(@Req() req: Request) {
+    const tenantId = this.getTenantId(req);
+    return this.financeVendorService.findAllPurchaseOrders(tenantId);
+  }
+
+  @Get('purchase-orders/:poId')
+  async getPurchaseOrderById(@Req() req: Request, @Param('poId') poId: string) {
+    const tenantId = this.getTenantId(req);
+    return this.financeVendorService.findPurchaseOrderByPoId(tenantId, poId);
+  }
+
+  @Get('purchase-orders-by-vendor/:vendorId')
+  async getPurchaseOrdersByVendor(@Req() req: Request, @Param('vendorId') vendorId: string) {
+    const tenantId = this.getTenantId(req);
+    return this.financeVendorService.findPurchaseOrdersByVendorId(tenantId, vendorId);
   }
 }

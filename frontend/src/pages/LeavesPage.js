@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { PageHeader } from '../components/ui/PageHeader';
-import { KPICard } from '../components/ui/KPICard';
+import KpiCards from '../components/hrm/KpiCards';
 import DataTable from '../components/ui/DataTable';
 import { Button } from '../components/ui/Button';
 import { Input, FormField, Select } from '../components/ui/Input';
@@ -11,6 +11,7 @@ import { Calendar, Plus, Search, RefreshCw, Check, X, Trash2, Edit, Clock, Check
 import { format } from 'date-fns';
 import { leaveApi, employeeApi } from '../services/hrmApi';
 import { usePermissions } from '../hooks/usePermissions';
+import { api } from '../lib/apiClient';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -27,11 +28,11 @@ const LeaveViewModal = ({ leave, onClose, onApprove, onReject, inline = false })
     : 0;
   const statusMap = {
     pending:  { cls: 'bg-amber-500/10 text-amber-500 border-amber-500/20',   icon: Clock,         label: 'Pending'  },
-    approved: { cls: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20', icon: CheckCircle, label: 'Approved' },
+    approved: { cls: 'bg-[var(--green)]/10 text-[var(--green)] border-[var(--green)]/20', icon: CheckCircle, label: 'Approved' },
     rejected: { cls: 'bg-red-500/10 text-red-500 border-red-500/20',          icon: XCircle,       label: 'Rejected' },
   };
   const st = statusMap[leave.status] || statusMap.pending;
-  const leaveTypeColor = { paid: 'bg-blue-500/10 text-blue-600', unpaid: 'bg-gray-500/10 text-gray-600', sick: 'bg-amber-500/10 text-amber-600', casual: 'bg-purple-500/10 text-purple-600', earned: 'bg-indigo-500/10 text-indigo-600' };
+  const leaveTypeColor = { paid: 'bg-[var(--blue-bg)] text-[var(--blue)]', unpaid: 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]', sick: 'bg-[var(--amber-bg)] text-[var(--amber)]', casual: 'bg-[var(--primary)]/10 text-[var(--primary)]', earned: 'bg-[var(--primary)]/10 text-[var(--primary)]' };
 
   const content = (
     <>
@@ -45,7 +46,7 @@ const LeaveViewModal = ({ leave, onClose, onApprove, onReject, inline = false })
             <p className="text-xs text-[var(--text-muted)]">{emp.employeeId} · {emp.department}</p>
             <div className="flex items-center gap-2 mt-2">
               <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${st.cls} flex items-center gap-1`}><st.icon size={11} />{st.label}</span>
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${leaveTypeColor[leave.leaveType] || 'bg-gray-500/10 text-gray-600'}`}>{leave.leaveType || 'paid'}</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${leaveTypeColor[leave.leaveType] || 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}>{leave.leaveType || 'paid'}</span>
             </div>
           </div>
           <div className="text-right">
@@ -57,7 +58,7 @@ const LeaveViewModal = ({ leave, onClose, onApprove, onReject, inline = false })
       {/* Date & Details */}
       <div className="grid grid-cols-2 gap-3 mb-4">
         {[
-          { label: 'Start Date', value: leave.startDate ? format(new Date(leave.startDate), 'dd MMM yyyy') : '—', color: 'bg-emerald-500/10 border-emerald-500/20' },
+          { label: 'Start Date', value: leave.startDate ? format(new Date(leave.startDate), 'dd MMM yyyy') : '—', color: 'bg-[var(--green)]/10 border-[var(--green)]/20' },
           { label: 'End Date',   value: leave.endDate   ? format(new Date(leave.endDate),   'dd MMM yyyy') : '—', color: 'bg-red-500/10 border-red-500/20' },
         ].map(item => (
           <div key={item.label} className={`p-3 rounded-xl border ${item.color}`}>
@@ -84,7 +85,7 @@ const LeaveViewModal = ({ leave, onClose, onApprove, onReject, inline = false })
         {leave.status === 'pending' && (
           <div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-[var(--border-muted)]">
             <button onClick={() => { onReject(leave._id); onClose(); }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl bg-red-500/10 text-red-600 border border-red-500/20 hover:bg-red-500/20"><XCircle size={13} /> Reject</button>
-            <button onClick={() => { onApprove(leave._id); onClose(); }} className="flex items-center gap-1.5 px-4 py-1.5 text-xs rounded-xl bg-emerald-500 text-white hover:bg-emerald-600"><CheckCircle size={13} /> Approve</button>
+            <button onClick={() => { onApprove(leave._id); onClose(); }} className="flex items-center gap-1.5 px-4 py-1.5 text-xs rounded-xl bg-[var(--green)] text-white hover:bg-[var(--green)]"><CheckCircle size={13} /> Approve</button>
           </div>
         )}
       </div>
@@ -99,7 +100,7 @@ const LeaveViewModal = ({ leave, onClose, onApprove, onReject, inline = false })
         {leave.status === 'pending' && (
           <div className="flex gap-2">
             <button onClick={() => { onReject(leave._id); onClose(); }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl bg-red-500/10 text-red-600 border border-red-500/20 hover:bg-red-500/20"><XCircle size={13} /> Reject</button>
-            <button onClick={() => { onApprove(leave._id); onClose(); }} className="flex items-center gap-1.5 px-4 py-1.5 text-xs rounded-xl bg-emerald-500 text-white hover:bg-emerald-600"><CheckCircle size={13} /> Approve</button>
+            <button onClick={() => { onApprove(leave._id); onClose(); }} className="flex items-center gap-1.5 px-4 py-1.5 text-xs rounded-xl bg-[var(--green)] text-white hover:bg-[var(--green)]"><CheckCircle size={13} /> Approve</button>
           </div>
         )}
       </div>
@@ -118,7 +119,7 @@ const LeaveKpiModal = ({ title, leaves, onClose, onViewLeave }) => (
       {leaves.length === 0 ? <p className="text-sm text-[var(--text-muted)] text-center py-8">No leaves found</p> : leaves.map(l => {
         const emp = l.employeeId || {};
         const days = l.startDate && l.endDate ? Math.ceil((new Date(l.endDate) - new Date(l.startDate)) / (1000*60*60*24)) + 1 : 0;
-        const stCls = { pending: 'bg-amber-500/10 text-amber-500', approved: 'bg-emerald-500/10 text-emerald-500', rejected: 'bg-red-500/10 text-red-500' };
+        const stCls = { pending: 'bg-amber-500/10 text-amber-500', approved: 'bg-[var(--green)]/10 text-[var(--green)]', rejected: 'bg-red-500/10 text-red-500' };
         return (
           <div key={l._id} onClick={() => onViewLeave(l)} className="flex items-center gap-3 p-3 rounded-xl bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] cursor-pointer border border-[var(--border-muted)] hover:border-[var(--primary)]/40 transition-all">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-sm">{emp.firstName?.[0]}{emp.lastName?.[0]}</div>
@@ -170,6 +171,29 @@ const LeavesPage = () => {
   const [viewLeave, setViewLeave] = useState(null);
   // KPI filter state - shows filtered data in table instead of modal
   const [kpiFilter, setKpiFilter] = useState(null); // 'pending' | 'approved' | 'rejected' | null
+
+  // Dashboard metrics for new KpiCards component
+  const [dashboardMetrics, setDashboardMetrics] = useState(null);
+  const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin' || user?.isSuperAdmin === true;
+
+  const fetchDashboardMetrics = async () => {
+    try {
+      const response = await api.get('/hrm/dashboard-metrics');
+      console.log('[DEBUG] Dashboard metrics API response:', response.data);
+      const metrics = response.data?.data || response.data;
+      console.log('[DEBUG] Extracted metrics:', metrics);
+      setDashboardMetrics(metrics || null);
+    } catch (error) {
+      console.error('Failed to fetch dashboard metrics:', error);
+      setDashboardMetrics({
+        attendance: { percentage: 0, presentToday: 0, totalToday: 0 },
+        leaves: { pending: 0 },
+        payroll: { totalPayroll: 0, unpaidCount: 0 },
+        employees: { atRiskCount: 0 }
+      });
+    }
+  };
+
   const [leaveForm, setLeaveForm] = useState({
     employeeId: '',
     leaveType: 'paid',
@@ -212,6 +236,7 @@ const LeavesPage = () => {
     setMounted(true);
     fetchLeaves();
     fetchEmployees();
+    fetchDashboardMetrics();
   }, []);
 
   if (!mounted) return null;
@@ -386,7 +411,7 @@ const LeavesPage = () => {
       render: (val) => {
         const colors = {
           pending: 'bg-amber-500/10 text-amber-500',
-          approved: 'bg-emerald-500/10 text-emerald-500',
+          approved: 'bg-[var(--green)]/10 text-[var(--green)]',
           rejected: 'bg-red-500/10 text-red-500',
         };
         return (
@@ -440,7 +465,7 @@ const LeavesPage = () => {
                   e.stopPropagation();
                   handleApproveLeave(row._id);
                 }}
-                className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
+                className="p-1.5 text-[var(--green)] hover:bg-[var(--green)]/10 rounded transition-colors"
                 title="Approve"
               >
                 <Check size={16} />
@@ -511,38 +536,11 @@ const LeavesPage = () => {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {[
-          { label: 'Pending Leaves',  value: leaves.filter(l => l.status === 'pending').length,  icon: Calendar, color: '#f59e0b', filter: 'pending'  },
-          { label: 'Approved Leaves', value: leaves.filter(l => l.status === 'approved').length, icon: Calendar, color: '#22c55e', filter: 'approved' },
-          { label: 'Rejected Leaves', value: leaves.filter(l => l.status === 'rejected').length, icon: Calendar, color: '#ef4444', filter: 'rejected' },
-          { label: 'Total Leaves',    value: leaves.length,                                       icon: Calendar, color: '#3b82f6', filter: 'all'      },
-        ].map((kpi, index) => (
-          <KPICard
-            key={index}
-            label={kpi.label}
-            value={kpi.value}
-            icon={kpi.icon}
-            accentColor={kpi.color}
-            onClick={() => { 
-              setKpiFilter(kpi.filter === 'all' ? null : kpi.filter); 
-              setLeaveStatusFilter('all'); 
-              // Auto-expand first leave
-              setTimeout(() => {
-                const filtered = kpi.filter === 'all' || !kpi.filter 
-                  ? leaves 
-                  : leaves.filter(l => l.status === kpi.filter);
-                if (filtered.length > 0) {
-                  setViewLeave(filtered[0]);
-                } else {
-                  setViewLeave(null);
-                }
-              }, 100);
-            }}
-          />
-        ))}
-      </div>
+      {/* KPI Cards - Dynamic Role-Based */}
+      <KpiCards 
+        role={isAdmin ? 'admin' : 'employee'} 
+        metrics={dashboardMetrics} 
+      />
 
       {/* Calendar Modal with FullCalendar */}
       {showCalendarModal && (
@@ -774,9 +772,9 @@ const LeavesPage = () => {
                     <>
                       {/* Status Stats */}
                       <div className="grid grid-cols-3 gap-2 mb-3">
-                        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-2 text-center">
-                          <p className="text-lg font-bold text-emerald-600">{approved}</p>
-                          <p className="text-xs text-emerald-600">Approved</p>
+                        <div className="bg-[var(--green)]/10 border border-[var(--green)]/20 rounded-lg p-2 text-center">
+                          <p className="text-lg font-bold text-[var(--green)]">{approved}</p>
+                          <p className="text-xs text-[var(--green)]">Approved</p>
                         </div>
                         <div className="bg-red-50 border border-red-200 rounded-lg p-2 text-center">
                           <p className="text-lg font-bold text-red-600">{rejected}</p>
@@ -794,9 +792,9 @@ const LeavesPage = () => {
                           <p className="text-sm font-bold text-blue-600">{paid}</p>
                           <p className="text-[10px] text-blue-600">Paid</p>
                         </div>
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-2 text-center">
-                          <p className="text-sm font-bold text-gray-600">{unpaid}</p>
-                          <p className="text-[10px] text-gray-600">Unpaid</p>
+                        <div className="bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-lg p-2 text-center">
+                          <p className="text-sm font-bold text-[var(--text-secondary)]">{unpaid}</p>
+                          <p className="text-[10px] text-[var(--text-secondary)]">Unpaid</p>
                         </div>
                         <div className="bg-purple-50 border border-purple-200 rounded-lg p-2 text-center">
                           <p className="text-sm font-bold text-purple-600">{sick}</p>
@@ -822,7 +820,7 @@ const LeavesPage = () => {
                                 {format(new Date(leave.startDate), 'dd MMM')} - {format(new Date(leave.endDate), 'dd MMM')} • {leave.leaveType}
                               </p>
                             </div>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${leave.status === 'approved' ? 'bg-emerald-100 text-emerald-600' :
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${leave.status === 'approved' ? 'bg-[var(--green)]/10 text-[var(--green)]' :
                               leave.status === 'rejected' ? 'bg-red-100 text-red-600' :
                                 'bg-amber-100 text-amber-600'
                               }`}>
@@ -856,7 +854,7 @@ const LeavesPage = () => {
                           {format(new Date(leave.startDate), 'dd MMM')} - {format(new Date(leave.endDate), 'dd MMM')} • {leave.leaveType}
                         </p>
                       </div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${leave.status === 'approved' ? 'bg-emerald-100 text-emerald-600' :
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${leave.status === 'approved' ? 'bg-[var(--green)]/10 text-[var(--green)]' :
                         leave.status === 'rejected' ? 'bg-red-100 text-red-600' :
                           'bg-amber-100 text-amber-600'
                         }`}>

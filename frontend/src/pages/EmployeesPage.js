@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSettings } from '../context/SettingsContext';
 import { PageHeader } from '../components/ui/PageHeader';
-import { KPICard } from '../components/ui/KPICard';
+import KpiCards from '../components/hrm/KpiCards';
 import DataTable from '../components/ui/DataTable';
 import { Button } from '../components/ui/Button';
 import { Input, FormField, Select, Textarea } from '../components/ui/Input';
@@ -14,12 +14,14 @@ import {
 } from 'lucide-react';
 import { employeeApi, departmentApi } from '../services/hrmApi';
 import { usePermissions } from '../hooks/usePermissions';
+import { useAuth } from '../context/AuthContext';
+import { api } from '../lib/apiClient';
 
 // ── Employee Detail View Modal ─────────────────────────────────────────────
 const EmployeeViewModal = ({ employee, onClose, onEdit, inline = false }) => {
   if (!employee) return null;
   const initial = `${employee.firstName?.[0] || ''}${employee.lastName?.[0] || ''}`.toUpperCase();
-  const statusColor = employee.status === 'active' ? 'text-emerald-500 bg-emerald-500/10' : 'text-red-500 bg-red-500/10';
+  const statusColor = employee.status === 'active' ? 'text-[var(--green)] bg-[var(--green)]/10' : 'text-red-500 bg-red-500/10';
   const InfoRow = ({ icon: Icon, label, value, accent }) => (
     <div className="flex items-start gap-3 py-2.5 border-b border-[var(--border-muted)] last:border-0">
       <div className="w-8 h-8 rounded-lg bg-[var(--bg-elevated)] flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -175,9 +177,35 @@ const EmployeesPage = () => {
   // KPI filter state - shows filtered data in table instead of modal
   const [kpiFilter, setKpiFilter] = useState(null); // 'all' | 'active' | 'inactive' | null
 
+  // Dashboard metrics for new KpiCards component
+  const [dashboardMetrics, setDashboardMetrics] = useState(null);
+  const { user } = useAuth();
+  const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin' || user?.isSuperAdmin === true;
+
+  const fetchDashboardMetrics = async () => {
+    try {
+      const response = await api.get('/hrm/dashboard-metrics');
+      console.log('[DEBUG] Dashboard metrics API response:', response.data);
+      // Handle both { data: {...} } and direct {...} response formats
+      const metrics = response.data?.data || response.data;
+      console.log('[DEBUG] Extracted metrics:', metrics);
+      setDashboardMetrics(metrics || null);
+    } catch (error) {
+      console.error('Failed to fetch dashboard metrics:', error);
+      // Set fallback data so UI doesn't look broken
+      setDashboardMetrics({
+        attendance: { percentage: 0, presentToday: 0, totalToday: 0 },
+        leaves: { pending: 0 },
+        payroll: { totalPayroll: 0, unpaidCount: 0 },
+        employees: { atRiskCount: 0 }
+      });
+    }
+  };
+
   useEffect(() => {
     fetchEmployees();
     fetchDepartments();
+    fetchDashboardMetrics();
   }, []);
 
   const fetchEmployees = async () => {
@@ -461,7 +489,7 @@ const EmployeesPage = () => {
       header: 'Status',
       render: (val) => (
         <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${val === 'active'
-          ? 'bg-emerald-500/10 text-emerald-600'
+          ? 'bg-[var(--green)]/10 text-[var(--green)]'
           : 'bg-red-500/10 text-red-600'
           }`}>
           {val}
@@ -520,67 +548,11 @@ const EmployeesPage = () => {
         }
       />
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard
-          label="Total Employees"
-          value={stats.total}
-          icon={Briefcase}
-          variant="blue"
-          sub="All employees"
-          onClick={() => { 
-            setKpiFilter(null); 
-            setStatusFilter('all'); 
-            // Auto-expand first employee
-            setTimeout(() => {
-              if (filteredEmployees.length > 0) {
-                setViewEmployee(filteredEmployees[0]);
-              }
-            }, 100);
-          }}
-        />
-        <KPICard
-          label="Active Employees"
-          value={stats.active}
-          icon={Briefcase}
-          variant="emerald"
-          trend={`${stats.total > 0 ? Math.round((stats.active / stats.total) * 100) : 0}%`}
-          trendUp={true}
-          onClick={() => { 
-            setKpiFilter('active'); 
-            setStatusFilter('all'); 
-            // Auto-expand first active employee
-            setTimeout(() => {
-              const firstActive = employees.find(emp => emp.status === 'active');
-              setViewEmployee(firstActive || null);
-            }, 100);
-          }}
-        />
-        <KPICard
-          label="Inactive"
-          value={stats.inactive}
-          icon={Briefcase}
-          variant="red"
-          trend={`${stats.total > 0 ? Math.round((stats.inactive / stats.total) * 100) : 0}%`}
-          trendUp={false}
-          onClick={() => { 
-            setKpiFilter('inactive'); 
-            setStatusFilter('all'); 
-            // Auto-expand first inactive employee
-            setTimeout(() => {
-              const firstInactive = employees.find(emp => emp.status === 'inactive');
-              setViewEmployee(firstInactive || null);
-            }, 100);
-          }}
-        />
-        <KPICard
-          label="Departments"
-          value={stats.departments}
-          icon={MapPin}
-          variant="amber"
-          sub="unique depts"
-        />
-      </div>
+      {/* KPI Cards - Dynamic Role-Based */}
+      <KpiCards 
+        role={isAdmin ? 'admin' : 'employee'} 
+        metrics={dashboardMetrics} 
+      />
 
       {/* Filters */}
       <div className="glass-card p-4">

@@ -210,6 +210,19 @@ export const MODULE_DEFS = [
         actions: { view: true, create: true, edit: true, delete: true, export: true, approve: true, assign: true },
     },
     {
+        id: 'tasks',
+        label: 'Tasks',
+        icon: 'CheckSquare',
+        description: 'Task management, assignments and tracking.',
+        group: 'OVERVIEW',
+        features: {
+            task_board: { label: 'Task Board', description: 'Kanban view of all tasks.' },
+            task_assignment: { label: 'Task Assignment', description: 'Assign tasks to team members.' },
+            task_tracking: { label: 'Task Tracking', description: 'Track task progress and status.' },
+        },
+        actions: { view: true, create: true, edit: true, delete: true, export: true, approve: false, assign: true },
+    },
+    {
         id: 'settings',
         label: 'Settings',
         icon: 'Settings',

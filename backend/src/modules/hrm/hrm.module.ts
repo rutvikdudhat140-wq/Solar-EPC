@@ -27,6 +27,7 @@ import { SalaryIncrementService } from './services/salary-increment.service';
 import { DepartmentService } from './services/department.service';
 import { PermissionService } from './services/permission.service';
 import { AttendancePolicyService } from './services/attendance-policy.service';
+import { HrmDashboardService } from './services/hrm-dashboard.service';
 
 // Controllers
 import { EmployeeController } from './controllers/employee.controller';
@@ -37,6 +38,7 @@ import { SalaryIncrementController } from './controllers/salary-increment.contro
 import { DepartmentController } from './controllers/department.controller';
 import { PermissionController } from './controllers/permission.controller';
 import { AttendancePolicyController } from './controllers/attendance-policy.controller';
+import { HrmDashboardController } from './controllers/hrm-dashboard.controller';
 
 @Module({
   imports: [
@@ -66,6 +68,7 @@ import { AttendancePolicyController } from './controllers/attendance-policy.cont
     DepartmentController,
     PermissionController,
     AttendancePolicyController,
+    HrmDashboardController,
   ],
   providers: [
     EmployeeService,
@@ -76,6 +79,7 @@ import { AttendancePolicyController } from './controllers/attendance-policy.cont
     DepartmentService,
     PermissionService,
     AttendancePolicyService,
+    HrmDashboardService,
   ],
   exports: [
     EmployeeService,

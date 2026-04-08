@@ -62,7 +62,17 @@ const AttendancePolicySettings = () => {
     console.log('[DEBUG] handleSave called');
     setSaving(true);
     try {
-      const response = await api.post('/hrm/attendance/policy', policy);
+      const {
+        _id,
+        id,
+        tenantId,
+        createdAt,
+        updatedAt,
+        __v,
+        ...policyPayload
+      } = policy || {};
+
+      const response = await api.post('/hrm/attendance/policy', policyPayload);
       // apiClient returns response.data directly (not the Axios response)
       // Most endpoints use { success: boolean, data?: any, message?: string }
       const isExplicitFailure = response?.success === false;
@@ -110,8 +120,8 @@ const AttendancePolicySettings = () => {
             <Clock className="w-6 h-6 text-orange-600" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Attendance Policy Settings</h2>
-            <p className="text-sm text-gray-500">Define company-wide check-in/check-out rules</p>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)]">Attendance Policy Settings</h2>
+            <p className="text-sm text-[var(--text-muted)]">Define company-wide check-in/check-out rules</p>
           </div>
         </div>
         <Button
@@ -120,7 +130,7 @@ const AttendancePolicySettings = () => {
           className="flex items-center gap-2"
         >
           <Save className="w-4 h-4" />
-          {saving ? 'Saving...' : 'Save Policy'}
+          {saving ? 'Saving...' : hasExistingPolicy ? 'Update Policy' : 'Create Policy'}
         </Button>
       </div>
 
@@ -140,15 +150,15 @@ const AttendancePolicySettings = () => {
       {/* Main Settings Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Check-in/Check-out Times */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
-          <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
+        <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-6 space-y-6">
+          <div className="flex items-center gap-2 pb-4 border-b border-[var(--border-base)]">
             <Clock className="w-5 h-5 text-orange-500" />
-            <h3 className="font-semibold text-gray-900">Standard Timings</h3>
+            <h3 className="font-semibold text-[var(--text-primary)]">Standard Timings</h3>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                 Standard Check-in Time
               </label>
               <div className="flex items-center gap-3">
@@ -158,17 +168,17 @@ const AttendancePolicySettings = () => {
                   onChange={(e) => handleChange('checkInTime', e.target.value)}
                   className="w-40"
                 />
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-[var(--text-muted)]">
                   ({formatTime(policy.checkInTime)})
                 </span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-[var(--text-muted)] mt-1">
                 Employees should check in by this time
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                 Standard Check-out Time
               </label>
               <div className="flex items-center gap-3">
@@ -178,17 +188,17 @@ const AttendancePolicySettings = () => {
                   onChange={(e) => handleChange('checkOutTime', e.target.value)}
                   className="w-40"
                 />
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-[var(--text-muted)]">
                   ({formatTime(policy.checkOutTime)})
                 </span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-[var(--text-muted)] mt-1">
                 Standard working day ends at this time
               </p>
             </div>
 
-            <div className="pt-4 border-t border-gray-100">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="pt-4 border-t border-[var(--border-base)]">
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                 Grace Period (minutes)
               </label>
               <div className="flex items-center gap-3">
@@ -200,9 +210,9 @@ const AttendancePolicySettings = () => {
                   onChange={(e) => handleChange('gracePeriodMinutes', parseInt(e.target.value) || 0)}
                   className="w-24"
                 />
-                <span className="text-sm text-gray-500">minutes</span>
+                <span className="text-sm text-[var(--text-muted)]">minutes</span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-[var(--text-muted)] mt-1">
                 Employees can check in late by this many minutes without penalty
               </p>
             </div>
@@ -210,15 +220,15 @@ const AttendancePolicySettings = () => {
         </div>
 
         {/* Late/Early Rules */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
-          <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
+        <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-6 space-y-6">
+          <div className="flex items-center gap-2 pb-4 border-b border-[var(--border-base)]">
             <AlertCircle className="w-5 h-5 text-red-500" />
-            <h3 className="font-semibold text-gray-900">Late & Early Rules</h3>
+            <h3 className="font-semibold text-[var(--text-primary)]">Late & Early Rules</h3>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                 Late Mark Threshold (minutes)
               </label>
               <div className="flex items-center gap-3">
@@ -230,15 +240,15 @@ const AttendancePolicySettings = () => {
                   onChange={(e) => handleChange('lateMarkAfterMinutes', parseInt(e.target.value) || 0)}
                   className="w-24"
                 />
-                <span className="text-sm text-gray-500">minutes after check-in time</span>
+                <span className="text-sm text-[var(--text-muted)]">minutes after check-in time</span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-[var(--text-muted)] mt-1">
                 Beyond grace period, employees are marked late after this many minutes
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                 Half Day Threshold (minutes)
               </label>
               <div className="flex items-center gap-3">
@@ -250,15 +260,15 @@ const AttendancePolicySettings = () => {
                   onChange={(e) => handleChange('halfDayAfterMinutes', parseInt(e.target.value) || 0)}
                   className="w-24"
                 />
-                <span className="text-sm text-gray-500">minutes</span>
+                <span className="text-sm text-[var(--text-muted)]">minutes</span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-[var(--text-muted)] mt-1">
                 Arriving this late marks attendance as Half Day
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                 Early Leave Threshold (minutes)
               </label>
               <div className="flex items-center gap-3">
@@ -270,9 +280,9 @@ const AttendancePolicySettings = () => {
                   onChange={(e) => handleChange('earlyLeaveBeforeMinutes', parseInt(e.target.value) || 0)}
                   className="w-24"
                 />
-                <span className="text-sm text-gray-500">minutes before check-out time</span>
+                <span className="text-sm text-[var(--text-muted)]">minutes before check-out time</span>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-[var(--text-muted)] mt-1">
                 Leaving before this threshold marks as Early Exit
               </p>
             </div>
@@ -280,10 +290,10 @@ const AttendancePolicySettings = () => {
         </div>
 
         {/* Break Time Settings */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
-          <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
+        <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-6 space-y-6">
+          <div className="flex items-center gap-2 pb-4 border-b border-[var(--border-base)]">
             <Coffee className="w-5 h-5 text-amber-500" />
-            <h3 className="font-semibold text-gray-900">Break Time Settings</h3>
+            <h3 className="font-semibold text-[var(--text-primary)]">Break Time Settings</h3>
           </div>
 
           <div className="space-y-4">
@@ -293,9 +303,9 @@ const AttendancePolicySettings = () => {
                 id="isBreakTimeDeducted"
                 checked={policy.isBreakTimeDeducted}
                 onChange={(e) => handleChange('isBreakTimeDeducted', e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                className="w-4 h-4 rounded border-[var(--border-base)] text-orange-600 focus:ring-orange-500"
               />
-              <label htmlFor="isBreakTimeDeducted" className="text-sm font-medium text-gray-700">
+              <label htmlFor="isBreakTimeDeducted" className="text-sm font-medium text-[var(--text-secondary)]">
                 Deduct break time from total hours
               </label>
             </div>
@@ -304,7 +314,7 @@ const AttendancePolicySettings = () => {
               <>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                       Break Start Time
                     </label>
                     <div className="flex items-center gap-3">
@@ -314,14 +324,14 @@ const AttendancePolicySettings = () => {
                         onChange={(e) => handleChange('breakStartTime', e.target.value)}
                         className="w-32"
                       />
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-[var(--text-muted)]">
                         ({formatTime(policy.breakStartTime)})
                       </span>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                       Break End Time
                     </label>
                     <div className="flex items-center gap-3">
@@ -331,7 +341,7 @@ const AttendancePolicySettings = () => {
                         onChange={(e) => handleChange('breakEndTime', e.target.value)}
                         className="w-32"
                       />
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-[var(--text-muted)]">
                         ({formatTime(policy.breakEndTime)})
                       </span>
                     </div>
@@ -357,10 +367,10 @@ const AttendancePolicySettings = () => {
         </div>
 
         {/* Working Days */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 lg:col-span-2">
-          <div className="flex items-center gap-2 pb-4 border-b border-gray-100">
+        <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-6 lg:col-span-2">
+          <div className="flex items-center gap-2 pb-4 border-b border-[var(--border-base)]">
             <Building2 className="w-5 h-5 text-blue-500" />
-            <h3 className="font-semibold text-gray-900">Working Days</h3>
+            <h3 className="font-semibold text-[var(--text-primary)]">Working Days</h3>
           </div>
 
           <div className="grid grid-cols-7 gap-3 mt-4">
@@ -371,47 +381,47 @@ const AttendancePolicySettings = () => {
                 className={`p-3 rounded-lg border-2 text-sm font-medium transition-all ${
                   policy.workingDays.includes(day.id)
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300'
+                    : 'border-[var(--border-base)] bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:border-[var(--border-base)]'
                 }`}
               >
                 {day.label.slice(0, 3)}
               </button>
             ))}
           </div>
-          <p className="text-xs text-gray-500 mt-3">
+          <p className="text-xs text-[var(--text-muted)] mt-3">
             Click to toggle working days. Attendance is only tracked on selected days.
           </p>
         </div>
       </div>
 
       {/* Preview Section */}
-      <div className="bg-gray-50 rounded-xl border border-gray-200 p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Policy Summary</h3>
+      <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border-base)] p-6">
+        <h3 className="font-semibold text-[var(--text-primary)] mb-4">Policy Summary</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div className="bg-white rounded-lg p-4">
-            <p className="text-gray-500 mb-1">Office Hours</p>
-            <p className="font-semibold text-gray-900">
+          <div className="bg-[var(--bg-surface)] rounded-lg p-4">
+            <p className="text-[var(--text-muted)] mb-1">Office Hours</p>
+            <p className="font-semibold text-[var(--text-primary)]">
               {formatTime(policy.checkInTime)} - {formatTime(policy.checkOutTime)}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[var(--text-muted)] mt-1">
               {policy.gracePeriodMinutes} min grace period
             </p>
           </div>
-          <div className="bg-white rounded-lg p-4">
-            <p className="text-gray-500 mb-1">Working Days</p>
-            <p className="font-semibold text-gray-900">
+          <div className="bg-[var(--bg-surface)] rounded-lg p-4">
+            <p className="text-[var(--text-muted)] mb-1">Working Days</p>
+            <p className="font-semibold text-[var(--text-primary)]">
               {policy.workingDays.length} days/week
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[var(--text-muted)] mt-1">
               {policy.workingDays.map(d => d.slice(0, 3)).join(', ')}
             </p>
           </div>
-          <div className="bg-white rounded-lg p-4">
-            <p className="text-gray-500 mb-1">Late Rules</p>
-            <p className="font-semibold text-gray-900">
+          <div className="bg-[var(--bg-surface)] rounded-lg p-4">
+            <p className="text-[var(--text-muted)] mb-1">Late Rules</p>
+            <p className="font-semibold text-[var(--text-primary)]">
               Late after {policy.lateMarkAfterMinutes} min
             </p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[var(--text-muted)] mt-1">
               Half day after {policy.halfDayAfterMinutes} min
             </p>
           </div>
