@@ -574,11 +574,14 @@ const CompliancePage = () => {
     const paginatedIns = inspections.slice((insPage - 1) * pageSize, insPage * pageSize);
     const paginatedDoc = documents.slice((docPage - 1) * pageSize, docPage * pageSize);
 
-    const totalSubsidy = subItems.reduce((a, s) => a + (s.claimAmount || 0), 0);
-    const disbursed = subItems.filter(s => s.status === 'Disbursed').reduce((a, s) => a + (s.disbursedAmount || s.claimAmount || 0), 0);
+    // Live data calculations - use API stats first, fallback to calculated from items
+    const totalSubsidy = stats.subsidies?.totalAmount || subItems.reduce((a, s) => a + (s.claimAmount || 0), 0);
+    const disbursed = stats.subsidies?.disbursedAmount || subItems.filter(s => s.status === 'Disbursed').reduce((a, s) => a + (s.disbursedAmount || s.claimAmount || 0), 0);
     const uploadedDocs = documents.filter(d => d.status === 'Uploaded').length;
-    const pendingDocs = documents.filter(d => d.status === 'Pending').length;
+    const pendingDocs = stats.documents?.pending || documents.filter(d => d.status === 'Pending').length;
     const docProgress = stats.documents?.complianceScore || (documents.length > 0 ? Math.round((uploadedDocs / documents.length) * 100) : 0);
+    const netMeteringCount = stats.netMetering?.total || nmItems.length;
+    const inspectionsCount = stats.inspections?.total || inspections.length;
 
     const NM_ACTIONS = [
         { label: 'View', icon: FileText, onClick: r => setSelected({ type: 'nm', data: r }) },
@@ -616,11 +619,11 @@ const CompliancePage = () => {
                 ]}
             />
 
-            {/* KPIs */}
+            {/* KPIs - Live Data */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <KPICard
                     label={<span className="text-xs font-medium text-[var(--text-muted)]">Net Metering Apps</span>}
-                    value={stats.netMetering?.total || 0}
+                    value={netMeteringCount}
                     icon={Building2}
                     color="blue"
                     style={{ backgroundColor: 'rgba(59, 130, 246, 0.2)' }}
@@ -647,7 +650,7 @@ const CompliancePage = () => {
                 />
                 <KPICard
                     label={<span className="text-xs font-medium text-[var(--text-muted)]">Docs Pending</span>}
-                    value={stats.documents?.pending || 0}
+                    value={pendingDocs}
                     icon={AlertTriangle}
                     color="amber"
                     style={{ backgroundColor: 'rgba(245, 158, 11, 0.2)' }}

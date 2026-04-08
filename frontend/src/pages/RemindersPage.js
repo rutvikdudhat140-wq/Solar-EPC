@@ -1,7 +1,7 @@
 // RemindersPage.js — Comprehensive reminder management interface
 import React, { useState, useMemo } from 'react';
 import {
-    Bell, Plus, Filter, Search, Clock, AlertTriangle, CheckCircle,
+    Bell, BellRing, ClipboardList, Plus, Filter, Search, Clock, AlertTriangle, CheckCircle,
     Settings, Calendar, Users, DollarSign, Package, Wrench,
     Volume2, MessageSquare, Smartphone, Eye, EyeOff, Play,
     Pause, RotateCcw, Trash2, Archive, Star, MapPin, FileText
@@ -124,7 +124,7 @@ const RemindersPage = () => {
     };
 
     const ReminderCard = ({ reminder }) => {
-        const ModuleIcon = MODULE_ICONS[reminder.module] || Bell;
+        const ModuleIcon = MODULE_ICONS[reminder.module] || ClipboardList;
         const moduleColor = MODULE_COLORS[reminder.module] || '#6b7280';
         const priorityColor = PRIORITY_COLORS[reminder.priority] || '#6b7280';
         const timeStatus = getTimeStatus(reminder.dueDate, reminder.status);
@@ -282,7 +282,7 @@ const RemindersPage = () => {
                 <div className="bg-gradient-to-r from-[var(--warning)]20 to-[var(--error)]20 border-l-4 border-[var(--warning)] p-4 rounded-lg">
                     <div className="flex items-center justify-between mb-3">
                         <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
-                            <Bell size={16} className="text-[var(--warning)]" />
+                            <BellRing size={16} className="text-[var(--warning)]" />
                             Active Notifications ({activeNotifications.length})
                         </h3>
                         <button
@@ -314,9 +314,9 @@ const RemindersPage = () => {
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatsCard
-                    label="Total"
+                    label="Total Reminders"
                     value={totalReminders}
-                    icon={Bell}
+                    icon={ClipboardList}
                     color="#6366f1"
                     onClick={() => setActiveTab('all')}
                     isActive={activeTab === 'all'}
