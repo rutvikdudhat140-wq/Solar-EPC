@@ -348,7 +348,10 @@ export class ProcurementService {
     return {
       vendorCount,
       poCount,
+      total: poCount, // For frontend compatibility
       inTransitCount,
+      pending: inTransitCount, // For frontend compatibility
+      completed: poCount - inTransitCount, // Calculate completed
       totalSpend,
     };
   }

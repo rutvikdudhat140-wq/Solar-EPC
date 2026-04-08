@@ -668,6 +668,7 @@ export class InventoryService {
   }
   async getStats(tenantCode: string, user?: UserWithVisibility) {
     const tenantId = await this.resolveTenantObjectId(tenantCode);
+    console.log(`[INVENTORY STATS] tenantCode: ${tenantCode}, resolved tenantId: ${tenantId}`);
     const matchQuery: any = { tenantId, isDeleted: false };
     if (user?.dataScope === 'ASSIGNED') {
       const userId = user._id || user.id;
@@ -676,7 +677,9 @@ export class InventoryService {
         matchQuery.assignedTo = objectId;
       }
     }
+    console.log(`[INVENTORY STATS] matchQuery:`, JSON.stringify(matchQuery));
     const items: any[] = await this.inventoryModel.find(matchQuery).lean();
+    console.log(`[INVENTORY STATS] Found ${items.length} items`);
     const totalItems = items.length;
     const totalStock = items.reduce((sum, it) => sum + (Number(it.stock) || 0), 0);
     const lowStockItems = items.filter((it) => {
@@ -686,7 +689,9 @@ export class InventoryService {
     }).length;
     const outOfStockItems = items.filter((it) => (Number(it.available) || 0) <= 0).length;
     const reservedItems = items.filter((it) => (Number(it.reserved) || 0) > 0).length;
-    return { totalItems, totalStock, lowStockItems, outOfStockItems, reservedItems };
+    const result = { totalItems, totalStock, lowStockItems, outOfStockItems, reservedItems };
+    console.log(`[INVENTORY STATS] Returning:`, result);
+    return result;
   }
   async getItemsByCategory(tenantCode: string, user?: UserWithVisibility) {
     const tenantId = await this.resolveTenantObjectId(tenantCode);
