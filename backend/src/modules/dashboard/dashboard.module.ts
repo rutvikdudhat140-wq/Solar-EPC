@@ -14,6 +14,13 @@ import { PurchaseOrder, PurchaseOrderSchema } from '../procurement/schemas/purch
 import { Estimate, EstimateSchema } from '../estimates/schemas/estimate.schema';
 import { Employee, EmployeeSchema } from '../hrm/schemas/employee.schema';
 import { Attendance, AttendanceSchema } from '../hrm/schemas/attendance.schema';
+import { Survey, SurveySchema } from '../survey/schemas/survey.schema';
+import { Quotation, QuotationSchema } from '../quotation/schemas/quotation.schema';
+import { Ticket, TicketSchema } from '../service-amc/schemas/ticket.schema';
+import { Commissioning, CommissioningSchema } from '../commissioning/schemas/commissioning.schema';
+import { Tenant, TenantSchema } from '../../core/tenant/schemas/tenant.schema';
+import { Task, TaskSchema } from '../tasks/schemas/task.schema';
+import { SettingsModule } from '../settings/settings.module';
 
 @Module({
   imports: [
@@ -29,7 +36,14 @@ import { Attendance, AttendanceSchema } from '../hrm/schemas/attendance.schema';
       { name: Estimate.name, schema: EstimateSchema },
       { name: Employee.name, schema: EmployeeSchema },
       { name: Attendance.name, schema: AttendanceSchema },
+      { name: Survey.name, schema: SurveySchema },
+      { name: Quotation.name, schema: QuotationSchema },
+      { name: Ticket.name, schema: TicketSchema },
+      { name: Commissioning.name, schema: CommissioningSchema },
+      { name: Tenant.name, schema: TenantSchema },
+      { name: Task.name, schema: TaskSchema },
     ]),
+    SettingsModule,
   ],
   controllers: [DashboardController],
   providers: [DashboardService, DashboardCacheService],

@@ -1,34 +1,209 @@
-// Dashboard API Service - Fetches live data from all modules
+// Dashboard API Service - Fully Dynamic with Fallback
 import { api } from '../lib/apiClient';
 
-// Get tenant ID from localStorage
-const TENANT_ID = localStorage.getItem('tenantId') || 'solarcorp';
-
 const DashboardService = {
-  // Overview Stats
-  getOverviewStats: async () => {
+  // Main widget data - try backend aggregated endpoint first, fallback to individual calls
+  getWidgetData: async () => {
     try {
-      const headers = { 'x-tenant-id': TENANT_ID };
-      const [projects, inventory, leads, finance, hrm, surveys] = await Promise.allSettled([
-        api.get('/projects/stats', { headers }),
-        api.get('/inventory/stats', { headers }),
-        api.get('/leads/stats', { headers }),
-        api.get('/finance/stats', { headers }),
-        api.get('/hrm/stats', { headers }),
-        api.get('/surveys/stats', { headers }),
+      // Try the aggregated widget endpoint
+      const response = await api.get('/dashboard/widget');
+      console.log('[Dashboard API] Widget response:', response?.data);
+      
+      const data = response?.data?.data;
+      
+      // Check if we got valid data, otherwise use fallback
+      if (data && (data.leads?.total !== undefined || data.projects?.total !== undefined)) {
+        return data;
+      }
+      
+      // Fallback: fetch from individual endpoints
+      console.log('[Dashboard API] Widget empty, using fallback...');
+      return await DashboardService.getWidgetDataFallback();
+    } catch (error) {
+      console.log('[Dashboard API] Widget failed, using fallback:', error.message);
+      return await DashboardService.getWidgetDataFallback();
+    }
+  },
+
+  // Fallback: fetch from individual module endpoints
+  getWidgetDataFallback: async () => {
+    try {
+      const [projectsRes, inventoryRes, leadsRes, financeRes, surveysRes, commissioningRes, serviceRes, installationRes, quotationRes, procurementRes, employeesRes] = await Promise.all([
+        api.get('/projects/stats').catch(() => null),
+        api.get('/inventory/stats').catch(() => null),
+        api.get('/leads/stats').catch(() => null),
+        api.get('/finance/dashboard-stats').catch(() => null),
+        api.get('/surveys/stats').catch(() => null),
+        api.get('/commissioning/stats').catch(() => null),
+        api.get('/service-amc/stats').catch(() => null),
+        api.get('/installation/stats').catch(() => null),
+        api.get('/quotation/stats').catch(() => null),
+        api.get('/procurement/stats').catch(() => null),
+        api.get('/hrm/employees/stats').catch(() => null),
       ]);
 
+      const extractData = (res) => {
+        if (!res) return {};
+        const d = res?.data?.data !== undefined ? res.data.data : res.data;
+        return d || {};
+      };
+
       return {
-        projects: projects.status === 'fulfilled' ? projects.value : null,
-        inventory: inventory.status === 'fulfilled' ? inventory.value : null,
-        leads: leads.status === 'fulfilled' ? leads.value : null,
-        finance: finance.status === 'fulfilled' ? finance.value : null,
-        hrm: hrm.status === 'fulfilled' ? hrm.value : null,
-        surveys: surveys.status === 'fulfilled' ? surveys.value : null,
+        projects: extractData(projectsRes),
+        inventory: extractData(inventoryRes),
+        leads: extractData(leadsRes),
+        finance: extractData(financeRes),
+        surveys: extractData(surveysRes),
+        commissioning: extractData(commissioningRes),
+        service: extractData(serviceRes),
+        installation: extractData(installationRes),
+        quotation: extractData(quotationRes),
+        procurement: extractData(procurementRes),
+        employees: extractData(employeesRes),
+        estimates: { total: 0, pending: 0, approved: 0 },
+        logistics: { total: 0, inTransit: 0, delivered: 0 },
+        compliance: { total: 0, pending: 0, compliant: 0 },
+        documents: { total: 0, pending: 0, approved: 0 },
       };
     } catch (error) {
+      console.error('[Dashboard API] Fallback error:', error);
+      return {};
+    }
+  },
+
+  // Overview stats
+  getOverviewStats: async () => {
+    try {
+      const response = await api.get('/dashboard/overview');
+      return response?.data?.data || {};
+    } catch (error) {
       console.error('Error fetching overview stats:', error);
-      return null;
+      return {};
+    }
+  },
+
+  // Recent activities from backend
+  getRecentActivities: async (limit = 10) => {
+    try {
+      const response = await api.get(`/dashboard/activities?limit=${limit}`);
+      return response?.data?.data || [];
+    } catch (error) {
+      console.error('Error fetching recent activities:', error);
+      return [];
+    }
+  },
+
+  // Finance data with trends
+  getFinanceTrends: async () => {
+    try {
+      const response = await api.get('/dashboard/finance');
+      return response?.data?.data || {};
+    } catch (error) {
+      console.error('Error fetching finance trends:', error);
+      return {};
+    }
+  },
+
+  // Sales pipeline data
+  getSalesPipeline: async () => {
+    try {
+      const response = await api.get('/dashboard/sales');
+      return response?.data?.data || {};
+    } catch (error) {
+      console.error('Error fetching sales pipeline:', error);
+      return {};
+    }
+  },
+
+  // Team performance
+  getTeamPerformance: async () => {
+    try {
+      const response = await api.get('/dashboard/team');
+      return response?.data?.data || {};
+    } catch (error) {
+      console.error('Error fetching team performance:', error);
+      return {};
+    }
+  },
+
+  // Project metrics
+  getProjectMetrics: async () => {
+    try {
+      const response = await api.get('/dashboard/projects');
+      return response?.data?.data || {};
+    } catch (error) {
+      console.error('Error fetching project metrics:', error);
+      return {};
+    }
+  },
+
+  // Inventory alerts
+  getInventoryAlerts: async () => {
+    try {
+      const response = await api.get('/dashboard/inventory');
+      return response?.data?.data || {};
+    } catch (error) {
+      console.error('Error fetching inventory alerts:', error);
+      return {};
+    }
+  },
+
+  // Intelligent insights
+  getInsights: async () => {
+    try {
+      const response = await api.get('/dashboard/insights');
+      return response?.data?.data || [];
+    } catch (error) {
+      console.error('Error fetching insights:', error);
+      return [];
+    }
+  },
+
+  // All dashboard data at once
+  getAllDashboardData: async () => {
+    try {
+      const response = await api.get('/dashboard/all');
+      return response?.data?.data || {};
+    } catch (error) {
+      console.error('Error fetching all dashboard data:', error);
+      return {};
+    }
+  },
+
+  // Refresh dashboard cache
+  refreshDashboard: async () => {
+    try {
+      const response = await api.get('/dashboard/refresh');
+      return response?.data || {};
+    } catch (error) {
+      console.error('Error refreshing dashboard:', error);
+      return {};
+    }
+  },
+
+  // Legacy support - Individual module stats (fallback)
+  getModuleStats: async (module) => {
+    try {
+      const endpoints = {
+        projects: '/projects/stats',
+        inventory: '/inventory/stats',
+        leads: '/leads/stats',
+        finance: '/finance/dashboard-stats',
+        surveys: '/surveys/stats',
+        commissioning: '/commissioning/stats',
+        service: '/service-amc/stats',
+        installation: '/installation/stats',
+        quotation: '/quotation/stats',
+        estimates: '/estimates/stats',
+        procurement: '/procurement/stats',
+        hrm: '/hrm/stats',
+      };
+      
+      const response = await api.get(endpoints[module] || `/dashboard/widget`);
+      return response?.data?.data || response?.data || {};
+    } catch (error) {
+      console.error(`Error fetching ${module} stats:`, error);
+      return {};
     }
   },
 
@@ -39,7 +214,7 @@ const DashboardService = {
         api.get('/projects/stats'),
         api.get('/projects/by-stage'),
       ]);
-      return { stats, byStage };
+      return { stats: stats?.data?.data || stats?.data || stats, byStage: byStage?.data?.data || byStage?.data || byStage };
     } catch (error) {
       console.error('Error fetching project stats:', error);
       return null;
@@ -53,7 +228,7 @@ const DashboardService = {
         api.get('/inventory/stats'),
         api.get('/inventory/by-category'),
       ]);
-      return { stats, byCategory };
+      return { stats: stats?.data?.data || stats?.data || stats, byCategory: byCategory?.data?.data || byCategory?.data || byCategory };
     } catch (error) {
       console.error('Error fetching inventory stats:', error);
       return null;
@@ -64,7 +239,7 @@ const DashboardService = {
   getCRMStats: async () => {
     try {
       const response = await api.get('/leads/stats');
-      return response;
+      return response?.data?.data || response?.data || response;
     } catch (error) {
       console.error('Error fetching CRM stats:', error);
       return null;
@@ -75,7 +250,7 @@ const DashboardService = {
   getFinanceStats: async () => {
     try {
       const response = await api.get('/finance/stats');
-      return response;
+      return response?.data?.data || response?.data || response;
     } catch (error) {
       console.error('Error fetching finance stats:', error);
       return null;
@@ -86,7 +261,7 @@ const DashboardService = {
   getHRMStats: async () => {
     try {
       const response = await api.get('/hrm/stats');
-      return response;
+      return response?.data?.data || response?.data || response;
     } catch (error) {
       console.error('Error fetching HRM stats:', error);
       return null;
@@ -97,7 +272,7 @@ const DashboardService = {
   getSurveyStats: async () => {
     try {
       const response = await api.get('/surveys/stats');
-      return response;
+      return response?.data?.data || response?.data || response;
     } catch (error) {
       console.error('Error fetching survey stats:', error);
       return null;
@@ -108,7 +283,7 @@ const DashboardService = {
   getInstallationStats: async () => {
     try {
       const response = await api.get('/installation/stats');
-      return response;
+      return response?.data?.data || response?.data || response;
     } catch (error) {
       console.error('Error fetching installation stats:', error);
       return null;
@@ -119,31 +294,20 @@ const DashboardService = {
   getCommissioningStats: async () => {
     try {
       const response = await api.get('/commissioning/stats');
-      return response;
+      return response?.data?.data || response?.data || response;
     } catch (error) {
       console.error('Error fetching commissioning stats:', error);
       return null;
     }
   },
 
-  // Service AMC Stats
-  getServiceStats: async () => {
+  // Quotation Stats
+  getQuotationStats: async () => {
     try {
-      const response = await api.get('/service-amc/stats');
-      return response;
+      const response = await api.get('/quotation/stats');
+      return response?.data?.data || response?.data || response;
     } catch (error) {
-      console.error('Error fetching service stats:', error);
-      return null;
-    }
-  },
-
-  // Compliance Stats
-  getComplianceStats: async () => {
-    try {
-      const response = await api.get('/compliance/stats');
-      return response;
-    } catch (error) {
-      console.error('Error fetching compliance stats:', error);
+      console.error('Error fetching quotation stats:', error);
       return null;
     }
   },
@@ -152,101 +316,21 @@ const DashboardService = {
   getProcurementStats: async () => {
     try {
       const response = await api.get('/procurement/stats');
-      return response;
+      return response?.data?.data || response?.data || response;
     } catch (error) {
       console.error('Error fetching procurement stats:', error);
       return null;
     }
   },
 
-  // Logistics Stats
-  getLogisticsStats: async () => {
+  // Tasks Stats
+  getTasksStats: async () => {
     try {
-      const response = await api.get('/logistics/stats');
-      return response;
+      const response = await api.get('/tasks/stats/overview');
+      return response?.data?.data || response?.data || response;
     } catch (error) {
-      console.error('Error fetching logistics stats:', error);
+      console.error('Error fetching tasks stats:', error);
       return null;
-    }
-  },
-
-  // Recent Activity
-  getRecentActivity: async () => {
-    try {
-      const [projects, quotations, installations, tickets] = await Promise.allSettled([
-        api.get('/projects?limit=5'),
-        api.get('/quotations?limit=5'),
-        api.get('/installation?limit=5'),
-        api.get('/service-amc/tickets?limit=5'),
-      ]);
-
-      return {
-        recentProjects: projects.status === 'fulfilled' ? projects.value : [],
-        recentQuotations: quotations.status === 'fulfilled' ? quotations.value : [],
-        recentInstallations: installations.status === 'fulfilled' ? installations.value : [],
-        recentTickets: tickets.status === 'fulfilled' ? tickets.value : [],
-      };
-    } catch (error) {
-      console.error('Error fetching recent activity:', error);
-      return null;
-    }
-  },
-
-  // Dashboard Widget Data (aggregated from ALL modules)
-  getWidgetData: async () => {
-    try {
-      const endpoints = [
-        { name: 'projects', url: '/projects/stats' },
-        { name: 'inventory', url: '/inventory/stats' },
-        { name: 'leads', url: '/leads/stats' },
-        { name: 'finance', url: '/finance/dashboard-stats' },  // Use dashboard-stats endpoint
-        { name: 'surveys', url: '/surveys/stats' },
-        { name: 'commissioning', url: '/commissioning/stats' },
-        { name: 'service', url: '/service-amc/stats' },
-        { name: 'employees', url: '/hrm/employees/stats' },
-        { name: 'installation', url: '/installation/stats' },
-        { name: 'quotation', url: '/quotation/stats' },
-        { name: 'estimates', url: '/estimates/stats' },
-        { name: 'procurement', url: '/procurement/stats' },
-        { name: 'logistics', url: '/logistics/stats' },
-        { name: 'compliance', url: '/compliance/stats' },
-        { name: 'documents', url: '/document/stats' },
-      ];
-
-      console.log('[Dashboard] Fetching widget data from all modules with tenant:', TENANT_ID);
-      
-      const headers = { 'x-tenant-id': TENANT_ID };
-      const results = await Promise.allSettled(
-        endpoints.map(ep => api.get(ep.url, { headers }).catch(err => {
-          console.error(`[Dashboard] API Error for ${ep.name}:`, err.message);
-          return null;
-        }))
-      );
-
-      const data = {};
-      
-      results.forEach((result, index) => {
-        const endpoint = endpoints[index];
-        if (result.status === 'fulfilled' && result.value) {
-          // Extract data from various response formats
-          const responseData = result.value?.data || result.value || {};
-          data[endpoint.name] = responseData;
-          console.log(`[Dashboard] ✅ ${endpoint.name}:`, responseData);
-        } else {
-          console.warn(`[Dashboard] ❌ Failed to fetch ${endpoint.name}:`, result.reason?.message || 'Unknown error');
-          // Provide fallback data structure
-          data[endpoint.name] = {};
-        }
-      });
-
-      // Log summary
-      const successful = Object.keys(data).filter(k => Object.keys(data[k]).length > 0).length;
-      console.log(`[Dashboard] Summary: ${successful}/${endpoints.length} modules returned data`);
-
-      return data;
-    } catch (error) {
-      console.error('Error fetching widget data:', error);
-      return {};
     }
   },
 };

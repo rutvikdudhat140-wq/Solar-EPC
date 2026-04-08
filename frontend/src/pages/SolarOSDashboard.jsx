@@ -34,73 +34,19 @@ const CHART_COLORS = {
 };
 
 // ============================================
-// MOCK DATA
+// DEFAULT DATA (Fallback when API returns empty)
 // ============================================
-const dashboardData = {
-  summaryCards: [
-    { id: 1, label: 'Projects', value: '24', trend: '+12%', trendUp: true, icon: FolderOpen, variant: 'blue' },
-    { id: 2, label: 'Leads', value: '156', trend: '+8%', trendUp: true, icon: Users, variant: 'purple' },
-    { id: 3, label: 'Surveys', value: '42', trend: '+15%', trendUp: true, icon: ClipboardList, variant: 'green' },
-    { id: 4, label: 'Inventory', value: '1,234', trend: '-3%', trendUp: false, icon: Package, variant: 'amber' },
-    { id: 5, label: 'Employees', value: '89', trend: '+5%', trendUp: true, icon: Briefcase, variant: 'indigo' },
-    { id: 6, label: 'Tasks', value: '67', trend: '+18%', trendUp: true, icon: CheckCircle2, variant: 'emerald' },
-    { id: 7, label: 'Commissioned', value: '18', trend: '+22%', trendUp: true, icon: Zap, variant: 'green' },
-    { id: 8, label: 'Revenue', value: '$2.4M', trend: '+25%', trendUp: true, icon: DollarSign, variant: 'indigo' }
-  ],
-  secondRowMetrics: [
-    { label: 'Total Projects', value: '24', change: '+12%' },
-    { label: 'Total Revenue', value: '$2.4M', change: '+25%' },
-    { label: 'Active Leads', value: '156', change: '+8%' },
-    { label: 'Inventory Alerts', value: '3', change: '-2', alert: true },
-    { label: 'Quotations', value: '45', change: '+10%' },
-    { label: 'Installations', value: '12', change: '+5%' },
-    { label: 'Service Tickets', value: '8', change: '-3' },
-    { label: 'Procurement', value: '6', change: '+2' }
-  ],
-  projectPipeline: [
-    { name: 'Leads', value: 156, fill: CHART_COLORS.blue },
-    { name: 'Surveys', value: 42, fill: CHART_COLORS.purple },
-    { name: 'Quotations', value: 45, fill: CHART_COLORS.green },
-    { name: 'Installations', value: 12, fill: CHART_COLORS.orange },
-    { name: 'Commissioned', value: 18, fill: CHART_COLORS.cyan }
-  ],
-  installationStatus: [
-    { name: 'In Progress', value: 8, fill: CHART_COLORS.blue },
-    { name: 'Completed', value: 12, fill: CHART_COLORS.green },
-    { name: 'Pending', value: 4, fill: CHART_COLORS.orange }
-  ],
-  quotationStatus: [
-    { name: 'Approved', value: 28, fill: CHART_COLORS.green },
-    { name: 'Pending', value: 12, fill: CHART_COLORS.orange },
-    { name: 'Rejected', value: 5, fill: CHART_COLORS.red }
-  ],
-  serviceTickets: [
-    { name: 'Open', value: 8, fill: CHART_COLORS.red },
-    { name: 'In Progress', value: 15, fill: CHART_COLORS.orange },
-    { name: 'Resolved', value: 42, fill: CHART_COLORS.green }
-  ],
-  procurementStatus: [
-    { name: 'Completed', value: 24, fill: CHART_COLORS.green },
-    { name: 'Pending', value: 8, fill: CHART_COLORS.orange },
-    { name: 'In Progress', value: 6, fill: CHART_COLORS.blue }
-  ],
-  inventoryCategory: [
-    { name: 'Solar Panels', value: 450, fill: CHART_COLORS.blue },
-    { name: 'Inverters', value: 280, fill: CHART_COLORS.purple },
-    { name: 'Batteries', value: 180, fill: CHART_COLORS.green },
-    { name: 'Mounting', value: 220, fill: CHART_COLORS.orange },
-    { name: 'Cables', value: 104, fill: CHART_COLORS.cyan }
-  ],
-  performanceMetrics: [
-    { label: 'Conversion Rate', value: '68%', target: '70%', status: 'good' },
-    { label: 'On-Time Delivery', value: '92%', target: '95%', status: 'good' },
-    { label: 'Customer Satisfaction', value: '4.8/5', target: '4.5', status: 'excellent' }
-  ],
-  systemHealth: [
-    { label: 'API Status', status: 'operational', icon: Server },
-    { label: 'Database Status', status: 'operational', icon: Database },
-    { label: 'Last Sync', value: '2 min ago', icon: RefreshCw }
-  ]
+const defaultDashboardData = {
+  summaryCards: [],
+  secondRowMetrics: [],
+  projectPipeline: [],
+  installationStatus: [],
+  quotationStatus: [],
+  serviceTickets: [],
+  procurementStatus: [],
+  inventoryCategory: [],
+  performanceMetrics: [],
+  systemHealth: []
 };
 
 // ============================================
@@ -307,7 +253,7 @@ const SolarOSDashboard = () => {
 
   // Transform API data to dashboard format
   const transformApiData = (rawData) => {
-    if (!rawData) return dashboardData;
+    if (!rawData) return defaultDashboardData;
     
     // Normalize data - extract from nested 'data' property if present
     const data = {};
@@ -449,11 +395,11 @@ const SolarOSDashboard = () => {
     ];
 
     // Project Pipeline Chart - always show all stages
-    const leadsTotal = data.leads?.total || 45;
-    const surveysTotal = data.surveys?.total || 28;
-    const quotationsTotal = data.quotation?.total || 32;
-    const installationsTotal = data.installation?.total || 20;
-    const commissionedTotal = data.commissioning?.commissioned || data.commissioning?.completed || data.projects?.commissioned || 15;
+    const leadsTotal = data.leads?.total || 0;
+    const surveysTotal = data.surveys?.total || 0;
+    const quotationsTotal = data.quotation?.total || 0;
+    const installationsTotal = data.installation?.total || 0;
+    const commissionedTotal = data.commissioning?.commissioned || data.commissioning?.completed || data.projects?.commissioned || 0;
     
     const projectPipeline = [
       { name: 'Leads', value: leadsTotal, fill: CHART_COLORS.blue },
@@ -489,8 +435,8 @@ const SolarOSDashboard = () => {
 
     // Service Tickets Chart - always show all categories
     const serviceOpen = data.service?.openTickets || data.service?.open || 0;
-    const serviceInProgress = data.service?.inProgressTickets || data.service?.inProgress || Math.floor(serviceOpen * 0.6);
-    const serviceResolved = data.service?.resolvedTickets || data.service?.resolved || Math.floor(serviceOpen * 1.5) || 12;
+    const serviceInProgress = data.service?.inProgressTickets || data.service?.inProgress || 0;
+    const serviceResolved = data.service?.resolvedTickets || data.service?.resolved || 0;
     
     const serviceTickets = [
       { name: 'Open', value: serviceOpen || 0, fill: CHART_COLORS.red },
@@ -510,15 +456,24 @@ const SolarOSDashboard = () => {
       { name: 'In Progress', value: procurementInProgress || 0, fill: CHART_COLORS.blue }
     ];
 
-    // Inventory by Category - always show all categories
-    const inventoryTotal = data.inventory?.totalItems || data.inventory?.total || 0;
-    const inventoryCategory = [
-      { name: 'Solar Panels', value: Math.floor(inventoryTotal * 0.35) || 12, fill: CHART_COLORS.blue },
-      { name: 'Inverters', value: Math.floor(inventoryTotal * 0.22) || 8, fill: CHART_COLORS.purple },
-      { name: 'Batteries', value: Math.floor(inventoryTotal * 0.14) || 5, fill: CHART_COLORS.green },
-      { name: 'Mounting', value: Math.floor(inventoryTotal * 0.17) || 6, fill: CHART_COLORS.orange },
-      { name: 'Cables', value: Math.floor(inventoryTotal * 0.08) || 3, fill: CHART_COLORS.cyan }
-    ];
+    // Inventory by Category - use real data from API
+    let inventoryCategory = [];
+    if (data.inventory?.byCategory && data.inventory.byCategory.length > 0) {
+      const colorKeys = Object.keys(CHART_COLORS);
+      inventoryCategory = data.inventory.byCategory.map((cat, index) => ({
+        name: cat.name || cat.category || 'Other',
+        value: cat.count || cat.quantity || cat.total || 0,
+        fill: CHART_COLORS[colorKeys[index % colorKeys.length]]
+      }));
+    } else {
+      inventoryCategory = [
+        { name: 'Solar Panels', value: 0, fill: CHART_COLORS.blue },
+        { name: 'Inverters', value: 0, fill: CHART_COLORS.purple },
+        { name: 'Batteries', value: 0, fill: CHART_COLORS.green },
+        { name: 'Mounting', value: 0, fill: CHART_COLORS.orange },
+        { name: 'Cables', value: 0, fill: CHART_COLORS.cyan }
+      ];
+    }
 
     // Performance Metrics
     const performanceMetrics = [
@@ -530,15 +485,15 @@ const SolarOSDashboard = () => {
       },
       { 
         label: 'On-Time Delivery', 
-        value: '92%', 
+        value: data.projects?.onTimeDelivery ? `${data.projects.onTimeDelivery}%` : '0%', 
         target: '95%', 
-        status: 'good' 
+        status: (data.projects?.onTimeDelivery || 0) >= 95 ? 'excellent' : (data.projects?.onTimeDelivery || 0) >= 80 ? 'good' : 'warning'
       },
       { 
         label: 'Customer Satisfaction', 
-        value: '4.8/5', 
+        value: data.service?.satisfaction ? `${data.service.satisfaction}/5` : '0/5', 
         target: '4.5', 
-        status: 'excellent' 
+        status: (data.service?.satisfaction || 0) >= 4.5 ? 'excellent' : (data.service?.satisfaction || 0) >= 3.5 ? 'good' : 'warning'
       }
     ];
 

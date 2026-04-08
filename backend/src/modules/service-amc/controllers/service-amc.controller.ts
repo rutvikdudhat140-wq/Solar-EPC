@@ -13,6 +13,7 @@ import {
   ValidationPipe,
   Request,
   UseGuards,
+  Headers,
 } from '@nestjs/common';
 import { TicketsService } from '../services/tickets.service';
 import { AmcContractsService } from '../services/amc-contracts.service';
@@ -303,10 +304,14 @@ export class ServiceAmcController {
   // ============ STATS ============
   @Get('stats')
   @UseGuards(JwtAuthGuard, TenantGuard, PermissionGuard)
-  async getStats(@Request() req: any) {
+  async getStats(
+    @Request() req: any,
+    @Headers('x-tenant-id') headerTenantId?: string,
+  ) {
     try {
       const user = req?.user;
-      const tenantId = req.tenant?.id;
+      const tenantId = headerTenantId || req.tenant?.id;
+      console.log('[Service Stats] tenantId:', tenantId);
       
       const [ticketStats, contracts, visits] = await Promise.all([
         this.ticketsService.getStats(tenantId, user),

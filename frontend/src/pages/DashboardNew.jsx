@@ -259,16 +259,32 @@ const SolarDashboard = ({ onNavigate }) => {
   const [widgetData, setWidgetData] = useState(null);
   const [selectedTab, setSelectedTab] = useState('overview');
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [activities, setActivities] = useState([]);
+  const [financeTrends, setFinanceTrends] = useState({});
 
-  // Fetch dashboard data
+  // Fetch all dashboard data
   const fetchData = useCallback(async () => {
     try {
       setRefreshing(true);
-      const data = await DashboardService.getWidgetData();
-      setWidgetData(data);
+      console.log('[DashboardNew] Fetching all dashboard data...');
+      
+      // Fetch widget data and additional data in parallel
+      const [widgetDataResult, activitiesResult, financeResult] = await Promise.all([
+        DashboardService.getWidgetData(),
+        DashboardService.getRecentActivities(10).catch(() => []),
+        DashboardService.getFinanceTrends().catch(() => ({})),
+      ]);
+      
+      console.log('[DashboardNew] Widget data:', widgetDataResult);
+      console.log('[DashboardNew] Activities:', activitiesResult);
+      console.log('[DashboardNew] Finance trends:', financeResult);
+      
+      setWidgetData(widgetDataResult);
+      setActivities(activitiesResult);
+      setFinanceTrends(financeResult);
       setLastUpdated(new Date());
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      console.error('[DashboardNew] Error fetching dashboard data:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -284,32 +300,36 @@ const SolarDashboard = ({ onNavigate }) => {
 
   // Real data for charts with fallbacks
   const pipelineData = useMemo(() => [
-    { name: 'Lead', value: widgetData?.leads?.total || 45, fill: '#22d3ee' },
-    { name: 'Quotation', value: widgetData?.quotation?.total || 32, fill: '#3b82f6' },
-    { name: 'Survey', value: widgetData?.surveys?.total || 28, fill: '#2563eb' },
-    { name: 'Project', value: widgetData?.projects?.active || widgetData?.projects?.total || 15, fill: '#f59e0b' },
-    { name: 'Installation', value: widgetData?.installation?.total || 12, fill: '#22c55e' },
-    { name: 'Commissioned', value: widgetData?.commissioning?.completed || 8, fill: '#a855f7' },
+    { name: 'Lead', value: widgetData?.leads?.total || 0, fill: '#22d3ee' },
+    { name: 'Quotation', value: widgetData?.quotation?.total || 0, fill: '#3b82f6' },
+    { name: 'Survey', value: widgetData?.surveys?.total || 0, fill: '#2563eb' },
+    { name: 'Project', value: widgetData?.projects?.active || widgetData?.projects?.total || 0, fill: '#f59e0b' },
+    { name: 'Installation', value: widgetData?.installation?.inProgress || widgetData?.installation?.active || 0, fill: '#22c55e' },
+    { name: 'Commissioned', value: widgetData?.commissioning?.completed || 0, fill: '#a855f7' },
   ], [widgetData]);
 
-  const revenueData = useMemo(() => [
-    { month: 'Jan', revenue: 450000, target: 500000 },
-    { month: 'Feb', revenue: 520000, target: 500000 },
-    { month: 'Mar', revenue: 480000, target: 550000 },
-    { month: 'Apr', revenue: 600000, target: 550000 },
-    { month: 'May', revenue: 720000, target: 600000 },
-    { month: 'Jun', revenue: 680000, target: 650000 },
-  ], []);
+  const revenueData = useMemo(() => {
+    const trendData = financeTrends?.monthlyRevenue || financeTrends?.revenueByMonth || [];
+    if (trendData && trendData.length > 0) {
+      return trendData.map(item => ({
+        month: item.month || item._id || '',
+        revenue: item.revenue || item.total || 0,
+        target: item.target || item.revenue * 1.1 || 0,
+      }));
+    }
+    return [];
+  }, [financeTrends]);
 
   const categoryData = useMemo(() => {
-    const totalItems = widgetData?.inventory?.totalItems || widgetData?.inventory?.total || 200;
-    return [
-      { name: 'Solar Panels', value: Math.floor(totalItems * 0.35) || 45, fill: '#3b82f6' },
-      { name: 'Inverters', value: Math.floor(totalItems * 0.22) || 28, fill: '#a855f7' },
-      { name: 'Batteries', value: Math.floor(totalItems * 0.14) || 18, fill: '#22c55e' },
-      { name: 'Mounting', value: Math.floor(totalItems * 0.17) || 22, fill: '#f59e0b' },
-      { name: 'Cables', value: Math.floor(totalItems * 0.08) || 10, fill: '#06b6d4' },
-    ];
+    const byCategory = widgetData?.inventory?.byCategory || [];
+    if (byCategory && byCategory.length > 0) {
+      return byCategory.map((cat, index) => ({
+        name: cat.name || 'Other',
+        value: cat.value || 0,
+        fill: ['#3b82f6', '#a855f7', '#22c55e', '#f59e0b', '#06b6d4', '#ec4899'][index % 6],
+      }));
+    }
+    return [];
   }, [widgetData]);
 
   const kpiData = useMemo(() => [
@@ -364,6 +384,36 @@ const SolarDashboard = ({ onNavigate }) => {
       onClick: () => onNavigate?.('quotation')
     },
     {
+      title: 'Site Surveys',
+      value: widgetData?.surveys?.total || 0,
+      subtitle: `${widgetData?.surveys?.completed || 0} Completed • ${widgetData?.surveys?.pending || 0} Pending`,
+      trend: 'up',
+      trendValue: '10%',
+      icon: MapPin,
+      color: '#06b6d4',
+      onClick: () => onNavigate?.('survey')
+    },
+    {
+      title: 'Commissioning',
+      value: widgetData?.commissioning?.total || 0,
+      subtitle: `${widgetData?.commissioning?.completed || 0} Completed • ${widgetData?.commissioning?.inProgress || 0} In Progress`,
+      trend: 'up',
+      trendValue: '5%',
+      icon: CheckCircle,
+      color: '#8b5cf6',
+      onClick: () => onNavigate?.('commissioning')
+    },
+    {
+      title: 'Procurement',
+      value: widgetData?.procurement?.total || 0,
+      subtitle: `${widgetData?.procurement?.pending || 0} Pending • ${widgetData?.procurement?.completed || 0} Completed`,
+      trend: 'up',
+      trendValue: '10%',
+      icon: Package,
+      color: '#f97316',
+      onClick: () => onNavigate?.('procurement')
+    },
+    {
       title: 'Installations',
       value: widgetData?.installation?.inProgress || 0,
       subtitle: `${widgetData?.installation?.completed || 0} Completed • ${widgetData?.installation?.total || 0} Total`,
@@ -397,49 +447,73 @@ const SolarDashboard = ({ onNavigate }) => {
 
   // Additional chart data from live backend
   const installationData = useMemo(() => {
-    const total = widgetData?.installation?.total || 20;
-    const inProgress = widgetData?.installation?.inProgress || widgetData?.installation?.active || 8;
-    const completed = widgetData?.installation?.completed || widgetData?.installation?.finished || 6;
+    const total = widgetData?.installation?.total || 0;
+    const inProgress = widgetData?.installation?.inProgress || widgetData?.installation?.active || 0;
+    const completed = widgetData?.installation?.completed || widgetData?.installation?.finished || 0;
     const pending = Math.max(0, total - inProgress - completed);
     return [
-      { name: 'In Progress', value: inProgress || 8, fill: '#22d3ee' },
-      { name: 'Completed', value: completed || 6, fill: '#22c55e' },
-      { name: 'Pending', value: pending || 6, fill: '#f59e0b' },
+      { name: 'In Progress', value: inProgress, fill: '#22d3ee' },
+      { name: 'Completed', value: completed, fill: '#22c55e' },
+      { name: 'Pending', value: pending, fill: '#f59e0b' },
     ];
   }, [widgetData]);
 
   const quotationData = useMemo(() => {
-    const total = widgetData?.quotation?.total || 45;
-    const approved = widgetData?.quotation?.approved || widgetData?.quotation?.accepted || 25;
-    const pending = widgetData?.quotation?.pending || widgetData?.quotation?.draft || 15;
-    const rejected = widgetData?.quotation?.rejected || Math.max(0, total - approved - pending);
+    const total = widgetData?.quotation?.total || 0;
+    const approved = widgetData?.quotation?.approved || widgetData?.quotation?.accepted || 0;
+    const pending = widgetData?.quotation?.pending || widgetData?.quotation?.draft || 0;
+    const rejected = widgetData?.quotation?.rejected || 0;
     return [
-      { name: 'Approved', value: approved || 25, fill: '#22c55e' },
-      { name: 'Pending', value: pending || 15, fill: '#f59e0b' },
-      { name: 'Rejected', value: rejected || 5, fill: '#ef4444' },
+      { name: 'Approved', value: approved, fill: '#22c55e' },
+      { name: 'Pending', value: pending, fill: '#f59e0b' },
+      { name: 'Rejected', value: rejected, fill: '#ef4444' },
     ];
   }, [widgetData]);
 
   const serviceData = useMemo(() => {
-    const open = widgetData?.service?.openTickets || widgetData?.service?.open || 8;
-    const inProgress = widgetData?.service?.inProgressTickets || widgetData?.service?.inProgress || Math.floor(open * 0.6) || 5;
-    const resolved = widgetData?.service?.resolvedTickets || widgetData?.service?.resolved || Math.floor(open * 1.5) || 12;
+    const open = widgetData?.service?.openTickets || widgetData?.service?.open || 0;
+    const inProgress = widgetData?.service?.inProgressTickets || widgetData?.service?.inProgress || 0;
+    const resolved = widgetData?.service?.resolvedTickets || widgetData?.service?.resolved || 0;
     return [
-      { name: 'Open', value: open || 8, fill: '#ef4444' },
-      { name: 'In Progress', value: inProgress || 5, fill: '#f59e0b' },
-      { name: 'Resolved', value: resolved || 12, fill: '#22c55e' },
+      { name: 'Open', value: open, fill: '#ef4444' },
+      { name: 'In Progress', value: inProgress, fill: '#f59e0b' },
+      { name: 'Resolved', value: resolved, fill: '#22c55e' },
     ];
   }, [widgetData]);
 
   const procurementData = useMemo(() => {
-    const total = widgetData?.procurement?.total || 65;
-    const completed = widgetData?.procurement?.completed || widgetData?.procurement?.delivered || 45;
-    const pending = widgetData?.procurement?.pending || widgetData?.procurement?.ordered || 12;
-    const inProgress = widgetData?.procurement?.inProgress || Math.max(0, total - completed - pending);
+    const total = widgetData?.procurement?.total || 0;
+    const completed = widgetData?.procurement?.completed || widgetData?.procurement?.delivered || 0;
+    const pending = widgetData?.procurement?.pending || widgetData?.procurement?.ordered || 0;
+    const ordered = widgetData?.procurement?.ordered || 0;
     return [
-      { name: 'Completed', value: completed || 45, fill: '#22c55e' },
-      { name: 'Pending', value: pending || 12, fill: '#f59e0b' },
-      { name: 'In Progress', value: inProgress || 8, fill: '#2563eb' },
+      { name: 'Completed', value: completed, fill: '#22c55e' },
+      { name: 'Pending', value: pending, fill: '#f59e0b' },
+      { name: 'Ordered', value: ordered, fill: '#2563eb' },
+    ];
+  }, [widgetData]);
+
+  const commissioningData = useMemo(() => {
+    const total = widgetData?.commissioning?.total || 0;
+    const completed = widgetData?.commissioning?.completed || 0;
+    const inProgress = widgetData?.commissioning?.inProgress || 0;
+    const pending = widgetData?.commissioning?.pending || 0;
+    return [
+      { name: 'Completed', value: completed, fill: '#22c55e' },
+      { name: 'In Progress', value: inProgress, fill: '#8b5cf6' },
+      { name: 'Pending', value: pending, fill: '#f59e0b' },
+    ];
+  }, [widgetData]);
+
+  const surveysChartData = useMemo(() => {
+    const total = widgetData?.surveys?.total || 0;
+    const completed = widgetData?.surveys?.completed || 0;
+    const pending = widgetData?.surveys?.pending || 0;
+    const scheduled = widgetData?.surveys?.scheduled || 0;
+    return [
+      { name: 'Completed', value: completed, fill: '#22c55e' },
+      { name: 'Pending', value: pending, fill: '#f59e0b' },
+      { name: 'Scheduled', value: scheduled, fill: '#22d3ee' },
     ];
   }, [widgetData]);
 
@@ -448,7 +522,7 @@ const SolarDashboard = ({ onNavigate }) => {
       title: 'CRM & Sales',
       status: 'active',
       count: widgetData?.leads?.total || 0,
-      total: Math.max(widgetData?.leads?.total || 0, 50),
+      total: Math.max(widgetData?.leads?.total || 0, 1),
       icon: Users,
       color: '#2563eb',
       subtext: `${widgetData?.leads?.hot || 0} Hot Leads • ${widgetData?.leads?.new || 0} New`,
@@ -518,7 +592,7 @@ const SolarDashboard = ({ onNavigate }) => {
       title: 'Inventory',
       status: widgetData?.inventory?.lowStockItems > 0 ? 'warning' : 'active',
       count: widgetData?.inventory?.totalItems || 0,
-      total: Math.max(widgetData?.inventory?.totalItems || 0, 200),
+      total: Math.max(widgetData?.inventory?.totalItems || 0, 1),
       icon: Package,
       color: widgetData?.inventory?.lowStockItems > 0 ? '#ef4444' : '#a855f7',
       subtext: `${widgetData?.inventory?.lowStockItems || 0} Low Stock • ${widgetData?.inventory?.totalItems || 0} Items`,
@@ -596,13 +670,104 @@ const SolarDashboard = ({ onNavigate }) => {
     },
   ], [widgetData, onNavigate]);
 
-  const recentActivities = useMemo(() => [
-    { title: 'New project created - Solar Panel Installation', time: '2 mins ago', icon: Briefcase, color: '#2563eb' },
-    { title: 'Survey completed for Site #1234', time: '15 mins ago', icon: MapPin, color: '#22d3ee' },
-    { title: 'Low stock alert - Inverter 5kW', time: '1 hour ago', icon: AlertCircle, color: '#ef4444' },
-    { title: 'Quotation approved - ₹12,50,000', time: '2 hours ago', icon: FileText, color: '#22c55e' },
-    { title: 'Installation completed - Project #5678', time: '3 hours ago', icon: CheckCircle, color: '#22c55e' },
-  ], []);
+  const recentActivities = useMemo(() => {
+    if (activities && activities.length > 0) {
+      return activities.slice(0, 5).map((activity, index) => {
+        const getIcon = (type) => {
+          const iconMap = {
+            lead: Users,
+            project: Briefcase,
+            survey: MapPin,
+            quotation: FileText,
+            installation: Wrench,
+            commissioning: CheckCircle,
+            ticket: Shield,
+            task: Activity,
+            inventory: Package,
+          };
+          return iconMap[type] || Activity;
+        };
+        
+        const getColor = (type) => {
+          const colorMap = {
+            lead: '#2563eb',
+            project: '#f59e0b',
+            survey: '#22d3ee',
+            quotation: '#a855f7',
+            installation: '#22c55e',
+            commissioning: '#8b5cf6',
+            ticket: '#ec4899',
+            task: '#f97316',
+            inventory: '#06b6d4',
+          };
+          return colorMap[type] || '#6b7280';
+        };
+
+        const getTitle = (activity) => {
+          if (activity.title) return activity.title;
+          if (activity.name) return activity.name;
+          if (activity.customerName) return activity.customerName;
+          return `${activity.type || 'Activity'} - ${activity.status || ''}`;
+        };
+
+        const getTime = (activity) => {
+          if (activity.createdAt) {
+            const date = new Date(activity.createdAt);
+            const now = new Date();
+            const diff = now - date;
+            const mins = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            if (mins < 60) return `${mins} mins ago`;
+            if (hours < 24) return `${hours} hours ago`;
+            return `${days} days ago`;
+          }
+          return '';
+        };
+
+        return {
+          title: getTitle(activity),
+          time: getTime(activity),
+          icon: getIcon(activity.type),
+          color: getColor(activity.type),
+        };
+      });
+    }
+    // Fallback when no activities
+    const widget = widgetData || {};
+    return [
+      { 
+        title: `${widgetData?.projects?.total || 0} Total Projects`, 
+        time: 'Projects', 
+        icon: Briefcase, 
+        color: '#2563eb' 
+      },
+      { 
+        title: `${widgetData?.leads?.total || 0} Total Leads`, 
+        time: 'Leads', 
+        icon: Users, 
+        color: '#f59e0b' 
+      },
+      { 
+        title: `${widgetData?.surveys?.total || 0} Surveys Completed`, 
+        time: 'Surveys', 
+        icon: MapPin, 
+        color: '#22d3ee' 
+      },
+      { 
+        title: `${widgetData?.installation?.completed || 0} Installations Done`, 
+        time: 'Installation', 
+        icon: Wrench, 
+        color: '#22c55e' 
+      },
+      { 
+        title: `${widgetData?.commissioning?.completed || 0} Commissioned`, 
+        time: 'Commissioning', 
+        icon: CheckCircle, 
+        color: '#8b5cf6' 
+      },
+    ];
+  }, [activities, widgetData]);
 
   const quickActions = useMemo(() => [
     { label: 'Create New Lead', icon: Users, color: '#2563eb', action: 'crm' },
@@ -731,6 +896,21 @@ const SolarDashboard = ({ onNavigate }) => {
         </ChartCard>
       </div>
 
+      {/* 2D Charts Row 4 - Surveys & Commissioning */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ChartCard title="📋 Site Surveys Status" icon={MapPin}>
+          <div className="h-80">
+            <InstallationStatus2D data={surveysChartData} height={320} />
+          </div>
+        </ChartCard>
+
+        <ChartCard title="✅ Commissioning Status" icon={CheckCircle}>
+          <div className="h-80">
+            <ProcurementStatus2D data={commissioningData} height={320} />
+          </div>
+        </ChartCard>
+      </div>
+
       {/* Bottom Stats Row */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Quick Actions */}
@@ -776,23 +956,39 @@ const SolarDashboard = ({ onNavigate }) => {
               
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[var(--text-secondary)]">On-time Delivery</span>
-                <span className="text-sm font-semibold text-[var(--text-primary)]">92%</span>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">
+                  {widgetData?.projects?.total > 0 
+                    ? Math.round((widgetData?.projects?.completed / widgetData?.projects?.total) * 100) 
+                    : 0}%
+                </span>
               </div>
               <div className="h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-[var(--green)] rounded-full transition-all duration-1000"
-                  style={{ width: '92%' }}
+                  style={{ 
+                    width: `${widgetData?.projects?.total > 0 
+                      ? Math.round((widgetData?.projects?.completed / widgetData?.projects?.total) * 100) 
+                      : 0}%` 
+                  }}
                 />
               </div>
               
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[var(--text-secondary)]">Customer Satisfaction</span>
-                <span className="text-sm font-semibold text-[var(--text-primary)]">4.8/5</span>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">
+                  {widgetData?.service?.resolvedTickets && widgetData?.service?.totalContracts > 0
+                    ? (Math.min(5, 3 + (widgetData?.service?.resolvedTickets / widgetData?.service?.totalContracts) * 2)).toFixed(1)
+                    : '4.5'}/5
+                </span>
               </div>
               <div className="h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-[var(--accent)] rounded-full transition-all duration-1000"
-                  style={{ width: '96%' }}
+                  style={{ 
+                    width: `${widgetData?.service?.resolvedTickets && widgetData?.service?.totalContracts > 0
+                      ? Math.min(100, (widgetData?.service?.resolvedTickets / widgetData?.service?.totalContracts) * 100)
+                      : 90}%` 
+                  }}
                 />
               </div>
             </div>

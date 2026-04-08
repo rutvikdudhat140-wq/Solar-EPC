@@ -76,6 +76,15 @@ export class DashboardController {
     return { success: true, message: 'Dashboard cache cleared' };
   }
 
+  @Get('widget')
+  async getWidgetData(@Req() req: any) {
+    // Try all possible sources for tenantId
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || req.user?.tenantId || '';
+    console.log('[Dashboard Controller] getWidgetData - tenantId:', tenantId, 'req.tenant:', req.tenant);
+    const data = await this.dashboardService.getWidgetData(tenantId, req.user);
+    return { success: true, data };
+  }
+
   @Get('all')
   async getAllDashboardData(@Req() req: any) {
     const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || req.user?.tenantId;

@@ -77,12 +77,13 @@ export class InventoryController {
     @Query('tenantId') queryTenantId: string,
     @Request() req?: any,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = headerTenantId || queryTenantId || '';
     const user = req.user ? {
       id: String(req.user.id || req.user._id),
       _id: String(req.user.id || req.user._id),
       dataScope: (req.user.dataScope as 'ALL' | 'ASSIGNED') || 'ALL',
     } : undefined;
+    console.log('[Inventory Stats] tenantId:', tenantId);
     return this.inventoryService.getStats(tenantId, user);
   }
 
@@ -92,7 +93,7 @@ export class InventoryController {
     @Query('tenantId') queryTenantId: string,
     @Request() req?: any,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = headerTenantId || queryTenantId || '';
     const user = req.user ? {
       id: String(req.user.id || req.user._id),
       _id: String(req.user.id || req.user._id),
