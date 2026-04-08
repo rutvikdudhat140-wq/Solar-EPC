@@ -1853,16 +1853,16 @@ const LogisticsPage = () => {
               </p>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <div onClick={() => handleCardClick('inTransit')} className="cursor-pointer transition-transform hover:scale-105">
-                  <KPICard title="Total Shipments In Transit" value={inTransit} icon={Truck} sub="Shipments currently moving" variant="blue" />
+                  <KPICard title="Total Shipments In Transit" value={inTransit} icon={Truck} sub="Shipments currently moving" variant="indigo" />
                 </div>
                 <div onClick={() => handleCardClick('scheduled')} className="cursor-pointer transition-transform hover:scale-105">
-                  <KPICard title="Total Dispatches Scheduled" value={scheduled} icon={Clock} sub="Dispatches awaiting pickup" variant="emerald" />
+                  <KPICard title="Total Dispatches Scheduled" value={scheduled} icon={Clock} sub="Dispatches awaiting pickup" variant="amber" />
                 </div>
                 <div onClick={() => handleCardClick('delivered')} className="cursor-pointer transition-transform hover:scale-105">
-                  <KPICard title="Total Deliveries Completed" value={delivered} icon={CheckCircle} sub={`${delivered} deliveries done this month`} variant="purple" />
+                  <KPICard title="Total Deliveries Completed" value={delivered} icon={CheckCircle} sub={`${delivered} deliveries done this month`} variant="emerald" />
                 </div>
                 <div onClick={() => handleCardClick('totalFreight')} className="cursor-pointer transition-transform hover:scale-105">
-                  <KPICard title="Total Freight Cost" value={`₹${totalFreight.toLocaleString('en-IN')}`} icon={MapPin} sub="Total shipping expenses" variant="amber" />
+                  <KPICard title="Total Freight Cost" value={`₹${totalFreight.toLocaleString('en-IN')}`} icon={MapPin} sub="Total shipping expenses" variant="indigo" />
                 </div>
               </div>
             </div>

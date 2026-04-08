@@ -545,25 +545,25 @@ const TasksPage = () => {
           title="Total Tasks"
           value={stats.total}
           icon={ClipboardList}
-          color="var(--primary)"
+          variant="indigo"
         />
         <KPICard
           title="Pending"
           value={stats.pending}
           icon={Clock}
-          color="#f59e0b"
+          variant="amber"
         />
         <KPICard
           title="In Progress"
           value={stats.inProgress}
           icon={TrendingUp}
-          color="#3b82f6"
+          variant="blue"
         />
         <KPICard
           title="Completed"
           value={stats.completed}
           icon={CheckSquare}
-          color="#22c55e"
+          variant="emerald"
         />
       </div>
 

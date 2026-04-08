@@ -10,11 +10,12 @@ import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { Input, FormField, Textarea, Select } from '../components/ui/Input';
 import { toast } from '../components/ui/Toast';
+import { KPICard } from '../components/ui/KPICard';
 import { useAuditLog } from '../hooks/useAuditLog';
 import { usePermissions } from '../hooks/usePermissions';
 
 const SurveyPage = () => {
- // �’�’State Management �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // �’�’State Management �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
  const [surveys, setSurveys] = useState([]);
  const [loading, setLoading] = useState(true);
  const [search, setSearch] = useState('');
@@ -35,7 +36,7 @@ const SurveyPage = () => {
  const { logCreate, logDelete } = useAuditLog('Survey');
  const { can } = usePermissions();
 
- // �’�’Mock Data �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // �’�’Mock Data �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
  useEffect(() => {
  const mockSurveys = [
  {
@@ -73,7 +74,7 @@ const SurveyPage = () => {
  setLoading(false);
  }, []);
 
- // �’�’Stats �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // �’�’Stats �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
  const stats = useMemo(() => ({
  total: surveys.length,
  pending: surveys.filter(s => s.status === 'pending').length,
@@ -81,7 +82,7 @@ const SurveyPage = () => {
  completed: surveys.filter(s => s.status === 'completed').length
  }), [surveys]);
 
- // �’�’Filtered Surveys �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // �’�’Filtered Surveys �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
  const filteredSurveys = useMemo(() => {
  let filtered = surveys;
  if (activeTab !== 'all') {
@@ -98,7 +99,7 @@ const SurveyPage = () => {
  return filtered;
  }, [surveys, activeTab, search]);
 
- // �’�’Handlers �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // �’�’Handlers �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
  const handleAddSurvey = () => {
  if (!can('survey', 'create')) {
  toast.error('Permission denied');
@@ -152,7 +153,7 @@ const SurveyPage = () => {
  toast.success('Survey started');
  };
 
- // �’�’Components �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // �’�’Components �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
  const StatusBadge = ({ status }) => {
  const styles = {
  pending: 'bg-amber-50 text-amber-700 border-amber-200',
@@ -195,7 +196,7 @@ const SurveyPage = () => {
  </button>
  );
 
- // �’�’Views �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // �’�’Views �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
  const TableView = () => (
  <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] overflow-hidden">
  <table className="w-full">
@@ -292,7 +293,7 @@ const SurveyPage = () => {
  </div>
  );
 
- // �’�’Render �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // �’�’Render �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
  return (
  <div className="p-6 bg-[var(--bg-elevated)] min-h-screen">
  {/* Header */}

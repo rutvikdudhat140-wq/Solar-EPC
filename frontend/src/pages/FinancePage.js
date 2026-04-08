@@ -1931,7 +1931,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
  lf: adjustForm.lf ? parseInt(adjustForm.lf) : undefined
  });
  
- console.log('œ�“ Saved vendor payment via manual adjustment, result:', adjustmentResult);
+ console.log('œ�“ Saved vendor payment via manual adjustment, result:', adjustmentResult);
  
  // Update local payables state AFTER successful API call
  setPayables(prev => {
@@ -2382,7 +2382,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
  // Calculate total collected from invoices
  const totalCollected = (filteredInvoicesByYear || []).reduce((sum, inv) => {
  const paid = getPaidAmount(inv, manualAdjustments);
- console.log('„¢� Collected Invoice:', {
+ console.log('„¢� Collected Invoice:', {
  id: inv.id || inv._id,
  invoiceNumber: inv.invoiceNumber,
  status: inv.status,
@@ -3565,7 +3565,7 @@ const filteredManualAdjustmentsByYear = useMemo(() => {
  <p>{fmt(activity.metadata.paymentAmount || 0)} received via {activity.metadata.paymentMethod}</p>
  )}
  {activity.action === 'STATUS_CHANGED' && (
- <p>{activity.metadata.previousStatus}  �¢ {activity.metadata.newStatus}</p>
+ <p>{activity.metadata.previousStatus}  �¢ {activity.metadata.newStatus}</p>
  )}
  {activity.action === 'REMINDER_SENT' && (
  <p>Reminder sent to {activity.metadata.sentTo}</p>

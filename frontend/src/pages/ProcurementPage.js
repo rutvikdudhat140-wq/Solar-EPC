@@ -1255,19 +1255,19 @@ const ProcurementPage = () => {
           </p>
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
             <div onClick={() => handleCardClick('pending')} className="cursor-pointer transition-transform hover:scale-105">
-              <KPICard title="Total Pending Approvals" value={pendingPOs} icon={ShoppingCart} sub="Draft & ordered POs awaiting approval" variant="blue" />
+              <KPICard title="Total Pending Approvals" value={pendingPOs} icon={ShoppingCart} sub="Draft & ordered POs awaiting approval" variant="amber" />
             </div>
             <div onClick={() => handleCardClick('active')} className="cursor-pointer transition-transform hover:scale-105">
-              <KPICard title="Total Active POs" value={activePOs} icon={Package} sub="All active purchase orders" variant="emerald" />
+              <KPICard title="Total Active POs" value={activePOs} icon={Package} sub="All active purchase orders" variant="blue" />
             </div>
             <div onClick={() => handleCardClick('delivered')} className="cursor-pointer transition-transform hover:scale-105">
-              <KPICard title="Total POs Delivered" value={delivered} icon={CheckCircle} sub="Completed deliveries" variant="purple" />
+              <KPICard title="Total POs Delivered" value={delivered} icon={CheckCircle} sub="Completed deliveries" variant="emerald" />
             </div>
             <div onClick={() => handleCardClick('inTransit')} className="cursor-pointer transition-transform hover:scale-105">
-              <KPICard title="Total POs In Transit" value={inTransit} icon={Truck} sub="On the way" variant="amber" />
+              <KPICard title="Total POs In Transit" value={inTransit} icon={Truck} sub="On the way" variant="indigo" />
             </div>
             <div onClick={() => handleCardClick('totalSpend')} className="cursor-pointer transition-transform hover:scale-105">
-              <KPICard title="Total Spend" value={fmtFull(totalSpend)} icon={Package} sub="Total PO value" variant="cyan" />
+              <KPICard title="Total Spend" value={fmtFull(totalSpend)} icon={Package} sub="Total PO value" variant="indigo" />
             </div>
           </div>
         </div>

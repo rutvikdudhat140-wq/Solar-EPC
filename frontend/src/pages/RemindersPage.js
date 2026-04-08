@@ -1,4 +1,4 @@
-// RemindersPage.js †â€™Comprehensive reminder management interface
+// RemindersPage.js ï¿½â€™Comprehensive reminder management interface
 import React, { useState, useMemo } from 'react';
 import {
  Bell, Plus, Filter, Search, Clock, AlertTriangle, CheckCircle,
@@ -139,7 +139,7 @@ const RemindersPage = () => {
  </div>
  <div>
  <h3 className="font-bold text-[var(--text-primary)] text-sm leading-tight">{reminder.title}</h3>
- <p className="text-xs text-[var(--text-muted)] mt-0.5 capitalize">{reminder.module} †â€™{reminder.type}</p>
+ <p className="text-xs text-[var(--text-muted)] mt-0.5 capitalize">{reminder.module} ï¿½â€™{reminder.type}</p>
  </div>
  </div>
  <div className="flex items-center gap-2">
@@ -297,13 +297,13 @@ const RemindersPage = () => {
  <div key={notification.id} className="flex items-center justify-between p-3 bg-[var(--bg-elevated)] rounded-lg">
  <div>
  <p className="font-medium text-sm text-[var(--text-primary)]">{notification.title}</p>
- <p className="text-xs text-[var(--text-muted)]">{notification.timeToGo} †â€™{notification.module}</p>
+ <p className="text-xs text-[var(--text-muted)]">{notification.timeToGo} ï¿½â€™{notification.module}</p>
  </div>
  <button
  onClick={() => dismissNotification(notification.id)}
  className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
  >
- †â€™„¢
+ ï¿½â€™ï¿½ï¿½
  </button>
  </div>
  ))}
@@ -399,7 +399,7 @@ const RemindersPage = () => {
  {filteredReminders.length === 0 && (
  <div className="text-center py-12">
  <div className="w-20 h-20 rounded-3xl bg-[var(--bg-elevated)] border border-[var(--border-base)] flex items-center justify-center text-4xl mx-auto mb-4">
- †â€™¸
+ ï¿½â€™ï¿½
  </div>
  <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">No reminders found</h3>
  <p className="text-sm text-[var(--text-muted)]">
@@ -420,7 +420,7 @@ const RemindersPage = () => {
  onClick={() => setShowSettings(false)}
  className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]"
  >
- †â€™„¢
+ ï¿½â€™ï¿½ï¿½
  </button>
  </div>
 

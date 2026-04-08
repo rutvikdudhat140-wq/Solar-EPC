@@ -1,4 +1,4 @@
-// Solar OS †â€™“ EPC Edition †â€™CompliancePage.js (API Integrated)
+// Solar OS ï¿½â€™ï¿½ EPC Edition ï¿½â€™CompliancePage.js (API Integrated)
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
  FileText, CheckCircle, AlertTriangle, Zap, Upload,
@@ -19,7 +19,7 @@ import apiClient, { api } from '../lib/apiClient';
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api/v1';
 const TENANT_ID = 'solarcorp';
 
-/* †â€™†â€™†â€™Config-driven Status Maps †â€™†â€™†â€™*/
+/* ï¿½â€™ï¿½â€™ï¿½â€™Config-driven Status Maps ï¿½â€™ï¿½â€™ï¿½â€™*/
 const NEUTRAL = 'bg-[var(--bg-elevated)] text-[var(--text-muted)] border-[var(--border-muted)]';
 const NM_STATUS = {
  Draft: { label: 'Draft', color: NEUTRAL },
@@ -56,11 +56,11 @@ const SubBadge = mkBadge(SUB_STATUS);
 const InsBadge = mkBadge(INS_STATUS);
 const DocBadge = mkBadge(DOC_STATUS);
 
-/* †â€™†â€™†â€™Local Data †â€™†â€™†â€™*/
+/* ï¿½â€™ï¿½â€™ï¿½â€™Local Data ï¿½â€™ï¿½â€™ï¿½â€™*/
 const NET_METERING = [
- { id: 'NM001', projectId: 'P001', customer: 'Ramesh Joshi', site: 'GIDC Ahmedabad', systemSize: '50 kW', discom: 'DGVCL', applicationNo: 'DGVCL/NM/2026/1234', appliedDate: '2026-02-26', approvalDate: null, status: 'Applied', compensationRate: '†â€™2.25/kWh', bidirectionalMeter: false },
- { id: 'NM002', projectId: 'P003', customer: 'Prakash Agarwal', site: 'Ahmedabad Plant', systemSize: '80 kW', discom: 'DGVCL', applicationNo: 'DGVCL/NM/2026/0891', appliedDate: '2026-01-16', approvalDate: '2026-02-10', status: 'Approved', compensationRate: '†â€™2.25/kWh', bidirectionalMeter: true },
- { id: 'NM003', projectId: 'P002', customer: 'Suresh Bhatt', site: 'Vapi GIDC', systemSize: '150 kW', discom: 'DGVCL', applicationNo: null, appliedDate: null, approvalDate: null, status: 'Draft', compensationRate: '†â€™2.25/kWh', bidirectionalMeter: false },
+ { id: 'NM001', projectId: 'P001', customer: 'Ramesh Joshi', site: 'GIDC Ahmedabad', systemSize: '50 kW', discom: 'DGVCL', applicationNo: 'DGVCL/NM/2026/1234', appliedDate: '2026-02-26', approvalDate: null, status: 'Applied', compensationRate: 'ï¿½â€™2.25/kWh', bidirectionalMeter: false },
+ { id: 'NM002', projectId: 'P003', customer: 'Prakash Agarwal', site: 'Ahmedabad Plant', systemSize: '80 kW', discom: 'DGVCL', applicationNo: 'DGVCL/NM/2026/0891', appliedDate: '2026-01-16', approvalDate: '2026-02-10', status: 'Approved', compensationRate: 'ï¿½â€™2.25/kWh', bidirectionalMeter: true },
+ { id: 'NM003', projectId: 'P002', customer: 'Suresh Bhatt', site: 'Vapi GIDC', systemSize: '150 kW', discom: 'DGVCL', applicationNo: null, appliedDate: null, approvalDate: null, status: 'Draft', compensationRate: 'ï¿½â€™2.25/kWh', bidirectionalMeter: false },
 ];
 
 const SUBSIDIES = [
@@ -87,15 +87,15 @@ const DOCUMENTS = [
  { id: 'DOC009', name: 'Generation Meter Calibration', category: 'CEA', project: 'P003', status: 'Uploaded', required: true },
 ];
 
-/* †â€™†â€™†â€™Column Schemas †â€™†â€™†â€™*/
+/* ï¿½â€™ï¿½â€™ï¿½â€™Column Schemas ï¿½â€™ï¿½â€™ï¿½â€™*/
 const NM_COLUMNS = [
  { key: 'applicationId', header: 'App ID', render: v => <span className="text-xs font-mono text-[var(--accent-light)]">{v}</span> },
  { key: 'customer', header: 'Customer', sortable: true, render: v => <span className="text-xs font-semibold text-[var(--text-primary)]">{v}</span> },
  { key: 'systemSize', header: 'Size', render: v => <span className="text-xs font-bold text-[var(--solar)]">{v}</span> },
  { key: 'discom', header: 'DISCOM', render: v => <span className="text-xs text-[var(--text-muted)]">{v}</span> },
- { key: 'applicationNo', header: 'App No.', render: v => <span className="text-xs font-mono text-[var(--text-secondary)]">{v ?? '†â€™'}</span> },
- { key: 'appliedDate', header: 'Applied', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? '†â€™'}</span> },
- { key: 'approvalDate', header: 'Approved', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? '†â€™'}</span> },
+ { key: 'applicationNo', header: 'App No.', render: v => <span className="text-xs font-mono text-[var(--text-secondary)]">{v ?? 'ï¿½â€™'}</span> },
+ { key: 'appliedDate', header: 'Applied', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? 'ï¿½â€™'}</span> },
+ { key: 'approvalDate', header: 'Approved', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? 'ï¿½â€™'}</span> },
  { key: 'compensationRate', header: 'Rate', render: v => <span className="text-xs text-[var(--green)]">{v}</span> },
  { key: 'status', header: 'Status', render: v => <NMBadge value={v} /> },
 ];
@@ -105,10 +105,10 @@ const SUB_COLUMNS = [
  { key: 'customer', header: 'Customer', sortable: true, render: v => <span className="text-xs font-semibold text-[var(--text-primary)]">{v}</span> },
  { key: 'scheme', header: 'Scheme', render: v => <span className="text-xs text-[var(--text-secondary)]">{v}</span> },
  { key: 'systemSize', header: 'Size', render: v => <span className="text-xs font-bold text-[var(--solar)]">{v}</span> },
- { key: 'claimAmount', header: 'Claim Amt', sortable: true, render: v => <span className="text-xs font-bold text-[var(--text-primary)]">†â€™{v.toLocaleString('en-IN')}</span> },
- { key: 'appliedDate', header: 'Applied', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? '†â€™'}</span> },
- { key: 'sanctionDate', header: 'Sanctioned', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? '†â€™'}</span> },
- { key: 'disbursedDate', header: 'Disbursed', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? '†â€™'}</span> },
+ { key: 'claimAmount', header: 'Claim Amt', sortable: true, render: v => <span className="text-xs font-bold text-[var(--text-primary)]">ï¿½â€™{v.toLocaleString('en-IN')}</span> },
+ { key: 'appliedDate', header: 'Applied', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? 'ï¿½â€™'}</span> },
+ { key: 'sanctionDate', header: 'Sanctioned', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? 'ï¿½â€™'}</span> },
+ { key: 'disbursedDate', header: 'Disbursed', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? 'ï¿½â€™'}</span> },
  { key: 'status', header: 'Status', render: v => <SubBadge value={v} /> },
 ];
 
@@ -118,8 +118,8 @@ const INS_COLUMNS = [
  { key: 'type', header: 'Type', render: v => <span className="text-xs text-[var(--text-secondary)]">{v}</span> },
  { key: 'inspector', header: 'Inspector', render: v => <span className="text-xs text-[var(--text-muted)]">{v}</span> },
  { key: 'scheduledDate', header: 'Scheduled', render: v => <span className="text-xs text-[var(--text-muted)]">{v}</span> },
- { key: 'completedDate', header: 'Completed', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? '†â€™'}</span> },
- { key: 'outcome', header: 'Outcome', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? '†â€™'}</span> },
+ { key: 'completedDate', header: 'Completed', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? 'ï¿½â€™'}</span> },
+ { key: 'outcome', header: 'Outcome', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? 'ï¿½â€™'}</span> },
  { key: 'status', header: 'Status', render: v => <InsBadge value={v} /> },
 ];
 
@@ -132,7 +132,7 @@ const DOC_COLUMNS = [
  { key: 'status', header: 'Status', render: v => <DocBadge value={v} /> },
 ];
 
-/* †â€™†â€™†â€™Kanban Stage Defs †â€™†â€™†â€™*/
+/* ï¿½â€™ï¿½â€™ï¿½â€™Kanban Stage Defs ï¿½â€™ï¿½â€™ï¿½â€™*/
 const NM_STAGES = [
  { id: 'Draft', label: 'Draft', color: '#64748b', bg: 'rgba(100,116,139,0.12)' },
  { id: 'Applied', label: 'Applied', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
@@ -148,7 +148,7 @@ const SUB_STAGES = [
  { id: 'Rejected', label: 'Rejected', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
 ];
 
-/* †â€™†â€™†â€™Net Metering Card †â€™†â€™†â€™*/
+/* ï¿½â€™ï¿½â€™ï¿½â€™Net Metering Card ï¿½â€™ï¿½â€™ï¿½â€™*/
 const NMCard = ({ item, onDragStart, onClick }) => {
  const meta = NM_STATUS[item.status] ?? NM_STATUS.Draft;
  return (
@@ -181,13 +181,13 @@ const NMCard = ({ item, onDragStart, onClick }) => {
  <p className="text-[9px] font-mono text-[var(--text-muted)] truncate">{item.applicationNo}</p>
  )}
  {item.bidirectionalMeter && (
- <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--blue)]/10 border border-[var(--blue)]/20 text-[var(--blue)]">Meter Installed †â€™…â€œÅ“</span>
+ <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--blue)]/10 border border-[var(--blue)]/20 text-[var(--blue)]">Meter Installed ï¿½â€™ï¿½â€œÅ“</span>
  )}
  </div>
  );
 };
 
-/* †â€™†â€™†â€™Subsidy Card †â€™†â€™†â€™*/
+/* ï¿½â€™ï¿½â€™ï¿½â€™Subsidy Card ï¿½â€™ï¿½â€™ï¿½â€™*/
 const SubCard = ({ item, onDragStart, onClick }) => {
  const meta = SUB_STATUS[item.status] ?? SUB_STATUS.Applied;
  return (
@@ -205,7 +205,7 @@ const SubCard = ({ item, onDragStart, onClick }) => {
  <div className="grid grid-cols-2 gap-1 text-[10px]">
  <div className="glass-card p-1.5">
  <p className="text-[var(--text-muted)]">Claim</p>
- <p className="font-bold text-[var(--green)]">†â€™{item.claimAmount.toLocaleString('en-IN')}</p>
+ <p className="font-bold text-[var(--green)]">ï¿½â€™{item.claimAmount.toLocaleString('en-IN')}</p>
  </div>
  <div className="glass-card p-1.5">
  <p className="text-[var(--text-muted)]">Size</p>
@@ -220,7 +220,7 @@ const SubCard = ({ item, onDragStart, onClick }) => {
  );
 };
 
-/* †â€™†â€™†â€™Generic Kanban Board †â€™†â€™†â€™*/
+/* ï¿½â€™ï¿½â€™ï¿½â€™Generic Kanban Board ï¿½â€™ï¿½â€™ï¿½â€™*/
 const ComplianceKanbanBoard = ({ stages, items, CardComponent, onStageChange, onCardClick }) => {
  const draggingId = useRef(null);
  const [dragOver, setDragOver] = useState(null);
@@ -609,7 +609,7 @@ const CompliancePage = () => {
  <div className="animate-fade-in space-y-5">
  <PageHeader
  title="Compliance & Regulatory"
- subtitle="Net metering †â€™…Â¡Â· subsidies †â€™…Â¡Â· DISCOM inspections †â€™…Â¡Â· document checklist"
+ subtitle="Net metering ï¿½â€™ï¿½Â¡Â· subsidies ï¿½â€™ï¿½Â¡Â· DISCOM inspections ï¿½â€™ï¿½Â¡Â· document checklist"
  actions={[
  { type: 'button', label: 'Upload Doc', icon: Upload, onClick: () => setShowUpload(true) },
  { type: 'button', label: 'Apply Net Metering', icon: Plus, variant: 'primary', onClick: () => setShowAddNM(true) }
@@ -629,7 +629,7 @@ const CompliancePage = () => {
  />
  <KPICard
  label={<span className="text-xs font-medium text-[var(--text-muted)]">Subsidy Claimed</span>}
- value={`†â€™${(totalSubsidy / 100000).toFixed(1)}L`}
+ value={`ï¿½â€™${(totalSubsidy / 100000).toFixed(1)}L`}
  icon={IndianRupee}
  color="solar"
  style={{ backgroundColor: 'rgba(249, 115, 22, 0.2)' }}
@@ -638,7 +638,7 @@ const CompliancePage = () => {
  />
  <KPICard
  label={<span className="text-xs font-medium text-[var(--text-muted)]">Subsidy Disbursed</span>}
- value={`†â€™${(disbursed / 100000).toFixed(1)}L`}
+ value={`ï¿½â€™${(disbursed / 100000).toFixed(1)}L`}
  icon={CheckCircle}
  color="emerald"
  style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)' }}
@@ -661,7 +661,7 @@ const CompliancePage = () => {
  <Zap size={14} className="text-[var(--accent-light)] mt-0.5 shrink-0" />
  <p className="text-xs text-[var(--text-secondary)]">
  <span className="text-[var(--accent-light)] font-semibold">AI Insight:</span>{' '}
- NM001 (Joshi Industries) awaiting bidirectional meter installation †â€™coordinate with DGVCL for expedited meter provisioning. SUB001 (PM Surya Ghar) application submitted †â€™expect sanction in 15-20 working days.
+ NM001 (Joshi Industries) awaiting bidirectional meter installation ï¿½â€™coordinate with DGVCL for expedited meter provisioning. SUB001 (PM Surya Ghar) application submitted ï¿½â€™expect sanction in 15-20 working days.
  </p>
  </div>
 
@@ -797,7 +797,7 @@ const CompliancePage = () => {
  <option value="">Select Project</option>
  {projects.map(p => (
  <option key={p._id || p.projectId} value={p.projectId || p._id}>
- {p.projectId || p._id} †â€™“ {p.customerName || 'Unknown'} {p.systemSize ? `(${p.systemSize} kW)` : ''}
+ {p.projectId || p._id} ï¿½â€™ï¿½ {p.customerName || 'Unknown'} {p.systemSize ? `(${p.systemSize} kW)` : ''}
  </option>
  ))}
  </Select>
@@ -844,7 +844,7 @@ const CompliancePage = () => {
  <option value="">Select Project</option>
  {projects.map(p => (
  <option key={p._id || p.projectId} value={p.projectId || p._id}>
- {p.projectId || p._id} †â€™“ {p.customerName || 'Unknown'} {p.systemSize ? `(${p.systemSize} kW)` : ''}
+ {p.projectId || p._id} ï¿½â€™ï¿½ {p.customerName || 'Unknown'} {p.systemSize ? `(${p.systemSize} kW)` : ''}
  </option>
  ))}
  </Select>
@@ -864,7 +864,7 @@ const CompliancePage = () => {
  </FormField>
  </div>
  <div className="grid grid-cols-2 gap-3">
- <FormField label="Claim Amount (†â€™)">
+ <FormField label="Claim Amount (ï¿½â€™)">
  <Input type="number" placeholder="94500" value={subForm.claimAmount} onChange={e => setSubForm(f => ({ ...f, claimAmount: e.target.value }))} />
  </FormField>
  <FormField label="Application Date">
@@ -891,7 +891,7 @@ const CompliancePage = () => {
  <option value="">Select Project</option>
  {projects.map(p => (
  <option key={p._id || p.projectId} value={p.projectId || p._id}>
- {p.projectId || p._id} †â€™“ {p.customerName || 'Unknown'} {p.systemSize ? `(${p.systemSize} kW)` : ''}
+ {p.projectId || p._id} ï¿½â€™ï¿½ {p.customerName || 'Unknown'} {p.systemSize ? `(${p.systemSize} kW)` : ''}
  </option>
  ))}
  </Select>
@@ -942,7 +942,7 @@ const CompliancePage = () => {
  <p className="text-xs text-[var(--text-muted)]">
  {docFile ? `Selected: ${docFile.name}` : 'Click to select file or drag & drop'}
  </p>
- <p className="text-[11px] text-[var(--text-muted)] mt-1">PDF, JPG, PNG †â€™max 10MB</p>
+ <p className="text-[11px] text-[var(--text-muted)] mt-1">PDF, JPG, PNG ï¿½â€™max 10MB</p>
  </div>
  </div>
  </Modal>
@@ -961,7 +961,7 @@ const CompliancePage = () => {
  <option value="">Select Project</option>
  {projects.map(p => (
  <option key={p._id || p.projectId} value={p.projectId || p._id}>
- {p.projectId || p._id} †â€™“ {p.customerName || 'Unknown'} {p.systemSize ? `(${p.systemSize} kW)` : ''}
+ {p.projectId || p._id} ï¿½â€™ï¿½ {p.customerName || 'Unknown'} {p.systemSize ? `(${p.systemSize} kW)` : ''}
  </option>
  ))}
  </Select>
@@ -997,10 +997,10 @@ const CompliancePage = () => {
  {/* Detail Modal */}
  {selected && selected.data && (
  <Modal open={!!selected} onClose={() => setSelected(null)}
- title={selected.type === 'nm' ? `Net Metering †â€™${selected.data?.id || selected.data?.applicationId || selected.data?._id}` :
- selected.type === 'sub' ? `Subsidy †â€™${selected.data?.id || selected.data?.subsidyId || selected.data?._id}` :
- selected.type === 'ins' ? `Inspection †â€™${selected.data?.id || selected.data?.inspectionId || selected.data?._id}` :
- `Document †â€™${selected.data?.id || selected.data?.documentId || selected.data?._id}`}
+ title={selected.type === 'nm' ? `Net Metering ï¿½â€™${selected.data?.id || selected.data?.applicationId || selected.data?._id}` :
+ selected.type === 'sub' ? `Subsidy ï¿½â€™${selected.data?.id || selected.data?.subsidyId || selected.data?._id}` :
+ selected.type === 'ins' ? `Inspection ï¿½â€™${selected.data?.id || selected.data?.inspectionId || selected.data?._id}` :
+ `Document ï¿½â€™${selected.data?.id || selected.data?.documentId || selected.data?._id}`}
  footer={
  <div className="flex gap-2 justify-end">
  <Button variant="ghost" onClick={() => setSelected(null)}>Close</Button>
@@ -1035,7 +1035,7 @@ const CompliancePage = () => {
  <div key={k} className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5 capitalize">{k.replace(/([A-Z])/g, ' $1')}</div>
  <div className="font-semibold text-[var(--text-primary)]">
- {v === null || v === undefined ? '†â€™' : typeof v === 'boolean' ? (v ? 'Yes' : 'No') : String(v)}
+ {v === null || v === undefined ? 'ï¿½â€™' : typeof v === 'boolean' ? (v ? 'Yes' : 'No') : String(v)}
  </div>
  </div>
  ))}

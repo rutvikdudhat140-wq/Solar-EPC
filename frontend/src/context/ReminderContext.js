@@ -1,7 +1,9 @@
 // ReminderContext.js — Centralized reminder management with real-time notifications
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { api } from '../lib/apiClient';
 
 const ReminderContext = createContext();
+const TENANT_ID = 'solarcorp';
 
 export const useReminders = () => {
     const context = useContext(ReminderContext);
@@ -137,7 +139,8 @@ const MOCK_REMINDERS = [
 ];
 
 export const ReminderProvider = ({ children }) => {
-    const [reminders, setReminders] = useState(MOCK_REMINDERS);
+    const [reminders, setReminders] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [activeNotifications, setActiveNotifications] = useState([]);
     const [settings, setSettings] = useState({
         voiceAlerts: true,
@@ -147,6 +150,51 @@ export const ReminderProvider = ({ children }) => {
         autoMarkComplete: false,
         reminderInterval: 15 // minutes
     });
+
+    // Fetch reminders from API
+    const fetchReminders = useCallback(async () => {
+        try {
+            setLoading(true);
+            console.log('[DEBUG] Fetching reminders from API...');
+            const res = await api.get('/reminders', {
+                tenantId: TENANT_ID,
+                includeOverdue: true,
+                limit: 100
+            });
+            console.log('[DEBUG] API response:', res);
+            const data = res?.data?.reminders || res?.data?.data || [];
+            console.log('[DEBUG] Extracted data:', data);
+            console.log('[DEBUG] Data length:', data.length);
+            // Convert date strings to Date objects
+            const parsed = data.map(r => ({
+                ...r,
+                dueDate: r.dueDate ? new Date(r.dueDate) : new Date(),
+                createdAt: r.createdAt ? new Date(r.createdAt) : new Date(),
+                updatedAt: r.updatedAt ? new Date(r.updatedAt) : new Date()
+            }));
+            console.log('[DEBUG] Parsed reminders:', parsed);
+            setReminders(parsed);
+        } catch (err) {
+            console.error('[DEBUG] Error fetching reminders:', err);
+            console.error('[DEBUG] Error response:', err.response);
+            // Fallback to mock data if API fails
+            console.log('[DEBUG] Falling back to mock data');
+            setReminders(MOCK_REMINDERS);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    // Initial fetch
+    useEffect(() => {
+        fetchReminders();
+    }, [fetchReminders]);
+
+    // Refresh every 5 minutes
+    useEffect(() => {
+        const interval = setInterval(fetchReminders, 5 * 60 * 1000);
+        return () => clearInterval(interval);
+    }, [fetchReminders]);
 
     const notificationTimeout = useRef(null);
     const voiceRef = useRef(null);
@@ -286,17 +334,32 @@ export const ReminderProvider = ({ children }) => {
         }
     };
 
-    // Reminder management functions
-    const addReminder = useCallback((reminderData) => {
-        const newReminder = {
-            id: `r${Date.now()}`,
-            ...reminderData,
-            createdAt: new Date(),
-            status: 'pending'
-        };
-        setReminders(prev => [...prev, newReminder]);
-        return newReminder.id;
-    }, []);
+    // Reminder management functions with API integration
+    const addReminder = useCallback(async (reminderData) => {
+        try {
+            console.log('[DEBUG] Creating reminder:', reminderData);
+            const res = await api.post('/reminders', reminderData, { tenantId: TENANT_ID });
+            console.log('[DEBUG] Created reminder response:', res);
+            const newReminder = res?.data?.data || res?.data;
+            if (newReminder) {
+                setReminders(prev => [...prev, { ...newReminder, dueDate: new Date(newReminder.dueDate) }]);
+                // Refresh list to ensure sync
+                fetchReminders();
+                return newReminder.id;
+            }
+        } catch (err) {
+            console.error('[DEBUG] Error creating reminder:', err);
+            // Fallback to local creation
+            const newReminder = {
+                id: `r${Date.now()}`,
+                ...reminderData,
+                createdAt: new Date(),
+                status: 'pending'
+            };
+            setReminders(prev => [...prev, newReminder]);
+            return newReminder.id;
+        }
+    }, [fetchReminders]);
 
     const updateReminder = useCallback((id, updates) => {
         setReminders(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));

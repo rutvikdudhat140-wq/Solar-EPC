@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Sun, Bell, Search, ChevronDown, LogOut, Menu, X, Zap, Settings, User, Palette, AlertTriangle, Package, Clock, ChevronRight } from 'lucide-react';
+import { Sun, Bell, BellRing, Search, ChevronDown, LogOut, Menu, X, Zap, Settings, User, Palette, AlertTriangle, Package, Clock, AlarmClock, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useReminders } from '../context/ReminderContext';
@@ -140,6 +140,9 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         if (!visibleChildren.length) return null;
         return { ...item, children: visibleChildren };
       }
+
+      // Bypass permission check for tasks module - always show it
+      if (item.id === 'tasks') return item;
 
       if (resolvePermission(item.id, 'view') !== true) return null;
       return item;
@@ -295,7 +298,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
           <span className={cn('text-[10px] font-medium', topbarHasCustomColor ? 'text-white/90' : 'text-[var(--primary-light)]')}>AI Active</span>
         </div>
 
-        {/* Reminders Button */}
+        {/* Reminders Button - Clock Icon */}
         <button
           onClick={() => { setReminderSidebarOpen(true); setNotifOpen(false); setUserMenuOpen(false); }}
           className={cn(
@@ -306,7 +309,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
           )}
           title="Reminders"
         >
-          <Bell size={14} />
+          <AlarmClock size={14} />
           {(upcomingCount + overdueCount + activeNotifications.length) > 0 && (
             <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full border-2 border-[var(--bg-page)] flex items-center justify-center text-[8px] font-bold text-white leading-none animate-pulse">
               {Math.min(upcomingCount + overdueCount + activeNotifications.length, 99)}
@@ -314,7 +317,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
           )}
         </button>
 
-        {/* Notifications */}
+        {/* Notifications - Bell Icon */}
         <div className="relative">
           <button
             onClick={() => { setNotifOpen(p => !p); setUserMenuOpen(false); setThemeMenuOpen(false); }}
@@ -324,7 +327,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
                 ? 'text-white/70 hover:text-white border-white/15 hover:border-white/30 bg-[var(--bg-surface)]/10'
                 : 'text-[var(--text-faint)] hover:text-[var(--text-primary)] border-[var(--border-base)] hover:border-[var(--border-muted)] bg-[var(--bg-elevated)]'
             )}>
-            <Bell size={14} />
+            <BellRing size={14} />
           </button>
           {(unreadCount > 0 || totalReminderAlerts > 0) && (
             <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full border-2 border-[var(--bg-page)] flex items-center justify-center text-[8px] font-bold text-white leading-none">

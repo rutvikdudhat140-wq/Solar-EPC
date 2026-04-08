@@ -158,8 +158,20 @@ export function buildCompleteFilter(
     const tenantObjId = typeof tenantId === 'string' && Types.ObjectId.isValid(tenantId)
       ? new Types.ObjectId(tenantId)
       : tenantId;
-    filter.tenantId = tenantObjId;
-    console.log("[BUILD_FILTER] Applied tenant filter:", tenantObjId.toString());
+    
+    // For admins or users with full access, also include leads without tenantId
+    // This allows viewing imported/legacy leads that don't have tenant context
+    if (hasFullAccess) {
+      filter.$or = [
+        { tenantId: tenantObjId },
+        { tenantId: { $exists: false } },
+        { tenantId: null }
+      ];
+      console.log("[BUILD_FILTER] Applied tenant filter with OR (includes null/undefined):", tenantObjId.toString());
+    } else {
+      filter.tenantId = tenantObjId;
+      console.log("[BUILD_FILTER] Applied tenant filter:", tenantObjId.toString());
+    }
   } else {
     console.log("[BUILD_FILTER] No tenantId - skipping tenant filter");
   }

@@ -1,4 +1,4 @@
-// Solar OS �’� EPC Edition �’ProjectPage.js
+// Solar OS �’� EPC Edition �’ProjectPage.js
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
  FolderOpen, Plus, Calendar, CheckCircle, Zap, TrendingUp, BarChart2,
@@ -70,7 +70,7 @@ const COLUMNS = [
  }
  },
  { key: 'status', header: 'Status', render: v => <StatusBadge domain="project" value={v} /> },
- { key: 'estEndDate', header: 'Est. End', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? '�’'}</span> },
+ { key: 'estEndDate', header: 'Est. End', render: v => <span className="text-xs text-[var(--text-muted)]">{v ?? '�’'}</span> },
  { key: 'value', header: 'Value', sortable: true, render: v => <span className="text-xs font-bold text-[var(--text-primary)]">{fmt(v)}</span> },
 ];
 
@@ -84,7 +84,7 @@ const PROGRESS_FILTERS = [
  { label: '76-100%', value: { min: 76, max: 100 } },
 ];
 
-/* �’�’Kanban Card �’�’*/
+/* �’�’Kanban Card �’�’*/
 const ProjectCard = ({ project, onDragStart, onClick }) => {
  // Calculate progress based on stage
  const getStageProgress = (status) => {
@@ -124,7 +124,7 @@ const ProjectCard = ({ project, onDragStart, onClick }) => {
  );
 };
 
-/* �’�’Kanban Board �’�’*/
+/* �’�’Kanban Board �’�’*/
 const KanbanBoard = ({ projects, onStageChange, onCardClick }) => {
  const draggingId = useRef(null);
  const [dragOver, setDragOver] = useState(null);
@@ -171,7 +171,7 @@ const KanbanBoard = ({ projects, onStageChange, onCardClick }) => {
  );
 };
 
-/* �’�’Main Page �’�’*/
+/* �’�’Main Page �’�’*/
 const ProjectPage = () => {
  const { user: authUser } = useAuth();
  const perm = usePermissions('project');
@@ -1297,7 +1297,7 @@ const ProjectPage = () => {
  <div className="animate-fade-in space-y-5">
  <PageHeader
  title="Project Management"
- subtitle="Track all EPC projects �’�¡· milestones �’�¡· progress �’�¡· delivery"
+ subtitle="Track all EPC projects �’�¡· milestones �’�¡· progress �’�¡· delivery"
  tabs={[
  { id: 'dashboard', label: 'Dashboard', icon: BarChart2 },
  { id: 'kanban', label: 'Kanban', icon: LayoutGrid },
@@ -1579,7 +1579,7 @@ const ProjectPage = () => {
  </div>
  <div className="flex items-center gap-1.5 mb-1">
  <span className={`text-xs font-medium ${isGood ? 'text-green-500' : metric.reverse ? 'text-amber-500' : 'text-red-500'}`}>
- {isGood ? '�’�“œ On Track' : metric.reverse ? '�’ High Risk' : '�’� Below Target'}
+ {isGood ? '�’�“œ On Track' : metric.reverse ? '�’ High Risk' : '�’� Below Target'}
  </span>
  </div>
  <p className="text-[10px] text-[var(--text-faint)] italic">{metric.hint}</p>
@@ -1739,7 +1739,7 @@ const ProjectPage = () => {
  />
  </div>
  <div className="w-16 text-[10px] font-semibold text-[var(--text-primary)] text-right">
- �’{(totalValue / 100000).toFixed(1)}L
+ �’{(totalValue / 100000).toFixed(1)}L
  </div>
  </div>
  );
@@ -1765,7 +1765,7 @@ const ProjectPage = () => {
  </div>
  <div className="flex flex-wrap gap-2 items-center mb-2 justify-between">
  <div className="flex flex-wrap gap-2 items-center">
- <Input placeholder="Search projects�’" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} className="h-8 text-xs w-52" />
+ <Input placeholder="Search projects�’" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} className="h-8 text-xs w-52" />
  <span className="text-xs text-[var(--text-muted)] mr-1 ml-2">Progress:</span>
  {PROGRESS_FILTERS.map(p => (
  <button key={p.label} onClick={() => { setProgressFilter(p.value); setPage(1); }}
@@ -1897,7 +1897,7 @@ const ProjectPage = () => {
  className={`filter-chip ${statusFilter === s ? 'filter-chip-active' : ''}`}>{s}</button>
  ))}
  <div className="ml-auto">
- <Input placeholder="Search projects�’" value={search} onChange={e => setSearch(e.target.value)} className="h-8 text-xs w-52" />
+ <Input placeholder="Search projects�’" value={search} onChange={e => setSearch(e.target.value)} className="h-8 text-xs w-52" />
  </div>
  </div>
  {loading ? (
@@ -1942,7 +1942,7 @@ const ProjectPage = () => {
  <FormField label="Site Address"><Input placeholder="Installation site" value={form.site} onChange={e => setForm(f => ({ ...f, site: e.target.value }))} /></FormField>
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
  <FormField label="System Size (kW)"><Input type="number" placeholder="50" value={form.systemSize} onChange={e => setForm(f => ({ ...f, systemSize: e.target.value }))} /></FormField>
- <FormField label="Project Value (�’)"><Input type="number" placeholder="280000" value={form.value} onChange={e => setForm(f => ({ ...f, value: e.target.value }))} /></FormField>
+ <FormField label="Project Value (�’)"><Input type="number" placeholder="280000" value={form.value} onChange={e => setForm(f => ({ ...f, value: e.target.value }))} /></FormField>
  </div>
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
  <FormField label="Department">
@@ -1979,7 +1979,7 @@ const ProjectPage = () => {
  </Modal>
 
  {/* Edit Modal */}
- <Modal open={showEdit} onClose={() => setShowEdit(false)} title={`Edit Project �’${editingProject?.id}`}
+ <Modal open={showEdit} onClose={() => setShowEdit(false)} title={`Edit Project �’${editingProject?.id}`}
  footer={<div className="flex gap-2 justify-end">
  <Button variant="ghost" onClick={() => setShowEdit(false)}>Cancel</Button>
  <Button onClick={handleUpdateProject} disabled={submitting || !editForm.customerName || !editForm.site}>
@@ -2005,7 +2005,7 @@ const ProjectPage = () => {
  <FormField label="Site Address"><Input placeholder="Installation site" value={editForm.site} onChange={e => setEditForm(f => ({ ...f, site: e.target.value }))} /></FormField>
  <div className="grid grid-cols-2 gap-3">
  <FormField label="System Size (kW)"><Input type="number" placeholder="50" value={editForm.systemSize} onChange={e => setEditForm(f => ({ ...f, systemSize: e.target.value }))} /></FormField>
- <FormField label="Project Value (�’)"><Input type="number" placeholder="280000" value={editForm.value} onChange={e => setEditForm(f => ({ ...f, value: e.target.value }))} /></FormField>
+ <FormField label="Project Value (�’)"><Input type="number" placeholder="280000" value={editForm.value} onChange={e => setEditForm(f => ({ ...f, value: e.target.value }))} /></FormField>
  </div>
  <div className="grid grid-cols-2 gap-3">
  <FormField label="Department">
@@ -2041,7 +2041,7 @@ const ProjectPage = () => {
 
  {/* Status Update Modal */}
  {statusProject && (
- <Modal open={showStatus} onClose={() => { setShowStatus(false); setStatusProject(null); }} title={`Update Status �’${statusProject.id}`}
+ <Modal open={showStatus} onClose={() => { setShowStatus(false); setStatusProject(null); }} title={`Update Status �’${statusProject.id}`}
  footer={<div className="flex gap-2 justify-end">
  <Button variant="ghost" onClick={() => { setShowStatus(false); setStatusProject(null); }}>Cancel</Button>
  <Button onClick={handleStatusUpdateConfirm} disabled={!newStatus || newStatus === statusProject.status}>
@@ -2056,11 +2056,11 @@ const ProjectPage = () => {
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Email</div>
- <div className="font-semibold text-[var(--text-primary)]">{statusProject.email || '�’'}</div>
+ <div className="font-semibold text-[var(--text-primary)]">{statusProject.email || '�’'}</div>
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Mobile</div>
- <div className="font-semibold text-[var(--text-primary)]">{statusProject.mobileNumber || '�’'}</div>
+ <div className="font-semibold text-[var(--text-primary)]">{statusProject.mobileNumber || '�’'}</div>
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Site</div>
@@ -2089,7 +2089,7 @@ const ProjectPage = () => {
 
  {/* Detail Modal */}
  {selected && (
- <Modal open={!!selected} onClose={() => setSelected(null)} title={`Project �’${selected.id}`}
+ <Modal open={!!selected} onClose={() => setSelected(null)} title={`Project �’${selected.id}`}
  footer={<div className="flex gap-2 justify-end">
  <Button variant="ghost" onClick={() => setSelected(null)}>Close</Button>
  {canMarkComplete && isAssignedToMe && hasEmployeeAssigned && (
@@ -2100,9 +2100,9 @@ const ProjectPage = () => {
  </div>}>
  <div className="space-y-4">
  <div className="grid grid-cols-2 gap-3 text-xs">
- {[['Customer', selected.customerName], ['Email', selected.email || '�’'], ['Mobile', selected.mobileNumber || '�’'], ['Site', selected.site], ['System Size', `${selected.systemSize} kW`], ['Project Manager', selected.pm],
+ {[['Customer', selected.customerName], ['Email', selected.email || '�’'], ['Mobile', selected.mobileNumber || '�’'], ['Site', selected.site], ['System Size', `${selected.systemSize} kW`], ['Project Manager', selected.pm],
  ['Status', <StatusBadge domain="project" value={selected.status} />], ['Value', fmt(selected.value)],
- ['Payment Terms %', selected.paymentTerms || '�’'], ['Visit in Month', selected.visitsPerMonth || '�’'], ['Total Visit', selected.totalVisits || '�’'],
+ ['Payment Terms %', selected.paymentTerms || '�’'], ['Visit in Month', selected.visitsPerMonth || '�’'], ['Total Visit', selected.totalVisits || '�’'],
  // ...
  ].map(([k, v]) => (
  <div key={k} className="glass-card p-2">
@@ -2141,7 +2141,7 @@ const ProjectPage = () => {
  <div key={`mat-${idx}`} className="glass-card p-2 flex items-center justify-between">
  <div>
  <div className="text-xs font-medium text-[var(--text-primary)]">{m.itemName}</div>
- <div className="text-[10px] text-[var(--text-muted)]">Qty: {m.quantity} | Issued: {m.issuedDate || '�’'}</div>
+ <div className="text-[10px] text-[var(--text-muted)]">Qty: {m.quantity} | Issued: {m.issuedDate || '�’'}</div>
  </div>
  {m.remarks && (
  <div className="text-[10px] text-[var(--text-faint)] max-w-[150px] truncate" title={m.remarks}>
@@ -2157,7 +2157,7 @@ const ProjectPage = () => {
  const category = item?.category || 'Item';
  // Extract date from notes (format: "Stock issued on YYYY-MM-DD")
  const dateMatch = res.notes?.match(/(\d{4}-\d{2}-\d{2})/);
- const issuedDate = dateMatch ? dateMatch[1] : (res.createdAt ? res.createdAt.split('T')[0] : '�’');
+ const issuedDate = dateMatch ? dateMatch[1] : (res.createdAt ? res.createdAt.split('T')[0] : '�’');
  return (
  <div key={`res-${idx}`} className="glass-card p-2 flex items-center justify-between border-l-2 border-amber-400">
  <div className="flex-1">
@@ -2180,7 +2180,7 @@ const ProjectPage = () => {
 
  {/* Timeline Modal */}
  {timelineProject && (
- <Modal open={showTimeline} onClose={() => { setShowTimeline(false); setTimelineProject(null); }} title={`Timeline �’${timelineProject.id}`}
+ <Modal open={showTimeline} onClose={() => { setShowTimeline(false); setTimelineProject(null); }} title={`Timeline �’${timelineProject.id}`}
  footer={<div className="flex gap-2 justify-end">
  <Button variant="ghost" onClick={() => { setShowTimeline(false); setTimelineProject(null); }}>Close</Button>
  </div>}>
@@ -2192,11 +2192,11 @@ const ProjectPage = () => {
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Email</div>
- <div className="font-semibold text-[var(--text-primary)]">{timelineProject.email || '�’'}</div>
+ <div className="font-semibold text-[var(--text-primary)]">{timelineProject.email || '�’'}</div>
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Mobile</div>
- <div className="font-semibold text-[var(--text-primary)]">{timelineProject.mobileNumber || '�’'}</div>
+ <div className="font-semibold text-[var(--text-primary)]">{timelineProject.mobileNumber || '�’'}</div>
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Site</div>
@@ -2204,15 +2204,15 @@ const ProjectPage = () => {
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Payment Terms %</div>
- <div className="font-semibold text-[var(--text-primary)]">{timelineProject.paymentTerms || '�’'}</div>
+ <div className="font-semibold text-[var(--text-primary)]">{timelineProject.paymentTerms || '�’'}</div>
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Visit in Month</div>
- <div className="font-semibold text-[var(--text-primary)]">{timelineProject.visitsPerMonth || '�’'}</div>
+ <div className="font-semibold text-[var(--text-primary)]">{timelineProject.visitsPerMonth || '�’'}</div>
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Total Visit</div>
- <div className="font-semibold text-[var(--text-primary)]">{timelineProject.totalVisits || '�’'}</div>
+ <div className="font-semibold text-[var(--text-primary)]">{timelineProject.totalVisits || '�’'}</div>
  </div>
  </div>
  <div className="relative pl-4 border-l-2 border-[var(--border-base)] space-y-4">
@@ -2229,7 +2229,7 @@ const ProjectPage = () => {
  }`} />
  <div className="flex-1">
  <div className="text-xs font-semibold text-[var(--text-primary)]">{item.label}</div>
- <div className="text-[10px] text-[var(--text-muted)]">{item.date || '�’'}</div>
+ <div className="text-[10px] text-[var(--text-muted)]">{item.date || '�’'}</div>
  <div className={`text-[10px] font-medium ${item.status === 'Done' ? 'text-green-500' :
  item.status === 'In Progress' ? 'text-blue-500' :
  item.status === 'Pending' ? 'text-amber-500' :
@@ -2245,7 +2245,7 @@ const ProjectPage = () => {
 
  {/* Activity Log Modal */}
  {activityProject && (
- <Modal open={showActivity} onClose={() => { setShowActivity(false); setActivityProject(null); }} title={`Activity Log �’${activityProject.id}`}
+ <Modal open={showActivity} onClose={() => { setShowActivity(false); setActivityProject(null); }} title={`Activity Log �’${activityProject.id}`}
  footer={<div className="flex gap-2 justify-end">
  <Button variant="ghost" onClick={() => { setShowActivity(false); setActivityProject(null); }}>Close</Button>
  </div>}>
@@ -2257,11 +2257,11 @@ const ProjectPage = () => {
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Email</div>
- <div className="font-semibold text-[var(--text-primary)]">{activityProject.email || '�’'}</div>
+ <div className="font-semibold text-[var(--text-primary)]">{activityProject.email || '�’'}</div>
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Mobile</div>
- <div className="font-semibold text-[var(--text-primary)]">{activityProject.mobileNumber || '�’'}</div>
+ <div className="font-semibold text-[var(--text-primary)]">{activityProject.mobileNumber || '�’'}</div>
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Site</div>
@@ -2269,15 +2269,15 @@ const ProjectPage = () => {
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Payment Terms %</div>
- <div className="font-semibold text-[var(--text-primary)]">{activityProject.paymentTerms || '�’'}</div>
+ <div className="font-semibold text-[var(--text-primary)]">{activityProject.paymentTerms || '�’'}</div>
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Visit in Month</div>
- <div className="font-semibold text-[var(--text-primary)]">{activityProject.visitsPerMonth || '�’'}</div>
+ <div className="font-semibold text-[var(--text-primary)]">{activityProject.visitsPerMonth || '�’'}</div>
  </div>
  <div className="glass-card p-2">
  <div className="text-[var(--text-muted)] mb-0.5">Total Visit</div>
- <div className="font-semibold text-[var(--text-primary)]">{activityProject.totalVisits || '�’'}</div>
+ <div className="font-semibold text-[var(--text-primary)]">{activityProject.totalVisits || '�’'}</div>
  </div>
  </div>
  <div className="space-y-3 max-h-[400px] overflow-y-auto">
@@ -2302,7 +2302,7 @@ const ProjectPage = () => {
  <div className="text-xs font-medium text-[var(--text-primary)]">{log.action}</div>
  <div className="flex items-center gap-2 mt-1">
  <span className="text-[10px] text-[var(--text-muted)]">{log.date}</span>
- <span className="text-[10px] text-[var(--accent-light)]">�’{log.user}</span>
+ <span className="text-[10px] text-[var(--accent-light)]">�’{log.user}</span>
  </div>
  </div>
  </div>
@@ -2324,7 +2324,7 @@ const ProjectPage = () => {
  </p>
  <div className="flex items-center gap-2 text-sm">
  <span className="px-2 py-1 rounded bg-[var(--bg-elevated)] text-[var(--text-muted)]">{backwardsMoveData?.currentStage}</span>
- <span>�’�Â¢</span>
+ <span>�’�Â¢</span>
  <span className="px-2 py-1 rounded bg-[var(--primary)]/10 text-[var(--primary)]">{backwardsMoveData?.newStage}</span>
  </div>
  <p className="text-xs text-[var(--text-faint)]">This action will revert the project to an earlier stage.</p>
