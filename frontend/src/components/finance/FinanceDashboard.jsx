@@ -134,9 +134,8 @@ const FinancialOverview = ({ dashboardStats, payablesTotal, manualBalance, cashP
       value: revenueCurrent,
       sub: 'From invoices',
       icon: TrendingUp,
-      accentColor: '#22c55e',
-      gradient: 'from-emerald-500/20 to-emerald-500/5',
-      trend: '+12%',
+      color: 'emerald',
+      tags: ['+12% vs last month'],
       onClick: onInvoicesClick,
     },
     {
@@ -144,9 +143,8 @@ const FinancialOverview = ({ dashboardStats, payablesTotal, manualBalance, cashP
       value: cashPositionVal,
       sub: 'Collected - Payables',
       icon: IndianRupee,
-      accentColor: '#3b82f6',
-      gradient: 'from-blue-500/20 to-blue-500/5',
-      trend: cashPositionVal >= 0 ? '+8%' : '-5%',
+      color: 'blue',
+      tags: cashPositionVal >= 0 ? ['Positive'] : ['Negative'],
       onClick: onCashPositionClick,
     },
     {
@@ -154,9 +152,8 @@ const FinancialOverview = ({ dashboardStats, payablesTotal, manualBalance, cashP
       value: receivables,
       sub: 'Outstanding',
       icon: Clock,
-      accentColor: '#f59e0b',
-      gradient: 'from-amber-500/20 to-amber-500/5',
-      trend: '-3%',
+      color: 'amber',
+      tags: ['To collect'],
       onClick: onReceivablesClick,
     },
     {
@@ -164,47 +161,50 @@ const FinancialOverview = ({ dashboardStats, payablesTotal, manualBalance, cashP
       value: payablesTotal,
       sub: 'Due to vendors',
       icon: TrendingDown,
-      accentColor: '#ef4444',
-      gradient: 'from-red-500/20 to-red-500/5',
-      trend: '+15%',
+      color: 'red',
+      tags: ['To pay'],
       onClick: onPayablesClick,
     },
   ];
 
+  const colorMap = {
+    emerald: { from: 'from-emerald-100', to: 'to-green-200', border: 'border-emerald-200', text: 'text-emerald-700', iconBg: 'bg-emerald-200', iconColor: 'text-emerald-700', tagBg: 'bg-emerald-100', tagText: 'text-emerald-700' },
+    blue: { from: 'from-blue-100', to: 'to-sky-200', border: 'border-blue-200', text: 'text-blue-700', iconBg: 'bg-blue-200', iconColor: 'text-blue-700', tagBg: 'bg-blue-100', tagText: 'text-blue-700' },
+    amber: { from: 'from-amber-100', to: 'to-orange-200', border: 'border-amber-200', text: 'text-amber-700', iconBg: 'bg-amber-200', iconColor: 'text-amber-700', tagBg: 'bg-amber-100', tagText: 'text-amber-700' },
+    red: { from: 'from-red-100', to: 'to-rose-200', border: 'border-red-200', text: 'text-red-700', iconBg: 'bg-red-200', iconColor: 'text-red-700', tagBg: 'bg-red-100', tagText: 'text-red-700' },
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map((card, index) => (
-        <div
-          key={card.label}
-          className={`relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br ${card.gradient} border border-[var(--border-muted)] shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-500 group animate-fade-in ${card.onClick ? 'cursor-pointer' : ''}`}
-          style={{ animationDelay: `${index * 100}ms` }}
-          onClick={card.onClick}
-        >
-          <div className="absolute top-0 right-0 w-24 h-24 opacity-10 group-hover:opacity-20 transition-opacity">
-            <div
-              className="w-full h-full rounded-full blur-2xl"
-              style={{ backgroundColor: card.accentColor }}
-            />
-          </div>
-          <div className="flex items-start justify-between mb-4 relative z-10">
-            <div
-              className="p-3 rounded-xl shadow-md"
-              style={{ backgroundColor: `${card.accentColor}30` }}
-            >
-              <card.icon size={22} style={{ color: card.accentColor }} />
+      {cards.map((card, index) => {
+        const colors = colorMap[card.color] || colorMap.blue;
+        return (
+          <div
+            key={card.label}
+            onClick={card.onClick}
+            className={`group relative overflow-hidden bg-gradient-to-br ${colors.from} ${colors.to} border ${colors.border} rounded-2xl p-5 cursor-pointer hover:shadow-xl hover:shadow-${card.color}-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300`}
+          >
+            <div className={`absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+            <div className="relative flex items-start justify-between">
+              <div>
+                <p className={`text-[10px] uppercase tracking-wider ${colors.text} font-bold`}>{card.label}</p>
+                <p className="text-3xl font-bold text-gray-800 mt-2">
+                  <AnimatedNumber value={card.value} />
+                </p>
+                <p className="text-xs text-gray-600 mt-1">{card.sub}</p>
+              </div>
+              <div className={`w-12 h-12 rounded-xl ${colors.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                <card.icon size={24} className={colors.iconColor} />
+              </div>
+            </div>
+            <div className="relative mt-3 flex gap-2 flex-wrap">
+              {card.tags.map((tag, i) => (
+                <span key={i} className={`text-[10px] px-2 py-1 ${colors.tagBg} rounded ${colors.tagText} font-medium`}>{tag}</span>
+              ))}
             </div>
           </div>
-          <div className="relative z-10">
-            <div className="text-3xl font-bold text-[var(--text-primary)] mb-1 tracking-tight">
-              <AnimatedNumber value={card.value} />
-            </div>
-            <div className="text-sm font-medium text-[var(--text-primary)] mb-0.5">
-              {card.label}
-            </div>
-            <div className="text-xs text-[var(--text-muted)]">{card.sub}</div>
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
@@ -239,53 +239,72 @@ const CashflowSummary = ({ dashboardStats, collectionRate, invoices, totalRevenu
       label: 'Total Invoiced',
       value: totalRevenue,
       icon: FileText,
-      color: '#64748b',
-      clickable: true,
+      color: 'blue',
+      tags: ['Invoices'],
     },
     {
       label: 'Collected',
       value: collected,
       icon: CheckCircle,
-      color: '#22c55e',
-      clickable: true,
+      color: 'emerald',
+      tags: ['Received'],
     },
     {
       label: 'Outstanding',
       value: outstanding,
       icon: Clock,
-      color: '#f59e0b',
-      clickable: true,
+      color: 'amber',
+      tags: ['Pending'],
     },
   ];
 
+  const colorMap = {
+    emerald: { from: 'from-emerald-100', to: 'to-green-200', border: 'border-emerald-200', text: 'text-emerald-700', iconBg: 'bg-emerald-200', iconColor: 'text-emerald-700', tagBg: 'bg-emerald-100', tagText: 'text-emerald-700' },
+    blue: { from: 'from-blue-100', to: 'to-sky-200', border: 'border-blue-200', text: 'text-blue-700', iconBg: 'bg-blue-200', iconColor: 'text-blue-700', tagBg: 'bg-blue-100', tagText: 'text-blue-700' },
+    amber: { from: 'from-amber-100', to: 'to-orange-200', border: 'border-amber-200', text: 'text-amber-700', iconBg: 'bg-amber-200', iconColor: 'text-amber-700', tagBg: 'bg-amber-100', tagText: 'text-amber-700' },
+  };
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      {cards.map((card, index) => (
-        <div
-          key={card.label}
-          className={`glass-card p-4 text-center rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-300 animate-fade-in ${card.clickable ? 'cursor-pointer' : ''}`}
-          style={{ animationDelay: `${index * 75}ms` }}
-          onClick={card.clickable ? (card.label === 'Collected' ? onCollectedClick : card.label === 'Outstanding' ? onOutstandingClick : onInvoicedClick) : undefined}
-        >
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <card.icon size={18} style={{ color: card.color }} />
-            <span className="text-[11px] text-[var(--text-muted)] font-medium">{card.label}</span>
+      {cards.map((card, index) => {
+        const colors = colorMap[card.color] || colorMap.blue;
+        return (
+          <div
+            key={card.label}
+            onClick={card.clickable ? (card.label === 'Collected' ? onCollectedClick : card.label === 'Outstanding' ? onOutstandingClick : onInvoicedClick) : undefined}
+            className={`group relative overflow-hidden bg-gradient-to-br ${colors.from} ${colors.to} border ${colors.border} rounded-2xl p-4 cursor-pointer hover:shadow-xl hover:shadow-${card.color}-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300`}
+          >
+            <div className={`absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+            <div className="relative flex flex-col items-center">
+              <div className={`w-10 h-10 rounded-xl ${colors.iconBg} flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300`}>
+                <card.icon size={20} className={colors.iconColor} />
+              </div>
+              <p className={`text-[10px] uppercase tracking-wider ${colors.text} font-bold`}>{card.label}</p>
+              <p className="text-2xl font-bold text-gray-800 mt-1">
+                <AnimatedNumber value={card.value} />
+              </p>
+              <div className="mt-2 flex gap-1 flex-wrap justify-center">
+                {card.tags.map((tag, i) => (
+                  <span key={i} className={`text-[9px] px-2 py-0.5 ${colors.tagBg} rounded ${colors.tagText} font-medium`}>{tag}</span>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="text-xl font-bold" style={{ color: card.color }}>
-            <AnimatedNumber value={card.value} />
+        );
+      })}
+      <div className="group relative overflow-hidden bg-gradient-to-br from-cyan-100 to-teal-200 border border-cyan-200 rounded-2xl p-4 cursor-pointer hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300">
+        <div className={`absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+        <div className="relative flex flex-col items-center">
+          <div className="w-10 h-10 rounded-xl bg-cyan-200 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300">
+            <BarChart3 size={20} className="text-cyan-700" />
           </div>
-        </div>
-      ))}
-      <div
-        className="glass-card p-4 text-center rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-300 animate-fade-in"
-        style={{ animationDelay: '225ms' }}
-      >
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <BarChart3 size={18} className="text-cyan-400" />
-          <span className="text-[11px] text-[var(--text-muted)] font-medium">Collection Rate</span>
-        </div>
-        <div className="text-xl font-bold text-cyan-400">
-          <AnimatedPercentage value={collectionRate} />
+          <p className="text-[10px] uppercase tracking-wider text-cyan-700 font-bold">Collection Rate</p>
+          <p className="text-2xl font-bold text-gray-800 mt-1">
+            <AnimatedPercentage value={collectionRate} />
+          </p>
+          <div className="mt-2 flex gap-1 flex-wrap justify-center">
+            <span className="text-[9px] px-2 py-0.5 bg-cyan-100 rounded text-cyan-700 font-medium">Performance</span>
+          </div>
         </div>
       </div>
     </div>

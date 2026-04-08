@@ -1,7 +1,7 @@
 
 // Solar OS – Lead Management Module (Premium Enterprise Edition)
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Plus, Phone, Mail, MapPin, TrendingUp, Users, Zap, Eye,
   BarChart2, Search, Download, Filter, MoreVertical, AlertCircle,
@@ -741,6 +741,7 @@ const SalesTeamReport = () => {
 };
 
 const CRMPage = ({ onNavigate }) => {
+  const queryClient = useQueryClient();
   const [view, setView] = useState('dashboard');
   const [activeLeads, setActiveLeads] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
@@ -1799,7 +1800,9 @@ const CRMPage = ({ onNavigate }) => {
   // Bulk Actions
   const handleBulkExport = async (selectedIds) => {
     if (!guardExport()) return;
-    if (!selectedIds || selectedIds.length === 0) {
+    // Convert Set to Array if needed
+    const idsArray = selectedIds instanceof Set ? Array.from(selectedIds) : selectedIds;
+    if (!idsArray || idsArray.length === 0) {
       toast.error('Please select leads to export');
       return;
     }
@@ -1807,7 +1810,7 @@ const CRMPage = ({ onNavigate }) => {
       setActionLoading(true);
       toast.loading('Exporting leads...', { id: 'export' });
 
-      const result = await leadsApi.exportCSV(selectedIds);
+      const result = await leadsApi.exportCSV(idsArray);
       const { csv, filename } = result.data || result;
 
       // Download CSV
@@ -1820,7 +1823,7 @@ const CRMPage = ({ onNavigate }) => {
       link.click();
       document.body.removeChild(link);
 
-      toast.success(`${selectedIds.length} leads exported successfully`, { id: 'export' });
+      toast.success(`${idsArray.length} leads exported successfully`, { id: 'export' });
     } catch (err) {
       console.error('Export failed:', err);
       toast.error(err?.response?.data?.message || 'Failed to export leads', { id: 'export' });
@@ -1830,13 +1833,15 @@ const CRMPage = ({ onNavigate }) => {
   };
 
   const handleBulkDelete = async (selectedIds) => {
+    // Convert Set to Array if needed
+    const idsArray = selectedIds instanceof Set ? Array.from(selectedIds) : selectedIds;
     try {
       setActionLoading(true);
-      await leadsApi.bulkDelete(selectedIds);
-      logDelete({ ids: selectedIds });
-      toast.success(`${selectedIds.length} leads deleted successfully`);
-      setActiveLeads((prev) => (Array.isArray(prev) ? prev.filter((l) => !selectedIds.includes(l?._id)) : prev));
-      setTotalLeads((prev) => Math.max(0, Number(prev || 0) - Number(selectedIds?.length || 0)));
+      await leadsApi.bulkDelete(idsArray);
+      logDelete({ ids: idsArray });
+      toast.success(`${idsArray.length} leads deleted successfully`);
+      setActiveLeads((prev) => (Array.isArray(prev) ? prev.filter((l) => !idsArray.includes(l?._id)) : prev));
+      setTotalLeads((prev) => Math.max(0, Number(prev || 0) - Number(idsArray?.length || 0)));
       fetchLeads();
       setSelected(new Set());
     } catch (err) {
@@ -2135,7 +2140,12 @@ const CRMPage = ({ onNavigate }) => {
       toast.success(`Lead "${leadData.name}" created successfully`);
       setShowAddModal(false);
       setNewLead({ firstName: '', lastName: '', company: '', email: '', phone: '', source: '', city: '', notes: '', statusKey: 'new' });
-      fetchLeads(); // Refresh list
+      setPage(1); // Reset to first page so new lead is visible
+      // Invalidate dashboard queries to refresh stats
+      queryClient.invalidateQueries({ queryKey: ['leads-dashboard-overview'] });
+      queryClient.invalidateQueries({ queryKey: ['leads-dashboard-trend'] });
+      queryClient.invalidateQueries({ queryKey: ['leads-dashboard-source'] });
+      await fetchLeads(); // Refresh list and wait for completion
     } catch (err) {
       console.error('Failed to create lead:', err);
       toast.error(err?.response?.data?.message || 'Failed to create lead');
