@@ -51,10 +51,6 @@ export class ReminderService {
       filter.assignedTo = new Types.ObjectId(userId);
     }
 
-    if (query.status && query.status !== 'all') {
-      filter.status = query.status;
-    }
-
     if (query.module) {
       filter.module = query.module;
     }
@@ -67,7 +63,10 @@ export class ReminderService {
       filter.assignedTo = new Types.ObjectId(query.assignedTo);
     }
 
-    if (!query.includeOverdue) {
+    // Handle status filter - don't overwrite with overdue filter
+    if (query.status && query.status !== 'all') {
+      filter.status = query.status;
+    } else if (!query.includeOverdue) {
       filter.status = { $nin: ['overdue'] };
     }
 
