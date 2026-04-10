@@ -1,4 +1,4 @@
-// AdminDashboard.js Ã¢â‚¬â€ Admin Control Center (Fully Aligned with Module Design Standards)
+// AdminDashboard.js a€" Admin Control Center (Fully Aligned with Module Design Standards)
 // Matches design patterns from CRM, Project, Survey, Installation, and Service modules
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
@@ -22,7 +22,7 @@ import {
 } from './DashboardShell';
 import { DateFilter, filterByDateRange } from '../dashboard/DateFilter';
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Admin Approval Workflow Stages Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// a"€a"€ Admin Approval Workflow Stages a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
 const ADMIN_KANBAN_STAGES = [
     { id: 'pending_approval', label: 'Pending Approval', color: '#f59e0b', icon: Clock, bg: '#f59e0b20' },
     { id: 'in_review', label: 'In Review', color: '#3b82f6', icon: Eye, bg: '#3b82f620' },
@@ -30,7 +30,7 @@ const ADMIN_KANBAN_STAGES = [
     { id: 'approved', label: 'Approved', color: '#10b981', icon: CheckCircle, bg: '#10b98120' }
 ];
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Mock Data for Admin Approval Items Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// a"€a"€ Mock Data for Admin Approval Items a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
 const MOCK_ADMIN_ITEMS = [
     { id: 1, title: 'New Project Approval Request', type: 'Project', requester: 'Sales Team', value: 285000, stage: 'pending_approval', priority: 'high', date: '2h ago' },
     { id: 2, title: 'Budget Increase - Ahmedabad Project', type: 'Finance', requester: 'PM Team', value: 50000, stage: 'in_review', priority: 'medium', date: '4h ago' },
@@ -42,7 +42,7 @@ const MOCK_ADMIN_ITEMS = [
     { id: 8, title: 'Project Milestone Completion', type: 'Project', requester: 'PM Team', value: 180000, stage: 'approved', priority: 'medium', date: '2d ago' }
 ];
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Admin Overview Data Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// a"€a"€ Admin Overview Data a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
 const ADMIN_OVERVIEW_DATA = {
     totalRevenue: 48000000,
     monthlyRevenue: 4200000,
@@ -56,7 +56,7 @@ const ADMIN_OVERVIEW_DATA = {
     departmentEfficiency: 91.2
 };
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Revenue Trend Data Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// a"€a"€ Revenue Trend Data a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
 const REVENUE_TREND_DATA = [
     { month: 'Sep', revenue: 3200000, profit: 1280000 },
     { month: 'Oct', revenue: 3600000, profit: 1580000 },
@@ -66,7 +66,7 @@ const REVENUE_TREND_DATA = [
     { month: 'Feb', revenue: 4200000, profit: 1890000 }
 ];
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Department Performance Data Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// a"€a"€ Department Performance Data a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
 const DEPARTMENT_PERFORMANCE = [
     { department: 'Sales', target: 100, actual: 118, efficiency: 95 },
     { department: 'Survey', target: 100, actual: 105, efficiency: 88 },
@@ -76,7 +76,7 @@ const DEPARTMENT_PERFORMANCE = [
     { department: 'Service', target: 100, actual: 102, efficiency: 89 }
 ];
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Project Status Data Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// a"€a"€ Project Status Data a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
 const PROJECT_STATUS_DATA = [
     { name: 'Completed', value: 186, color: '#10b981' },
     { name: 'In Progress', value: 35, color: '#3b82f6' },
@@ -84,7 +84,7 @@ const PROJECT_STATUS_DATA = [
     { name: 'On Hold', value: 4, color: '#ef4444' }
 ];
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Real-Time Alerts Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// a"€a"€ Real-Time Alerts a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
 const REAL_TIME_ALERTS = [
     { id: 1, type: 'critical', message: 'High-priority project deadline approaching', time: '2 mins ago', role: 'PM' },
     { id: 2, type: 'warning', message: 'Inventory stock below threshold', time: '5 mins ago', role: 'Store' },
@@ -92,7 +92,7 @@ const REAL_TIME_ALERTS = [
     { id: 4, type: 'success', message: 'Project milestone achieved ahead of schedule', time: '12 mins ago', role: 'PM' }
 ];
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ All Roles Data Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// a"€a"€ All Roles Data a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
 const ALL_ROLES_DATA = [
     {
         id: 'sales',
@@ -227,7 +227,7 @@ const ALL_ROLES_DATA = [
     }
 ];
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Role Card Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// a"€a"€ Role Card Component a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
 const RoleCard = ({ role, onClick }) => {
     const icons = {
         DollarSign, Briefcase, Package, ShoppingCart, MapPin,
@@ -298,7 +298,7 @@ const RoleCard = ({ role, onClick }) => {
                 {role.inventoryValue !== undefined && (
                     <div className="p-2 rounded bg-[var(--bg-elevated)]">
                         <p className="text-[10px] text-[var(--text-muted)]">Inventory Value</p>
-                        <p className="text-sm font-bold" style={{ color: role.color }}>Ã¢â€šÂ¹{(role.inventoryValue / 100000).toFixed(1)}L</p>
+                        <p className="text-sm font-bold" style={{ color: role.color }}>a"š1{(role.inventoryValue / 100000).toFixed(1)}L</p>
                     </div>
                 )}
                 {role.pendingPOs !== undefined && (
@@ -370,14 +370,14 @@ const RoleCard = ({ role, onClick }) => {
                     {role.status.toUpperCase()}
                 </span>
                 <button className="text-[10px] text-[var(--primary)] hover:underline font-medium">
-                    View Details Ã¢â€ â€™
+                    View Details a" "™
                 </button>
             </div>
         </div>
     );
 };
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Admin Kanban Card Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// a"€a"€ Admin Kanban Card Component a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
 const AdminKanbanCard = ({ item, onDragStart, onClick }) => {
     const priorityColors = {
         urgent: { bg: 'bg-red-500/10', text: 'text-red-500', border: 'border-red-200 dark:border-red-800' },
@@ -437,7 +437,7 @@ const AdminKanbanCard = ({ item, onDragStart, onClick }) => {
     );
 };
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Admin Kanban Board Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// a"€a"€ Admin Kanban Board Component a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
 const AdminKanbanBoard = ({ items, onStageChange, onCardClick }) => {
     const [dragOver, setDragOver] = useState(null);
     const draggingId = useRef(null);
@@ -512,7 +512,7 @@ const AdminKanbanBoard = ({ items, onStageChange, onCardClick }) => {
     );
 };
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Main Admin Dashboard Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// a"€a"€ Main Admin Dashboard Component a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
 const AdminDashboard = ({ onNavigate }) => {
     const [view, setView] = useState('dashboard'); // dashboard | kanban | analytics
     const [search, setSearch] = useState('');
@@ -569,7 +569,7 @@ const AdminDashboard = ({ onNavigate }) => {
 
     return (
         <div className="space-y-6">
-            {/* Ã¢â€â‚¬Ã¢â€â‚¬ Standard Module Header Ã¢â€â‚¬Ã¢â€â‚¬ */}
+            {/* a"€a"€ Standard Module Header a"€a"€ */}
             <div className="glass-card p-6">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -634,7 +634,7 @@ const AdminDashboard = ({ onNavigate }) => {
                 </div>
             </div>
 
-            {/* Ã¢â€â‚¬Ã¢â€â‚¬ View Toggle (Standard Pattern) Ã¢â€â‚¬Ã¢â€â‚¬ */}
+            {/* a"€a"€ View Toggle (Standard Pattern) a"€a"€ */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <button
@@ -663,7 +663,7 @@ const AdminDashboard = ({ onNavigate }) => {
                 </div>
             </div>
 
-            {/* Ã¢â€â‚¬Ã¢â€â‚¬ KPI Cards (Standard Module Pattern) Ã¢â€â‚¬Ã¢â€â‚¬ */}
+            {/* a"€a"€ KPI Cards (Standard Module Pattern) a"€a"€ */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {kpis.map(kpi => (
                     <div key={kpi.label} className="glass-card p-4 hover:scale-[1.02] transition-transform cursor-pointer">
@@ -679,7 +679,7 @@ const AdminDashboard = ({ onNavigate }) => {
                                 <p className="text-xl font-black text-[var(--text-primary)]">{kpi.value}</p>
                                 {kpi.change && (
                                     <p className={`text-xs font-bold ${kpi.change.startsWith('+') ? 'text-emerald-500' : 'text-red-500'}`}>
-                                        {kpi.change.startsWith('+') ? 'Ã¢â€ â€˜' : 'Ã¢â€ â€œ'} {kpi.change}%
+                                        {kpi.change.startsWith('+') ? 'a" "˜' : 'a" "'} {kpi.change}%
                                     </p>
                                 )}
                             </div>
@@ -688,7 +688,7 @@ const AdminDashboard = ({ onNavigate }) => {
                 ))}
             </div>
 
-            {/* Ã¢â€â‚¬Ã¢â€â‚¬ Dashboard View Ã¢â€â‚¬Ã¢â€â‚¬ */}
+            {/* a"€a"€ Dashboard View a"€a"€ */}
             {view === 'dashboard' && (
                 <div className="space-y-6">
                     {/* Global Date Filter Bar */}
@@ -830,7 +830,7 @@ const AdminDashboard = ({ onNavigate }) => {
                         </ResponsiveContainer>
                     </ChartCard>
 
-                    {/* Ã¢â€â‚¬Ã¢â€â‚¬ All Roles Overview Section Ã¢â€â‚¬Ã¢â€â‚¬ */}
+                    {/* a"€a"€ All Roles Overview Section a"€a"€ */}
                     <div className="glass-card p-6">
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
@@ -917,7 +917,7 @@ const AdminDashboard = ({ onNavigate }) => {
                 </div>
             )}
 
-            {/* Ã¢â€â‚¬Ã¢â€â‚¬ Kanban View Ã¢â€â‚¬Ã¢â€â‚¬ */}
+            {/* a"€a"€ Kanban View a"€a"€ */}
             {view === 'kanban' && (
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -938,7 +938,7 @@ const AdminDashboard = ({ onNavigate }) => {
                 </div>
             )}
 
-            {/* Ã¢â€â‚¬Ã¢â€â‚¬ Analytics View Ã¢â€â‚¬Ã¢â€â‚¬ */}
+            {/* a"€a"€ Analytics View a"€a"€ */}
             {view === 'analytics' && (
                 <div className="space-y-6">
                     <ChartCard title="Advanced Analytics" subtitle="Comprehensive system insights">

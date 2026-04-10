@@ -45,7 +45,7 @@ import { APP_CONFIG } from '../config/app.config';
 import { commissioningApi } from '../services/commissioningApi';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell, Legend, AreaChart, Area, LineChart, Line, ComposedChart } from 'recharts';
 
-// �’�’Kanban columns �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Kanban columns �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const INSTALL_STAGES = [
  { id: 'Pending Assign', label: 'Pending Assign', color: '#6366f1', bg: 'rgba(99,102,241,0.12)' },
  { id: 'In Progress', label: 'In Progress', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
@@ -89,7 +89,7 @@ const calculateProgress = (tasks=[]) => {
  return Math.round((done / tasks.length) * 100);
 };
 
-// �’�’Commissioning Kanban Card �’�’
+// �’�’Commissioning Kanban Card �’�’
 const formatEventType = (type) => {
  const labels = {
  'Commissioning_created': 'Commissioning Created',
@@ -115,7 +115,7 @@ const formatEventMetadata = (metadata) => {
  if (metadata.from !== undefined && metadata.to !== undefined) {
  const fromText = metadata.from === null ? 'Unassigned' : 'Previous';
  const toText = metadata.to === null ? 'Unassigned' : 'New';
- parts.push(`From: ${fromText} �’�Â¢ To: ${toText}`);
+ parts.push(`From: ${fromText} �’�¢ To: ${toText}`);
  }
  if (metadata.oldStatus && metadata.newStatus) {
  parts.push(`Changed from "${metadata.oldStatus}" to "${metadata.newStatus}"`);
@@ -173,7 +173,7 @@ const InstallCard = ({ log, onDragStart, onClick }) => {
  );
 };
 
-/* �’�’Kanban Board �’�’*/
+/* �’�’Kanban Board �’�’*/
 const InstallKanbanBoard = ({ items, onCardClick, onDrop, canEdit }) => {
  const draggingId = useRef(null);
  const draggingStageId = useRef(null);
@@ -304,10 +304,10 @@ const COLUMNS = [
  <span className="text-[10px] font-semibold text-[var(--text-muted)] w-7 text-right">{v}%</span>
  </div>
  )},
- { key: 'scheduledDate', header: 'Due Date', sortable: true, render: (v) => <span className="text-xs">{v ? new Date(v).toLocaleDateString() : '�’'}</span> },
+ { key: 'scheduledDate', header: 'Due Date', sortable: true, render: (v) => <span className="text-xs">{v ? new Date(v).toLocaleDateString() : '�’'}</span> },
 ];
 
-// �’�’Commissioning Calendar Component �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Commissioning Calendar Component �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const STATUS_COLORS = {
  'Pending Assign': '#6366f1',
  'In Progress': '#f59e0b',
@@ -351,7 +351,7 @@ const CommissioningCalendar = ({ logs, onOpenCommissioning }) => {
  setSelectedDay(null);
  };
 
- // Build grid: always 6 rows �’��7 cols
+ // Build grid: always 6 rows �’��7 cols
  const grid = useMemo(() => {
  const first = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
  const days = new Date(calYear, calMonth + 1, 0).getDate();
@@ -507,12 +507,12 @@ const CommissioningCalendar = ({ logs, onOpenCommissioning }) => {
  {inst.status}
  </span>
  </div>
- <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{inst.customerName || '�’'}</p>
- {inst.siteAddress && <p className="text-[10px] text-[var(--text-muted)] truncate mt-0.5">�’�œ{inst.siteAddress}</p>}
+ <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{inst.customerName || '�’'}</p>
+ {inst.siteAddress && <p className="text-[10px] text-[var(--text-muted)] truncate mt-0.5">�’�œ{inst.siteAddress}</p>}
  <div className="mt-2 flex items-center justify-between">
  <span className="text-[10px] text-[var(--text-muted)]">
  {inst.technicianName && inst.technicianName !== 'Not Assigned'
- ? `�’�· ${inst.technicianName}`
+ ? `�’�· ${inst.technicianName}`
  : <span className="italic">Not Assigned</span>
  }
  </span>
@@ -525,7 +525,7 @@ const CommissioningCalendar = ({ logs, onOpenCommissioning }) => {
  style={{ width: `${inst.progress}%`, backgroundColor: STATUS_COLORS[inst.status] || '#94a3b8' }}
  />
  </div>
- <p className="text-[9px] text-[var(--text-muted)] mt-1.5 group-hover:text-[var(--primary)] transition-colors">Click to view details �’�Â¢</p>
+ <p className="text-[9px] text-[var(--text-muted)] mt-1.5 group-hover:text-[var(--primary)] transition-colors">Click to view details �’�¢</p>
  </button>
  ))}
  </div>
@@ -534,7 +534,7 @@ const CommissioningCalendar = ({ logs, onOpenCommissioning }) => {
  );
 };
 
-// �’�’Commissioning Dashboard with Advanced 3D Animated Charts �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Commissioning Dashboard with Advanced 3D Animated Charts �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const CommissioningDashboard = ({ logs }) => {
  const [dateRange, setDateRange] = useState('all'); // '7days', '30days', '90days', 'all', 'custom'
  const [customStartDate, setCustomStartDate] = useState('');
@@ -922,7 +922,7 @@ const CommissioningDashboard = ({ logs }) => {
  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-600 font-medium">+{day.created}</span>
  )}
  {day.completed > 0 && (
- <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--green)]/10 text-[var(--green)] font-medium">�’�“œ{day.completed}</span>
+ <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--green)]/10 text-[var(--green)] font-medium">�’�“œ{day.completed}</span>
  )}
  </div>
  </div>
@@ -1077,7 +1077,7 @@ const CommissioningDashboard = ({ logs }) => {
  );
 };
 
-// �’�’Main Page �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Main Page �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const CommissioningPage = () => {
  const { can, user, role } = usePermissions();
  const { logCreate, logUpdate, logStatusChange } = useAuditLog('Commissioning');
@@ -1121,6 +1121,8 @@ const CommissioningPage = () => {
  // fetch Commissionings
  const { data: CommissioningsRaw=[], refetch } = useQuery({
  queryKey: ['Commissionings'],
+ refetchInterval: 10000, // Live refresh every 10 seconds
+ refetchOnWindowFocus: true,
  queryFn: async () => { const r = await apiClient.get('/commissionings'); return r.data || []; }
  });
 
@@ -1322,7 +1324,7 @@ const CommissioningPage = () => {
  photoRequired: !!x.photoRequired
  });
  
- // Check if all tasks are now done �’�Â¢ auto-complete
+ // Check if all tasks are now done �’�¢ auto-complete
  const allNowDone = updatedTasks.length > 0 && updatedTasks.every(t => t.done);
  const isUnchecking = t.done === true; // Task was done, now being unchecked
  const isProjectCompleted = selected.status?.toLowerCase() === 'completed';
@@ -1337,12 +1339,12 @@ const CommissioningPage = () => {
  // Auto-move to Completed when all tasks are done
  await apiClient.patch(`/commissionings/${selected._id || selected.id}/status`, { status: 'Completed' });
  setSelected({ ...resp.data, status: 'Completed' });
- toast.success('All tasks done �’Commissioning marked as Completed!');
+ toast.success('All tasks done �’Commissioning marked as Completed!');
  } else if (shouldRevertStatus) {
  // If project was completed and task unchecked, revert status to In Progress
  await apiClient.patch(`/commissionings/${selected._id || selected.id}/status`, { status: 'In Progress' });
  setSelected({ ...resp.data, status: 'In Progress', tasks: updatedTasks });
- toast.success('Task unchecked �’Commissioning reverted to In Progress');
+ toast.success('Task unchecked �’Commissioning reverted to In Progress');
  } else {
  setSelected({ ...resp.data, tasks: updatedTasks });
  }
@@ -1493,6 +1495,9 @@ const CommissioningPage = () => {
  const [bulkAssignIds, setBulkAssignIds] = useState([]);
  const [bulkAssignForm, setBulkAssignForm] = useState({ department: '', technicianId: '', technicianName: '', dueDate: '' });
  const [bulkAssignDept, setBulkAssignDept] = useState('');
+const [showAssignModal, setShowAssignModal] = useState(false);
+const [assignForm, setAssignForm] = useState({ commissioningId: '', department: '', technicianId: '', technicianName: '', dueDate: '' });
+const [assignDept, setAssignDept] = useState('');
  
  // Fetch completed installations to show in commissioning
  const { data: completedInstallations = [] } = useQuery({
@@ -1536,13 +1541,13 @@ const CommissioningPage = () => {
  }).map(inst => ({
  ...inst,
  isInstallation: true,
- displayName: `${inst.customerName || 'Unknown'} �’${inst.site || inst.siteAddress || 'No Site'} (Installation Completed)`,
+ displayName: `${inst.customerName || 'Unknown'} �’${inst.site || inst.siteAddress || 'No Site'} (Installation Completed)`,
  }));
  
  const pendingItems = pendingCommissionings.map(inst => ({
  ...inst,
  isInstallation: false,
- displayName: `${inst.customerName || 'Unknown'} �’${inst.site || inst.siteAddress || 'No Site'} (Pending)`,
+ displayName: `${inst.customerName || 'Unknown'} �’${inst.site || inst.siteAddress || 'No Site'} (Pending)`,
  }));
  
  console.log('[availableProjects] installations:', installationsForCommissioning.length, 'pending:', pendingItems.length);
@@ -1563,7 +1568,7 @@ const CommissioningPage = () => {
  return [];
  }
  },
- enabled: showAdd || showEdit || showBulkAssign,
+ enabled: showAdd || showEdit || showBulkAssign || showAssignModal,
  });
 
  // Fetch employees from HRM
@@ -1584,7 +1589,7 @@ const CommissioningPage = () => {
  return [];
  }
  },
- enabled: showAdd || showEdit || showBulkAssign,
+ enabled: showAdd || showEdit || showBulkAssign || showAssignModal,
  });
 
  // Departments list from HRM (fallback: extract from employees)
@@ -1656,7 +1661,8 @@ const CommissioningPage = () => {
  activeTab={view} 
  onTabChange={setView} 
  actions={[
- can('commissioning','create') && { type: 'button', label: 'Assign', icon: Plus, variant: 'primary', onClick: () => setShowAdd(true) },
+ can('commissioning','create') && { type: 'button', label: 'Create', icon: Plus, variant: 'primary', onClick: () => setShowAdd(true) },
+ ...(can('commissioning','assign') || can('commissioning','edit') ? [{ type: 'button', label: 'Assign', icon: UserPlus, variant: 'secondary', onClick: () => { setShowAssignModal(true); } }] : []),
  view !== 'dashboard' && { type: 'button', label: showCardsInViews ? 'Hide Cards' : 'Show Cards', icon: Layers, variant: 'ghost', onClick: () => setShowCardsInViews(!showCardsInViews) }
  ].filter(Boolean)} 
  />
@@ -1704,7 +1710,7 @@ const CommissioningPage = () => {
 
  <div className="flex items-center justify-between">
  {view !== 'table' && view !== 'dashboard' && (
- <Input placeholder="Search Commissionings�’" value={search} onChange={e=>setSearch(e.target.value)} className="w-80" />
+ <Input placeholder="Search Commissionings�’" value={search} onChange={e=>setSearch(e.target.value)} className="w-80" />
  )}
  </div>
 
@@ -1856,7 +1862,7 @@ const CommissioningPage = () => {
  <Modal
  open={showBulkAssign}
  onClose={() => { setShowBulkAssign(false); setBulkAssignDept(''); }}
- title={`Bulk Assign �’${bulkAssignIds.length} Commissioning${bulkAssignIds.length !== 1 ? 's' : ''}`}
+ title={`Bulk Assign �’${bulkAssignIds.length} Commissioning${bulkAssignIds.length !== 1 ? 's' : ''}`}
  footer={
  <div className="flex gap-2 justify-end pt-1">
  <Button variant="ghost" onClick={() => { setShowBulkAssign(false); setBulkAssignDept(''); }}>Cancel</Button>
@@ -1954,14 +1960,122 @@ const CommissioningPage = () => {
  </div>
  </Modal>
 
- {/* New Log Modal */}
- <Modal open={showAdd} onClose={()=>{setShowAdd(false); setSelectedDept(''); setSelectedProjectId('');}} title="Assign Commissioning" footer={
+ 
+{/* Assign Technician Modal */}
+<Modal
+  open={showAssignModal}
+  onClose={() => { setShowAssignModal(false); setAssignDept(''); setAssignForm({ commissioningId: '', department: '', technicianId: '', technicianName: '', dueDate: '' }); }}
+  title="Assign Technician"
+  footer={
+    <div className="flex gap-2 justify-end pt-1">
+      <Button variant="ghost" onClick={() => { setShowAssignModal(false); setAssignDept(''); setAssignForm({ commissioningId: '', department: '', technicianId: '', technicianName: '', dueDate: '' }); }}>Cancel</Button>
+      <Button
+        disabled={!assignForm.commissioningId || !assignForm.technicianId}
+        onClick={async () => {
+          try {
+            const selectedLog = logs.find(l => (l._id || l.id) === assignForm.commissioningId);
+            await apiClient.patch(`/commissionings/${assignForm.commissioningId}`, {
+              technicianId: assignForm.technicianId,
+              technicianName: assignForm.technicianName,
+              department: assignForm.department,
+              ...(assignForm.dueDate ? { scheduledDate: assignForm.dueDate, dueDate: assignForm.dueDate } : {}),
+              status: 'In Progress',
+            });
+            setShowAssignModal(false);
+            setAssignDept('');
+            setAssignForm({ commissioningId: '', department: '', technicianId: '', technicianName: '', dueDate: '' });
+            refetch();
+            toast.success(`Assigned to ${assignForm.technicianName}`);
+          } catch(err) { toast.error(err.message || 'Assign failed'); }
+        }}
+      >
+        <UserPlus size={14} /> Assign
+      </Button>
+    </div>
+  }
+>
+  <div className="space-y-4 py-1">
+    {/* Select Commissioning */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Select Commissioning</label>
+      <select
+        className="w-full px-3 py-2.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-base)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] transition-colors"
+        value={assignForm.commissioningId}
+        onChange={e => setAssignForm(p => ({ ...p, commissioningId: e.target.value }))}
+      >
+        <option value="">Select Commissioning</option>
+        {logs.filter(l => l.status === 'Pending Assign' || !l.technicianId).map(log => (
+          <option key={log._id || log.id} value={log._id || log.id}>
+            {log.customerName || 'Unknown'} - {log.siteAddress || 'No Site'} ({log.CommissioningId || log.id})
+          </option>
+        ))}
+      </select>
+      {logs.filter(l => l.status === 'Pending Assign' || !l.technicianId).length === 0 && (
+        <p className="text-[10px] text-amber-500 mt-1">No unassigned commissionings available.</p>
+      )}
+    </div>
+
+    {/* Department */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Department</label>
+      <select
+        className="w-full px-3 py-2.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-base)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] transition-colors"
+        value={assignDept}
+        onChange={e => {
+          setAssignDept(e.target.value);
+          setAssignForm(p => ({ ...p, department: e.target.value, technicianId: '', technicianName: '' }));
+        }}
+      >
+        <option value="">{departments.length > 0 ? 'Select Department' : 'No Departments'}</option>
+        {departments.map(dept => (
+          <option key={dept.id} value={dept.name}>{dept.name}</option>
+        ))}
+      </select>
+    </div>
+
+    {/* Technician */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Technician</label>
+      <select
+        className="w-full px-3 py-2.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-base)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        value={assignForm.technicianId}
+        disabled={!assignDept}
+        onChange={e => {
+          const emp = employees.find(x => (x._id || x.id) === e.target.value);
+          const name = emp ? ((emp.firstName || '') + ' ' + (emp.lastName || '')).trim() || emp.name || '' : '';
+          setAssignForm(p => ({ ...p, technicianId: e.target.value, technicianName: name }));
+        }}
+      >
+        <option value="">{assignDept ? 'Select Technician' : 'Select Dept First'}</option>
+        {employees.filter(e => e.department === assignDept).map(emp => (
+          <option key={emp._id || emp.id} value={emp._id || emp.id}>
+            {((emp.firstName || '') + ' ' + (emp.lastName || '')).trim() || emp.name}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    {/* Due Date */}
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Due Date</label>
+      <Input
+        type="datetime-local"
+        step={1}
+        value={assignForm.dueDate}
+        onChange={e => setAssignForm(p => ({ ...p, dueDate: e.target.value }))}
+        className="py-2.5"
+      />
+    </div>
+  </div>
+</Modal>
+{/* New Log Modal */}
+ <Modal open={showAdd} onClose={()=>{setShowAdd(false); setSelectedDept(''); setSelectedProjectId('');}} title="Create Commissioning" footer={
  <div className="flex gap-2 justify-end pt-1">
  <Button variant="ghost" onClick={()=>{setShowAdd(false); setSelectedDept(''); setSelectedProjectId('');}}>
  Cancel
  </Button>
  <Button onClick={createCommissioning} disabled={!newForm.technicianId}>
- <Plus size={14} /> Assign
+ <Plus size={14} /> Create
  </Button>
  </div>
  }>
@@ -2016,7 +2130,7 @@ const CommissioningPage = () => {
  <optgroup label="Completed Installations (Ready for Commissioning)">
  {completedInstallations.map(inst => (
  <option key={inst._id || inst.id} value={inst._id || inst.id}>
- {inst.customerName || 'Unknown'} �’{inst.site || inst.siteAddress || 'No Site'} �’�“œ
+ {inst.customerName || 'Unknown'} �’{inst.site || inst.siteAddress || 'No Site'} �’�“œ
  </option>
  ))}
  </optgroup>
@@ -2027,7 +2141,7 @@ const CommissioningPage = () => {
  <optgroup label="Pending Commissionings">
  {pendingCommissionings.map(inst => (
  <option key={inst._id || inst.id} value={inst._id || inst.id}>
- {inst.customerName || 'Unknown'} �’{inst.site || inst.siteAddress || 'No Site'} (Pending)
+ {inst.customerName || 'Unknown'} �’{inst.site || inst.siteAddress || 'No Site'} (Pending)
  </option>
  ))}
  </optgroup>
@@ -2120,7 +2234,7 @@ const CommissioningPage = () => {
 
  {/* Detail Modal */}
  {selected && (
- <Modal open={!!selected} onClose={()=>setSelected(null)} title={`Commissioning �’${selected.CommissioningId || selected.id}`} footer={
+ <Modal open={!!selected} onClose={()=>setSelected(null)} title={`Commissioning �’${selected.CommissioningId || selected.id}`} footer={
  <div className="flex gap-2 justify-end">
  <CanEdit module="Commissioning">
  <Button variant="primary" onClick={()=>{setEditForm(selected); setShowEdit(true);}}><Edit size={14} /> Edit</Button>
@@ -2295,7 +2409,7 @@ const CommissioningPage = () => {
  : 'bg-[var(--bg-hover)] text-[var(--text-muted)] cursor-not-allowed'
  }`}
  >
- {isCompleted && allTasksDone ? 'Marked as Completed �’�“œ' : !canComplete ? 'Permission Denied' : allTasksDone ? 'Complete Project' : 'Complete All Tasks First'}
+ {isCompleted && allTasksDone ? 'Marked as Completed �’�“œ' : !canComplete ? 'Permission Denied' : allTasksDone ? 'Complete Project' : 'Complete All Tasks First'}
  </button>
  );
  })()}

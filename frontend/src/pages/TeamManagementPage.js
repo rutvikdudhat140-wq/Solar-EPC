@@ -327,7 +327,7 @@ const DepartmentCard = ({
  {department.memberCount || 0} members
  {department.head && (
  <span className="ml-2">
- †â€™„¢Â žÂ¢†â€™…Â¡Ã†â€™„¢Ã†â€™†â€™…Â¡Ã†â€™„¢Ã†â€™…Â¡Head: {department.head.firstName} {department.head.lastName}
+ ï¿½â€™ï¿½ï¿½Â ï¿½Â¢ï¿½â€™ï¿½Â¡fï¿½ï¿½fï¿½â€™ï¿½Â¡fï¿½ï¿½fï¿½Â¡Head: {department.head.firstName} {department.head.lastName}
  <Crown className="inline-block w-3 h-3 ml-1" style={{ color: 'var(--amber)' }} />
  </span>
  )}

@@ -17,11 +17,11 @@ import { toast } from '../ui/Toast';
 import { leadsApi } from '../../services/leadsApi';
 
 const fmt = (val) => {
-  if (!val || val === 0) return 'Ã¢â€šÂ¹0';
-  if (val >= 10000000) return `Ã¢â€šÂ¹${(val / 10000000).toFixed(1)}Cr`;
-  if (val >= 100000) return `Ã¢â€šÂ¹${(val / 100000).toFixed(1)}L`;
-  if (val >= 1000) return `Ã¢â€šÂ¹${(val / 1000).toFixed(0)}K`;
-  return `Ã¢â€šÂ¹${val.toLocaleString()}`;
+  if (!val || val === 0) return 'a"š10';
+  if (val >= 10000000) return `a"š1${(val / 10000000).toFixed(1)}Cr`;
+  if (val >= 100000) return `a"š1${(val / 100000).toFixed(1)}L`;
+  if (val >= 1000) return `a"š1${(val / 1000).toFixed(0)}K`;
+  return `a"š1${val.toLocaleString()}`;
 };
 
 const formatNumber = (num) => {
@@ -263,7 +263,7 @@ const FunnelChart = ({ data, loading, leads = [] }) => {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Sales Funnel</h3>
-          <p className="text-sm text-[var(--text-muted)] mt-1">{totalLeads} leads Ã‚Â· {fmt(totalValue)}</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">{totalLeads} leads •. {fmt(totalValue)}</p>
         </div>
         <ChartDateFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
       </div>
@@ -500,7 +500,7 @@ const TrendChart = ({ data, loading }) => {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Monthly Trend</h3>
-          <p className="text-sm text-[var(--text-muted)] mt-1">{totalCreated} new Ã‚Â· {totalWon} won</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">{totalCreated} new •. {totalWon} won</p>
         </div>
         <ChartDateFilter dateRange={dateRange} onDateRangeChange={setDateRange} />
       </div>
@@ -921,7 +921,7 @@ const LeadCalendar = ({ leads, loading }) => {
                       {lead.name || lead.customerName || 'Unknown Lead'}
                     </p>
                     <p className="text-xs text-[var(--text-muted)]">
-                      {lead.statusKey || lead.status || 'new'} Ã¢â‚¬Â¢ {lead.phone || lead.mobile || 'No phone'}
+                      {lead.statusKey || lead.status || 'new'} a€¢ {lead.phone || lead.mobile || 'No phone'}
                     </p>
                   </div>
                 </div>
