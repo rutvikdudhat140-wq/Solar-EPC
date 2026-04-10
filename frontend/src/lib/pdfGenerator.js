@@ -1836,3 +1836,14 @@ export default {
   downloadEstimatePDF,
   printEstimate
 };
+
+// ============================================================
+// PROFESSIONAL ESTIMATE PDF - Modern & Creative Design
+// Re-export from estimatePdfGenerator.js
+// ============================================================
+
+export {
+  generateProfessionalEstimatePDF,
+  downloadProfessionalEstimatePDF,
+  printProfessionalEstimatePDF,
+} from './estimatePdfGenerator';

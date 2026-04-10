@@ -1,4 +1,4 @@
-// ProcurementOfficerDashboard.js Ã¢â‚¬â€ Procurement Officer role dashboard (redesigned)
+// ProcurementOfficerDashboard.js "" Procurement Officer role dashboard (redesigned)
 import React from 'react';
 import {
     BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
@@ -61,7 +61,7 @@ const ProcurementOfficerDashboard = () => {
 
             <SectionHeader
                 title="Procurement Officer Dashboard"
-                subtitle="Purchase orders Ã‚Â· Vendor management Ã‚Â· Cost optimization"
+                subtitle="Purchase orders •· Vendor management •· Cost optimization"
                 icon={ShoppingCart}
                 accent={C.primary}
                 badge="Procurement Hub"
@@ -167,7 +167,7 @@ const ProcurementOfficerDashboard = () => {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-[12.5px] font-semibold text-[var(--text-primary)] truncate">{v.name}</p>
-                                    <p className="text-[10px] text-[var(--text-muted)]">{v.orders} orders Ã‚Â· {v.onTime}% on-time</p>
+                                    <p className="text-[10px] text-[var(--text-muted)]">{v.orders} orders •· {v.onTime}% on-time</p>
                                 </div>
                                 <div className="flex items-center gap-1 shrink-0">
                                     <Star size={11} style={{ color: '#f59e0b' }} />

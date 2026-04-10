@@ -2324,7 +2324,7 @@ const ProjectPage = () => {
  </p>
  <div className="flex items-center gap-2 text-sm">
  <span className="px-2 py-1 rounded bg-[var(--bg-elevated)] text-[var(--text-muted)]">{backwardsMoveData?.currentStage}</span>
- <span>�’�Â¢</span>
+ <span>�’�¢</span>
  <span className="px-2 py-1 rounded bg-[var(--primary)]/10 text-[var(--primary)]">{backwardsMoveData?.newStage}</span>
  </div>
  <p className="text-xs text-[var(--text-faint)]">This action will revert the project to an earlier stage.</p>

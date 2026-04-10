@@ -1,4 +1,4 @@
-// Solar OS �’� EPC Edition �’DesignPage.js
+// Solar OS �’� EPC Edition �’DesignPage.js
 // Project Type Adaptive Design Studio
 import React, { useState, useMemo, useRef } from 'react';
 import {
@@ -30,14 +30,14 @@ import { toast } from '../components/ui/Toast';
 
 const fmt = CURRENCY.format;
 
-// �’�’Project type icon map �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Project type icon map �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const PT_ICON = {
  [PROJECT_TYPES.RESIDENTIAL]: Home,
  [PROJECT_TYPES.COMMERCIAL]: Building2,
  [PROJECT_TYPES.INDUSTRIAL]: Factory,
 };
 
-// �’�’Extended design data �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Extended design data �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const TYPES_ARR = [PROJECT_TYPES.RESIDENTIAL, PROJECT_TYPES.COMMERCIAL, PROJECT_TYPES.INDUSTRIAL];
 const DESIGNS_EXT = DESIGNS.map((d, i) => ({
  ...d,
@@ -63,7 +63,7 @@ const BOQ_TEMPLATES = {
  { sno: 1, description: '400W Mono PERC Solar Panel', unit: 'Nos', qty: 125, rate: 14500, amount: 1812500 },
  { sno: 2, description: '10kW String Inverter (Sungrow)', unit: 'Nos', qty: 1, rate: 65000, amount: 65000 },
  { sno: 3, description: 'GI Mounting Structure (Set)', unit: 'Set', qty: 5, rate: 12000, amount: 60000 },
- { sno: 4, description: '4mm�’�¡² DC Solar Cable', unit: 'Mtr', qty: 400, rate: 42, amount: 16800 },
+ { sno: 4, description: '4mm�’�¡² DC Solar Cable', unit: 'Mtr', qty: 400, rate: 42, amount: 16800 },
  { sno: 5, description: 'MC4 Connector Pairs', unit: 'Nos', qty: 100, rate: 85, amount: 8500 },
  { sno: 6, description: 'AC Distribution Board', unit: 'Nos', qty: 1, rate: 8000, amount: 8000 },
  { sno: 7, description: 'Earthing & Lightning Arrester', unit: 'Lot', qty: 1, rate: 12000, amount: 12000 },
@@ -73,7 +73,7 @@ const BOQ_TEMPLATES = {
  { sno: 1, description: '440W Bifacial Half-Cut Panel', unit: 'Nos', qty: 250, rate: 15200, amount: 3800000 },
  { sno: 2, description: '50kW String Inverter (SMA)', unit: 'Nos', qty: 2, rate: 185000, amount: 370000 },
  { sno: 3, description: 'GI Mounting Structure (Set)', unit: 'Set', qty: 10, rate: 18000, amount: 180000 },
- { sno: 4, description: '4mm�’�¡² DC Solar Cable', unit: 'Mtr', qty: 1600, rate: 42, amount: 67200 },
+ { sno: 4, description: '4mm�’�¡² DC Solar Cable', unit: 'Mtr', qty: 1600, rate: 42, amount: 67200 },
  { sno: 5, description: 'MC4 Connector Pairs', unit: 'Nos', qty: 500, rate: 85, amount: 42500 },
  { sno: 6, description: 'AC Distribution Board', unit: 'Nos', qty: 2, rate: 12000, amount: 24000 },
  { sno: 7, description: 'Earthing & Lightning Arrester', unit: 'Lot', qty: 1, rate: 25000, amount: 25000 },
@@ -83,7 +83,7 @@ const BOQ_TEMPLATES = {
  { sno: 1, description: '545W TOPCon Bifacial Panel', unit: 'Nos', qty: 275, rate: 18500, amount: 5087500 },
  { sno: 2, description: '100kW Growatt Central Inverter', unit: 'Nos', qty: 2, rate: 320000, amount: 640000 },
  { sno: 3, description: 'Wide-Span GI Mounting (Industrial)', unit: 'Set', qty: 15, rate: 22000, amount: 330000 },
- { sno: 4, description: '6mm�’�¡² DC Solar Cable', unit: 'Mtr', qty: 3000, rate: 58, amount: 174000 },
+ { sno: 4, description: '6mm�’�¡² DC Solar Cable', unit: 'Mtr', qty: 3000, rate: 58, amount: 174000 },
  { sno: 5, description: 'MC4 Connector Pairs', unit: 'Nos', qty: 550, rate: 85, amount: 46750 },
  { sno: 6, description: 'HT AC Panel & Metering', unit: 'Nos', qty: 1, rate: 85000, amount: 85000 },
  { sno: 7, description: 'Earthing, LA & Surge Protection', unit: 'Lot', qty: 1, rate: 45000, amount: 45000 },
@@ -91,14 +91,14 @@ const BOQ_TEMPLATES = {
  ],
 };
 
-// AI recommendations �’project-type-aware
+// AI recommendations �’project-type-aware
 const AI_RECS = {
- 'D001': { rec: 'Residential (10kW) �’Approved, PR 79.2%. PM-KUSUM subsidy applicable; net customer cost after 40% subsidy �’ �’2.5L. Simple payback < 5 years. Cost optimisation achieved.', severity: 'success' },
- 'D002': { rec: 'Commercial (100kW) �’Tilt 20�’�¡Æ’�Â¢22�’�¡adds +8% yield. Bifacial upgrade adds 4% at marginal cost; ROI-positive Year 2. Accelerated depreciation saves �’3.2L in Y1 tax.', severity: 'warning' },
- 'D003': { rec: 'Industrial (150kW) �’BOQ pending. Wide row spacing (3.5m) eliminates inter-row shadow loss. IRR projected 14.8% / 25 yrs. Confirm DISCOM HT single-point approval.', severity: 'info' },
+ 'D001': { rec: 'Residential (10kW) �’Approved, PR 79.2%. PM-KUSUM subsidy applicable; net customer cost after 40% subsidy �’ �’2.5L. Simple payback < 5 years. Cost optimisation achieved.', severity: 'success' },
+ 'D002': { rec: 'Commercial (100kW) �’Tilt 20�’�¡f�¢22�’�¡adds +8% yield. Bifacial upgrade adds 4% at marginal cost; ROI-positive Year 2. Accelerated depreciation saves �’3.2L in Y1 tax.', severity: 'warning' },
+ 'D003': { rec: 'Industrial (150kW) �’BOQ pending. Wide row spacing (3.5m) eliminates inter-row shadow loss. IRR projected 14.8% / 25 yrs. Confirm DISCOM HT single-point approval.', severity: 'info' },
 };
 
-// �’�’Table columns �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Table columns �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const COLUMNS = [
  {
  key: 'id', header: 'Design ID',
@@ -140,8 +140,8 @@ const COLUMNS = [
  {
  key: 'boqGenerated', header: 'BOQ',
  render: v => v
- ? <span className="text-[11px] font-semibold text-[var(--green)]">�’�“œ Generated</span>
- : <span className="text-[11px] font-semibold text-amber-400">�’� Pending</span>
+ ? <span className="text-[11px] font-semibold text-[var(--green)]">�’�“œ Generated</span>
+ : <span className="text-[11px] font-semibold text-amber-400">�’� Pending</span>
  },
  {
  key: 'status', header: 'Status',
@@ -149,7 +149,7 @@ const COLUMNS = [
  },
 ];
 
-// �’�’Kanban stage defs �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Kanban stage defs �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const DESIGN_STAGES = [
  { id: 'Draft', label: 'Draft', color: '#64748b', bg: 'rgba(100,116,139,0.12)' },
  { id: 'In Review', label: 'In Review', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
@@ -157,7 +157,7 @@ const DESIGN_STAGES = [
  { id: 'Rejected', label: 'Rejected', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
 ];
 
-// �’�’Project Type Selector �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Project Type Selector �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ProjectTypeSelector = ({ value, onChange }) => {
  const { projectTypeConfig } = useSettings();
  
@@ -193,7 +193,7 @@ const ProjectTypeSelector = ({ value, onChange }) => {
  );
 };
 
-// �’�’Project Type Badge (inline small chip) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Project Type Badge (inline small chip) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ProjectTypeBadge = ({ typeId }) => {
  const { projectTypeConfig } = useSettings();
  const def = useMemo(() => {
@@ -213,7 +213,7 @@ const ProjectTypeBadge = ({ typeId }) => {
  );
 };
 
-// �’�’2D Panel Grid Visualiser �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’2D Panel Grid Visualiser �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const PanelGridVisualiser = ({ cfg, systemSizeKw }) => {
  const kw = parseFloat(systemSizeKw) || 50;
  const roofW = Math.round(Math.sqrt(kw * 8));
@@ -227,7 +227,7 @@ const PanelGridVisualiser = ({ cfg, systemSizeKw }) => {
  <div className="space-y-3">
  <div className="flex items-center justify-between text-[11px]">
  <span className="text-[var(--text-muted)]">
- {grid.cols} cols �’��{grid.rows} rows = <strong className="text-[var(--text-primary)]">{grid.totalPanels} panels</strong>
+ {grid.cols} cols �’��{grid.rows} rows = <strong className="text-[var(--text-primary)]">{grid.totalPanels} panels</strong>
  </span>
  <span className="text-[var(--text-muted)]">
  Coverage: <strong style={{ color: cfg.color }}>{grid.coverageRatio}%</strong>
@@ -262,23 +262,23 @@ const PanelGridVisualiser = ({ cfg, systemSizeKw }) => {
  );
 };
 
-// �’�’Financial Summary (mode-adaptive) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Financial Summary (mode-adaptive) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const FinancialSummary = ({ cfg, systemSizeKw }) => {
  const fin = computeFinancials(cfg, systemSizeKw);
  const mode = cfg.financialMode;
 
  const rows = [
  { l: 'System CAPEX', v: fmt(fin.capex), color: 'text-[var(--text-primary)]', show: true },
- { l: `Subsidy (${cfg.subsidyPct}%)`, v: fin.subsidyAmt > 0 ? `�’�Â¢ ${fmt(fin.subsidyAmt)}` : '�’', color: 'text-amber-400', show: true },
+ { l: `Subsidy (${cfg.subsidyPct}%)`, v: fin.subsidyAmt > 0 ? `�’�¢ ${fmt(fin.subsidyAmt)}` : '�’', color: 'text-amber-400', show: true },
  { l: 'Net CAPEX', v: fmt(fin.netCapex), color: 'text-[var(--text-primary)]', show: true },
  { l: 'Annual Energy', v: `${(fin.annualGen / 1000).toFixed(0)}k kWh`, color: 'text-[var(--primary-light)]', show: true },
  { l: 'Annual Savings', v: fmt(fin.annualSave), color: 'text-[var(--green)]', show: true },
  { l: 'Simple Payback', v: `${fin.payback} yrs`, color: 'text-amber-400', show: ['payback', 'roi', 'irr'].includes(mode) },
  { l: 'Year-1 ROI', v: `${fin.roi1}%`, color: 'text-[var(--green)]', show: ['roi', 'irr'].includes(mode) },
- { l: '25-Year IRR', v: fin.irr25 ? `${fin.irr25}%` : '�’', color: 'text-[var(--green)]', show: mode === 'irr' },
- { l: 'Depreciation Benefit (Y1)', v: fin.depBenefit > 0 ? fmt(fin.depBenefit) : '�’', color: 'text-purple-400', show: ['roi', 'irr'].includes(mode) },
- { l: 'Monthly EMI', v: fin.emi > 0 ? fmt(fin.emi) : '�’', color: 'text-[var(--primary-light)]', show: true },
- { l: 'CO�’Offset/yr', v: `${fin.co2Saved} t`, color: 'text-[var(--blue)]', show: true },
+ { l: '25-Year IRR', v: fin.irr25 ? `${fin.irr25}%` : '�’', color: 'text-[var(--green)]', show: mode === 'irr' },
+ { l: 'Depreciation Benefit (Y1)', v: fin.depBenefit > 0 ? fmt(fin.depBenefit) : '�’', color: 'text-purple-400', show: ['roi', 'irr'].includes(mode) },
+ { l: 'Monthly EMI', v: fin.emi > 0 ? fmt(fin.emi) : '�’', color: 'text-[var(--primary-light)]', show: true },
+ { l: 'CO�’Offset/yr', v: `${fin.co2Saved} t`, color: 'text-[var(--blue)]', show: true },
  ].filter(r => r.show);
 
  return (
@@ -304,7 +304,7 @@ const FinancialSummary = ({ cfg, systemSizeKw }) => {
  );
 };
 
-// �’�’Design card �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Design card �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const DesignCard = ({ design, cfg, onDragStart, onClick }) => {
  const aiRec = AI_RECS[design.id];
  return (
@@ -343,7 +343,7 @@ const DesignCard = ({ design, cfg, onDragStart, onClick }) => {
  );
 };
 
-// �’�’Kanban board �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Kanban board �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const DesignKanbanBoard = ({ designs, onStageChange, onCardClick, getTypeCfg }) => {
  const draggingId = useRef(null);
  const [dragOver, setDragOver] = useState(null);
@@ -371,7 +371,7 @@ const DesignKanbanBoard = ({ designs, onStageChange, onCardClick, getTypeCfg }) 
  style={{ background: stage.bg, color: stage.color }}>{cards.length}</span>
  </div>
  <div className="flex items-center gap-2 text-[9px] text-[var(--text-muted)] pl-4">
- <span>{stageKw} kW</span><span>�’�¡·</span><span>{fmt(stageCost)}</span>
+ <span>{stageKw} kW</span><span>�’�¡·</span><span>{fmt(stageCost)}</span>
  </div>
  </div>
  <div className="flex flex-col gap-2 p-2 flex-1 min-h-[120px]">
@@ -396,7 +396,7 @@ const DesignKanbanBoard = ({ designs, onStageChange, onCardClick, getTypeCfg }) 
  );
 };
 
-// �’�’Main Page Component �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Main Page Component �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const DesignPage = () => {
  const { getProjectTypeCfg } = useSettings();
  const { can } = usePermissions();
@@ -505,17 +505,17 @@ const DesignPage = () => {
  return (
  <div className="animate-fade-in space-y-5">
 
- {/* �’�’Header �’�’*/}
+ {/* �’�’Header �’�’*/}
  <PageHeader
  title="Design & BOQ"
- subtitle="Adaptive design studio �’panel layout �’�¡· BOQ �’�¡· financial engine �’�¡· AI optimisation"
+ subtitle="Adaptive design studio �’panel layout �’�¡· BOQ �’�¡· financial engine �’�¡· AI optimisation"
  actions={[
  { type: 'button', label: '3D Studio', icon: Box, onClick: () => setStudioDesign({ projectName: 'New Project', designName: 'Design 1' }) },
  { type: 'button', label: 'New Design', icon: Plus, variant: 'primary', onClick: () => { if (guardCreate()) setShowAdd(true); } }
  ]}
  />
 
- {/* �’�’Project Type Selector Bar �’�’*/}
+ {/* �’�’Project Type Selector Bar �’�’*/}
  <div className="glass-card px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3">
  <div className="shrink-0">
  <p className="text-[10px] font-bold text-[var(--text-faint)] uppercase tracking-widest mb-1.5">Filter by Project Type</p>
@@ -535,10 +535,10 @@ const DesignPage = () => {
  <div className="flex gap-4 flex-wrap text-[10px]">
  {[
  { l: 'Max Cap', v: `${cfg?.capacityMax} kW` },
- { l: 'Tilt', v: `${cfg?.tiltAngle}�’�¡` },
+ { l: 'Tilt', v: `${cfg?.tiltAngle}�’�¡` },
  { l: 'Row Spacing', v: `${cfg?.rowSpacing}m` },
- { l: 'Rate', v: `�’${cfg?.ratePerWp}/Wp` },
- { l: 'Tariff', v: `�’${cfg?.tariff}/kWh` },
+ { l: 'Rate', v: `�’${cfg?.ratePerWp}/Wp` },
+ { l: 'Tariff', v: `�’${cfg?.tariff}/kWh` },
  { l: 'AI Goal', v: cfg?.aiObjectiveLabel?.split(' ')[0] },
  ].map(i => (
  <div key={i.l}>
@@ -552,7 +552,7 @@ const DesignPage = () => {
  })()}
  </div>
 
- {/* �’�’KPIs with descriptive labels �’�’*/}
+ {/* �’�’KPIs with descriptive labels �’�’*/}
  <div className="mb-2">
  <p className="text-xs text-[var(--text-muted)] mb-2 flex items-center gap-2">
  <Pencil size={12} className="text-[var(--accent-light)]" />
@@ -566,7 +566,7 @@ const DesignPage = () => {
  </div>
  </div>
 
- {/* �’�’Type breakdown �’�’*/}
+ {/* �’�’Type breakdown �’�’*/}
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
  {PROJECT_TYPE_LIST.map(pt => {
  const cfg = getProjectTypeCfg(pt.id);
@@ -586,9 +586,9 @@ const DesignPage = () => {
  </div>
  <p className="text-[10px] text-[var(--text-muted)] mb-2 leading-relaxed">{pt.description}</p>
  <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px]">
- <span className="text-[var(--text-faint)]">�’� <strong className="text-[var(--text-muted)]">{cfg?.capacityMax} kW</strong></span>
- <span className="text-[var(--text-faint)]">Tilt <strong className="text-[var(--text-muted)]">{cfg?.tiltAngle}�’�¡</strong></span>
- <span className="text-[var(--text-faint)]">�’<strong className="text-[var(--text-muted)]">{cfg?.ratePerWp}/Wp</strong></span>
+ <span className="text-[var(--text-faint)]">�’� <strong className="text-[var(--text-muted)]">{cfg?.capacityMax} kW</strong></span>
+ <span className="text-[var(--text-faint)]">Tilt <strong className="text-[var(--text-muted)]">{cfg?.tiltAngle}�’�¡</strong></span>
+ <span className="text-[var(--text-faint)]">�’<strong className="text-[var(--text-muted)]">{cfg?.ratePerWp}/Wp</strong></span>
  <span className="font-semibold" style={{ color: pt.color }}>{cfg?.financialMode?.toUpperCase()} focus</span>
  </div>
  </div>
@@ -597,22 +597,22 @@ const DesignPage = () => {
  })}
  </div>
 
- {/* �’�’AI Banner �’�’*/}
+ {/* �’�’AI Banner �’�’*/}
  <div className="ai-banner">
  <div className="w-8 h-8 rounded-xl bg-[var(--bg-hover)] border border-[var(--border-active)] flex items-center justify-center shrink-0">
  <Zap size={14} className="text-[var(--primary-light)]" />
  </div>
  <div className="flex-1 min-w-0">
- <p className="text-xs font-bold text-[var(--primary-light)] mb-0.5">AI Design Optimisation �’Project Type Adaptive</p>
+ <p className="text-xs font-bold text-[var(--primary-light)] mb-0.5">AI Design Optimisation �’Project Type Adaptive</p>
  <p className="text-xs text-[var(--text-muted)] leading-relaxed">
- <strong className="text-amber-400">Residential (D001)</strong> �’cost mode: PM-KUSUM saves �’2.5L, payback &lt;5 yrs.&nbsp;
- <strong className="text-[var(--primary-light)]">Commercial (D002)</strong> �’ROI mode: tilt +8% yield, depreciation �’3.2L Y1 benefit.&nbsp;
- <strong className="text-[var(--green)]">Industrial (D003)</strong> �’efficiency mode: wide row-spacing eliminates shadow loss, IRR 14.8%.
+ <strong className="text-amber-400">Residential (D001)</strong> �’cost mode: PM-KUSUM saves �’2.5L, payback &lt;5 yrs.&nbsp;
+ <strong className="text-[var(--primary-light)]">Commercial (D002)</strong> �’ROI mode: tilt +8% yield, depreciation �’3.2L Y1 benefit.&nbsp;
+ <strong className="text-[var(--green)]">Industrial (D003)</strong> �’efficiency mode: wide row-spacing eliminates shadow loss, IRR 14.8%.
  </p>
  </div>
  </div>
 
- {/* �’�’Filters + View Toggle �’�’*/}
+ {/* �’�’Filters + View Toggle �’�’*/}
  <div className="flex flex-wrap gap-2 items-center">
  <span className="text-xs text-[var(--text-muted)] mr-1">Status:</span>
  {STATUS_FILTERS.map(s => (
@@ -649,12 +649,12 @@ const DesignPage = () => {
  />
  )}
 
- {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
- NEW DESIGN MODAL �’type-adaptive form
- �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
+ {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ NEW DESIGN MODAL �’type-adaptive form
+ �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
  <Modal open={showAdd} onClose={() => setShowAdd(false)}
  title="New System Design"
- description="Select project type first �’form, rules, and financial model adapt automatically"
+ description="Select project type first �’form, rules, and financial model adapt automatically"
  size="lg"
  footer={
  <>
@@ -685,12 +685,12 @@ const DesignPage = () => {
  <div className="mt-2 p-2.5 rounded-xl border text-[10px] flex flex-wrap gap-x-4 gap-y-1"
  style={{ background: cfg?.bg, borderColor: cfg?.border }}>
  <span className="font-bold w-full" style={{ color: cfg?.color }}>
- {cfg?.aiObjectiveLabel} �’�¡· {cfg?.financialMode?.toUpperCase()} financial model
+ {cfg?.aiObjectiveLabel} �’�¡· {cfg?.financialMode?.toUpperCase()} financial model
  </span>
- <span className="text-[var(--text-muted)]">Cap: <b>�’�{cfg?.capacityMax} kW</b></span>
- <span className="text-[var(--text-muted)]">Tilt: <b>{cfg?.tiltAngle}�’�¡</b></span>
+ <span className="text-[var(--text-muted)]">Cap: <b>�’�{cfg?.capacityMax} kW</b></span>
+ <span className="text-[var(--text-muted)]">Tilt: <b>{cfg?.tiltAngle}�’�¡</b></span>
  <span className="text-[var(--text-muted)]">Row spacing: <b>{cfg?.rowSpacing}m</b></span>
- <span className="text-[var(--text-muted)]">Rate: <b>�’{cfg?.ratePerWp}/Wp</b></span>
+ <span className="text-[var(--text-muted)]">Rate: <b>�’{cfg?.ratePerWp}/Wp</b></span>
  <span className="text-[var(--text-muted)]">Subsidy: <b>{cfg?.subsidyLabel}</b></span>
  </div>
  </div>
@@ -700,10 +700,10 @@ const DesignPage = () => {
  <div className="grid grid-cols-2 gap-4">
  <FormField label="Survey Reference">
  <Select>
- <option value="">Select survey�’</option>
- <option>S001 �’Ramesh Joshi (10 kW Residential)</option>
- <option>S002 �’Malhotra Textiles (100 kW Commercial)</option>
- <option>S003 �’Parekh Ceramics (150 kW Industrial)</option>
+ <option value="">Select survey�’</option>
+ <option>S001 �’Ramesh Joshi (10 kW Residential)</option>
+ <option>S002 �’Malhotra Textiles (100 kW Commercial)</option>
+ <option>S003 �’Parekh Ceramics (150 kW Industrial)</option>
  </Select>
  </FormField>
  <FormField label="Lead Designer">
@@ -713,7 +713,7 @@ const DesignPage = () => {
  </Select>
  </FormField>
 
- <FormField label={`AC System Size (kW) �’max ${cfg?.capacityMax} kW`}>
+ <FormField label={`AC System Size (kW) �’max ${cfg?.capacityMax} kW`}>
  <Input type="number" placeholder={String(cfg?.capacityStep * 5)}
  min={cfg?.capacityMin} max={cfg?.capacityMax} step={cfg?.capacityStep}
  value={newKw} onChange={e => setNewKw(e.target.value)} />
@@ -731,26 +731,26 @@ const DesignPage = () => {
  <Select>
  {cfg?.recommendedPanels?.map(p => <option key={p}>{p}</option>)
  }
- <option disabled>�’�’�’�’</option>
- <option>Other�’</option>
+ <option disabled>�’�’�’�’</option>
+ <option>Other�’</option>
  </Select>
  </FormField>
  <FormField label="Recommended Inverter">
  <Select>
  {cfg?.recommendedInverters?.map(p => <option key={p}>{p}</option>)
  }
- <option disabled>�’�’�’�’</option>
- <option>Custom�’</option>
+ <option disabled>�’�’�’�’</option>
+ <option>Custom�’</option>
  </Select>
  </FormField>
 
- <FormField label={`Tilt Angle (�’�¡) �’default ${cfg?.tiltAngle}�’�¡`}>
+ <FormField label={`Tilt Angle (�’�¡) �’default ${cfg?.tiltAngle}�’�¡`}>
  <Input type="number" placeholder={String(cfg?.tiltAngle)} min="0" max="45" />
  </FormField>
  <FormField label="Mounting Type">
  <Select>
  {cfg?.layoutDensity === 'wide'
- ? <><option>Ground Mount �’Fixed</option><option>Ground Mount �’Single-Axis Tracker</option></>
+ ? <><option>Ground Mount �’Fixed</option><option>Ground Mount �’Single-Axis Tracker</option></>
  : <><option>Rooftop Fixed Tilt (GI)</option><option>East-West Rooftop</option></>
  }
  </Select>
@@ -772,7 +772,7 @@ const DesignPage = () => {
  : cfg?.financialMode === 'roi' ? { l: 'Y1 ROI', v: `${previewFin.roi1}%` }
  : { l: '25yr IRR', v: `${previewFin.irr25}%` },
  { l: 'Monthly EMI', v: fmt(previewFin.emi) },
- { l: 'CO�’Offset', v: `${previewFin.co2Saved} t/yr` },
+ { l: 'CO�’Offset', v: `${previewFin.co2Saved} t/yr` },
  ].map(r => (
  <div key={r.l} className="p-2 rounded-lg bg-[var(--bg-overlay)] text-center">
  <p className="text-[var(--text-faint)]">{r.l}</p>
@@ -786,10 +786,10 @@ const DesignPage = () => {
  <FormField label="Design Notes">
  <Textarea rows={2} placeholder={
  cfg?.shadowPriority === 'high'
- ? 'Industrial: inter-row shadow constraints, maintenance corridors, DISCOM HT connection details�’'
+ ? 'Industrial: inter-row shadow constraints, maintenance corridors, DISCOM HT connection details�’'
  : cfg?.financialMode === 'roi'
- ? 'Commercial: accelerated depreciation eligibility, net metering, ROI targets�’'
- : 'Residential: subsidy category, roof load limits, single-phase / 3-phase connection�’'
+ ? 'Commercial: accelerated depreciation eligibility, net metering, ROI targets�’'
+ : 'Residential: subsidy category, roof load limits, single-phase / 3-phase connection�’'
  } />
  </FormField>
  </div>
@@ -797,10 +797,10 @@ const DesignPage = () => {
  })()}
  </Modal>
 
- {/* �’�’DESIGN DETAIL MODAL footer �’add 3D Studio button �’�’*/}
+ {/* �’�’DESIGN DETAIL MODAL footer �’add 3D Studio button �’�’*/}
  <Modal open={!!selected} onClose={() => setSelected(null)}
- title={selected ? `Design ${selected.id} �’${selected.projectName}` : ''}
- description={selected ? `${selected.systemSize} kW �’�¡· ${selected.designer} �’�¡· Created ${selected.created}` : ''}
+ title={selected ? `Design ${selected.id} �’${selected.projectName}` : ''}
+ description={selected ? `${selected.systemSize} kW �’�¡· ${selected.designer} �’�¡· Created ${selected.created}` : ''}
  size="xl"
  footer={
  <>
@@ -843,10 +843,10 @@ const DesignPage = () => {
  style={{ background: selectedCfg.bg, borderColor: selectedCfg.border }}>
  {(() => { const Icon = PT_ICON[selected.projectType]; return <Icon size={14} style={{ color: selectedCfg.color }} />; })()}
  <span className="text-xs font-bold" style={{ color: selectedCfg.color }}>{selectedCfg.label} Project</span>
- <span className="text-[10px] text-[var(--text-muted)]">�’�¡·</span>
+ <span className="text-[10px] text-[var(--text-muted)]">�’�¡·</span>
  <span className="text-[10px] text-[var(--text-muted)]">{selectedCfg.aiObjectiveLabel}</span>
  <span className="text-[10px] text-[var(--text-muted)] ml-auto hidden sm:block">
- Max {selectedCfg.capacityMax} kW �’�¡· Row spacing {selectedCfg.rowSpacing}m �’�¡· Tilt {selectedCfg.tiltAngle}�’�¡
+ Max {selectedCfg.capacityMax} kW �’�¡· Row spacing {selectedCfg.rowSpacing}m �’�¡· Tilt {selectedCfg.tiltAngle}�’�¡
  </span>
  </div>
 
@@ -867,7 +867,7 @@ const DesignPage = () => {
  ))}
  </div>
 
- {/* �’�’OVERVIEW �’�’*/}
+ {/* �’�’OVERVIEW �’�’*/}
  {activeTab === 'overview' && (
  <div className="space-y-4">
  <div className="grid grid-cols-2 gap-3">
@@ -878,12 +878,12 @@ const DesignPage = () => {
  { l: 'System AC', v: `${selected.systemSize} kW` },
  { l: 'Panel', v: selected.panels },
  { l: 'Inverter', v: selected.inverter },
- { l: 'Tilt / Azimuth', v: `${selected.tiltAngle}�’�¡/ ${selected.azimuth}�’�¡` },
+ { l: 'Tilt / Azimuth', v: `${selected.tiltAngle}�’�¡/ ${selected.azimuth}�’�¡` },
  { l: 'Row Spacing', v: `${selectedCfg.rowSpacing} m` },
  { l: 'Layout Density', v: selectedCfg.layoutDensity },
  { l: 'Shadow Priority', v: selectedCfg.shadowPriority },
  { l: 'PR Target', v: `${selectedCfg.prTarget}%` },
- { l: 'Approved By', v: selected.approvedBy ?? '�’' },
+ { l: 'Approved By', v: selected.approvedBy ?? '�’' },
  ].map(f => (
  <div key={f.l} className="p-3 rounded-xl bg-[var(--bg-raised)] border border-[var(--border-base)]">
  <p className="label-muted mb-1">{f.l}</p>
@@ -897,7 +897,7 @@ const DesignPage = () => {
  <Zap size={14} style={{ color: selectedCfg.color }} className="shrink-0 mt-0.5" />
  <div>
  <p className="text-[11px] font-bold mb-0.5" style={{ color: selectedCfg.color }}>
- AI Insight �’{selectedCfg.aiObjectiveLabel}
+ AI Insight �’{selectedCfg.aiObjectiveLabel}
  </p>
  <p className="text-xs text-[var(--text-muted)] leading-relaxed">{AI_RECS[selected.id].rec}</p>
  </div>
@@ -906,13 +906,13 @@ const DesignPage = () => {
  </div>
  )}
 
- {/* �’�’LAYOUT �’�’*/}
+ {/* �’�’LAYOUT �’�’*/}
  {activeTab === 'layout' && (
  <div className="space-y-4">
  <div className="flex items-center gap-2">
  <LayoutGrid size={13} style={{ color: selectedCfg.color }} />
  <span className="text-xs font-bold text-[var(--text-primary)]">
- 2D Panel Grid �’{selectedCfg.label} Layout Rules
+ 2D Panel Grid �’{selectedCfg.label} Layout Rules
  </span>
  </div>
  <PanelGridVisualiser cfg={selectedCfg} systemSizeKw={selected.systemSize} />
@@ -934,7 +934,7 @@ const DesignPage = () => {
  </div>
  )}
 
- {/* �’�’BOQ �’�’*/}
+ {/* �’�’BOQ �’�’*/}
  {activeTab === 'boq' && (
  <div className="space-y-3">
  {boqRows.length === 0 ? (
@@ -949,7 +949,7 @@ const DesignPage = () => {
  <table className="w-full text-xs">
  <thead>
  <tr className="bg-[var(--bg-raised)] border-b border-[var(--border-base)]">
- {['#', 'Description', 'Unit', 'Qty', 'Rate (�’)', 'Amount (�’)'].map(h => (
+ {['#', 'Description', 'Unit', 'Qty', 'Rate (�’)', 'Amount (�’)'].map(h => (
  <th key={h} className="px-3 py-2 text-left text-[var(--text-muted)] font-semibold uppercase tracking-wide text-[10px]">{h}</th>
  ))}
  </tr>
@@ -982,19 +982,19 @@ const DesignPage = () => {
  </div>
  )}
 
- {/* �’�’FINANCIALS �’�’*/}
+ {/* �’�’FINANCIALS �’�’*/}
  {activeTab === 'financials' && sim && (
  <div className="space-y-4">
  <FinancialSummary cfg={selectedCfg} systemSizeKw={selected.systemSize} />
  <div className="p-3 rounded-xl bg-[var(--bg-raised)] border border-[var(--border-base)]">
  <p className="text-[11px] font-bold text-[var(--text-primary)] mb-2">
- Simulation Assumptions �’{selectedCfg.label}
+ Simulation Assumptions �’{selectedCfg.label}
  </p>
  <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-[11px] text-[var(--text-muted)]">
- <div>Tariff: �’{selectedCfg.tariff}/kWh</div>
+ <div>Tariff: �’{selectedCfg.tariff}/kWh</div>
  <div>Irradiance: {selectedCfg.irradiance} kWh/kWp/yr</div>
  <div>Degradation: {selectedCfg.degradation}%/yr</div>
- <div>O&amp;M: �’{selectedCfg.omCostPerKwh}/kWh</div>
+ <div>O&amp;M: �’{selectedCfg.omCostPerKwh}/kWh</div>
  <div>Project life: {selectedCfg.projectLife} yrs</div>
  <div>Inflation: {selectedCfg.inflationRate}% p.a.</div>
  {selectedCfg.depreciationPct > 0 && <div>Accl. Depreciation: {selectedCfg.depreciationPct}%</div>}
@@ -1010,7 +1010,7 @@ const DesignPage = () => {
  : selectedCfg.financialMode === 'roi' ? `Year-1 ROI ${sim.roi1}%`
  : `25-Year IRR ${sim.irr25}%`}
  </strong>
- {' '}�’{selectedCfg.aiObjectiveDesc}
+ {' '}�’{selectedCfg.aiObjectiveDesc}
  </p>
  </div>
  </div>
@@ -1020,9 +1020,9 @@ const DesignPage = () => {
  )}
  </Modal>
 
- {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
- SOLAR 3D DESIGN STUDIO �’Full screen overlay
- �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
+ {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ SOLAR 3D DESIGN STUDIO �’Full screen overlay
+ �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
  {studioDesign && (
  <SolarSurveyStudio
  projectName={studioDesign.projectName}

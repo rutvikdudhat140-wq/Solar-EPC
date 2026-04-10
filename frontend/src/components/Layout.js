@@ -151,7 +151,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
     return { ...section, items };
   }).filter(s => (s.items || []).length > 0);
 
-  /* â”€â”€ Derive layout dimensions from customization â”€â”€ */
+  /* -- Derive layout dimensions from customization -- */
   const c = customization || {};
   const isHorizontal = c.layout === 'horizontal';
   const isMini = c.layout === 'mini' || c.sidebarSize === 'compact';
@@ -202,18 +202,18 @@ const Layout = ({ currentPage, onNavigate, children }) => {
   // Card layout class
   const cardClass = c.cardLayout === 'borderless' ? 'card-borderless' : c.cardLayout === 'shadow' ? 'card-shadow' : '';
 
-  // Topbar has custom color â†’ use white text
+  // Topbar has custom color → use white text
   const topbarHasCustomColor = c.topbarColor && c.topbarColor !== 'white';
   const topbarTextCls = topbarHasCustomColor ? 'text-white/80' : 'text-[var(--text-faint)]';
   const topbarTextPrimaryCls = topbarHasCustomColor ? 'text-white' : 'text-[var(--text-primary)]';
 
-  // Sidebar has custom color â†’ use custom text
+  // Sidebar has custom color → use custom text
   const sidebarHasCustomColor = (c.sidebarColor && c.sidebarColor !== 'default') || c.sidebarBg;
 
   return (
     <div className={cn('min-h-screen bg-[var(--bg-page)]', isBoxed && 'max-w-[1440px] mx-auto shadow-2xl', cardClass)}>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TOP BAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ==================== TOP BAR ==================== */}
       <header
         className={cn(
           'fixed top-0 left-0 right-0 z-[60] h-14 flex items-center gap-3 px-4 border-b transition-all duration-300 w-full',
@@ -275,7 +275,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
           <input
             value={searchVal}
             onChange={e => setSearchVal(e.target.value)}
-            placeholder="Search projects, leads, invoicesâ€¦"
+            placeholder="Search projects, leads, invoices"
             className={cn(
               'w-full h-8 pl-8 pr-3 text-xs rounded-xl focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all',
               topbarHasCustomColor
@@ -459,7 +459,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
                       t.key === 'solar' && 'bg-[#181200] border-amber-500/60',
                     )} />
                     {t.label}
-                    {theme === t.key && <span className="ml-auto text-[10px] text-[var(--primary-light)]">âœ“</span>}
+                    {theme === t.key && <span className="ml-auto text-[10px] text-[var(--primary-light)]">&#10003;</span>}
                   </button>
                 ))}
               </div>
@@ -530,7 +530,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         </div>
       </header>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MOBILE OVERLAY â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ==================== MOBILE OVERLAY ==================== */}
       {(sidebarOpen || (isOverlay && sidebarHovered)) && (
         <div
           className={cn(
@@ -542,7 +542,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         />
       )}
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HORIZONTAL NAV BAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ==================== HORIZONTAL NAV BAR ==================== */}
       {isHorizontal && (
         <div
           className="fixed top-14 left-0 right-0 z-30 h-11 flex items-center gap-1 px-4 border-b border-[var(--border-base)] overflow-x-auto"
@@ -572,7 +572,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         </div>
       )}
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SIDEBAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ==================== SIDEBAR ==================== */}
       {!isHorizontal && (
         <aside
           className={cn(
@@ -604,7 +604,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
           onMouseLeave={() => { if (isHoverView || isOverlay) setSidebarHovered(false); }}
         >
 
-          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SIDEBAR LOGO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+          {/* ==================== SIDEBAR LOGO ==================== */}
           <div className={cn(
             'relative z-50 flex items-center border-b border-[var(--border-base)] bg-[var(--bg-sidebar)] shrink-0',
             showLabels ? 'px-4 h-14 gap-3' : 'justify-center h-10'
@@ -778,7 +778,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
             ))}
           </nav>
 
-          {/* AI Engine badge â€” only when sidebar is expanded */}
+          {/* AI Engine badge "” only when sidebar is expanded */}
           {showLabels && (
             <div className="m-3 p-3.5 rounded-xl border border-[var(--primary)]/20"
               style={{ background: 'linear-gradient(135deg, var(--primary-glow) 0%, rgba(34,211,238,0.05) 100%)' }}>
@@ -802,7 +802,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         </aside>
       )}
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• OVERLAY / HOVER TRIGGER ZONE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ==================== OVERLAY / HOVER TRIGGER ZONE ==================== */}
       {(isOverlay || isHoverView) && !sidebarOpen && !sidebarHovered && !isHorizontal && (
         <div
           className="fixed top-14 left-0 bottom-0 w-3 z-40 hidden lg:block"
@@ -810,7 +810,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         />
       )}
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MAIN CONTENT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ==================== MAIN CONTENT ==================== */}
       <main
         className={cn(
           'min-h-[calc(100vh-56px)] p-5 bg-[var(--bg-page)] transition-all duration-300',
@@ -827,14 +827,14 @@ const Layout = ({ currentPage, onNavigate, children }) => {
         </div>
       </main>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• REMINDER SIDEBAR â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ==================== REMINDER SIDEBAR ==================== */}
       <ReminderSidebar
         isOpen={reminderSidebarOpen}
         onClose={() => setReminderSidebarOpen(false)}
         onNavigate={onNavigate}
       />
 
-      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• THEME CUSTOMIZER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ==================== THEME CUSTOMIZER ==================== */}
       <ThemeCustomizer />
     </div>
   );

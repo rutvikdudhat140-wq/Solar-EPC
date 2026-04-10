@@ -45,7 +45,7 @@ import { APP_CONFIG } from '../config/app.config';
 import { commissioningApi } from '../services/commissioningApi';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell, Legend, AreaChart, Area, LineChart, Line, ComposedChart } from 'recharts';
 
-// �’�’Kanban columns �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Kanban columns �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const INSTALL_STAGES = [
  { id: 'Pending Assign', label: 'Pending Assign', color: '#6366f1', bg: 'rgba(99,102,241,0.12)' },
  { id: 'In Progress', label: 'In Progress', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
@@ -89,7 +89,7 @@ const calculateProgress = (tasks=[]) => {
  return Math.round((done / tasks.length) * 100);
 };
 
-// �’�’Commissioning Kanban Card �’�’
+// �’�’Commissioning Kanban Card �’�’
 const formatEventType = (type) => {
  const labels = {
  'Commissioning_created': 'Commissioning Created',
@@ -115,7 +115,7 @@ const formatEventMetadata = (metadata) => {
  if (metadata.from !== undefined && metadata.to !== undefined) {
  const fromText = metadata.from === null ? 'Unassigned' : 'Previous';
  const toText = metadata.to === null ? 'Unassigned' : 'New';
- parts.push(`From: ${fromText} �’�Â¢ To: ${toText}`);
+ parts.push(`From: ${fromText} �’�¢ To: ${toText}`);
  }
  if (metadata.oldStatus && metadata.newStatus) {
  parts.push(`Changed from "${metadata.oldStatus}" to "${metadata.newStatus}"`);
@@ -173,7 +173,7 @@ const InstallCard = ({ log, onDragStart, onClick }) => {
  );
 };
 
-/* �’�’Kanban Board �’�’*/
+/* �’�’Kanban Board �’�’*/
 const InstallKanbanBoard = ({ items, onCardClick, onDrop, canEdit }) => {
  const draggingId = useRef(null);
  const draggingStageId = useRef(null);
@@ -304,10 +304,10 @@ const COLUMNS = [
  <span className="text-[10px] font-semibold text-[var(--text-muted)] w-7 text-right">{v}%</span>
  </div>
  )},
- { key: 'scheduledDate', header: 'Due Date', sortable: true, render: (v) => <span className="text-xs">{v ? new Date(v).toLocaleDateString() : '�’'}</span> },
+ { key: 'scheduledDate', header: 'Due Date', sortable: true, render: (v) => <span className="text-xs">{v ? new Date(v).toLocaleDateString() : '�’'}</span> },
 ];
 
-// �’�’Commissioning Calendar Component �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Commissioning Calendar Component �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const STATUS_COLORS = {
  'Pending Assign': '#6366f1',
  'In Progress': '#f59e0b',
@@ -351,7 +351,7 @@ const CommissioningCalendar = ({ logs, onOpenCommissioning }) => {
  setSelectedDay(null);
  };
 
- // Build grid: always 6 rows �’��7 cols
+ // Build grid: always 6 rows �’��7 cols
  const grid = useMemo(() => {
  const first = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
  const days = new Date(calYear, calMonth + 1, 0).getDate();
@@ -507,12 +507,12 @@ const CommissioningCalendar = ({ logs, onOpenCommissioning }) => {
  {inst.status}
  </span>
  </div>
- <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{inst.customerName || '�’'}</p>
- {inst.siteAddress && <p className="text-[10px] text-[var(--text-muted)] truncate mt-0.5">�’�œ{inst.siteAddress}</p>}
+ <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{inst.customerName || '�’'}</p>
+ {inst.siteAddress && <p className="text-[10px] text-[var(--text-muted)] truncate mt-0.5">�’�œ{inst.siteAddress}</p>}
  <div className="mt-2 flex items-center justify-between">
  <span className="text-[10px] text-[var(--text-muted)]">
  {inst.technicianName && inst.technicianName !== 'Not Assigned'
- ? `�’�· ${inst.technicianName}`
+ ? `�’�· ${inst.technicianName}`
  : <span className="italic">Not Assigned</span>
  }
  </span>
@@ -525,7 +525,7 @@ const CommissioningCalendar = ({ logs, onOpenCommissioning }) => {
  style={{ width: `${inst.progress}%`, backgroundColor: STATUS_COLORS[inst.status] || '#94a3b8' }}
  />
  </div>
- <p className="text-[9px] text-[var(--text-muted)] mt-1.5 group-hover:text-[var(--primary)] transition-colors">Click to view details �’�Â¢</p>
+ <p className="text-[9px] text-[var(--text-muted)] mt-1.5 group-hover:text-[var(--primary)] transition-colors">Click to view details �’�¢</p>
  </button>
  ))}
  </div>
@@ -534,7 +534,7 @@ const CommissioningCalendar = ({ logs, onOpenCommissioning }) => {
  );
 };
 
-// �’�’Commissioning Dashboard with Advanced 3D Animated Charts �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Commissioning Dashboard with Advanced 3D Animated Charts �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const CommissioningDashboard = ({ logs }) => {
  const [dateRange, setDateRange] = useState('all'); // '7days', '30days', '90days', 'all', 'custom'
  const [customStartDate, setCustomStartDate] = useState('');
@@ -922,7 +922,7 @@ const CommissioningDashboard = ({ logs }) => {
  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-600 font-medium">+{day.created}</span>
  )}
  {day.completed > 0 && (
- <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--green)]/10 text-[var(--green)] font-medium">�’�“œ{day.completed}</span>
+ <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--green)]/10 text-[var(--green)] font-medium">�’�“œ{day.completed}</span>
  )}
  </div>
  </div>
@@ -1077,7 +1077,7 @@ const CommissioningDashboard = ({ logs }) => {
  );
 };
 
-// �’�’Main Page �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Main Page �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const CommissioningPage = () => {
  const { can, user, role } = usePermissions();
  const { logCreate, logUpdate, logStatusChange } = useAuditLog('Commissioning');
@@ -1324,7 +1324,7 @@ const CommissioningPage = () => {
  photoRequired: !!x.photoRequired
  });
  
- // Check if all tasks are now done �’�Â¢ auto-complete
+ // Check if all tasks are now done �’�¢ auto-complete
  const allNowDone = updatedTasks.length > 0 && updatedTasks.every(t => t.done);
  const isUnchecking = t.done === true; // Task was done, now being unchecked
  const isProjectCompleted = selected.status?.toLowerCase() === 'completed';
@@ -1339,12 +1339,12 @@ const CommissioningPage = () => {
  // Auto-move to Completed when all tasks are done
  await apiClient.patch(`/commissionings/${selected._id || selected.id}/status`, { status: 'Completed' });
  setSelected({ ...resp.data, status: 'Completed' });
- toast.success('All tasks done �’Commissioning marked as Completed!');
+ toast.success('All tasks done �’Commissioning marked as Completed!');
  } else if (shouldRevertStatus) {
  // If project was completed and task unchecked, revert status to In Progress
  await apiClient.patch(`/commissionings/${selected._id || selected.id}/status`, { status: 'In Progress' });
  setSelected({ ...resp.data, status: 'In Progress', tasks: updatedTasks });
- toast.success('Task unchecked �’Commissioning reverted to In Progress');
+ toast.success('Task unchecked �’Commissioning reverted to In Progress');
  } else {
  setSelected({ ...resp.data, tasks: updatedTasks });
  }
@@ -1541,13 +1541,13 @@ const [assignDept, setAssignDept] = useState('');
  }).map(inst => ({
  ...inst,
  isInstallation: true,
- displayName: `${inst.customerName || 'Unknown'} �’${inst.site || inst.siteAddress || 'No Site'} (Installation Completed)`,
+ displayName: `${inst.customerName || 'Unknown'} �’${inst.site || inst.siteAddress || 'No Site'} (Installation Completed)`,
  }));
  
  const pendingItems = pendingCommissionings.map(inst => ({
  ...inst,
  isInstallation: false,
- displayName: `${inst.customerName || 'Unknown'} �’${inst.site || inst.siteAddress || 'No Site'} (Pending)`,
+ displayName: `${inst.customerName || 'Unknown'} �’${inst.site || inst.siteAddress || 'No Site'} (Pending)`,
  }));
  
  console.log('[availableProjects] installations:', installationsForCommissioning.length, 'pending:', pendingItems.length);
@@ -1710,7 +1710,7 @@ const [assignDept, setAssignDept] = useState('');
 
  <div className="flex items-center justify-between">
  {view !== 'table' && view !== 'dashboard' && (
- <Input placeholder="Search Commissionings�’" value={search} onChange={e=>setSearch(e.target.value)} className="w-80" />
+ <Input placeholder="Search Commissionings�’" value={search} onChange={e=>setSearch(e.target.value)} className="w-80" />
  )}
  </div>
 
@@ -1862,7 +1862,7 @@ const [assignDept, setAssignDept] = useState('');
  <Modal
  open={showBulkAssign}
  onClose={() => { setShowBulkAssign(false); setBulkAssignDept(''); }}
- title={`Bulk Assign �’${bulkAssignIds.length} Commissioning${bulkAssignIds.length !== 1 ? 's' : ''}`}
+ title={`Bulk Assign �’${bulkAssignIds.length} Commissioning${bulkAssignIds.length !== 1 ? 's' : ''}`}
  footer={
  <div className="flex gap-2 justify-end pt-1">
  <Button variant="ghost" onClick={() => { setShowBulkAssign(false); setBulkAssignDept(''); }}>Cancel</Button>
@@ -2130,7 +2130,7 @@ const [assignDept, setAssignDept] = useState('');
  <optgroup label="Completed Installations (Ready for Commissioning)">
  {completedInstallations.map(inst => (
  <option key={inst._id || inst.id} value={inst._id || inst.id}>
- {inst.customerName || 'Unknown'} �’{inst.site || inst.siteAddress || 'No Site'} �’�“œ
+ {inst.customerName || 'Unknown'} �’{inst.site || inst.siteAddress || 'No Site'} �’�“œ
  </option>
  ))}
  </optgroup>
@@ -2141,7 +2141,7 @@ const [assignDept, setAssignDept] = useState('');
  <optgroup label="Pending Commissionings">
  {pendingCommissionings.map(inst => (
  <option key={inst._id || inst.id} value={inst._id || inst.id}>
- {inst.customerName || 'Unknown'} �’{inst.site || inst.siteAddress || 'No Site'} (Pending)
+ {inst.customerName || 'Unknown'} �’{inst.site || inst.siteAddress || 'No Site'} (Pending)
  </option>
  ))}
  </optgroup>
@@ -2234,7 +2234,7 @@ const [assignDept, setAssignDept] = useState('');
 
  {/* Detail Modal */}
  {selected && (
- <Modal open={!!selected} onClose={()=>setSelected(null)} title={`Commissioning �’${selected.CommissioningId || selected.id}`} footer={
+ <Modal open={!!selected} onClose={()=>setSelected(null)} title={`Commissioning �’${selected.CommissioningId || selected.id}`} footer={
  <div className="flex gap-2 justify-end">
  <CanEdit module="Commissioning">
  <Button variant="primary" onClick={()=>{setEditForm(selected); setShowEdit(true);}}><Edit size={14} /> Edit</Button>
@@ -2409,7 +2409,7 @@ const [assignDept, setAssignDept] = useState('');
  : 'bg-[var(--bg-hover)] text-[var(--text-muted)] cursor-not-allowed'
  }`}
  >
- {isCompleted && allTasksDone ? 'Marked as Completed �’�“œ' : !canComplete ? 'Permission Denied' : allTasksDone ? 'Complete Project' : 'Complete All Tasks First'}
+ {isCompleted && allTasksDone ? 'Marked as Completed �’�“œ' : !canComplete ? 'Permission Denied' : allTasksDone ? 'Complete Project' : 'Complete All Tasks First'}
  </button>
  );
  })()}

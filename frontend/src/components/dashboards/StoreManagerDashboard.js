@@ -1,4 +1,4 @@
-// StoreManagerDashboard.js Ã¢â‚¬â€ Store Manager role dashboard (redesigned)
+// StoreManagerDashboard.js "" Store Manager role dashboard (redesigned)
 import React from 'react';
 import {
     BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
@@ -63,7 +63,7 @@ const StoreManagerDashboard = () => {
 
             <SectionHeader
                 title="Store Manager Dashboard"
-                subtitle="Inventory Ã‚Â· Stock alerts Ã‚Â· Warehouse movement"
+                subtitle="Inventory •· Stock alerts •· Warehouse movement"
                 icon={Package}
                 accent={C.primary}
                 badge="Warehouse"
