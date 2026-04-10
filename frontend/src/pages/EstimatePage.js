@@ -16,7 +16,12 @@ import { CURRENCY } from '../config/app.config';
 import { cn } from '../lib/utils';
 import { EquipmentLibrary } from '../components/estimates/EquipmentLibrary';
 import { CompanyHeader, DocumentHeader } from '../components/documents/CompanyHeader';
-import { downloadEstimatePDF, downloadProposalPDF, generateEstimatePDF } from '../lib/pdfGenerator';
+import {
+  downloadEstimatePDF,
+  downloadProposalPDF,
+  generateEstimatePDF,
+  downloadProfessionalEstimatePDF,
+} from '../lib/pdfGenerator';
 import { settingsApi } from '../services/settingsApi';
 import { toast } from '../components/ui/Toast';
 import api from '../lib/apiClient';
@@ -260,6 +265,11 @@ const EstimatePage = () => {
 
   const handleDownloadPDF = (estimate) => {
     downloadEstimatePDF(estimate);
+  };
+
+  const handleDownloadProfessionalPDF = (estimate) => {
+    downloadProfessionalEstimatePDF(estimate);
+    toast.success('Professional estimate PDF downloaded');
   };
 
   const handleDownloadProposal = (estimate) => {
@@ -668,6 +678,7 @@ const EstimatePage = () => {
               onDuplicate={() => handleDuplicateEstimate(estimate)}
               onDelete={() => handleDeleteEstimate(estimate.id)}
               onDownload={() => handleDownloadPDF(estimate)}
+              onDownloadProfessional={() => handleDownloadProfessionalPDF(estimate)}
               onDownloadProposal={() => handleDownloadProposal(estimate)}
               onSend={() => handleSendEstimate(estimate.id)}
             />
@@ -809,6 +820,7 @@ const EstimatePage = () => {
             onEdit={() => setIsEditMode(true)}
             onDelete={() => handleDeleteEstimate(selectedEstimate.id)}
             onDownload={() => handleDownloadPDF(selectedEstimate)}
+            onDownloadProfessional={() => handleDownloadProfessionalPDF(selectedEstimate)}
             onDownloadProposal={() => handleDownloadProposal(selectedEstimate)}
             onSend={() => handleSendEstimate(selectedEstimate.id)}
           />
@@ -819,7 +831,7 @@ const EstimatePage = () => {
 };
 
 // ── Estimate Card Component ───────────────────────────────────────────────────
-const EstimateCard = ({ estimate, onView, onEdit, onDuplicate, onDelete, onDownload, onDownloadProposal, onSend }) => {
+const EstimateCard = ({ estimate, onView, onEdit, onDuplicate, onDelete, onDownload, onDownloadProfessional, onDownloadProposal, onSend }) => {
   const statusConfig = ESTIMATE_STATUS[estimate.status] || ESTIMATE_STATUS.draft;
   const StatusIcon = statusConfig.icon;
 
@@ -878,11 +890,18 @@ const EstimateCard = ({ estimate, onView, onEdit, onDuplicate, onDelete, onDownl
           <FileText size={14} />
         </button>
         <button
-          onClick={(e) => { e.stopPropagation(); onDownload(); }}
-          className="flex items-center justify-center p-1.5 rounded-lg bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
-          title="Download PDF"
+          onClick={(e) => { e.stopPropagation(); onDownloadProfessional(); }}
+          className="flex items-center justify-center p-1.5 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] hover:bg-[var(--accent)]/20 transition-colors"
+          title="Download Professional PDF"
         >
           <Download size={14} />
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onDownload(); }}
+          className="flex items-center justify-center p-1.5 rounded-lg bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
+          title="Download Standard PDF"
+        >
+          <FileText size={14} />
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onEdit(); }}
@@ -1789,7 +1808,7 @@ const CreateEstimateForm = ({ initialData, estimates, onSubmit, onCancel }) => {
 };
 
 // ── Estimate Detail Component ─────────────────────────────────────────────────
-const EstimateDetail = ({ estimate, onEdit, onDelete, onDownload, onDownloadProposal, onSend }) => {
+const EstimateDetail = ({ estimate, onEdit, onDelete, onDownload, onDownloadProfessional, onDownloadProposal, onSend }) => {
   const statusConfig = ESTIMATE_STATUS[estimate.status] || ESTIMATE_STATUS.draft;
   const StatusIcon = statusConfig.icon;
 
@@ -1966,11 +1985,18 @@ const EstimateDetail = ({ estimate, onEdit, onDelete, onDownload, onDownloadProp
           Proposal
         </button>
         <button
+          onClick={onDownloadProfessional}
+          className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] text-sm font-medium hover:bg-[var(--accent)]/20 transition-colors"
+        >
+          <Download size={16} />
+          Professional
+        </button>
+        <button
           onClick={onDownload}
           className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-hover)] transition-colors"
         >
-          <Download size={16} />
-          PDF
+          <FileText size={16} />
+          Standard
         </button>
         <button
           onClick={onEdit}

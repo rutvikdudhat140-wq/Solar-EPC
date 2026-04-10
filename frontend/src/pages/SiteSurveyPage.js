@@ -29,7 +29,7 @@ import { KPICard } from '../components/ui/KPICard';
 import DataTable from '../components/ui/DataTable';
 import { downloadSurveyReportPDF } from '../lib/pdfGenerator';
 
-// �’�’Constants & Config �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Constants & Config �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const STATUS_TABS = [
  { id: 'all', label: 'All Surveys' },
  { id: 'pending', label: 'Pending' },
@@ -90,12 +90,12 @@ const getColumns = ({ onStartSurvey, onFillForm }) => [
  {
  key: 'engineer',
  header: 'Engineer',
- render: v => <span className="text-xs text-[var(--text-secondary)]">{v || '�’'}</span>,
+ render: v => <span className="text-xs text-[var(--text-secondary)]">{v || '�’'}</span>,
  },
  {
  key: 'roofType',
  header: 'Roof Type',
- render: v => <span className="text-xs capitalize text-[var(--text-muted)]">{v?.replace('_', ' ') || '�’'}</span>,
+ render: v => <span className="text-xs capitalize text-[var(--text-muted)]">{v?.replace('_', ' ') || '�’'}</span>,
  },
  {
  key: 'status',
@@ -108,7 +108,7 @@ const getColumns = ({ onStartSurvey, onFillForm }) => [
  sortable: true,
  render: v => (
  <span className="text-xs text-[var(--text-muted)]">
- {v ? format(new Date(v), 'dd MMM yyyy') : '�’'}
+ {v ? format(new Date(v), 'dd MMM yyyy') : '�’'}
  </span>
  ),
  },
@@ -151,7 +151,7 @@ const getColumns = ({ onStartSurvey, onFillForm }) => [
  },
 ];
 
-// �’�’Grid Drawing Canvas Component �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Grid Drawing Canvas Component �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  const canvasRef = useRef(null);
 
@@ -288,7 +288,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  setSelected(null);
  };
 
- // �’�’Rotation helpers �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // �’�’Rotation helpers �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
  // Get bounding center for each element type
  const getCenter = (type, el) => {
  if (type === 'lines' || type === 'dimensions') {
@@ -397,7 +397,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  if (r.fill) { ctx.fillStyle = (r.color || '#2563eb') + '20'; ctx.fillRect(r.x, r.y, r.w, r.h); }
  if (highlight(i, 'rects') && r.rotation) {
  ctx.fillStyle = '#f59e0b'; ctx.font = '10px Arial';
- ctx.fillText(`${Math.round(r.rotation)}�’�¡`, cx - 10, cy - r.h / 2 - 4);
+ ctx.fillText(`${Math.round(r.rotation)}�’�¡`, cx - 10, cy - r.h / 2 - 4);
  }
  ctx.restore();
  });
@@ -452,7 +452,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  ctx.setLineDash([]);
  if (l.rotation) {
  ctx.fillStyle = '#f59e0b'; ctx.font = '10px Arial';
- ctx.fillText(`${Math.round(l.rotation)}�’�¡`, l.x + w + 6, l.y);
+ ctx.fillText(`${Math.round(l.rotation)}�’�¡`, l.x + w + 6, l.y);
  }
  }
  ctx.restore();
@@ -583,15 +583,15 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  };
 
  const TOOLS = [
- { id: 'select', icon: '�’', label: 'Select' },
+ { id: 'select', icon: '�’', label: 'Select' },
  { id: 'line', icon: '/', label: 'Line' },
- { id: 'arrow', icon: '�’�Â¢', label: 'Arrow' },
- { id: 'rect', icon: '�’', label: 'Rect' },
- { id: 'circle', icon: '�’', label: 'Circle' },
- { id: 'freehand', icon: '�’�“¦�', label: 'Draw' },
- { id: 'dimension', icon: '�’', label: 'Measure' },
+ { id: 'arrow', icon: '�’�¢', label: 'Arrow' },
+ { id: 'rect', icon: '�’', label: 'Rect' },
+ { id: 'circle', icon: '�’', label: 'Circle' },
+ { id: 'freehand', icon: '�’�“¦�', label: 'Draw' },
+ { id: 'dimension', icon: '�’', label: 'Measure' },
  { id: 'text', icon: 'T', label: 'Text' },
- { id: 'eraser', icon: '�’�¢«', label: 'Erase' },
+ { id: 'eraser', icon: '�’�¢«', label: 'Erase' },
  ];
 
  if (readOnly) {
@@ -606,7 +606,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
 
  return (
  <div className="space-y-1.5">
- {/* �’�’Toolbar �’�’*/}
+ {/* �’�’Toolbar �’�’*/}
  <div className="flex flex-wrap items-center gap-1.5 p-2 bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-lg">
  {/* Tools */}
  <div className="flex items-center gap-0.5 bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg p-0.5">
@@ -653,8 +653,8 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  <div className="w-px h-6 bg-[var(--bg-hover)]" />
 
  {/* Undo / Redo */}
- <button onClick={undo} disabled={!history.length} title="Undo" className="w-7 h-7 flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30 text-sm">�’</button>
- <button onClick={redo} disabled={!redoStack.length} title="Redo" className="w-7 h-7 flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30 text-sm">�’�</button>
+ <button onClick={undo} disabled={!history.length} title="Undo" className="w-7 h-7 flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30 text-sm">�’</button>
+ <button onClick={redo} disabled={!redoStack.length} title="Redo" className="w-7 h-7 flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30 text-sm">�’�</button>
 
  {/* Clear */}
  <button onClick={clearAll} className="ml-auto px-2.5 py-1 text-xs text-[var(--red-bg)]0 border border-red-200 hover:bg-[var(--red-bg)] rounded-lg transition-colors flex items-center gap-1">
@@ -662,26 +662,26 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  </button>
  </div>
 
- {/* �’�’Selected element actions �’�’*/}
+ {/* �’�’Selected element actions �’�’*/}
  {selected && selectedEl && (
  <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-xs flex-wrap">
  <span className="text-amber-600 font-medium capitalize">
- �’�“¦ {selected.type?.replace('textLabels','text').replace('freehand','drawing') || 'Unknown'}
- {selectedEl.rotation ? <span className="ml-1 text-amber-500">({Math.round(selectedEl.rotation)}�’�¡)</span> : null}
+ �’�“¦ {selected.type?.replace('textLabels','text').replace('freehand','drawing') || 'Unknown'}
+ {selectedEl.rotation ? <span className="ml-1 text-amber-500">({Math.round(selectedEl.rotation)}�’�¡)</span> : null}
  </span>
 
  {/* Rotate controls */}
  <div className="flex items-center gap-0.5 bg-[var(--bg-surface)] border border-amber-200 rounded px-1 py-0.5">
- <span className="text-[10px] text-amber-500 mr-1">�’� Rotate:</span>
+ <span className="text-[10px] text-amber-500 mr-1">�’� Rotate:</span>
  {[
- { label: '�’�Â¢90�’�¡', deg: -90 },
- { label: '�’�Â¢45�’�¡', deg: -45 },
- { label: '�’�Â¢15�’�¡', deg: -15 },
- { label: '�’�Â¢5�’�¡', deg: -5 },
- { label: '+5�’�¡', deg: 5 },
- { label: '+15�’�¡', deg: 15 },
- { label: '+45�’�¡', deg: 45 },
- { label: '+90�’�¡', deg: 90 },
+ { label: '�’�¢90�’�¡', deg: -90 },
+ { label: '�’�¢45�’�¡', deg: -45 },
+ { label: '�’�¢15�’�¡', deg: -15 },
+ { label: '�’�¢5�’�¡', deg: -5 },
+ { label: '+5�’�¡', deg: 5 },
+ { label: '+15�’�¡', deg: 15 },
+ { label: '+45�’�¡', deg: 45 },
+ { label: '+90�’�¡', deg: 90 },
  ].map(btn => (
  <button
  key={btn.label}
@@ -707,7 +707,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  className="px-1.5 py-0.5 text-[10px] rounded hover:bg-red-100 text-red-400 transition-colors ml-1 border-l border-amber-200"
  title="Reset rotation"
  >
- 0�’�¡
+ 0�’�¡
  </button>
  )}
  </div>
@@ -734,7 +734,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  </div>
  )}
 
- {/* �’�’Edit label inline �’�’*/}
+ {/* �’�’Edit label inline �’�’*/}
  {editingLabel && (
  <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
  <span className="text-xs text-[var(--primary)] font-medium">Edit text:</span>
@@ -750,17 +750,17 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  </div>
  )}
 
- {/* �’�’Text input on canvas click �’�’*/}
+ {/* �’�’Text input on canvas click �’�’*/}
  {inputPos && (
  <form onSubmit={handleTextSubmit} className="flex items-center gap-2 px-2 py-1.5 bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-lg">
  <span className="text-xs text-[var(--text-muted)]">Text at ({inputPos.x}, {inputPos.y}):</span>
  <input autoFocus type="text" value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Enter text..." className="flex-1 px-2 py-1 border border-[var(--border-base)] rounded text-sm focus:outline-none focus:border-[var(--primary)]" />
  <button type="submit" className="px-2.5 py-1 bg-[var(--primary)] text-white rounded text-xs hover:bg-blue-700">Add</button>
- <button type="button" onClick={() => { setInputPos(null); setInputText(''); }} className="px-2.5 py-1 text-[var(--text-secondary)] text-xs border border-[var(--border-base)] rounded hover:bg-[var(--bg-elevated)]">�’�“</button>
+ <button type="button" onClick={() => { setInputPos(null); setInputText(''); }} className="px-2.5 py-1 text-[var(--text-secondary)] text-xs border border-[var(--border-base)] rounded hover:bg-[var(--bg-elevated)]">�’�“</button>
  </form>
  )}
 
- {/* �’�’Canvas �’�’*/}
+ {/* �’�’Canvas �’�’*/}
  <div className="border-2 border-[var(--border-muted)] rounded bg-[var(--bg-surface)] overflow-hidden relative">
  <canvas
  ref={canvasRef}
@@ -780,7 +780,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  />
  {/* Tool hint */}
  <div className="absolute bottom-1 right-2 text-[10px] text-[var(--text-muted)] pointer-events-none">
- {tool === 'select' ? 'Click to select �’�¡· Delete key to remove' :
+ {tool === 'select' ? 'Click to select �’�¡· Delete key to remove' :
  tool === 'eraser' ? 'Click on element to erase' :
  tool === 'text' ? 'Click on canvas to place text' :
  tool === 'freehand' ? 'Hold and drag to draw freely' :
@@ -788,7 +788,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  </div>
  </div>
 
- {/* �’�’Status bar �’�’*/}
+ {/* �’�’Status bar �’�’*/}
  <div className="flex items-center gap-3 text-[10px] text-[var(--text-muted)] px-1">
  <span>Lines: {elements.lines.length}</span>
  <span>Shapes: {elements.rects.length + elements.circles.length}</span>
@@ -800,7 +800,7 @@ const GridDrawingCanvas = ({ drawingData, onChange, readOnly = false }) => {
  );
 };
 
-// �’�’Status Badge �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Status Badge �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const SurveyStatusBadge = ({ status }) => {
  const map = {
  pending: 'bg-amber-100 text-amber-700 border-amber-300',
@@ -815,7 +815,7 @@ const SurveyStatusBadge = ({ status }) => {
  );
 };
 
-// �’�’Survey Card (Grid View) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Survey Card (Grid View) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const SurveyCard = ({ survey, onView, onStart, onComplete, onDelete }) => {
  const statusConfig = {
  pending: { label: 'Pending', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)', icon: Clock },
@@ -859,7 +859,7 @@ const SurveyCard = ({ survey, onView, onStart, onComplete, onDelete }) => {
  <div className="grid grid-cols-2 gap-2">
  <div className="glass-card p-2 text-center">
  <p className="text-[10px] text-[var(--text-muted)]">System</p>
- <p className="text-sm font-bold text-[var(--text-primary)]">{survey.projectCapacity || '�’'}</p>
+ <p className="text-sm font-bold text-[var(--text-primary)]">{survey.projectCapacity || '�’'}</p>
  </div>
  <div className="glass-card p-2 text-center">
  <p className="text-[10px] text-[var(--text-muted)]">Engineer</p>
@@ -870,7 +870,7 @@ const SurveyCard = ({ survey, onView, onStart, onComplete, onDelete }) => {
  {/* Date */}
  <div className="flex items-center gap-2 text-[10px] text-[var(--text-muted)]">
  <Calendar size={10} />
- {survey.createdAt ? format(new Date(survey.createdAt), 'dd MMM yyyy') : '�’'}
+ {survey.createdAt ? format(new Date(survey.createdAt), 'dd MMM yyyy') : '�’'}
  </div>
 
  {/* Actions */}
@@ -934,7 +934,7 @@ const SurveyCard = ({ survey, onView, onStart, onComplete, onDelete }) => {
  );
 };
 
-// �’�’Assign Survey Modal (Pending �’�Â¢ Active) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Assign Survey Modal (Pending �’�¢ Active) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const PendingToActiveModal = ({ isOpen, onClose, survey, onSubmit, onAssign }) => {
  const [formData, setFormData] = useState({ engineerId: '', engineerName: '', surveyDate: format(new Date(), 'yyyy-MM-dd'), notes: '' });
  const [employees, setEmployees] = useState([]);
@@ -1045,7 +1045,7 @@ const PendingToActiveModal = ({ isOpen, onClose, survey, onSubmit, onAssign }) =
  className="w-full border border-[var(--border-base)] bg-[var(--bg-elevated)] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-[var(--text-primary)] disabled:opacity-50"
  >
  <option value="">
- {empLoading ? 'Loading employees...' : '�’Select Engineer �’'}
+ {empLoading ? 'Loading employees...' : '�’Select Engineer �’'}
  </option>
  {Object.entries(employeesByDept).map(([dept, emps]) => (
  <optgroup key={dept} label={dept}>
@@ -1100,7 +1100,7 @@ const PendingToActiveModal = ({ isOpen, onClose, survey, onSubmit, onAssign }) =
  );
 };
 
-// �’�’Complete Survey Modal (Active �’�Â¢ Complete) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Complete Survey Modal (Active �’�¢ Complete) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onSaveSurvey }) => {
  const [formData, setFormData] = useState({ finalImages: [], finalNotes: '', engineerApproval: false, engineerName: '', completionDate: format(new Date(), 'yyyy-MM-dd'), panelPlacementDetails: '', finalDrawing: { lines: [], dimensions: [], textLabels: [] } });
  const [uploading, setUploading] = useState(false);
@@ -1243,13 +1243,13 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
  >
  <div className="bg-[var(--bg-surface)] p-6 max-h-[75vh] overflow-y-auto space-y-6">
 
- {/* �’�’PART 1: Pre-Sales Site Assessment Form �’�’*/}
+ {/* �’�’PART 1: Pre-Sales Site Assessment Form �’�’*/}
  <div className={`border-2 p-4 bg-[var(--bg-surface)] transition-colors ${editMode ? 'border-[var(--primary)]' : 'border-[var(--border-base)]'}`}>
  {/* Header */}
  <div className="flex items-start justify-between border-b-2 border-[var(--border-base)] pb-3 mb-4">
  <div className="text-center flex-1"><h2 className="text-lg font-bold text-[var(--text-primary)] border-2 border-[var(--border-base)] inline-block px-4 py-1">Pre-Sales Site Assessment Form</h2></div>
  <div className="text-right">
- <p className="text-sm text-[var(--text-secondary)]">Date: <span className="border-b border-[var(--border-muted)] px-2">{survey?.createdAt ? format(new Date(survey.createdAt), 'dd/MM/yy') : '�’'}</span></p>
+ <p className="text-sm text-[var(--text-secondary)]">Date: <span className="border-b border-[var(--border-muted)] px-2">{survey?.createdAt ? format(new Date(survey.createdAt), 'dd/MM/yy') : '�’'}</span></p>
  <p className="text-xs text-[var(--text-muted)] mt-1">Survey ID: {survey?.surveyId}</p>
  <div className="mt-2 flex items-center gap-2 justify-end">
  <SurveyStatusBadge status={survey?.status} />
@@ -1284,12 +1284,12 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
  </div>
 
  {editMode ? (
- /* �’�’EDIT MODE �’�’*/
+ /* �’�’EDIT MODE �’�’*/
  <div className="space-y-3">
  {isAdmin && (
  <div className="flex items-center gap-1.5 mb-3 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
  <Edit2 size={13} className="text-blue-500" />
- <p className="text-xs text-[var(--primary)] font-medium">Admin Edit Mode �’Make changes and click Save</p>
+ <p className="text-xs text-[var(--primary)] font-medium">Admin Edit Mode �’Make changes and click Save</p>
  </div>
  )}
  <div className="grid grid-cols-2 gap-3">
@@ -1329,7 +1329,7 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
  <textarea value={editForm.notes} onChange={e => setEdit('notes', e.target.value)} rows={2} className="w-full border border-[var(--border-base)] rounded px-2 py-1.5 text-sm focus:outline-none focus:border-[var(--primary)]" placeholder="Additional notes..." />
  </div>
 
- {/* �’�’Dynamic Custom Fields �’�’*/}
+ {/* �’�’Dynamic Custom Fields �’�’*/}
  <div className="border-t border-dashed border-blue-300 pt-3">
  <div className="flex items-center justify-between mb-2">
  <p className="text-xs font-bold text-[var(--primary)] uppercase tracking-wide flex items-center gap-1">
@@ -1413,11 +1413,11 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
  </div>
  </div>
  ) : (
- /* �’�’VIEW MODE �’�’*/
+ /* �’�’VIEW MODE �’�’*/
  <>
  <div className="grid grid-cols-2 gap-4 mb-4">
  <div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Client Name/City:</span><span className="flex-1 border-b border-[var(--border-base)] px-2 py-1 text-sm">{survey?.clientName} / {survey?.city}</span></div>
- <div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Project Capacity:</span><span className="w-32 border-b border-[var(--border-base)] px-2 py-1 text-sm">{survey?.projectCapacity || '�’'}</span></div>
+ <div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Project Capacity:</span><span className="w-32 border-b border-[var(--border-base)] px-2 py-1 text-sm">{survey?.projectCapacity || '�’'}</span></div>
  </div>
  <div className="mb-3 border-b border-[var(--border-base)] pb-2"><CheckboxGroup label="Roof Type:" value={survey?.roofType} options={ROOF_TYPES} /></div>
  <div className="mb-3 border-b border-[var(--border-base)] pb-2"><CheckboxGroup label="Structure Type:" value={survey?.structureType} options={STRUCTURE_TYPES} /></div>
@@ -1427,8 +1427,8 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
  </div>
  <div className="mb-3 border-b border-[var(--border-base)] pb-2"><CheckboxGroup label="Module:" value={survey?.moduleType} options={MODULE_TYPES} /></div>
  <div className="grid grid-cols-2 gap-4 mb-4">
- <div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Solar Consultant:</span><span className="flex-1 border-b border-[var(--border-base)] px-2 py-1 text-sm">{survey?.solarConsultant || '�’'}</span></div>
- <div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Floors:</span><span className="w-16 border-b border-[var(--border-base)] px-2 py-1 text-sm text-center">{survey?.floors || '�’'}</span></div>
+ <div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Solar Consultant:</span><span className="flex-1 border-b border-[var(--border-base)] px-2 py-1 text-sm">{survey?.solarConsultant || '�’'}</span></div>
+ <div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap">Floors:</span><span className="w-16 border-b border-[var(--border-base)] px-2 py-1 text-sm text-center">{survey?.floors || '�’'}</span></div>
  </div>
  <div className="mb-4"><div className="flex items-center gap-2"><span className="text-sm font-semibold text-[var(--text-secondary)]">Client Signature:</span><div className="flex-1 border-b-2 border-[var(--border-base)] h-8" /></div></div>
  {roofDrawing.lines?.length > 0 && (
@@ -1460,7 +1460,7 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
  )}
  </div>
 
- {/* �’�’PART 2: Survey Completion Form �’�’*/}
+ {/* �’�’PART 2: Survey Completion Form �’�’*/}
  <div className="border-2 border-[var(--border-base)] p-4 bg-[var(--bg-surface)]">
  <div className="flex items-start justify-between border-b-2 border-[var(--border-base)] pb-3 mb-4">
  <div className="text-center flex-1"><h2 className="text-lg font-bold text-[var(--text-primary)] border-2 border-[var(--border-base)] inline-block px-4 py-1">Survey Completion Form</h2></div>
@@ -1529,8 +1529,8 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
  );
 };
 
-// �’�’Survey Details Modal (Paper Form Style) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
-// �’�’VIEW DETAILS MODAL (Read-only) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Survey Details Modal (Paper Form Style) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’VIEW DETAILS MODAL (Read-only) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const SurveyDetailsModal = ({ isOpen, onClose, survey }) => {
  if (!survey || !isOpen) return null;
  
@@ -1588,7 +1588,7 @@ const SurveyDetailsModal = ({ isOpen, onClose, survey }) => {
  <div className="bg-[var(--bg-elevated)] p-3 rounded-lg">
  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Project Capacity</p>
  <p className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-1">
- <Zap size={14} className="text-yellow-500" /> {survey.projectCapacity || '�’'} kWp
+ <Zap size={14} className="text-yellow-500" /> {survey.projectCapacity || '�’'} kWp
  </p>
  </div>
 
@@ -1611,7 +1611,7 @@ const SurveyDetailsModal = ({ isOpen, onClose, survey }) => {
  <p className="text-xs font-semibold text-[var(--text-muted)] uppercase mb-1">Survey Date</p>
  <p className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-1">
  <Calendar size={14} className="text-[var(--text-muted)]" />
- {survey.createdAt ? format(new Date(survey.createdAt), 'dd MMM yyyy') : '�’'}
+ {survey.createdAt ? format(new Date(survey.createdAt), 'dd MMM yyyy') : '�’'}
  </p>
  </div>
  </div>
@@ -1715,11 +1715,11 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
  const completeData = survey.completeData || {};
 
  const displayDate = (d) => {
- if (!d) return '�’';
+ if (!d) return '�’';
  try {
  return format(new Date(d), 'dd MMM yyyy');
  } catch {
- return '�’';
+ return '�’';
  }
  };
 
@@ -1733,7 +1733,7 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
 
  const safeCapacity = (() => {
  const val = (survey.projectCapacity ?? '').toString();
- if (!val) return '�’';
+ if (!val) return '�’';
  return val.toLowerCase().includes('kw') ? val : `${val} kWp`;
  })();
 
@@ -1922,7 +1922,7 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
  <div>
  <p className="text-xs font-semibold text-white/80">Solar EPC</p>
  <h2 className="text-2xl font-bold tracking-tight">Site Survey Report</h2>
- <p className="text-sm text-white/90 mt-1">Survey ID: <span className="font-mono text-white">{survey.surveyId || '�’'}</span></p>
+ <p className="text-sm text-white/90 mt-1">Survey ID: <span className="font-mono text-white">{survey.surveyId || '�’'}</span></p>
  </div>
  <div className="text-right">
  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[var(--bg-surface)]/10 border border-white/20 backdrop-blur-sm">{(survey.status || 'complete').toString().toUpperCase()}</span>
@@ -1935,8 +1935,8 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
  <div className="grid grid-cols-2 gap-4">
  <div className="rounded-xl p-4 border border-[var(--border-base)] bg-[var(--bg-surface)]">
  <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">Customer</p>
- <p className="text-base font-bold text-[var(--text-primary)] mt-1">{survey.clientName || '�’'}</p>
- <p className="text-sm text-[var(--text-secondary)] mt-1 flex items-center gap-1"><MapPin size={14} className="text-[var(--text-muted)]" /> {survey.city || '�’'}</p>
+ <p className="text-base font-bold text-[var(--text-primary)] mt-1">{survey.clientName || '�’'}</p>
+ <p className="text-sm text-[var(--text-secondary)] mt-1 flex items-center gap-1"><MapPin size={14} className="text-[var(--text-muted)]" /> {survey.city || '�’'}</p>
  </div>
  <div className="rounded-xl p-4 border border-[var(--border-base)] bg-[var(--bg-surface)]">
  <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">Project</p>
@@ -1947,11 +1947,11 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
  </div>
  <div>
  <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">Floors</p>
- <p className="text-sm font-semibold text-[var(--text-primary)]">{survey.floors ?? '�’'}</p>
+ <p className="text-sm font-semibold text-[var(--text-primary)]">{survey.floors ?? '�’'}</p>
  </div>
  <div>
  <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">Engineer</p>
- <p className="text-sm font-semibold text-[var(--text-primary)]">{survey.engineer || '�’'}</p>
+ <p className="text-sm font-semibold text-[var(--text-primary)]">{survey.engineer || '�’'}</p>
  </div>
  <div>
  <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase">Survey Date</p>
@@ -1966,23 +1966,23 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
  <div className="grid grid-cols-2 gap-3 mt-3">
  <div className="bg-slate-50 rounded-lg p-3">
  <p className="text-[11px] font-semibold text-slate-500 uppercase">Roof Type</p>
- <p className="text-sm font-semibold text-slate-900 mt-1">{survey.roofType ? survey.roofType.replace('_', ' ') : '�’'}</p>
+ <p className="text-sm font-semibold text-slate-900 mt-1">{survey.roofType ? survey.roofType.replace('_', ' ') : '�’'}</p>
  </div>
  <div className="bg-slate-50 rounded-lg p-3">
  <p className="text-[11px] font-semibold text-slate-500 uppercase">Structure Type</p>
- <p className="text-sm font-semibold text-slate-900 mt-1">{survey.structureType ? survey.structureType.replace('_', ' ') : '�’'}</p>
+ <p className="text-sm font-semibold text-slate-900 mt-1">{survey.structureType ? survey.structureType.replace('_', ' ') : '�’'}</p>
  </div>
  <div className="bg-slate-50 rounded-lg p-3">
  <p className="text-[11px] font-semibold text-slate-500 uppercase">Structure Height</p>
- <p className="text-sm font-semibold text-slate-900 mt-1">{survey.structureHeight ? `${survey.structureHeight}${survey.customHeight ? ` (${survey.customHeight})` : ''}` : '�’'}</p>
+ <p className="text-sm font-semibold text-slate-900 mt-1">{survey.structureHeight ? `${survey.structureHeight}${survey.customHeight ? ` (${survey.customHeight})` : ''}` : '�’'}</p>
  </div>
  <div className="bg-slate-50 rounded-lg p-3">
  <p className="text-[11px] font-semibold text-slate-500 uppercase">Module Type</p>
- <p className="text-sm font-semibold text-slate-900 mt-1">{survey.moduleType || '�’'}</p>
+ <p className="text-sm font-semibold text-slate-900 mt-1">{survey.moduleType || '�’'}</p>
  </div>
  <div className="bg-slate-50 rounded-lg p-3 col-span-2">
  <p className="text-[11px] font-semibold text-slate-500 uppercase">Solar Consultant</p>
- <p className="text-sm font-semibold text-slate-900 mt-1">{survey.solarConsultant || '�’'}</p>
+ <p className="text-sm font-semibold text-slate-900 mt-1">{survey.solarConsultant || '�’'}</p>
  </div>
  </div>
  </div>
@@ -2000,15 +2000,15 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
  </div>
  <div className="bg-slate-50 rounded-lg p-3 col-span-2">
  <p className="text-[11px] font-semibold text-slate-500 uppercase">Engineer Name</p>
- <p className="text-sm font-semibold text-slate-900 mt-1">{completeData.engineerName || survey.engineer || '�’'}</p>
+ <p className="text-sm font-semibold text-slate-900 mt-1">{completeData.engineerName || survey.engineer || '�’'}</p>
  </div>
  <div className="bg-slate-50 rounded-lg p-3 col-span-2">
  <p className="text-[11px] font-semibold text-slate-500 uppercase">Panel Placement Details</p>
- <p className="text-sm text-slate-900 mt-1 whitespace-pre-wrap">{completeData.panelPlacementDetails || '�’'}</p>
+ <p className="text-sm text-slate-900 mt-1 whitespace-pre-wrap">{completeData.panelPlacementDetails || '�’'}</p>
  </div>
  <div className="bg-slate-50 rounded-lg p-3 col-span-2">
  <p className="text-[11px] font-semibold text-slate-500 uppercase">Final Notes</p>
- <p className="text-sm text-slate-900 mt-1 whitespace-pre-wrap">{completeData.finalNotes || '�’'}</p>
+ <p className="text-sm text-slate-900 mt-1 whitespace-pre-wrap">{completeData.finalNotes || '�’'}</p>
  </div>
  </div>
  </div>
@@ -2058,7 +2058,7 @@ const CompletedSurveyPdfModal = ({ isOpen, onClose, survey }) => {
  );
 };
 
-// �’�’Survey KPI List Modal �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Survey KPI List Modal �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const SurveyKpiModal = ({ title, surveys, filter, onClose, onView }) => {
  const statusColor = {
  pending: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
@@ -2093,7 +2093,7 @@ const SurveyKpiModal = ({ title, surveys, filter, onClose, onView }) => {
  </div>
  <div className="flex-1 min-w-0">
  <p className="font-semibold text-sm text-[var(--text-primary)] truncate">{s.clientName}</p>
- <p className="text-xs text-[var(--text-muted)] flex items-center gap-1"><MapPin size={10}/>{s.city} �’�¡· {s.projectCapacity || '�’'}</p>
+ <p className="text-xs text-[var(--text-muted)] flex items-center gap-1"><MapPin size={10}/>{s.city} �’�¡· {s.projectCapacity || '�’'}</p>
  </div>
  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${statusColor[s.status] || statusColor.pending}`}>{s.status}</span>
  </div>
@@ -2103,7 +2103,7 @@ const SurveyKpiModal = ({ title, surveys, filter, onClose, onView }) => {
  );
 };
 
-// �’�’Main Site Survey Page �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’Main Site Survey Page �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const SiteSurveyPage = () => {
  const { user } = useAuth();
  const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin';
@@ -2354,7 +2354,7 @@ const SiteSurveyPage = () => {
  {/* Page Header */}
  <PageHeader
  title="Site Survey Management"
- subtitle="Manage site surveys �’�¡· from lead assignment to completion"
+ subtitle="Manage site surveys �’�¡· from lead assignment to completion"
  tabs={[
  { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
  { id: 'grid', label: 'Grid', icon: LayoutGrid },
@@ -2864,7 +2864,7 @@ const SiteSurveyPage = () => {
  );
 };
 
-// �’�’CREATE SURVEY MODAL �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’CREATE SURVEY MODAL �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const CreateSurveyModal = ({ isOpen, onClose, onCreate }) => {
  const [formData, setFormData] = useState({
  clientName: '',
@@ -3018,7 +3018,7 @@ const CreateSurveyModal = ({ isOpen, onClose, onCreate }) => {
  );
 };
 
-// �’�’EDIT SURVEY MODAL �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’EDIT SURVEY MODAL �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const EditSurveyModal = ({ isOpen, onClose, survey, onSave }) => {
  const [formData, setFormData] = useState({
  clientName: '',
@@ -3147,7 +3147,7 @@ const EditSurveyModal = ({ isOpen, onClose, survey, onSave }) => {
  disabled={empLoading}
  className="w-full border border-[var(--border-base)] bg-[var(--bg-elevated)] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] text-[var(--text-primary)] disabled:opacity-50"
  >
- <option value="">{empLoading ? 'Loading employees...' : '�’Select Engineer �’'}</option>
+ <option value="">{empLoading ? 'Loading employees...' : '�’Select Engineer �’'}</option>
  {Object.entries(employeesByDept).map(([dept, emps]) => (
  <optgroup key={dept} label={dept}>
  {emps.map(emp => {
@@ -3234,7 +3234,7 @@ const EditSurveyModal = ({ isOpen, onClose, survey, onSave }) => {
  );
 };
 
-// �’�’ASSIGN SURVEY MODAL �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’ASSIGN SURVEY MODAL �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const AssignSurveyModal = ({ isOpen, onClose, survey, onAssign }) => {
  const [selectedUser, setSelectedUser] = useState('');
  const [notes, setNotes] = useState('');
@@ -3333,7 +3333,7 @@ const AssignSurveyModal = ({ isOpen, onClose, survey, onAssign }) => {
  disabled={empLoading}
  className="w-full border border-[var(--border-base)] bg-[var(--bg-elevated)] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] text-[var(--text-primary)] disabled:opacity-50"
  >
- <option value="">{empLoading ? 'Loading employees...' : '�’Select Engineer �’'}</option>
+ <option value="">{empLoading ? 'Loading employees...' : '�’Select Engineer �’'}</option>
  {Object.entries(employeesByDept).map(([dept, emps]) => (
  <optgroup key={dept} label={dept}>
  {emps.map(emp => {

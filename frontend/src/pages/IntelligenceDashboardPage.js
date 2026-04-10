@@ -1,4 +1,4 @@
-// Solar OS �’� AI Intelligence Center
+// Solar OS �’� AI Intelligence Center
 // Real-time AI-powered business intelligence & trade decision assistant UI. Pure frontend. No backend, no API calls.
 // All intelligence derived from mock data via useIntelligenceStore.
 
@@ -16,7 +16,7 @@ import { CURRENCY } from '../config/app.config';
 
 const fmt = CURRENCY.format;
 
-// �’�’�’ICON MAP (for dynamic icon lookup) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’ICON MAP (for dynamic icon lookup) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ICON_MAP = {
  Users, MapPin, Pencil, FileText, FolderOpen, Wrench, DollarSign,
  Package, UserX, ShieldCheck, Sparkles, IndianRupee, AlertTriangle,
@@ -29,7 +29,7 @@ const Ic = ({ name, size = 14, className = '', style }) => {
  return <C size={size} className={className} style={style} />;
 };
 
-// �’�’�’COLOUR HELPERS �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’COLOUR HELPERS �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const scoreColor = s => s >= 75 ? 'text-[var(--green)]' : s >= 50 ? 'text-amber-400' : 'text-red-400';
 const scoreBg = s => s >= 75 ? 'from-emerald-500 to-teal-400' : s >= 50 ? 'from-amber-500 to-orange-400' : 'from-red-500 to-rose-400';
 const priorityBadge = p => p === 'High'
@@ -58,7 +58,7 @@ const riskBadge = r => r === 'High'
  ? 'bg-amber-500/15 border-amber-500/30 text-amber-400'
  : 'bg-[var(--green)]/15 border-[var(--green)]/30 text-[var(--green)]';
 
-// �’�’�’ANIMATED COUNTER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’ANIMATED COUNTER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const AnimatedNumber = ({ to, prefix = '', suffix = '', duration = 1200 }) => {
  const [display, setDisplay] = useState(0);
  const frameRef = useRef(null);
@@ -89,7 +89,7 @@ const AnimatedNumber = ({ to, prefix = '', suffix = '', duration = 1200 }) => {
  return <span>{prefix}{formatted}{suffix}</span>;
 };
 
-// �’�’�’MINI PROGRESS BAR �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’MINI PROGRESS BAR �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // colorClass = Tailwind gradient classes (static), OR color = hex string for dynamic colors
 const MiniBar = ({ value, colorClass, color }) => (
  <div className="w-full h-1.5 rounded-full bg-[var(--bg-overlay)] overflow-hidden">
@@ -103,7 +103,7 @@ const MiniBar = ({ value, colorClass, color }) => (
  </div>
 );
 
-// �’�’�’CIRCULAR SCORE WIDGET �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’CIRCULAR SCORE WIDGET �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const CircularScore = ({ score, size = 160 }) => {
  const [animScore, setAnimScore] = useState(0);
  const frameRef = useRef(null);
@@ -148,12 +148,12 @@ const CircularScore = ({ score, size = 160 }) => {
  );
 };
 
-// �’�’�’AI STATUS BADGE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’AI STATUS BADGE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const AIStatusBadge = ({ status }) => {
  const map = {
- Learning: { dot: 'bg-[var(--green)]', ring: 'ring-emerald-400/40', text: 'text-[var(--green)]', label: '�’�¦�Learning' },
- Analyzing: { dot: 'bg-amber-400', ring: 'ring-amber-400/40', text: 'text-amber-400', label: '�’�¦�Analyzing' },
- Optimizing: { dot: 'bg-[var(--primary-light)]', ring: 'ring-[var(--primary-glow)]', text: 'text-[var(--primary-light)]', label: '�’�µ Optimizing' },
+ Learning: { dot: 'bg-[var(--green)]', ring: 'ring-emerald-400/40', text: 'text-[var(--green)]', label: '�’�¦�Learning' },
+ Analyzing: { dot: 'bg-amber-400', ring: 'ring-amber-400/40', text: 'text-amber-400', label: '�’�¦�Analyzing' },
+ Optimizing: { dot: 'bg-[var(--primary-light)]', ring: 'ring-[var(--primary-glow)]', text: 'text-[var(--primary-light)]', label: '�’�µ Optimizing' },
  };
  const s = map[status] || map.Optimizing;
  return (
@@ -164,12 +164,12 @@ const AIStatusBadge = ({ status }) => {
  );
 };
 
-// �’�’�’RISK BADGE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’RISK BADGE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const RiskBadge = ({ level }) => (
  <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${riskBadge(level)}`}>{level}</span>
 );
 
-// �’�’�’INSIGHT CARD �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’INSIGHT CARD �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const InsightCard = ({ title, children, className = '', action }) => (
  <div className={`glass-card overflow-hidden ${className}`}>
  <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[var(--border-muted)]">
@@ -184,7 +184,7 @@ const InsightCard = ({ title, children, className = '', action }) => (
  </div>
 );
 
-// �’�’�’RECOMMENDATION LIST �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’RECOMMENDATION LIST �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const RecommendationList = ({ alerts, onNavigate }) => (
  <div className="space-y-2.5">
  {alerts.map(alert => (
@@ -215,7 +215,7 @@ const RecommendationList = ({ alerts, onNavigate }) => (
  </div>
 );
 
-// �’�’�’HEALTH SCORE SECTION �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’HEALTH SCORE SECTION �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const HealthScoreSection = ({ health }) => {
  const subMetrics = [
  { label: 'Sales Health', val: health.salesHealth, icon: TrendingUp },
@@ -257,7 +257,7 @@ const HealthScoreSection = ({ health }) => {
  {/* Tooltip */}
  <div className="absolute right-0 bottom-full mb-1 hidden group-hover:block z-10">
  <div className="bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg p-2 text-[10px] text-[var(--text-muted)] whitespace-nowrap shadow-lg">
- {m.val >= 75 ? '�’�“¦ On target' : m.val >= 50 ? '�’�’Needs attention' : '�’�¦Critical �’action required'}
+ {m.val >= 75 ? '�’�“¦ On target' : m.val >= 50 ? '�’�’Needs attention' : '�’�¦Critical �’action required'}
  </div>
  </div>
  </div>
@@ -270,9 +270,9 @@ const HealthScoreSection = ({ health }) => {
  <div className="p-3 rounded-xl bg-[var(--bg-raised)] border border-[var(--border-muted)]">
  <p className="text-[10px] font-bold text-[var(--text-faint)] uppercase tracking-wider mb-2">Score Legend</p>
  {[
- { range: '75�’�100', label: 'Healthy', color: 'text-[var(--green)]', dot: 'bg-[var(--green)]' },
- { range: '50�’�74', label: 'Attention', color: 'text-amber-400', dot: 'bg-amber-400' },
- { range: '0�’�49', label: 'Critical', color: 'text-red-400', dot: 'bg-red-400' },
+ { range: '75�’�100', label: 'Healthy', color: 'text-[var(--green)]', dot: 'bg-[var(--green)]' },
+ { range: '50�’�74', label: 'Attention', color: 'text-amber-400', dot: 'bg-amber-400' },
+ { range: '0�’�49', label: 'Critical', color: 'text-red-400', dot: 'bg-red-400' },
  ].map(r => (
  <div key={r.range} className="flex items-center gap-2 mb-1.5">
  <div className={`w-2 h-2 rounded-full ${r.dot}`} />
@@ -287,7 +287,7 @@ const HealthScoreSection = ({ health }) => {
  {health.overall >= 75
  ? 'Operations running well. Monitor cash flow and inventory for sustained growth.'
  : health.overall >= 60
- ? 'Stable but 2�’�3 areas need intervention. Prioritise project execution and receivables.'
+ ? 'Stable but 2�’�3 areas need intervention. Prioritise project execution and receivables.'
  : 'Multiple risk signals detected. Immediate escalation recommended on top alerts.'}
  </p>
  </div>
@@ -297,7 +297,7 @@ const HealthScoreSection = ({ health }) => {
  );
 };
 
-// �’�’�’PREDICTIVE PIPELINE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PREDICTIVE PIPELINE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const PredictivePipeline = ({ pipeline }) => (
  <div className="glass-card p-5">
  <div className="flex items-center gap-2 mb-4">
@@ -363,7 +363,7 @@ const PredictivePipeline = ({ pipeline }) => (
  </div>
 );
 
-// �’�’�’PROJECT RISK GRID �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PROJECT RISK GRID �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ProjectRiskGrid = ({ risks }) => (
  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
  {risks.map(p => (
@@ -413,7 +413,7 @@ const ProjectRiskGrid = ({ risks }) => (
  {p.riskLevel === 'High'
  ? 'Based on milestone velocity and pending approvals.'
  : p.riskLevel === 'Medium'
- ? 'Monitor weekly �’moderate delay signals detected.'
+ ? 'Monitor weekly �’moderate delay signals detected.'
  : 'AI confidence: low risk. Continue current trajectory.'}
  </p>
  </div>
@@ -421,7 +421,7 @@ const ProjectRiskGrid = ({ risks }) => (
  </div>
 );
 
-// �’�’�’CASH FLOW FORECAST �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’CASH FLOW FORECAST �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const CashFlowForecast = ({ forecast }) => {
  const maxVal = Math.max(...forecast.map(f => Math.max(f.inflow, f.outflow)));
  const HEIGHT = 100;
@@ -448,7 +448,7 @@ const CashFlowForecast = ({ forecast }) => {
  <line key={r} x1="0" y1={r * HEIGHT} x2={forecast.length * 80} y2={r * HEIGHT}
  stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
  ))}
- {/* Bars �’inflow */}
+ {/* Bars �’inflow */}
  {forecast.map((d, i) => {
  const bw = 18;
  const inflowH = (d.inflow / maxVal) * HEIGHT;
@@ -495,7 +495,7 @@ const CashFlowForecast = ({ forecast }) => {
  <div className={`p-3 rounded-xl ${forecast[0]?.net > 0 ? 'bg-[var(--bg-hover)] border border-[var(--border-active)]' : 'bg-red-500/5 border border-red-500/15'}`}>
  <p className={`text-[10px] font-bold mb-1 ${forecast[0]?.net > 0 ? 'text-[var(--primary-light)]' : 'text-red-400'}`}>Net Position</p>
  <p className={`text-sm font-extrabold ${forecast[0]?.net > 0 ? 'text-[var(--primary-light)]' : 'text-red-400'}`}>{fmt(Math.abs(forecast[0]?.net))}</p>
- <p className="text-[10px] text-[var(--text-faint)]">{forecast[0]?.net > 0 ? 'Surplus' : '�’ Deficit'}</p>
+ <p className="text-[10px] text-[var(--text-faint)]">{forecast[0]?.net > 0 ? 'Surplus' : '�’ Deficit'}</p>
  </div>
  </div>
 
@@ -510,7 +510,7 @@ const CashFlowForecast = ({ forecast }) => {
  );
 };
 
-// �’�’�’TEAM PERFORMANCE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’TEAM PERFORMANCE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const TeamPerformance = ({ metrics }) => (
  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
  {metrics.map(m => (
@@ -563,7 +563,7 @@ const TeamPerformance = ({ metrics }) => (
  </div>
 );
 
-// �’�’�’SIMULATOR PANEL �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’SIMULATOR PANEL �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const SimulatorPanel = () => {
  const [margin, setMargin] = useState(25);
  const [capacity, setCapacity] = useState(60);
@@ -632,7 +632,7 @@ const SimulatorPanel = () => {
  );
 };
 
-// �’�’�’INSIGHT FEED �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’INSIGHT FEED �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const InsightFeed = ({ feed }) => {
  const [expanded, setExpanded] = useState(false);
  const shown = expanded ? feed : feed.slice(0, 6);
@@ -655,18 +655,18 @@ const InsightFeed = ({ feed }) => {
  onClick={() => setExpanded(e => !e)}
  className="w-full py-2 text-[11px] text-[var(--accent)] hover:underline flex items-center justify-center gap-1"
  >
- {expanded ? '�’Show less' : `�’� Show ${feed.length - 6} more observations`}
+ {expanded ? '�’Show less' : `�’� Show ${feed.length - 6} more observations`}
  </button>
  </div>
  );
 };
 
-// �’�’�’SKELETON CARD �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’SKELETON CARD �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const SkeletonCard = ({ h = 'h-24', className = '' }) => (
  <div className={`glass-card ${h} animate-shimmer ${className}`} />
 );
 
-// �’�’�’GLOBAL KPI SNAPSHOT �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’GLOBAL KPI SNAPSHOT �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const GlobalKPISnapshot = ({ kpis, isRefreshing }) => {
  const items = [
  { key: 'revenueForecast', label: 'Revenue Forecast', icon: TrendingUp, variant: 'emerald' },
@@ -706,7 +706,7 @@ const GlobalKPISnapshot = ({ kpis, isRefreshing }) => {
  );
 };
 
-// �’�’�’SECTION HEADER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’SECTION HEADER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const SectionHeader = ({ icon: Icon, title, subtitle, color = 'var(--accent)' }) => (
  <div className="flex items-center gap-3 mb-4">
  <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
@@ -720,16 +720,16 @@ const SectionHeader = ({ icon: Icon, title, subtitle, color = 'var(--accent)' })
  </div>
 );
 
-// �’�’�’DATE RANGE SELECTOR �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’DATE RANGE SELECTOR �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const DATE_RANGES = ['Today', 'Last 7 days', 'Last 30 days', 'Last Quarter', 'YTD'];
 
-// �’�’�’SECTION WRAPPER with skeleton fallback �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’SECTION WRAPPER with skeleton fallback �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const SectionWrap = ({ loading, skeletonH = 'h-40', children }) =>
  loading ? <SkeletonCard h={skeletonH} /> : children;
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // MAIN PAGE
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const IntelligenceDashboardPage = ({ onNavigate }) => {
  const {
  intelligence, lastRefresh, isRefreshing, refresh, aiStatus, dateRange, setDateRange,
@@ -754,7 +754,7 @@ const IntelligenceDashboardPage = ({ onNavigate }) => {
  return (
  <div className="animate-fade-in space-y-8 relative">
 
- {/* �’�’Refresh toast �’�’*/}
+ {/* �’�’Refresh toast �’�’*/}
  {showToast && (
  <div className="fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl
  bg-[var(--bg-surface)] border border-[var(--green)]/30 shadow-xl shadow-black/30 animate-slide-up">
@@ -765,7 +765,7 @@ const IntelligenceDashboardPage = ({ onNavigate }) => {
  </div>
  )}
 
- {/* �’�’PAGE HEADER �’�’*/}
+ {/* �’�’PAGE HEADER �’�’*/}
  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
  <div className="flex items-center gap-3">
  {/* Brain icon with pulse on refresh */}
@@ -785,7 +785,7 @@ const IntelligenceDashboardPage = ({ onNavigate }) => {
  )}
  </h1>
  <p className="text-xs text-[var(--text-muted)] mt-0.5">
- Operational intelligence �’�¡· derived from all modules �’�¡· updated {lastRefreshStr}
+ Operational intelligence �’�¡· derived from all modules �’�¡· updated {lastRefreshStr}
  </p>
  </div>
  </div>
@@ -809,19 +809,19 @@ const IntelligenceDashboardPage = ({ onNavigate }) => {
  text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-violet-500/40
  transition-all disabled:opacity-50 disabled:cursor-not-allowed">
  <RefreshCw size={12} className={isRefreshing ? 'animate-spin' : ''} />
- {isRefreshing ? 'Refreshing�’' : 'Refresh Insights'}
+ {isRefreshing ? 'Refreshing�’' : 'Refresh Insights'}
  </button>
  </div>
  </div>
 
- {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
- KPI STRIP �’always-visible 6-up grid
- �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
+ {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ KPI STRIP �’always-visible 6-up grid
+ �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
  <GlobalKPISnapshot kpis={globalKPIs} isRefreshing={isRefreshing} />
 
- {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
- SECTION 1 �’�¡· BUSINESS HEALTH SCORE
- �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
+ {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ SECTION 1 �’�¡· BUSINESS HEALTH SCORE
+ �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
  <section>
  <SectionHeader icon={Gauge} title="Business Health Score"
  subtitle="AI composite score across 5 operational dimensions"
@@ -831,13 +831,13 @@ const IntelligenceDashboardPage = ({ onNavigate }) => {
  </SectionWrap>
  </section>
 
- {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
- SECTION 2 �’�¡· AI RECOMMENDED ACTIONS
- �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
+ {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ SECTION 2 �’�¡· AI RECOMMENDED ACTIONS
+ �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
  <section>
  <SectionHeader icon={Brain}
- title="�’�  Recommended Actions"
- subtitle={`${highPriorityCount} high-priority �’�¡· ${alerts.length} total actions from AI analysis`}
+ title="�’�  Recommended Actions"
+ subtitle={`${highPriorityCount} high-priority �’�¡· ${alerts.length} total actions from AI analysis`}
  color="#8b5cf6" />
  <SectionWrap loading={isRefreshing} skeletonH="h-64">
  <div className="glass-card p-5">
@@ -846,33 +846,33 @@ const IntelligenceDashboardPage = ({ onNavigate }) => {
  </SectionWrap>
  </section>
 
- {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
- SECTION 3 �’�¡· PREDICTIVE PIPELINE
- �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
+ {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ SECTION 3 �’�¡· PREDICTIVE PIPELINE
+ �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
  <section>
  <SectionHeader icon={Activity} title="Predictive EPC Pipeline"
- subtitle="Full lifecycle: Lead �’�Â¢ Survey �’�Â¢ Design �’�Â¢ Quote �’�Â¢ Project �’�Â¢ Install �’�Â¢ Commission �’�Â¢ Finance"
+ subtitle="Full lifecycle: Lead �’� Survey �’� Design �’� Quote �’� Project �’� Install �’� Commission �’� Finance"
  color="#3b82f6" />
  <SectionWrap loading={isRefreshing} skeletonH="h-56">
  <PredictivePipeline pipeline={pipeline} />
  </SectionWrap>
  </section>
 
- {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
- SECTION 4 �’�¡· PROJECT RISK ANALYSIS
- �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
+ {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ SECTION 4 �’�¡· PROJECT RISK ANALYSIS
+ �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
  <section>
  <SectionHeader icon={AlertTriangle} title="Project Risk Analysis"
- subtitle="AI-scored risk factors per active project �’milestone velocity + approval status"
+ subtitle="AI-scored risk factors per active project �’milestone velocity + approval status"
  color="#f59e0b" />
  <SectionWrap loading={isRefreshing} skeletonH="h-48">
  <ProjectRiskGrid risks={risks} />
  </SectionWrap>
  </section>
 
- {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
- SECTION 5 + 8 �’�¡· CASH FLOW + INSIGHT FEED
- �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
+ {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ SECTION 5 + 8 �’�¡· CASH FLOW + INSIGHT FEED
+ �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
  <section>
  <SectionHeader icon={DollarSign} title="Cash Flow Forecast"
@@ -887,7 +887,7 @@ const IntelligenceDashboardPage = ({ onNavigate }) => {
 
  <section>
  <SectionHeader icon={Eye} title="AI Insight Feed"
- subtitle="Continuous operational observations �’auto-generated, timestamped"
+ subtitle="Continuous operational observations �’auto-generated, timestamped"
  color="#f97316" />
  <SectionWrap loading={isRefreshing} skeletonH="h-72">
  <InsightCard title="Live Observations">
@@ -897,37 +897,37 @@ const IntelligenceDashboardPage = ({ onNavigate }) => {
  </section>
  </div>
 
- {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
- SECTION 6 �’�¡· TEAM PERFORMANCE
- �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
+ {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ SECTION 6 �’�¡· TEAM PERFORMANCE
+ �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
  <section>
  <SectionHeader icon={Users} title="Team Performance Intelligence"
- subtitle="Departmental productivity �’�¡· delay ratios �’�¡· trend direction �’�¡· AI observations"
+ subtitle="Departmental productivity �’�¡· delay ratios �’�¡· trend direction �’�¡· AI observations"
  color="#06b6d4" />
  <SectionWrap loading={isRefreshing} skeletonH="h-44">
  <TeamPerformance metrics={teamMetrics} />
  </SectionWrap>
  </section>
 
- {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
- SECTION 7 �’�¡· DECISION SIMULATOR
- �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
+ {/* �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ SECTION 7 �’�¡· DECISION SIMULATOR
+ �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’*/}
  <section>
  <SectionHeader icon={Zap}
  title="Decision Simulator"
- subtitle='"What happens if�’" �’interactive scenario sandbox �’�¡· pure UI math �’�¡· no backend'
+ subtitle='"What happens if�’" �’interactive scenario sandbox �’�¡· pure UI math �’�¡· no backend'
  color="#ec4899" />
- <InsightCard title="�’�¦�º What happens if�’">
+ <InsightCard title="�’�¦�º What happens if�’">
  <SimulatorPanel />
  </InsightCard>
  </section>
 
- {/* �’�’Footer �’�’*/}
+ {/* �’�’Footer �’�’*/}
  <div className="flex flex-col sm:flex-row items-center justify-between gap-2
  pt-4 pb-2 border-t border-[var(--border-muted)] text-[10px] text-[var(--text-faint)]">
- <span>Solar OS AI Intelligence Center �’�¡· {dateRange} �’�¡· Last updated {lastRefreshStr}</span>
+ <span>Solar OS AI Intelligence Center �’�¡· {dateRange} �’�¡· Last updated {lastRefreshStr}</span>
  <span className="text-violet-400/70">
- All insights derived from module data �’�¡· No external API calls
+ All insights derived from module data �’�¡· No external API calls
  </span>
  </div>
  </div>

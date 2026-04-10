@@ -1,4 +1,4 @@
-// ProjectManagerDashboard.js Ã¢â‚¬â€ Professional Project Management Control Center
+// ProjectManagerDashboard.js "" Professional Project Management Control Center
 import React, { useState, useEffect } from 'react';
 import {
     BarChart, Bar, LineChart, Line, ComposedChart, Area,
@@ -176,7 +176,7 @@ const ProjectManagerDashboard = ({ onNavigate }) => {
                                 </span>
                             </div>
                             <p className="text-white/80 text-sm">
-                                Project Tracking Ã¢â‚¬Â¢ Team Management Ã¢â‚¬Â¢ Milestone Monitoring
+                                Project Tracking " Team Management " Milestone Monitoring
                             </p>
                         </div>
                     </div>

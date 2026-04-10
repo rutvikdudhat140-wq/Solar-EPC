@@ -1,5 +1,5 @@
-// Solar OS �’Settings & Control Center (Enterprise Edition)
-// Feature Flags �’�¡· RBAC Matrix �’�¡· Role Builder �’�¡· User Permissions �’�¡· Workflow Rules �’�¡· Audit Logs �’�¡· AI Suggestions
+// Solar OS �’Settings & Control Center (Enterprise Edition)
+// Feature Flags �’�¡· RBAC Matrix �’�¡· Role Builder �’�¡· User Permissions �’�¡· Workflow Rules �’�¡· Audit Logs �’�¡· AI Suggestions
 import React, { useEffect, useMemo, useState } from 'react';
 import {
  Settings, Shield, Flag, GitBranch, ScrollText, Zap,
@@ -29,7 +29,7 @@ import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 
-// �’�’�’Icon map �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’Icon map �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ICON_MAP = {
  LayoutDashboard, Users, MapPin, Pencil, FileText, FolderOpen,
  Package, ShoppingCart, Truck, Wrench, CheckCircle, DollarSign,
@@ -40,7 +40,7 @@ const ModIcon = ({ name, size = 14, className = '' }) => {
  return <Icon size={size} className={className} />;
 };
 
-// �’�’�’Reusable toggle switch �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’Reusable toggle switch �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const Toggle = ({ on, onChange, size = 'md', disabled = false }) => {
  const w = size === 'sm' ? 'w-7 h-4' : 'w-10 h-5';
  const k = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4';
@@ -56,7 +56,7 @@ const Toggle = ({ on, onChange, size = 'md', disabled = false }) => {
  );
 };
 
-// �’�’�’CRM: Lead Status Builder �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’CRM: Lead Status Builder �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 function LeadStatusBuilder() {
  const [loading, setLoading] = useState(true);
  const [statuses, setStatuses] = useState([]);
@@ -310,7 +310,7 @@ function LeadStatusBuilder() {
 
  {loading ? (
  <div className="p-4">
- <p className="text-xs text-[var(--text-faint)]">Loading�’</p>
+ <p className="text-xs text-[var(--text-faint)]">Loading�’</p>
  </div>
  ) : (
  <div className="p-3">
@@ -324,7 +324,7 @@ function LeadStatusBuilder() {
  <div ref={drag.innerRef} {...drag.draggableProps}
  className={`flex items-center gap-3 px-3 py-2 rounded-xl border border-[var(--border-base)] bg-[var(--bg-elevated)]`}
  >
- <div {...drag.dragHandleProps} className="text-[var(--text-faint)] text-xs select-none w-5 text-center">�’</div>
+ <div {...drag.dragHandleProps} className="text-[var(--text-faint)] text-xs select-none w-5 text-center">�’</div>
  <div className="w-2.5 h-2.5 rounded-full" style={{ background: s.color }} />
  <div className="flex-1 min-w-0">
  <div className="flex items-center gap-2 flex-wrap">
@@ -376,7 +376,7 @@ function LeadStatusBuilder() {
  <button onClick={save} disabled={saving}
  className={`px-4 py-2 rounded-lg text-xs font-bold bg-[var(--accent)] text-black hover:opacity-90 transition-opacity ${saving ? 'opacity-60 cursor-not-allowed' : ''}`}
  >
- {saving ? 'Saving�’' : 'Save'}
+ {saving ? 'Saving�’' : 'Save'}
  </button>
  </>
  }
@@ -496,7 +496,7 @@ function LeadStatusBuilder() {
  disabled={deleting}
  className={`px-4 py-2 rounded-lg text-xs font-bold bg-red-500 text-white hover:opacity-90 transition-opacity ${deleting ? 'opacity-60 cursor-not-allowed' : ''}`}
  >
- {deleting ? 'Deleting�’' : 'Delete'}
+ {deleting ? 'Deleting�’' : 'Delete'}
  </button>
  </>
  }
@@ -506,7 +506,7 @@ function LeadStatusBuilder() {
  Are you sure you want to delete this status?
  </p>
  <div className="rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] px-3 py-2">
- <p className="text-xs font-bold text-[var(--text-primary)] truncate">{deleteTarget?.label || '�’'}</p>
+ <p className="text-xs font-bold text-[var(--text-primary)] truncate">{deleteTarget?.label || '�’'}</p>
  <p className="text-[10px] text-[var(--text-faint)] mt-0.5">{deleteTarget?.key || ''}</p>
  <p className="text-[10px] text-[var(--text-faint)] mt-1">
  This will hide the status (soft delete). Existing leads already in this status will keep the same stage key.
@@ -518,7 +518,7 @@ function LeadStatusBuilder() {
  );
 }
 
-// �’�’�’Section header �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’Section header �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const SectionHeader = ({ icon: Icon, title, subtitle, badge, children }) => (
  <div className="flex items-start justify-between mb-5">
  <div className="flex items-center gap-3">
@@ -541,7 +541,7 @@ const SectionHeader = ({ icon: Icon, title, subtitle, badge, children }) => (
  </div>
 );
 
-// �’�’�’PANEL A: MODULE CONTROL �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL A: MODULE CONTROL �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ModulesPanel = () => {
  const { flags, toggleModule, toggleFeature, toggleAction, resetFlags } = useSettings();
  const { user } = useAuth();
@@ -579,7 +579,7 @@ const ModulesPanel = () => {
  <div className="flex flex-wrap gap-2 mb-4">
  <div className="relative flex-1 min-w-[180px]">
  <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
- <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search modules or features�’"
+ <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search modules or features�’"
  className="w-full pl-7 pr-3 py-1.5 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--accent)]" />
  </div>
  <div className="flex gap-1 flex-wrap">
@@ -677,10 +677,10 @@ const ModulesPanel = () => {
  </div>
  </div>
 
- {/* CRM �’�Â¢ Lead: Dynamic Status Builder */}
+ {/* CRM �’�¢ Lead: Dynamic Status Builder */}
  {mod.id === 'crm' && (
  <div>
- <p className="text-[10px] font-bold text-[var(--text-faint)] uppercase tracking-wider mb-2">CRM �’�¡· Lead</p>
+ <p className="text-[10px] font-bold text-[var(--text-faint)] uppercase tracking-wider mb-2">CRM �’�¡· Lead</p>
  <LeadStatusBuilder />
  </div>
  )}
@@ -700,7 +700,7 @@ const ModulesPanel = () => {
  );
 };
 
-// �’�’�’PANEL B: RBAC MATRIX �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL B: RBAC MATRIX �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const RBACPanel = () => {
  const { customRoles, toggleCustomRolePermission, setCustomRolePreset } = useSettings();
  const { user } = useAuth();
@@ -798,7 +798,7 @@ const RBACPanel = () => {
  {/* Module search */}
  <div className="relative mb-3">
  <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
- <input value={modFilter} onChange={e => setModFilter(e.target.value)} placeholder="Filter modules�’"
+ <input value={modFilter} onChange={e => setModFilter(e.target.value)} placeholder="Filter modules�’"
  className="w-full pl-7 pr-3 py-1.5 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--accent)]" />
  </div>
 
@@ -860,7 +860,7 @@ const RBACPanel = () => {
  );
 };
 
-// �’�’�’PANEL C: FEATURE FLAGS �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL C: FEATURE FLAGS �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const FeatureFlagsPanel = () => {
  const { flags, toggleModule, toggleFeature } = useSettings();
  const { user } = useAuth();
@@ -920,14 +920,14 @@ const FeatureFlagsPanel = () => {
  return (
  <div>
  <SectionHeader icon={Zap} title="Feature Flags Panel" subtitle="Search and toggle every system flag in one place."
- badge={`${onCount} ON �’�¡· ${offCount} OFF`}>
+ badge={`${onCount} ON �’�¡· ${offCount} OFF`}>
  </SectionHeader>
 
  {/* Toolbar */}
  <div className="flex flex-wrap gap-2 mb-4">
  <div className="relative flex-1 min-w-[180px]">
  <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
- <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search flags�’"
+ <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search flags�’"
  className="w-full pl-7 pr-3 py-1.5 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--accent)]" />
  </div>
  <div className="flex gap-1">
@@ -1002,8 +1002,8 @@ const FeatureFlagsPanel = () => {
  );
 };
 
-// �’�’�’PANEL D: WORKFLOW RULES �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
-const OPERATORS = ['=', '�’', '>', '<', '�’�', '�’�', 'contains', 'is empty'];
+// �’�’�’PANEL D: WORKFLOW RULES �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+const OPERATORS = ['=', '�’', '>', '<', '�’�', '�’�', 'contains', 'is empty'];
 const FIELDS = ['lead_stage', 'invoice_status', 'inventory_level', 'project_status', 'ticket_status', 'payment_status'];
 const ACTIONS_T = ['enable_feature', 'disable_feature', 'create_record', 'send_notification', 'assign_user', 'trigger_webhook'];
 
@@ -1034,7 +1034,7 @@ const WorkflowPanel = () => {
 
  return (
  <div>
- <SectionHeader icon={GitBranch} title="Workflow Rules" subtitle="Conditional automation �’IF condition THEN action." badge={`${activeCount} active`}>
+ <SectionHeader icon={GitBranch} title="Workflow Rules" subtitle="Conditional automation �’IF condition THEN action." badge={`${activeCount} active`}>
  <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-semibold bg-[var(--accent)] text-black hover:opacity-90 transition-opacity">
  <Plus size={10} /> New Rule
  </button>
@@ -1070,14 +1070,14 @@ const WorkflowPanel = () => {
  <code className="px-2 py-1 rounded bg-[var(--bg-elevated)] border border-[var(--border-base)] text-[var(--text-primary)] font-mono text-[10px]">
  {wf.action.type}
  </code>
- <span className="text-[var(--text-faint)]">�’�Â¢</span>
+ <span className="text-[var(--text-faint)]">�’�¢</span>
  <code className="px-2 py-1 rounded bg-[var(--bg-elevated)] border border-[var(--border-base)] text-green-400 font-mono text-[10px]">
  {wf.action.target}
  </code>
  </div>
 
  <p className="text-[9px] text-[var(--text-faint)] mt-2">
- Created by {wf.createdBy} �’�¡· {wf.createdAt}
+ Created by {wf.createdBy} �’�¡· {wf.createdAt}
  </p>
  </div>
 
@@ -1099,7 +1099,7 @@ const WorkflowPanel = () => {
  {/* Label */}
  <div>
  <label className="text-[11px] font-semibold text-[var(--text-faint)] block mb-1">Rule Name *</label>
- <input value={form.label} onChange={e => setForm(p => ({ ...p, label: e.target.value }))} placeholder="e.g. Qualified Lead �’�Â¢ Enable Quotation"
+ <input value={form.label} onChange={e => setForm(p => ({ ...p, label: e.target.value }))} placeholder="e.g. Qualified Lead �’�¢ Enable Quotation"
  className="w-full px-3 py-2 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--accent)]" />
  {errors.label && <p className="text-[10px] text-red-400 mt-1">{errors.label}</p>}
  </div>
@@ -1166,7 +1166,7 @@ const WorkflowPanel = () => {
  );
 };
 
-// �’�’�’PANEL E: AUDIT LOGS �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL E: AUDIT LOGS �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ACTION_COLORS = {
  TOGGLE_MODULE: '#f59e0b',
  TOGGLE_FEATURE: '#3b82f6',
@@ -1203,7 +1203,7 @@ const AuditPanel = () => {
  <div className="flex flex-wrap gap-2 mb-4">
  <div className="relative flex-1 min-w-[180px]">
  <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
- <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search logs�’"
+ <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search logs�’"
  className="w-full pl-7 pr-3 py-1.5 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--accent)]" />
  </div>
  <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
@@ -1220,7 +1220,7 @@ const AuditPanel = () => {
  <table className="w-full">
  <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border-base)]">
  <tr>
- {['Timestamp', 'User', 'Action', 'Target', 'From �’�Â¢ To', 'IP', ''].map(h => (
+ {['Timestamp', 'User', 'Action', 'Target', 'From �’�¢ To', 'IP', ''].map(h => (
  <th key={h} className="px-3 py-2.5 text-left text-[9px] font-bold text-[var(--text-faint)] uppercase tracking-wide whitespace-nowrap">{h}</th>
  ))}
  </tr>
@@ -1283,7 +1283,7 @@ const AuditPanel = () => {
  );
 };
 
-// �’�’�’PANEL F: AI SUGGESTIONS �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL F: AI SUGGESTIONS �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const AISuggestionsPanel = () => {
  const { flags, rbac } = useSettings();
  const [applied, setApplied] = useState({});
@@ -1341,7 +1341,7 @@ const AISuggestionsPanel = () => {
  list.push({
  id: 's_health', type: 'success', severity: 'none',
  title: `System health: ${enabledPct}% modules active`,
- description: 'Your Solar OS configuration is running well. All critical pipeline modules (CRM �’�Â¢ Commissioning) are operational.',
+ description: 'Your Solar OS configuration is running well. All critical pipeline modules (CRM �’�¢ Commissioning) are operational.',
  action: null,
  target: null,
  });
@@ -1405,7 +1405,7 @@ const AISuggestionsPanel = () => {
  );
 };
 
-// �’�’�’PANEL G: ROLE BUILDER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL G: ROLE BUILDER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ROLE_COLORS = [
  '#ef4444', '#f97316', '#f59e0b', '#22c55e', '#06b6d4',
  '#3b82f6', '#8b5cf6', '#ec4899', '#84cc16', '#14b8a6',
@@ -1578,7 +1578,7 @@ const RoleBuilderPanel = () => {
  {/* Search */}
  <div className="relative">
  <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
- <input value={modFilter} onChange={e => setModFilter(e.target.value)} placeholder="Filter modules�’"
+ <input value={modFilter} onChange={e => setModFilter(e.target.value)} placeholder="Filter modules�’"
  className="w-full pl-7 pr-3 py-1.5 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--accent)]" />
  </div>
 
@@ -1637,7 +1637,7 @@ const RoleBuilderPanel = () => {
  <div>
  <label className="text-[11px] font-semibold text-[var(--text-faint)] block mb-1">Description</label>
  <textarea value={newRole.description} onChange={e => setNewRole(p => ({ ...p, description: e.target.value }))} rows={2}
- placeholder="Describe this role's purpose�’"
+ placeholder="Describe this role's purpose�’"
  className="w-full px-3 py-2 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--accent)] resize-none" />
  </div>
  <div>
@@ -1667,7 +1667,7 @@ const RoleBuilderPanel = () => {
  <label className="text-[11px] font-semibold text-[var(--text-faint)] block mb-1">Clone From *</label>
  <select value={cloneSourceId} onChange={e => setCloneSourceId(e.target.value)}
  className="w-full px-3 py-2 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]">
- <option value="">Select source role�’</option>
+ <option value="">Select source role�’</option>
  {customRoleList.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
  </select>
  </div>
@@ -1689,7 +1689,7 @@ const RoleBuilderPanel = () => {
  );
 };
 
-// �’�’�’PANEL H: USER PERMISSIONS �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL H: USER PERMISSIONS �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const UserPermissionsPanel = () => {
  const {
  getEnrichedUsers, customRoles, userOverrides,
@@ -1729,7 +1729,7 @@ const UserPermissionsPanel = () => {
 
  const cycleOverride = (moduleId, actionId) => {
  const current = getOverrideState(moduleId, actionId);
- // null �’�Â¢ true �’�Â¢ false �’�Â¢ null
+ // null �’�¢ true �’�¢ false �’�¢ null
  const next = current === null ? true : current === true ? false : null;
  setUserPermissionOverride(selectedUserId, moduleId, actionId, next, adminUser?.name);
  };
@@ -1746,7 +1746,7 @@ const UserPermissionsPanel = () => {
  return (
  <td className="px-2 py-2 text-center">
  <button onClick={() => cycleOverride(moduleId, actionId)}
- title={`Base: ${base ? '�’�“œ' : '�’�“'} | Override: ${override === null ? 'none' : override ? 'grant' : 'revoke'}\nClick to cycle: default �’�Â¢ grant �’�Â¢ revoke �’�Â¢ default`}
+ title={`Base: ${base ? '�’�“œ' : '�’�“'} | Override: ${override === null ? 'none' : override ? 'grant' : 'revoke'}\nClick to cycle: default �’�¢ grant �’�¢ revoke �’�¢ default`}
  className={`relative w-7 h-7 rounded-md mx-auto flex items-center justify-center border transition-all
  ${isGrant ? 'border-[var(--green)]/50 bg-[var(--green)]/20 text-[var(--green)]' :
  isRevoke ? 'border-red-500/50 bg-red-500/10 text-red-400' :
@@ -1775,7 +1775,7 @@ const UserPermissionsPanel = () => {
  <div className="w-52 shrink-0">
  <div className="relative mb-3">
  <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
- <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search users�’"
+ <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search users�’"
  className="w-full pl-7 pr-3 py-1.5 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--accent)]" />
  </div>
  <div className="space-y-1.5">
@@ -1863,13 +1863,13 @@ const UserPermissionsPanel = () => {
  <div className="flex items-center gap-1.5"><div className="w-4 h-4 rounded border border-[var(--border-base)] flex items-center justify-center"><X size={8} className="text-[var(--text-faint)] opacity-30" /></div><span className="text-[var(--text-faint)]">Role default (denied)</span></div>
  <div className="flex items-center gap-1.5 relative"><div className="w-4 h-4 rounded border border-[var(--green)]/50 bg-[var(--green)]/20 flex items-center justify-center"><Check size={8} className="text-[var(--green)]" /></div><div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[var(--green)]" /><span className="text-[var(--text-faint)] ml-2">Override: force grant</span></div>
  <div className="flex items-center gap-1.5 relative"><div className="w-4 h-4 rounded border border-red-500/50 bg-red-500/10 flex items-center justify-center"><X size={8} className="text-red-400" /></div><div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-red-400" /><span className="text-[var(--text-faint)] ml-2">Override: force revoke</span></div>
- <span className="text-[var(--text-faint)] ml-auto italic">Click cell to cycle: default �’�Â¢ grant �’�Â¢ revoke</span>
+ <span className="text-[var(--text-faint)] ml-auto italic">Click cell to cycle: default �’�¢ grant �’�¢ revoke</span>
  </div>
 
  {/* Filter */}
  <div className="relative">
  <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
- <input value={modFilter} onChange={e => setModFilter(e.target.value)} placeholder="Filter modules�’"
+ <input value={modFilter} onChange={e => setModFilter(e.target.value)} placeholder="Filter modules�’"
  className="w-full pl-7 pr-3 py-1.5 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--accent)]" />
  </div>
 
@@ -1909,7 +1909,7 @@ const UserPermissionsPanel = () => {
  );
 };
 
-// �’�’�’PANEL I: VIEW AS �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL I: VIEW AS �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ViewAsPanel = () => {
  const {
  getEnrichedUsers, customRoles, userOverrides,
@@ -1959,7 +1959,7 @@ const ViewAsPanel = () => {
  You are previewing as <strong>{enrichedUsers.find(u => u.id === viewAsUserId)?.name ?? 'Unknown'}</strong>.
  All permission checks in the app now reflect their access.
  </p>
- <button onClick={clearViewAs} className="ml-auto text-[10px] font-bold text-amber-400 hover:text-amber-300 whitespace-nowrap">Exit �’�Â¢</button>
+ <button onClick={clearViewAs} className="ml-auto text-[10px] font-bold text-amber-400 hover:text-amber-300 whitespace-nowrap">Exit �’�¢</button>
  </div>
  )}
 
@@ -2000,7 +2000,7 @@ const ViewAsPanel = () => {
  <p className="text-[10px] text-[var(--text-faint)]">
  Base: {previewUser.role}
  {previewUser.customRoleId && <span className="text-amber-400 ml-1.5">+ {customRoles[previewUser.customRoleId]?.label}</span>}
- {previewUser.overrideCount > 0 && <span className="text-amber-400 ml-1.5">�’�¡· {previewUser.overrideCount} overrides</span>}
+ {previewUser.overrideCount > 0 && <span className="text-amber-400 ml-1.5">�’�¡· {previewUser.overrideCount} overrides</span>}
  </p>
  </div>
  </div>
@@ -2013,7 +2013,7 @@ const ViewAsPanel = () => {
  {/* Filter */}
  <div className="relative">
  <Search size={11} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
- <input value={modFilter} onChange={e => setModFilter(e.target.value)} placeholder="Filter modules�’"
+ <input value={modFilter} onChange={e => setModFilter(e.target.value)} placeholder="Filter modules�’"
  className="w-full pl-7 pr-3 py-1.5 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--accent)]" />
  </div>
 
@@ -2078,7 +2078,7 @@ const ViewAsPanel = () => {
  );
 };
 
-// �’�’�’PANEL G: PROJECT TYPE CONFIGURATION �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL G: PROJECT TYPE CONFIGURATION �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const PT_ICON_MAP = {
  [PROJECT_TYPES.RESIDENTIAL]: Home,
  [PROJECT_TYPES.COMMERCIAL]: Building2,
@@ -2144,7 +2144,7 @@ const ProjectTypeConfigPanel = () => {
  style={active
  ? { background: 'var(--tab-active-overlay)', color: '#fff' }
  : { background: pt.bg, color: pt.color }}>
- {pt.id === PROJECT_TYPES.RESIDENTIAL ? '�’�10kW' : pt.id === PROJECT_TYPES.COMMERCIAL ? '10�’�100kW' : '100kW+'}
+ {pt.id === PROJECT_TYPES.RESIDENTIAL ? '�’�10kW' : pt.id === PROJECT_TYPES.COMMERCIAL ? '10�’�100kW' : '100kW+'}
  </span>
  </button>
  );
@@ -2287,7 +2287,7 @@ const ProjectTypeConfigPanel = () => {
  );
 };
 
-// �’�’�’PANEL H: INSTALLATION TASK BUILDER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL H: INSTALLATION TASK BUILDER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const InstallationTasksPanel = () => {
  const { installationTasks, updateInstallationTasks } = useSettings();
  const { user } = useAuth();
@@ -2350,7 +2350,7 @@ const InstallationTasksPanel = () => {
  );
 };
 
-// �’�’�’PANEL I: COMMISSIONING TASK BUILDER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL I: COMMISSIONING TASK BUILDER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const CommissioningTasksPanel = () => {
  const { commissioningTasks, updateCommissioningTasks } = useSettings();
  const { user } = useAuth();
@@ -2413,13 +2413,13 @@ const CommissioningTasksPanel = () => {
  );
 };
 
-// �’�’�’PANEL J: AUTOMATION BUILDER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL J: AUTOMATION BUILDER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const AutomationPanel = () => {
  const { user, tenantId } = useAuth();
  return <AutomationBuilder tenantId={tenantId} user={user} />;
 };
 
-// �’�’�’PANEL K: MILESTONES BUILDER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’PANEL K: MILESTONES BUILDER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const MilestonesPanel = () => {
  const { milestones, updateMilestones, isLoading } = useSettings();
  const { user } = useAuth();
@@ -2497,7 +2497,7 @@ const MilestonesPanel = () => {
  );
 };
 
-// �’�’�’MAIN SETTINGS PAGE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’MAIN SETTINGS PAGE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const TABS = [
  { id: 'modules', label: 'Modules', icon: Flag, panel: ModulesPanel },
  { id: 'rbac', label: 'RBAC Matrix', icon: Shield, panel: RBACPanel },
@@ -2538,7 +2538,7 @@ const SettingsPage = () => {
  return (
  <div className="space-y-5 animate-fade-in">
 
- {/* �’�’PAGE HEADER �’�’*/}
+ {/* �’�’PAGE HEADER �’�’*/}
  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
  <div>
  <h1 className="text-xl font-extrabold text-[var(--text-primary)] flex items-center gap-2.5">
@@ -2548,7 +2548,7 @@ const SettingsPage = () => {
  Settings & Control Center
  </h1>
  <p className="text-xs text-[var(--text-faint)] mt-1">
- Feature flags �’�¡· RBAC �’�¡· Workflow rules �’�¡· Audit logs �’all in one place
+ Feature flags �’�¡· RBAC �’�¡· Workflow rules �’�¡· Audit logs �’all in one place
  </p>
  </div>
  <div className="flex items-center gap-2">
@@ -2559,12 +2559,12 @@ const SettingsPage = () => {
  </div>
  </div>
 
- {/* �’�’VIEW AS BANNER �’�’*/}
+ {/* �’�’VIEW AS BANNER �’�’*/}
  {viewAsUser && (
  <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-amber-500/8 border border-amber-500/30">
  <Eye size={14} className="text-amber-400 shrink-0" />
  <p className="text-xs font-semibold text-amber-300 flex-1">
- Admin Preview Mode �’viewing as <strong>{viewAsUser.name}</strong> ({viewAsUser.effectiveRole}). All module access reflects their permissions.
+ Admin Preview Mode �’viewing as <strong>{viewAsUser.name}</strong> ({viewAsUser.effectiveRole}). All module access reflects their permissions.
  </p>
  <button onClick={clearViewAs} className="text-[10px] font-bold text-amber-400 hover:text-amber-200 whitespace-nowrap px-3 py-1.5 rounded-lg border border-amber-500/30 hover:bg-amber-500/15 transition-colors">
  <EyeOff size={10} className="inline mr-1" />Exit
@@ -2572,13 +2572,13 @@ const SettingsPage = () => {
  </div>
  )}
 
- {/* �’�’STATS OVERVIEW �’�’*/}
+ {/* �’�’STATS OVERVIEW �’�’*/}
  {null}
 
- {/* �’�’LIVE CONFIG JSON PREVIEW (collapsed) �’�’*/}
+ {/* �’�’LIVE CONFIG JSON PREVIEW (collapsed) �’�’*/}
  {null}
 
- {/* �’�’TAB NAV �’�’*/}
+ {/* �’�’TAB NAV �’�’*/}
  <div className="flex flex-nowrap gap-1 p-1 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-base)] overflow-x-auto">
  {TABS.map(tab => {
  const Icon = tab.icon;
@@ -2593,7 +2593,7 @@ const SettingsPage = () => {
  })}
  </div>
 
- {/* �’�’ACTIVE PANEL �’�’*/}
+ {/* �’�’ACTIVE PANEL �’�’*/}
  <div className="glass-card p-5 min-h-[400px]">
  <ActivePanel />
  </div>
@@ -2601,7 +2601,7 @@ const SettingsPage = () => {
  );
 };
 
-// �’�’�’CONFIG JSON PREVIEW �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’CONFIG JSON PREVIEW �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ConfigJSONPreview = ({ flags, rbac }) => {
  const [open, setOpen] = useState(false);
  const [copied, setCopied] = useState(false);
@@ -2640,7 +2640,7 @@ const ConfigJSONPreview = ({ flags, rbac }) => {
  </div>
  <span className="text-xs font-bold text-[var(--text-primary)]">Live Config JSON</span>
  <span className="text-[10px] text-[var(--text-faint)] bg-[var(--bg-elevated)] px-2 py-0.5 rounded border border-[var(--border-base)]">
- {MODULE_DEFS.length} modules �’�¡· {Object.keys(rbac).length} roles
+ {MODULE_DEFS.length} modules �’�¡· {Object.keys(rbac).length} roles
  </span>
  </div>
  <div className="flex items-center gap-2">

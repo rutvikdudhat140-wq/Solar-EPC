@@ -522,7 +522,7 @@ const PDFTemplateCustomizer = ({
                         <span>Sr</span><span>Item</span><span>Qty</span><span>Price</span>
                       </div>
                       <div className="grid grid-cols-4 gap-1 p-1 text-[var(--text-secondary)]">
-                        <span>1</span><span>Solar Panel</span><span>10</span><span>Ã¢â€šÂ¹25,000</span>
+                        <span>1</span><span>Solar Panel</span><span>10</span><span>a"š125,000</span>
                       </div>
                     </div>
                   </div>
@@ -540,7 +540,7 @@ const PDFTemplateCustomizer = ({
                       className="text-white p-1 rounded font-bold mt-1"
                       style={{ backgroundColor: `rgb(${(config?.colors?.primary || [0, 102, 102]).join(',')})` }}
                     >
-                      Total: Ã¢â€šÂ¹2,95,000
+                      Total: a"š12,95,000
                     </div>
                   </div>
                 )}
@@ -582,12 +582,12 @@ const PDFTemplateCustomizer = ({
 
           {/* Tips */}
           <div className="glass-card p-3 bg-amber-500/5 border-amber-500/20">
-            <p className="text-xs text-amber-600 font-medium mb-1">Ã°Å¸â€™Â¡ Tips:</p>
+            <p className="text-xs text-amber-600 font-medium mb-1">💡 Tips:</p>
             <ul className="text-xs text-[var(--text-muted)] space-y-1">
-              <li>Ã¢â‚¬Â¢ Use light colors for better printing</li>
-              <li>Ã¢â‚¬Â¢ Keep header style consistent</li>
-              <li>Ã¢â‚¬Â¢ Disable unused sections to save space</li>
-              <li>Ã¢â‚¬Â¢ A4 format recommended for printing</li>
+              <li>• Use light colors for better printing</li>
+              <li>• Keep header style consistent</li>
+              <li>• Disable unused sections to save space</li>
+              <li>• A4 format recommended for printing</li>
             </ul>
           </div>
         </div>

@@ -1,608 +1,670 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Download, Eye, Plus, RefreshCw, Search, Wallet, X } from 'lucide-react';
 import { PageHeader } from '../components/ui/PageHeader';
-import KpiCards from '../components/hrm/KpiCards';
 import DataTable from '../components/ui/DataTable';
-import { Button } from '../components/ui/Button';
-import { Input, FormField, Select } from '../components/ui/Input';
-import { Modal } from '../components/ui/Modal';
 import { toast } from '../components/ui/Toast';
-import { Search, RefreshCw, Plus, Wallet, X, User, Calendar, TrendingUp, DollarSign, CheckCircle, Clock } from 'lucide-react';
-import { format } from 'date-fns';
-import { payrollApi, employeeApi } from '../services/hrmApi';
-import { usePermissions } from '../hooks/usePermissions';
-import { useAuth } from '../context/AuthContext';
-import { api } from '../lib/apiClient';
+import { PayrollReceipt } from '../components/hrm';
+import { employeeApi, payrollApi } from '../services/hrmApi';
+import {
+  downloadPayrollReceipt,
+  formatInr,
+  formatPayPeriod,
+  normalizePayrollData,
+} from '../lib/payrollReceiptGenerator';
 
-// †â€™†â€™Payroll Detail View Modal †â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™†â€™
-const PayrollViewModal = ({ payroll, onClose }) => {
- if (!payroll) return null;
- const emp = payroll.employeeId || {};
- const initial = `${emp.firstName?.[0] || ''}${emp.lastName?.[0] || ''}`.toUpperCase() || 'P';
- const monthName = new Date(2000, (payroll.month || 1) - 1, 1).toLocaleString('default', { month: 'long' });
- const net = payroll.netSalary || (payroll.baseSalary + (payroll.allowances||0) + (payroll.bonus||0) - (payroll.deductions||0));
- const stCls = { pending: 'bg-amber-500/10 text-amber-500', paid: 'bg-[var(--green)]/10 text-[var(--green)]', failed: 'bg-red-500/10 text-red-500' };
- const BreakItem = ({ label, value, color, bold }) => (
- <div className={`flex items-center justify-between py-2.5 border-b border-[var(--border-muted)] last:border-0 ${bold ? 'font-bold' : ''}`}>
- <span className="text-sm text-[var(--text-secondary)]">{label}</span>
- <span className={`text-sm font-semibold ${color || 'text-[var(--text-primary)]'}`}>†â€™{Number(value||0).toLocaleString()}</span>
- </div>
- );
- return (
- <Modal open={!!payroll} onClose={onClose} title="" size="md" footer={
- <button onClick={onClose} className="px-4 py-1.5 text-xs rounded-xl border border-[var(--border-base)] text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]"><X size={13} className="inline mr-1" />Close</button>
- }>
- {/* Hero */}
- <div className="relative overflow-hidden rounded-xl mb-4 p-5 bg-gradient-to-br from-emerald-500/15 via-emerald-500/5 to-transparent border border-[var(--border-base)]">
- <div className="absolute top-0 right-0 w-28 h-28 rounded-full bg-[var(--green)]/10 -translate-y-6 translate-x-6" />
- <div className="flex items-center gap-4">
- <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold text-lg shadow-lg">{initial}</div>
- <div className="flex-1">
- <h2 className="text-lg font-bold text-[var(--text-primary)]">{emp.firstName} {emp.lastName}</h2>
- <p className="text-xs text-[var(--text-muted)]">{emp.employeeId} †â€™…Â¡Â· {emp.department}</p>
- <div className="flex items-center gap-2 mt-2">
- <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${stCls[payroll.paymentStatus] || stCls.pending}`}>{payroll.paymentStatus || 'pending'}</span>
- <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--bg-elevated)] text-[var(--text-muted)] border border-[var(--border-muted)]">{monthName} {payroll.year}</span>
- </div>
- </div>
- <div className="text-right">
- <p className="text-2xl font-bold text-[var(--green)]">†â€™{Number(net).toLocaleString()}</p>
- <p className="text-xs text-[var(--text-faint)]">Net Salary</p>
- </div>
- </div>
- </div>
- {/* Salary Breakdown */}
- <div className="glass-card p-4">
- <h3 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-3 flex items-center gap-1.5"><Wallet size={13} /> Salary Breakdown</h3>
- <BreakItem label="Base Salary" value={payroll.baseSalary} />
- <BreakItem label="Allowances" value={payroll.allowances} color="text-blue-500" />
- <BreakItem label="Bonus" value={payroll.bonus} color="text-purple-500" />
- <BreakItem label="Deductions" value={payroll.deductions} color="text-red-500" />
- <div className="mt-2 pt-2 flex items-center justify-between border-t-2 border-[var(--border-base)]">
- <span className="text-sm font-bold text-[var(--text-primary)]">Net Salary</span>
- <span className="text-xl font-bold text-[var(--green)]">†â€™{Number(net).toLocaleString()}</span>
- </div>
- </div>
- {payroll.createdAt && (
- <p className="text-xs text-[var(--text-faint)] text-center mt-3">Generated on {format(new Date(payroll.createdAt), 'dd MMM yyyy, hh:mm a')}</p>
- )}
- </Modal>
- );
+const currentDate = new Date();
+
+const createInitialForm = () => ({
+  selectedEmployeeId: '',
+  employeeName: '',
+  employeeCode: '',
+  department: '',
+  designation: '',
+  month: currentDate.getMonth() + 1,
+  year: currentDate.getFullYear(),
+  workingDays: 30,
+  daysPresent: 30,
+  basicSalary: 0,
+  hra: 0,
+  bonus: 0,
+  otherAllowances: 0,
+  pf: 0,
+  tax: 0,
+  otherDeductions: 0,
+  bankName: '',
+  accountNumber: '',
+  ifscCode: '',
+  transactionId: '',
+  status: 'pending',
+});
+
+const monthOptions = Array.from({ length: 12 }, (_, index) => ({
+  value: index + 1,
+  label: formatPayPeriod(index + 1, currentDate.getFullYear()).split(' ')[0],
+}));
+
+const toNumber = (value) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const buildPayrollFromForm = (form, source = 'manual') => {
+  const workingDays = toNumber(form.workingDays);
+  const daysPresent = Math.min(workingDays, toNumber(form.daysPresent));
+  const grossSalary = toNumber(form.basicSalary) + toNumber(form.hra) + toNumber(form.bonus) + toNumber(form.otherAllowances);
+  const totalDeductions = toNumber(form.pf) + toNumber(form.tax) + toNumber(form.otherDeductions);
+
+  return normalizePayrollData({
+    id: `${form.employeeCode || 'EMP'}-${form.month}-${form.year}-${Date.now()}`,
+    source,
+    employeeName: form.employeeName,
+    employeeCode: form.employeeCode,
+    department: form.department,
+    designation: form.designation,
+    month: form.month,
+    year: form.year,
+    workingDays,
+    daysPresent,
+    basicSalary: form.basicSalary,
+    hra: form.hra,
+    bonus: form.bonus,
+    otherAllowances: form.otherAllowances,
+    pf: form.pf,
+    tax: form.tax,
+    otherDeductions: form.otherDeductions,
+    grossSalary,
+    totalDeductions,
+    netSalary: grossSalary - totalDeductions,
+    bankName: form.bankName,
+    accountNumber: form.accountNumber,
+    ifscCode: form.ifscCode,
+    transactionId: form.transactionId,
+    status: form.status,
+    date: new Date().toISOString(),
+  });
+};
+
+const StatCard = ({ title, value, tone = 'slate' }) => {
+  const tones = {
+    slate: 'border-slate-200 bg-white text-slate-900',
+    green: 'border-emerald-200 bg-emerald-50 text-emerald-900',
+    amber: 'border-amber-200 bg-amber-50 text-amber-900',
+    teal: 'border-teal-200 bg-teal-50 text-teal-900',
+  };
+
+  return (
+    <div className={`rounded-3xl border p-5 shadow-sm ${tones[tone] || tones.slate}`}>
+      <p className="text-sm font-medium text-slate-500">{title}</p>
+      <p className="mt-3 text-3xl font-semibold">{value}</p>
+    </div>
+  );
+};
+
+const Field = ({ label, children, note }) => (
+  <label className="block">
+    <span className="mb-2 block text-sm font-medium text-slate-700">{label}</span>
+    {children}
+    {note ? <span className="mt-1 block text-xs text-slate-400">{note}</span> : null}
+  </label>
+);
+
+const inputClassName = 'w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#0F766E] focus:ring-4 focus:ring-[#0F766E]/10';
+
+const PayrollFormModal = ({ employees, form, setForm, onClose, onGenerate, preview }) => {
+  const handleChange = (key) => (event) => {
+    const value = event.target.value;
+    setForm((current) => ({
+      ...current,
+      [key]: ['month', 'year', 'workingDays', 'daysPresent', 'basicSalary', 'hra', 'bonus', 'otherAllowances', 'pf', 'tax', 'otherDeductions'].includes(key)
+        ? toNumber(value)
+        : value,
+    }));
+  };
+
+  const handleEmployeeSelect = (event) => {
+    const selectedEmployeeId = event.target.value;
+    const employee = employees.find((item) => item._id === selectedEmployeeId);
+
+    setForm((current) => ({
+      ...current,
+      selectedEmployeeId,
+      employeeName: employee ? `${employee.firstName || ''} ${employee.lastName || ''}`.trim() : current.employeeName,
+      employeeCode: employee?.employeeId || current.employeeCode,
+      department: employee?.department || current.department,
+      designation: employee?.designation || employee?.role || current.designation,
+    }));
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm">
+      <div className="max-h-[94vh] w-full max-w-7xl overflow-y-auto rounded-[32px] bg-slate-100 shadow-2xl">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/95 px-6 py-5 backdrop-blur">
+          <div>
+            <h2 className="text-2xl font-semibold text-slate-900">Generate Payroll</h2>
+            <p className="text-sm text-slate-500">Every field entered here is reflected in the salary slip and PDF.</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-2xl border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="grid gap-6 p-6 xl:grid-cols-[1.2fr_0.8fr]">
+          <div className="space-y-6">
+            <div className="rounded-[28px] bg-white p-6 shadow-sm">
+              <div className="mb-5 flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900">Employee Details</h3>
+                  <p className="text-sm text-slate-500">Fill manually or load an existing employee profile.</p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field label="Load From Employee">
+                  <select value={form.selectedEmployeeId} onChange={handleEmployeeSelect} className={inputClassName}>
+                    <option value="">Select employee (optional)</option>
+                    {employees.map((employee) => (
+                      <option key={employee._id} value={employee._id}>
+                        {`${employee.firstName || ''} ${employee.lastName || ''}`.trim()} {employee.employeeId ? `(${employee.employeeId})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <div />
+                <Field label="Name">
+                  <input value={form.employeeName} onChange={handleChange('employeeName')} className={inputClassName} placeholder="Employee full name" />
+                </Field>
+                <Field label="Employee ID">
+                  <input value={form.employeeCode} onChange={handleChange('employeeCode')} className={inputClassName} placeholder="EMP005" />
+                </Field>
+                <Field label="Department">
+                  <input value={form.department} onChange={handleChange('department')} className={inputClassName} placeholder="Operations" />
+                </Field>
+                <Field label="Designation">
+                  <input value={form.designation} onChange={handleChange('designation')} className={inputClassName} placeholder="Site Engineer" />
+                </Field>
+              </div>
+            </div>
+
+            <div className="rounded-[28px] bg-white p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-slate-900">Payroll Details</h3>
+              <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <Field label="Month">
+                  <select value={form.month} onChange={handleChange('month')} className={inputClassName}>
+                    {monthOptions.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Year">
+                  <input type="number" value={form.year} onChange={handleChange('year')} className={inputClassName} />
+                </Field>
+                <Field label="Working Days">
+                  <input type="number" value={form.workingDays} onChange={handleChange('workingDays')} className={inputClassName} />
+                </Field>
+                <Field label="Days Present">
+                  <input type="number" value={form.daysPresent} onChange={handleChange('daysPresent')} className={inputClassName} />
+                </Field>
+                <Field label="Days Absent" note="Auto calculated">
+                  <input value={preview.daysAbsent} readOnly className={`${inputClassName} bg-slate-50`} />
+                </Field>
+                <Field label="Status">
+                  <select value={form.status} onChange={handleChange('status')} className={inputClassName}>
+                    <option value="pending">Pending</option>
+                    <option value="paid">Paid</option>
+                  </select>
+                </Field>
+              </div>
+            </div>
+
+            <div className="grid gap-6 xl:grid-cols-2">
+              <div className="rounded-[28px] border border-emerald-200 bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-emerald-800">Earnings</h3>
+                <div className="mt-5 grid gap-4">
+                  <Field label="Basic Salary">
+                    <input type="number" value={form.basicSalary} onChange={handleChange('basicSalary')} className={inputClassName} />
+                  </Field>
+                  <Field label="HRA">
+                    <input type="number" value={form.hra} onChange={handleChange('hra')} className={inputClassName} />
+                  </Field>
+                  <Field label="Bonus">
+                    <input type="number" value={form.bonus} onChange={handleChange('bonus')} className={inputClassName} />
+                  </Field>
+                  <Field label="Other Allowances">
+                    <input type="number" value={form.otherAllowances} onChange={handleChange('otherAllowances')} className={inputClassName} />
+                  </Field>
+                </div>
+              </div>
+
+              <div className="rounded-[28px] border border-rose-200 bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-rose-800">Deductions</h3>
+                <div className="mt-5 grid gap-4">
+                  <Field label="PF">
+                    <input type="number" value={form.pf} onChange={handleChange('pf')} className={inputClassName} />
+                  </Field>
+                  <Field label="Tax">
+                    <input type="number" value={form.tax} onChange={handleChange('tax')} className={inputClassName} />
+                  </Field>
+                  <Field label="Other Deductions">
+                    <input type="number" value={form.otherDeductions} onChange={handleChange('otherDeductions')} className={inputClassName} />
+                  </Field>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[28px] bg-white p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-slate-900">Payment Details</h3>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <Field label="Bank Name">
+                  <input value={form.bankName} onChange={handleChange('bankName')} className={inputClassName} placeholder="HDFC Bank" />
+                </Field>
+                <Field label="Account Number">
+                  <input value={form.accountNumber} onChange={handleChange('accountNumber')} className={inputClassName} placeholder="XXXX1234" />
+                </Field>
+                <Field label="IFSC Code">
+                  <input value={form.ifscCode} onChange={handleChange('ifscCode')} className={inputClassName} placeholder="HDFC0001234" />
+                </Field>
+                <Field label="Transaction ID">
+                  <input value={form.transactionId} onChange={handleChange('transactionId')} className={inputClassName} placeholder="UTR/NEFT/IMPS reference" />
+                </Field>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="rounded-[28px] bg-[#0f4a46] p-6 text-white shadow-sm">
+              <p className="text-xs uppercase tracking-[0.22em] text-emerald-200">Live Summary</p>
+              <h3 className="mt-3 text-2xl font-semibold">Salary Slip Totals</h3>
+              <div className="mt-6 space-y-4 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-emerald-100">Gross Salary</span>
+                  <span className="font-semibold">{formatInr(preview.grossSalary)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-emerald-100">Total Deductions</span>
+                  <span className="font-semibold">{formatInr(preview.totalDeductions)}</span>
+                </div>
+                <div className="rounded-2xl bg-white/10 px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-emerald-100">Net Salary</p>
+                  <p className="mt-2 text-3xl font-bold">{formatInr(preview.netSalary)}</p>
+                  <p className="mt-2 text-xs text-emerald-100">{preview.amountInWords}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[28px] bg-white p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-slate-900">Slip Preview Snapshot</h3>
+              <div className="mt-5 rounded-[24px] border border-slate-200 bg-slate-50 p-5">
+                <div className="rounded-[20px] bg-[#0f4a46] p-4 text-white">
+                  <p className="text-lg font-semibold">SUNOVA ENERGY PVT. LTD.</p>
+                  <p className="text-xs text-emerald-100">Salary Slip / Payroll Receipt</p>
+                  <div className="mt-3 grid gap-1 text-xs text-emerald-50">
+                    <p>Receipt No: {preview.receiptNo}</p>
+                    <p>Period: {preview.payPeriodLabel}</p>
+                    <p>Status: {preview.status.toUpperCase()}</p>
+                  </div>
+                </div>
+                <div className="mt-4 space-y-3 text-sm text-slate-700">
+                  <p><span className="font-medium">Name:</span> {preview.employee.name}</p>
+                  <p><span className="font-medium">Employee ID:</span> {preview.employee.employeeId}</p>
+                  <p><span className="font-medium">Department:</span> {preview.employee.department}</p>
+                  <p><span className="font-medium">Designation:</span> {preview.employee.designation}</p>
+                  <p><span className="font-medium">Bank Name:</span> {preview.paymentDetails.bankName}</p>
+                  <p><span className="font-medium">Transaction ID:</span> {preview.paymentDetails.transactionId}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={onClose}
+                className="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-white"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={onGenerate}
+                className="rounded-2xl bg-[#0F766E] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#115e59]"
+              >
+                Create Payroll
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const PayrollPage = () => {
- const [mounted, setMounted] = useState(false);
- 
- // Get permissions for payroll module
- const { 
- canView, 
- canCreate, 
- canEdit, 
- canDelete, 
- canExport, 
- canGenerate,
- columns 
- } = usePermissions('payroll');
- 
- const [employees, setEmployees] = useState([]);
- const [payrolls, setPayrolls] = useState([]);
- const [loading, setLoading] = useState(false);
- const [payrollSearch, setPayrollSearch] = useState('');
- const [showPayrollModal, setShowPayrollModal] = useState(false);
- const [showEditModal, setShowEditModal] = useState(false);
- const [editingPayroll, setEditingPayroll] = useState(null);
- const [viewPayroll, setViewPayroll] = useState(null);
- const [payrollForm, setPayrollForm] = useState({
- employeeId: '',
- month: new Date().getMonth() + 1,
- year: new Date().getFullYear(),
- baseSalary: 0,
- allowances: 0,
- deductions: 0,
- bonus: 0,
- });
+  const [employees, setEmployees] = useState([]);
+  const [payrolls, setPayrolls] = useState([]);
+  const [manualPayrolls, setManualPayrolls] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [actionLoadingId, setActionLoadingId] = useState(null);
+  const [search, setSearch] = useState('');
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [form, setForm] = useState(createInitialForm);
+  const [selectedPayroll, setSelectedPayroll] = useState(null);
 
- // Dashboard metrics for new KpiCards component
- const [dashboardMetrics, setDashboardMetrics] = useState(null);
- const { user } = useAuth();
- const isAdmin = user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'superadmin' || user?.isSuperAdmin === true;
+  const fetchEmployees = async () => {
+    try {
+      const response = await employeeApi.getAll();
+      const data = response?.data?.data || response?.data || [];
+      setEmployees(Array.isArray(data) ? data : []);
+    } catch (error) {
+      toast.error('Failed to fetch employees');
+    }
+  };
 
- const fetchDashboardMetrics = async () => {
- try {
- const response = await api.get('/hrm/dashboard-metrics');
- console.log('[DEBUG] Dashboard metrics API response:', response.data);
- const metrics = response.data?.data || response.data;
- console.log('[DEBUG] Extracted metrics:', metrics);
- setDashboardMetrics(metrics || null);
- } catch (error) {
- console.error('Failed to fetch dashboard metrics:', error);
- setDashboardMetrics({
- attendance: { percentage: 0, presentToday: 0, totalToday: 0 },
- leaves: { pending: 0 },
- payroll: { totalPayroll: 0, unpaidCount: 0 },
- employees: { atRiskCount: 0 }
- });
- }
- };
+  const fetchPayrolls = async () => {
+    try {
+      setLoading(true);
+      const response = await payrollApi.getAll();
+      const data = response?.data?.data || response?.data || [];
+      setPayrolls(Array.isArray(data) ? data : []);
+    } catch (error) {
+      toast.error('Failed to fetch payroll records');
+      setPayrolls([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
- // Functions defined before useEffect
- const fetchEmployees = async () => {
- try {
- console.log('[DEBUG] Fetching employees from API...');
- const response = await employeeApi.getAll();
- console.log('[DEBUG] Employee API response:', response);
- const data = response.data?.data || response.data || [];
- console.log('[DEBUG] Setting employees:', data.length, 'employees');
- setEmployees(data);
- } catch (error) {
- console.error('[DEBUG] Error fetching employees:', error);
- console.error('[DEBUG] Error details:', error.response?.data || error.message);
- console.error('[DEBUG] Error response:', error.response);
- console.error('[DEBUG] Error config:', error.config);
- console.error('[DEBUG] Error request:', error.request);
- toast.error('Failed to fetch employees');
- }
- };
+  useEffect(() => {
+    fetchEmployees();
+    fetchPayrolls();
+  }, []);
 
- const fetchPayrolls = async () => {
- try {
- setLoading(true);
- const response = await payrollApi.getAll();
- const payrollData = response.data?.data || response.data || [];
- setPayrolls(payrollData);
- } catch (error) {
- toast.error('Failed to fetch payrolls');
- setPayrolls([]);
- } finally {
- setLoading(false);
- }
- };
+  const previewPayroll = useMemo(() => buildPayrollFromForm(form), [form]);
 
- useEffect(() => {
- setMounted(true);
- fetchPayrolls();
- fetchEmployees();
- fetchDashboardMetrics();
- }, []);
+  const records = useMemo(() => {
+    const normalizedApi = payrolls.map((item) => normalizePayrollData(item));
+    const apiById = new Map(normalizedApi.map((item) => [item.id, item]));
+    const mergedManual = manualPayrolls.map((item) => ({
+      ...(apiById.get(item.id) || {}),
+      ...item,
+    }));
+    const manualIds = new Set(mergedManual.map((item) => item.id));
+    const remainingApi = normalizedApi.filter((item) => !manualIds.has(item.id));
+    return [...mergedManual, ...remainingApi];
+  }, [manualPayrolls, payrolls]);
 
- if (!mounted) return null;
+  const filteredRecords = useMemo(() => {
+    if (!search.trim()) return records;
+    const query = search.toLowerCase();
+    return records.filter((record) => (
+      record.employee.name.toLowerCase().includes(query)
+      || record.employee.employeeId.toLowerCase().includes(query)
+      || record.employee.department.toLowerCase().includes(query)
+      || record.payPeriodLabel.toLowerCase().includes(query)
+    ));
+  }, [records, search]);
 
- const handleGeneratePayroll = async () => {
- if (!payrollForm.employeeId || !payrollForm.baseSalary) {
- toast.error('Please fill all required fields');
- return;
- }
- console.log('[DEBUG] Generating payroll with data:', payrollForm);
+  const stats = useMemo(() => {
+    const totalNet = records.reduce((sum, item) => sum + item.netSalary, 0);
+    const totalGross = records.reduce((sum, item) => sum + item.grossSalary, 0);
+    const paidCount = records.filter((item) => item.status === 'paid').length;
+    const pendingCount = records.filter((item) => item.status !== 'paid').length;
 
- // Ensure all numeric values are proper numbers
- const data = {
- employeeId: payrollForm.employeeId,
- month: Number(payrollForm.month),
- year: Number(payrollForm.year),
- baseSalary: Number(payrollForm.baseSalary),
- allowances: Number(payrollForm.allowances),
- deductions: Number(payrollForm.deductions),
- bonus: Number(payrollForm.bonus),
- };
+    return { totalNet, totalGross, paidCount, pendingCount };
+  }, [records]);
 
- console.log('[DEBUG] Cleaned data:', data);
+  const getPayrollDetails = async (record) => {
+    if (!record || record.source === 'manual') return record;
 
- try {
- const response = await payrollApi.create(data);
- console.log('[DEBUG] Payroll created:', response);
- toast.success('Payroll generated successfully');
- setShowPayrollModal(false);
- fetchPayrolls();
- setPayrollForm({
- employeeId: '',
- month: new Date().getMonth() + 1,
- year: new Date().getFullYear(),
- baseSalary: 0,
- allowances: 0,
- deductions: 0,
- bonus: 0,
- });
- } catch (error) {
- console.error('[DEBUG] Payroll error:', error);
- console.error('[DEBUG] Error response:', error.response);
- toast.error(error.response?.data?.message || error.message || 'Failed to generate payroll');
- }
- };
+    const payrollId = record.raw?._id || record.id;
+    if (!payrollId) return record;
 
- const handleUpdatePayroll = async () => {
- if (!editingPayroll) return;
- 
- const data = {
- baseSalary: Number(payrollForm.baseSalary),
- allowances: Number(payrollForm.allowances),
- deductions: Number(payrollForm.deductions),
- bonus: Number(payrollForm.bonus),
- };
+    const response = await payrollApi.getById(payrollId);
+    const fullRecord = response?.data?.data || response?.data || {};
 
- try {
- await payrollApi.update(editingPayroll._id, data);
- toast.success('Payroll updated successfully');
- setShowEditModal(false);
- setEditingPayroll(null);
- fetchPayrolls();
- } catch (error) {
- toast.error(error.response?.data?.message || 'Failed to update payroll');
- }
- };
+    return normalizePayrollData({ ...fullRecord, fallbackPayroll: record, source: record.source });
+  };
 
- const handleDeletePayroll = async (id) => {
- if (!window.confirm('Are you sure you want to delete this payroll record?')) return;
- try {
- await payrollApi.delete(id);
- toast.success('Payroll record deleted');
- fetchPayrolls();
- } catch (error) {
- toast.error('Failed to delete payroll record');
- }
- };
+  const handleOpenPayroll = async (record, mode = 'preview') => {
+    try {
+      setActionLoadingId(record.id);
+      const detailedRecord = await getPayrollDetails(record);
+      if (mode === 'download') {
+        downloadPayrollReceipt(detailedRecord);
+        return;
+      }
+      setSelectedPayroll(detailedRecord);
+    } catch (error) {
+      toast.error('Failed to load payroll details');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
 
- const filteredPayrolls = payrolls.filter(payroll => {
- if (payrollSearch === '') return true;
- const search = payrollSearch.toLowerCase();
- const empName = `${payroll.employeeId?.firstName || ''} ${payroll.employeeId?.lastName || ''}`.toLowerCase();
- return empName.includes(search);
- });
+  const handleGeneratePayroll = async () => {
+    if (!form.selectedEmployeeId) {
+      toast.error('Select an employee to create payroll');
+      return;
+    }
 
- const totalNetSalary = payrolls.reduce((sum, p) => sum + (p.netSalary || 0), 0);
+    if (!form.employeeName || !form.employeeCode || !form.department || !form.designation) {
+      toast.error('Fill all employee details before creating payroll');
+      return;
+    }
 
- const kpis = [
- {
- label: 'Total Payroll',
- value: `†â€™${totalNetSalary.toLocaleString()}`,
- icon: Wallet,
- variant: 'emerald'
- },
- {
- label: 'This Month',
- value: payrolls.filter(p => {
- const payrollMonth = new Date(p.createdAt).getMonth() + 1;
- const payrollYear = new Date(p.createdAt).getFullYear();
- return payrollMonth === new Date().getMonth() + 1 && payrollYear === new Date().getFullYear();
- }).length,
- icon: Wallet,
- variant: 'blue'
- },
- {
- label: 'Employees Paid',
- value: new Set(payrolls.map(p => p.employeeId?._id || p.employeeId)).size,
- icon: Wallet,
- variant: 'amber'
- },
- {
- label: 'Total Records',
- value: payrolls.length,
- icon: Wallet,
- variant: 'purple'
- },
- ];
+    if (!form.bankName || !form.accountNumber || !form.ifscCode || !form.transactionId) {
+      toast.error('Fill all payment details before creating payroll');
+      return;
+    }
 
- // Build columns dynamically based on permissions
- const tableColumns = [
- columns.employee && {
- key: 'employeeId',
- header: 'Employee',
- render: (val) => (
- <div>
- <p className="font-medium text-sm">{val?.firstName} {val?.lastName}</p>
- <p className="text-xs text-[var(--text-muted)]">{val?.employeeId}</p>
- </div>
- ),
- },
- columns.month && {
- key: 'month',
- header: 'Month',
- render: (val) => new Date(2000, val - 1, 1).toLocaleString('default', { month: 'long' }),
- },
- columns.year && {
- key: 'year',
- header: 'Year',
- render: (val) => val,
- },
- columns.baseSalary && {
- key: 'baseSalary',
- header: 'Base Salary',
- render: (val) => `†â€™${val?.toLocaleString() || 0}`,
- },
- columns.allowances && {
- key: 'allowances',
- header: 'Allowances',
- render: (val) => `†â€™${val?.toLocaleString() || 0}`,
- },
- columns.deductions && {
- key: 'deductions',
- header: 'Deductions',
- render: (val) => `†â€™${val?.toLocaleString() || 0}`,
- },
- columns.netSalary && {
- key: 'netSalary',
- header: 'Net Salary',
- render: (val) => <span className="font-bold text-[var(--green)]">†â€™{val?.toLocaleString() || 0}</span>,
- },
- columns.status && {
- key: 'paymentStatus',
- header: 'Status',
- render: (val) => {
- const colors = {
- pending: 'bg-amber-500/10 text-amber-500',
- paid: 'bg-[var(--green)]/10 text-[var(--green)]',
- failed: 'bg-red-500/10 text-red-500',
- };
- return (
- <span className={`px-2 py-1 rounded-full text-xs ${colors[val] || colors.pending} capitalize`}>
- {val || 'pending'}
- </span>
- );
- },
- },
- columns.actions && (canEdit() || canDelete()) && {
- key: 'actions',
- header: 'Actions',
- render: (_, record) => (
- <div className="flex items-center gap-2">
- {canEdit() && (
- <button
- onClick={(e) => {
- e.stopPropagation();
- setEditingPayroll(record);
- setPayrollForm({
- employeeId: record.employeeId?._id || record.employeeId,
- month: record.month,
- year: record.year,
- baseSalary: record.baseSalary,
- allowances: record.allowances,
- deductions: record.deductions,
- bonus: record.bonus,
- });
- setShowEditModal(true);
- }}
- className="p-1.5 rounded-lg hover:bg-blue-500/10 text-[var(--text-muted)] hover:text-blue-500 transition-colors"
- title="Edit"
- >
- <RefreshCw size={14} />
- </button>
- )}
- {canDelete() && (
- <button
- onClick={(e) => {
- e.stopPropagation();
- handleDeletePayroll(record._id);
- }}
- className="p-1.5 rounded-lg hover:bg-red-500/10 text-[var(--text-muted)] hover:text-red-500 transition-colors"
- title="Delete"
- >
- <X size={14} />
- </button>
- )}
- </div>
- ),
- },
- ].filter(Boolean);
+    try {
+      const payload = {
+        employeeId: form.selectedEmployeeId,
+        month: form.month,
+        year: form.year,
+        baseSalary: toNumber(form.basicSalary),
+        allowances: toNumber(form.hra) + toNumber(form.otherAllowances),
+        deductions: toNumber(form.pf) + toNumber(form.tax) + toNumber(form.otherDeductions),
+        bonus: toNumber(form.bonus),
+      };
 
- return (
- <div className="animate-fade-in space-y-5">
- <PageHeader
- title="Payroll Management"
- subtitle="Generate and manage employee payroll"
- actions={canCreate() || canGenerate() ? [
- {
- type: 'button',
- label: 'Generate Payroll',
- icon: Plus,
- variant: 'primary',
- onClick: () => {
- setPayrollForm({
- employeeId: '',
- month: new Date().getMonth() + 1,
- year: new Date().getFullYear(),
- baseSalary: 0,
- allowances: 0,
- deductions: 0,
- bonus: 0,
- });
- setShowPayrollModal(true);
- },
- },
- ] : []}
- />
+      const response = await payrollApi.create(payload);
+      const createdPayroll = response?.data?.data || response?.data || {};
 
- {/* KPI Cards - Dynamic Role-Based */}
- <KpiCards 
- role={isAdmin ? 'admin' : 'employee'} 
- metrics={dashboardMetrics} 
- />
+      const record = normalizePayrollData({
+        ...createdPayroll,
+        employeeName: form.employeeName,
+        employeeCode: form.employeeCode,
+        department: form.department,
+        designation: form.designation,
+        workingDays: form.workingDays,
+        daysPresent: form.daysPresent,
+        hra: form.hra,
+        otherAllowances: form.otherAllowances,
+        pf: form.pf,
+        tax: form.tax,
+        otherDeductions: form.otherDeductions,
+        bankName: form.bankName,
+        accountNumber: form.accountNumber,
+        ifscCode: form.ifscCode,
+        transactionId: form.transactionId,
+        source: 'manual',
+      });
 
- {/* Filters */}
- <div className="flex items-center gap-3 flex-wrap">
- <div className="relative flex-1 max-w-sm">
- <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
- <Input
- placeholder="Search payroll..."
- value={payrollSearch}
- onChange={(e) => setPayrollSearch(e.target.value)}
- className="pl-9 h-9"
- />
- </div>
- <p className="text-sm text-[var(--text-muted)]">
- {filteredPayrolls.length} of {payrolls.length} records
- </p>
- <Button variant="outline" onClick={fetchPayrolls} className="ml-auto">
- <RefreshCw size={14} /> Refresh
- </Button>
- </div>
+      setManualPayrolls((current) => [record, ...current]);
+      setSelectedPayroll(record);
+      setShowFormModal(false);
+      setForm(createInitialForm());
+      toast.success('Payroll created successfully');
+      fetchPayrolls();
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Failed to create payroll');
+    }
+  };
 
- {/* Payroll Table */}
- <DataTable
- columns={tableColumns}
- data={filteredPayrolls}
- total={filteredPayrolls.length}
- rowKey="_id"
- emptyText="No payroll records found."
- loading={loading}
- onRowClick={(row) => setViewPayroll(row)}
- />
+  const handleDeleteRecord = (record) => {
+    if (record.source !== 'manual') {
+      toast.error('Only newly generated local payrolls can be removed from this screen');
+      return;
+    }
 
- <PayrollViewModal payroll={viewPayroll} onClose={() => setViewPayroll(null)} />
+    setManualPayrolls((current) => current.filter((item) => item.id !== record.id));
+  };
 
- {/* Generate Payroll Modal */}
- {showPayrollModal && (
- <Modal
- open={showPayrollModal}
- onClose={() => setShowPayrollModal(false)}
- title="Generate Payroll"
- footer={
- <div className="flex gap-2 justify-end">
- <Button variant="ghost" onClick={() => setShowPayrollModal(false)}>
- Cancel
- </Button>
- <Button onClick={handleGeneratePayroll} disabled={!payrollForm.employeeId || !payrollForm.baseSalary}>
- <Plus size={13} /> Generate
- </Button>
- </div>
- }
- >
- <FormField label="Employee">
- <Select
- value={payrollForm.employeeId}
- onChange={(e) => setPayrollForm({ ...payrollForm, employeeId: e.target.value })}
- >
- <option value="">Select Employee</option>
- {employees.map((emp) => (
- <option key={emp._id} value={emp._id}>
- {emp.firstName} {emp.lastName} ({emp.employeeId})
- </option>
- ))}
- </Select>
- </FormField>
- <div className="grid grid-cols-2 gap-3 mt-3">
- <FormField label="Month">
- <Select
- value={payrollForm.month}
- onChange={(e) => setPayrollForm({ ...payrollForm, month: parseInt(e.target.value) })}
- >
- {Array.from({ length: 12 }, (_, i) => (
- <option key={i + 1} value={i + 1}>
- {new Date(2000, i, 1).toLocaleString('default', { month: 'long' })}
- </option>
- ))}
- </Select>
- </FormField>
- <FormField label="Year">
- <Input
- type="number"
- value={payrollForm.year}
- onChange={(e) => setPayrollForm({ ...payrollForm, year: parseInt(e.target.value) })}
- />
- </FormField>
- </div>
- <div className="grid grid-cols-2 gap-3 mt-3">
- <FormField label="Base Salary (†â€™)">
- <Input
- type="number"
- value={payrollForm.baseSalary}
- onChange={(e) => setPayrollForm({ ...payrollForm, baseSalary: parseFloat(e.target.value) || 0 })}
- />
- </FormField>
- <FormField label="Allowances (†â€™)">
- <Input
- type="number"
- value={payrollForm.allowances}
- onChange={(e) => setPayrollForm({ ...payrollForm, allowances: parseFloat(e.target.value) || 0 })}
- />
- </FormField>
- <FormField label="Deductions (†â€™)">
- <Input
- type="number"
- value={payrollForm.deductions}
- onChange={(e) => setPayrollForm({ ...payrollForm, deductions: parseFloat(e.target.value) || 0 })}
- />
- </FormField>
- <FormField label="Bonus (†â€™)">
- <Input
- type="number"
- value={payrollForm.bonus}
- onChange={(e) => setPayrollForm({ ...payrollForm, bonus: parseFloat(e.target.value) || 0 })}
- />
- </FormField>
- </div>
- <div className="mt-4 p-3 rounded-lg bg-[var(--bg-elevated)]">
- <p className="text-sm text-[var(--text-muted)]">Net Salary Preview</p>
- <p className="text-2xl font-bold text-[var(--accent)]">
- †â€™{(payrollForm.baseSalary + payrollForm.allowances + payrollForm.bonus - payrollForm.deductions).toLocaleString()}
- </p>
- </div>
- </Modal>
- )}
+  const tableColumns = [
+    {
+      key: 'employeeName',
+      header: 'Employee',
+      render: (_value, record) => (
+        <div className="flex flex-col">
+          <span className="font-medium text-slate-900">{record.employee.name}</span>
+          <span className="text-xs text-slate-500">{record.employee.employeeId}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'payPeriod',
+      header: 'Pay Period',
+      render: (_value, record) => record.payPeriodLabel,
+    },
+    {
+      key: 'grossSalary',
+      header: 'Gross Salary',
+      render: (_value, record) => formatInr(record.grossSalary),
+    },
+    {
+      key: 'netSalary',
+      header: 'Net Salary',
+      render: (_value, record) => <span className="font-semibold text-emerald-700">{formatInr(record.netSalary)}</span>,
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (_value, record) => (
+        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${record.status === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+          {record.status.toUpperCase()}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      render: (_value, record) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+              handleOpenPayroll(record, 'preview');
+            }}
+            className="rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+            title="Preview slip"
+            disabled={actionLoadingId === record.id}
+          >
+            <Eye size={16} />
+          </button>
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+              handleOpenPayroll(record, 'download');
+            }}
+            className="rounded-xl p-2 text-emerald-600 transition hover:bg-emerald-50"
+            title="Download PDF"
+            disabled={actionLoadingId === record.id}
+          >
+            <Download size={16} />
+          </button>
+          {record.source === 'manual' ? (
+            <button
+              onClick={(event) => {
+                event.stopPropagation();
+                handleDeleteRecord(record);
+              }}
+              className="rounded-xl p-2 text-rose-600 transition hover:bg-rose-50"
+              title="Remove local record"
+            >
+              <X size={16} />
+            </button>
+          ) : null}
+        </div>
+      ),
+    },
+  ];
 
- {/* Edit Payroll Modal */}
- {showEditModal && (
- <Modal
- open={showEditModal}
- onClose={() => {
- setShowEditModal(false);
- setEditingPayroll(null);
- }}
- title="Edit Payroll Record"
- footer={
- <div className="flex gap-2 justify-end">
- <Button variant="ghost" onClick={() => setShowEditModal(false)}>
- Cancel
- </Button>
- <Button onClick={handleUpdatePayroll}>
- <RefreshCw size={13} /> Update
- </Button>
- </div>
- }
- >
- <div className="mb-4 p-3 rounded-lg bg-[var(--bg-elevated)]">
- <p className="text-xs text-[var(--text-muted)]">Employee</p>
- <p className="font-medium">{editingPayroll?.employeeId?.firstName} {editingPayroll?.employeeId?.lastName}</p>
- <p className="text-xs text-[var(--text-muted)] mt-1">Period: {new Date(2000, editingPayroll?.month - 1, 1).toLocaleString('default', { month: 'long' })} {editingPayroll?.year}</p>
- </div>
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Payroll Management"
+        subtitle="Manage employee salaries, generate payslips, and track payments"
+        icon={Wallet}
+        action={(
+          <button
+            onClick={() => setShowFormModal(true)}
+            className="inline-flex items-center gap-2 rounded-2xl bg-[#0F766E] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#115e59]"
+          >
+            <Plus size={16} />
+            Create Payroll
+          </button>
+        )}
+      />
 
- <div className="grid grid-cols-2 gap-3">
- <FormField label="Base Salary (†â€™)">
- <Input
- type="number"
- value={payrollForm.baseSalary}
- onChange={(e) => setPayrollForm({ ...payrollForm, baseSalary: parseFloat(e.target.value) || 0 })}
- />
- </FormField>
- <FormField label="Allowances (†â€™)">
- <Input
- type="number"
- value={payrollForm.allowances}
- onChange={(e) => setPayrollForm({ ...payrollForm, allowances: parseFloat(e.target.value) || 0 })}
- />
- </FormField>
- <FormField label="Deductions (†â€™)">
- <Input
- type="number"
- value={payrollForm.deductions}
- onChange={(e) => setPayrollForm({ ...payrollForm, deductions: parseFloat(e.target.value) || 0 })}
- />
- </FormField>
- <FormField label="Bonus (†â€™)">
- <Input
- type="number"
- value={payrollForm.bonus}
- onChange={(e) => setPayrollForm({ ...payrollForm, bonus: parseFloat(e.target.value) || 0 })}
- />
- </FormField>
- </div>
- <div className="mt-4 p-3 rounded-lg bg-[var(--bg-elevated)] border-t-2 border-[var(--primary)]">
- <p className="text-sm text-[var(--text-muted)]">Updated Net Salary</p>
- <p className="text-2xl font-bold text-[var(--green)]">
- †â€™{(payrollForm.baseSalary + payrollForm.allowances + payrollForm.bonus - payrollForm.deductions).toLocaleString()}
- </p>
- </div>
- </Modal>
- )}
- </div>
- );
+      <div className="grid gap-4 xl:grid-cols-4">
+        <StatCard title="Total Payroll" value={formatInr(stats.totalNet)} tone="green" />
+        <StatCard title="Gross Processed" value={formatInr(stats.totalGross)} tone="teal" />
+        <StatCard title="Paid Slips" value={String(stats.paidCount)} tone="amber" />
+        <StatCard title="Pending Slips" value={String(stats.pendingCount)} tone="slate" />
+      </div>
+
+      <div className="rounded-[28px] bg-white p-5 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="relative w-full max-w-xl">
+            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search payrolls..."
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-12 pr-4 text-sm outline-none transition focus:border-[#0F766E] focus:ring-4 focus:ring-[#0F766E]/10"
+            />
+          </div>
+          <button
+            onClick={fetchPayrolls}
+            className="inline-flex items-center justify-center rounded-2xl border border-slate-200 p-3 text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
+            title="Refresh payrolls"
+          >
+            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+          </button>
+        </div>
+      </div>
+
+      <div className="rounded-[28px] bg-white p-4 shadow-sm">
+        <DataTable
+          columns={tableColumns}
+          data={filteredRecords}
+          loading={loading}
+          rowKey="id"
+          emptyText="No payroll records found."
+          hideSearch
+          onRowClick={(record) => handleOpenPayroll(record, 'preview')}
+        />
+      </div>
+
+      {showFormModal ? (
+        <PayrollFormModal
+          employees={employees}
+          form={form}
+          setForm={setForm}
+          onClose={() => setShowFormModal(false)}
+          onGenerate={handleGeneratePayroll}
+          preview={previewPayroll}
+        />
+      ) : null}
+
+      {selectedPayroll ? (
+        <PayrollReceipt
+          payroll={selectedPayroll}
+          onClose={() => setSelectedPayroll(null)}
+        />
+      ) : null}
+    </div>
+  );
 };
 
 export default PayrollPage;

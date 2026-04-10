@@ -1,4 +1,4 @@
-// ServiceManagerDashboard.js Ã¢â‚¬â€ Service Manager role dashboard (redesigned)
+// ServiceManagerDashboard.js a€" Service Manager role dashboard (redesigned)
 import React from 'react';
 import {
     BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
@@ -82,7 +82,7 @@ const ServiceManagerDashboard = () => {
 
             <SectionHeader
                 title="Service Manager Dashboard"
-                subtitle="AMC contracts Ã‚Â· Service tickets Ã‚Â· Team performance Ã‚Â· Commissioning"
+                subtitle="AMC contracts •. Service tickets •. Team performance •. Commissioning"
                 icon={Shield}
                 accent={C.primary}
                 badge="Service Hub"
@@ -259,9 +259,9 @@ const ServiceManagerDashboard = () => {
 
                 <ChartCard title="Recent Service Activity" subtitle="Latest ticket updates">
                     {[
-                        { icon: CheckCircle, title: 'Ticket #1082 resolved: Inverter fault', meta: 'Client: Modi Textiles Ã¢â‚¬â€ 1h response', time: '1h ago', status: 'Resolved', statusColor: '#10b981' },
-                        { icon: Headphones, title: 'New AMC enquiry: Patel Residency', meta: '5-year contract Ã¢â‚¬â€ 200kW system', time: '3h ago', status: 'New', statusColor: C.primary },
-                        { icon: AlertTriangle, title: 'High priority: Grid sync failure', meta: 'Site: SolarMax Industrial Ã¢â‚¬â€ escalated', time: '4h ago', status: 'Urgent', statusColor: '#ef4444' },
+                        { icon: CheckCircle, title: 'Ticket #1082 resolved: Inverter fault', meta: 'Client: Modi Textiles a€" 1h response', time: '1h ago', status: 'Resolved', statusColor: '#10b981' },
+                        { icon: Headphones, title: 'New AMC enquiry: Patel Residency', meta: '5-year contract a€" 200kW system', time: '3h ago', status: 'New', statusColor: C.primary },
+                        { icon: AlertTriangle, title: 'High priority: Grid sync failure', meta: 'Site: SolarMax Industrial a€" escalated', time: '4h ago', status: 'Urgent', statusColor: '#ef4444' },
                         { icon: Star, title: '5-star review: Green Valley Apartments', meta: 'Fast response, professional team', time: '1d ago', status: 'Review', statusColor: '#f59e0b' },
                         { icon: Zap, title: 'Commissioning completed: Rajkot 500kW', meta: 'All systems operational', time: '1d ago', status: 'Completed', statusColor: '#10b981' },
                     ].map((item, i) => (
