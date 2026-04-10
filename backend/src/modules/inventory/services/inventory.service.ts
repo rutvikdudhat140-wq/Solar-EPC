@@ -41,6 +41,36 @@ export class InventoryService {
     return (tenant as any)._id as Types.ObjectId;
   }
 
+  private async buildTenantScopedMatch(tenantCode: string): Promise<Record<string, any>> {
+    if (!tenantCode) {
+      throw new BadRequestException('Tenant context is missing');
+    }
+
+    const tenantCandidates: Array<string | Types.ObjectId> = [tenantCode];
+
+    if (Types.ObjectId.isValid(tenantCode)) {
+      const tenantObjectId = new Types.ObjectId(tenantCode);
+      tenantCandidates.push(tenantObjectId, tenantObjectId.toString());
+    } else {
+      try {
+        const tenant = await this.tenantModel.findOne({ code: tenantCode }).select({ _id: 1 }).lean();
+        if (tenant?._id) {
+          const tenantObjectId = tenant._id as Types.ObjectId;
+          tenantCandidates.push(tenantObjectId, tenantObjectId.toString());
+        }
+      } catch (error: any) {
+        console.warn(`[INVENTORY STATS] Failed to resolve tenant code '${tenantCode}':`, error?.message);
+      }
+    }
+
+    const uniqueCandidates = Array.from(new Set(tenantCandidates.map((value) => value.toString())));
+    return {
+      $or: uniqueCandidates.map((value) =>
+        Types.ObjectId.isValid(value) ? { tenantId: new Types.ObjectId(value) } : { tenantId: value },
+      ),
+    };
+  }
+
   async findAll(tenantCode: string, user?: UserWithVisibility, category?: string, search?: string) {
     const tenantId = await this.resolveTenantObjectId(tenantCode);
     const query: any = { tenantId, isDeleted: false };
@@ -667,9 +697,10 @@ export class InventoryService {
     return units.filter((unit: string) => unit && unit.trim() !== '').sort();
   }
   async getStats(tenantCode: string, user?: UserWithVisibility) {
-    const tenantId = await this.resolveTenantObjectId(tenantCode);
-    console.log(`[INVENTORY STATS] tenantCode: ${tenantCode}, resolved tenantId: ${tenantId}`);
-    const matchQuery: any = { tenantId, isDeleted: false };
+    const tenantMatch = await this.buildTenantScopedMatch(tenantCode);
+    const matchQuery: any = { ...tenantMatch, isDeleted: false };
+    console.log(`[INVENTORY STATS] tenantCode: ${tenantCode}`);
+    console.log(`[INVENTORY STATS] tenant match:`, JSON.stringify(tenantMatch));
     if (user?.dataScope === 'ASSIGNED') {
       const userId = user._id || user.id;
       if (userId) {
@@ -682,6 +713,12 @@ export class InventoryService {
     console.log(`[INVENTORY STATS] Found ${items.length} items`);
     const totalItems = items.length;
     const totalStock = items.reduce((sum, it) => sum + (Number(it.stock) || 0), 0);
+    const totalAvailableStock = items.reduce((sum, it) => {
+      const available = it.available !== undefined && it.available !== null
+        ? Number(it.available) || 0
+        : (Number(it.stock) || 0) - (Number(it.reserved) || 0);
+      return sum + Math.max(available, 0);
+    }, 0);
     const lowStockItems = items.filter((it) => {
       const available = Number(it.available) || 0;
       const minStock = Number(it.minStock) || 0;
@@ -689,13 +726,21 @@ export class InventoryService {
     }).length;
     const outOfStockItems = items.filter((it) => (Number(it.available) || 0) <= 0).length;
     const reservedItems = items.filter((it) => (Number(it.reserved) || 0) > 0).length;
-    const result = { totalItems, totalStock, lowStockItems, outOfStockItems, reservedItems };
+
+    const byCategory = await this.inventoryModel.aggregate([
+      { $match: matchQuery },
+      { $group: { _id: '$category', count: { $sum: 1 }, totalStock: { $sum: '$stock' } } },
+      { $project: { _id: 0, category: { $ifNull: ['$_id', 'Other'] }, count: 1, totalStock: 1 } },
+      { $sort: { count: -1 } },
+    ]);
+
+    const result = { totalItems, totalStock, totalAvailableStock, lowStockItems, outOfStockItems, reservedItems, byCategory };
     console.log(`[INVENTORY STATS] Returning:`, result);
     return result;
   }
   async getItemsByCategory(tenantCode: string, user?: UserWithVisibility) {
-    const tenantId = await this.resolveTenantObjectId(tenantCode);
-    const matchQuery: any = { tenantId, isDeleted: false };
+    const tenantMatch = await this.buildTenantScopedMatch(tenantCode);
+    const matchQuery: any = { ...tenantMatch, isDeleted: false };
     if (user?.dataScope === 'ASSIGNED') {
       const userId = user._id || user.id;
       if (userId) {

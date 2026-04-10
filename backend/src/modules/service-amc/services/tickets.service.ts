@@ -3047,6 +3047,93 @@ Solar EPC Team
 
 
 
+  async getDashboardStats(tenantId?: string, user?: UserWithVisibility): Promise<any> {
+    const filter: any = { isDeleted: { $ne: true } };
+
+    if (tenantId) {
+      const tenantVariants: any[] = [{ tenantId }];
+      if (typeof tenantId === 'string' && Types.ObjectId.isValid(tenantId) && tenantId.length === 24) {
+        const tenantObjectId = new Types.ObjectId(tenantId);
+        tenantVariants.push({ tenantId: tenantObjectId }, { tenantId: tenantObjectId.toString() });
+      }
+      filter.$and = [...(filter.$and || []), { $or: tenantVariants }];
+    }
+
+    if (user?.dataScope === 'ASSIGNED') {
+      const userId = user._id || user.id;
+      const userEmail = (user as any).email || '';
+      const assignedToIds: Types.ObjectId[] = [];
+
+      if (userId) {
+        const objectId = typeof userId === 'string' && Types.ObjectId.isValid(userId)
+          ? new Types.ObjectId(userId)
+          : userId;
+        if (objectId instanceof Types.ObjectId) {
+          assignedToIds.push(objectId);
+        }
+      }
+
+      if (userEmail) {
+        const linkedAuthUser = await this.userModel.findOne({ email: userEmail }).select({ _id: 1 }).lean();
+        const linkedId = linkedAuthUser?._id;
+        if (linkedId) {
+          const linkedObjectId = typeof linkedId === 'string' && Types.ObjectId.isValid(linkedId)
+            ? new Types.ObjectId(linkedId)
+            : linkedId;
+          if (linkedObjectId instanceof Types.ObjectId) {
+            assignedToIds.push(linkedObjectId);
+          }
+        }
+      }
+
+      const uniqueAssignedToIds = Array.from(new Set(assignedToIds.map((id) => id.toString())))
+        .map((id) => new Types.ObjectId(id));
+      if (uniqueAssignedToIds.length > 0) {
+        filter.$and = [...(filter.$and || []), { assignedTo: { $in: uniqueAssignedToIds } }];
+      }
+    }
+
+    console.log('[TICKETS DASHBOARD STATS] tenantId:', tenantId);
+    console.log('[TICKETS DASHBOARD STATS] filter:', JSON.stringify(filter));
+
+    const statusCounts = await this.ticketModel.aggregate([
+      { $match: filter },
+      {
+        $group: {
+          _id: { $toLower: { $ifNull: ['$status', 'unknown'] } },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const counts = statusCounts.reduce((acc: Record<string, number>, curr: any) => {
+      acc[curr._id] = Number(curr.count) || 0;
+      return acc;
+    }, {});
+
+    const openTickets = Number(counts.open || 0);
+    const inProgressTickets = Number(counts['in progress'] || counts.inprogress || counts['in-progress'] || 0);
+    const resolvedTickets = Number(counts.resolved || 0);
+    const scheduledTickets = Number(counts.scheduled || 0);
+    const closedTickets = Number(counts.closed || 0);
+    const totalTickets = statusCounts.reduce((sum, row: any) => sum + (Number(row.count) || 0), 0);
+
+    return {
+      totalTickets,
+      openTickets,
+      inProgress: inProgressTickets,
+      resolved: resolvedTickets,
+      scheduled: scheduledTickets,
+      closed: closedTickets,
+      statusDistribution: counts,
+      inProgressTickets,
+      resolvedTickets,
+      scheduledTickets,
+      closedTickets,
+      open: openTickets,
+    };
+  }
+
   async getEngineers(tenantId?: string): Promise<{ id: string; name: string; email: string }[]> {
 
 
