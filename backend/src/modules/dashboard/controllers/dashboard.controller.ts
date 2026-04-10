@@ -85,6 +85,30 @@ export class DashboardController {
     return { success: true, data };
   }
 
+  @Get('inventory-stats')
+  async getInventoryStats(@Req() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || req.user?.tenantId || '';
+    console.log('[Dashboard Controller] inventory-stats tenantId:', tenantId);
+    const data = await this.dashboardService.getInventoryStatsForDashboard(tenantId, req.user);
+    return { success: true, data };
+  }
+
+  @Get('service-stats')
+  async getServiceStats(@Req() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || req.user?.tenantId || '';
+    console.log('[Dashboard Controller] service-stats tenantId:', tenantId);
+    const data = await this.dashboardService.getServiceStatsForDashboard(tenantId, req.user);
+    return { success: true, data };
+  }
+
+  @Get('metrics')
+  async getMetrics(@Req() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || req.user?.tenantId || '';
+    console.log('[Dashboard Controller] metrics tenantId:', tenantId);
+    const data = await this.dashboardService.getDashboardMetrics(tenantId, req.user);
+    return { success: true, data };
+  }
+
   @Get('all')
   async getAllDashboardData(@Req() req: any) {
     const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || req.user?.tenantId;

@@ -1,70 +1,231 @@
 // Dashboard API Service - Fully Dynamic with Fallback
 import { api } from '../lib/apiClient';
 
+const extractData = (res) => {
+  if (!res) return {};
+  return res?.data?.data !== undefined ? res.data.data : (res?.data || res || {});
+};
+
+const normalizeQuotationStats = (data = {}) => {
+  const byStatus = data.byStatus || {};
+  const draft = Number(data.draft ?? byStatus.draft ?? byStatus.Draft ?? 0);
+  const sent = Number(data.sent ?? byStatus.sent ?? byStatus.Sent ?? 0);
+  const approved = Number(data.approved ?? data.accepted ?? byStatus.accepted ?? byStatus.Accepted ?? byStatus.approved ?? byStatus.Approved ?? 0);
+  const rejected = Number(data.rejected ?? byStatus.rejected ?? byStatus.Rejected ?? 0);
+  const pending = Number(data.pending ?? (draft + sent));
+  const total = Number(data.total ?? (draft + sent + approved + rejected));
+
+  return {
+    ...data,
+    total,
+    draft,
+    sent,
+    approved,
+    accepted: approved,
+    pending,
+    rejected,
+  };
+};
+
+const normalizeInventoryItemList = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data?.items)) return data.items;
+  if (Array.isArray(data?.results)) return data.results;
+  return [];
+};
+
+const normalizeLookupCategories = (data) => {
+  const raw = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);
+  return raw.map((item) => item?.name || item?.code || item).filter(Boolean);
+};
+
+const buildInventoryByCategoryFromCategories = (categories = [], items = []) => {
+  return categories
+    .map((category) => {
+      const categoryItems = items.filter((item) => item?.category === category);
+      return {
+        category,
+        count: categoryItems.length,
+        totalStock: categoryItems.reduce((sum, item) => sum + (Number(item?.stock) || 0), 0),
+        totalAvailable: categoryItems.reduce((sum, item) => {
+          const available = item?.available !== undefined && item?.available !== null
+            ? Number(item.available) || 0
+            : (Number(item?.stock) || 0) - (Number(item?.reserved) || 0);
+          return sum + Math.max(available, 0);
+        }, 0),
+      };
+    })
+    .filter((item) => item.count > 0);
+};
+
+const buildInventoryByCategoryFromItems = (items = []) => {
+  const grouped = items.reduce((acc, item) => {
+    const category = item?.category || item?.name || 'Other';
+    const available = item?.available !== undefined && item?.available !== null
+      ? Number(item.available) || 0
+      : (Number(item?.stock) || 0) - (Number(item?.reserved) || 0);
+
+    if (!acc[category]) {
+      acc[category] = { category, count: 0, totalStock: 0, totalAvailable: 0 };
+    }
+
+    acc[category].count += 1;
+    acc[category].totalStock += Number(item?.stock) || 0;
+    acc[category].totalAvailable += Math.max(available, 0);
+    return acc;
+  }, {});
+
+  return Object.values(grouped).sort((a, b) => (b.totalAvailable || b.totalStock || 0) - (a.totalAvailable || a.totalStock || 0));
+};
+
+const normalizeInventoryStats = (stats = {}, byCategory = [], inventoryItems = [], lookupCategories = []) => {
+  const categoryCountData = buildInventoryByCategoryFromCategories(lookupCategories, inventoryItems);
+  let normalizedByCategory = [];
+
+  if (Array.isArray(byCategory) && byCategory.length > 0) {
+    normalizedByCategory = byCategory;
+  } else if (Array.isArray(stats.byCategory) && stats.byCategory.length > 0) {
+    normalizedByCategory = stats.byCategory;
+  } else if (categoryCountData.length > 0) {
+    normalizedByCategory = categoryCountData;
+  } else {
+    normalizedByCategory = buildInventoryByCategoryFromItems(inventoryItems);
+  }
+
+  return {
+    ...stats,
+    byCategory: normalizedByCategory,
+    categoryGraph: categoryCountData.length > 0 ? categoryCountData : normalizedByCategory,
+    categories: lookupCategories,
+    items: inventoryItems,
+    total: stats.totalAvailableStock || stats.totalStock || stats.totalItems || stats.total || 0,
+  };
+};
+
+const normalizeInstallationStats = (data = {}) => ({
+  ...data,
+  total: Number(data.total ?? data.totalInstallations ?? 0),
+  inProgress: Number(data.inProgress ?? data.active ?? 0),
+  active: Number(data.active ?? data.inProgress ?? 0),
+  completed: Number(data.completed ?? data.finished ?? 0),
+  pending: Number(data.pending ?? data.unassigned ?? 0),
+  unassigned: Number(data.unassigned ?? data.pending ?? 0),
+});
+
+const normalizeFinanceStats = (data = {}) => ({
+  ...data,
+  totalRevenue: Number(data.totalRevenue ?? data.totalValue ?? data.revenue ?? 0),
+  totalValue: Number(data.totalValue ?? data.totalRevenue ?? data.revenue ?? 0),
+});
+
+const normalizeEmployeeStats = (data = {}) => ({
+  ...data,
+  total: Number(data.total ?? data.totalEmployees ?? data.count ?? 0),
+  totalEmployees: Number(data.totalEmployees ?? data.total ?? data.count ?? 0),
+});
+
+const normalizeTasksStats = (data = {}) => ({
+  ...data,
+  total: Number(data.total ?? data.totalTasks ?? data.count ?? 0),
+});
+
+const normalizeProjectsStats = (data = {}) => ({
+  ...data,
+  total: Number(data.total ?? data.totalProjects ?? 0),
+  totalProjects: Number(data.totalProjects ?? data.total ?? 0),
+});
+
+const mergeLiveModuleData = async (seed = {}) => {
+  const [
+    widgetRes,
+    projectsRes,
+    inventoryRes,
+    inventoryListRes,
+    inventoryCategoriesRes,
+    leadsRes,
+    financeRes,
+    surveysRes,
+    commissioningRes,
+    serviceRes,
+    installationRes,
+    quotationRes,
+    procurementRes,
+    employeesRes,
+    tasksRes,
+  ] = await Promise.all([
+    api.get('/dashboard/widget').catch(() => null),
+    api.get('/projects/stats').catch(() => null),
+    api.get('/dashboard/inventory-stats')
+      .catch(() => api.get('/inventory/stats'))
+      .catch(() => null),
+    api.get('/inventory').catch(() => null),
+    api.get('/lookups/categories').catch(() => null),
+    api.get('/leads/stats').catch(() => null),
+    api.get('/finance/dashboard-stats').catch(() => null),
+    api.get('/site-surveys/stats').catch(() => null),
+    api.get('/commissionings/stats').catch(() => null),
+    api.get('/dashboard/service-stats')
+      .catch(() => api.get('/service-amc/stats'))
+      .catch(() => null),
+    api.get('/installations/stats').catch(() => null),
+    api.get('/documents/estimates-proposals-quotations/stats').catch(() => null),
+    api.get('/procurement/stats').catch(() => null),
+    api.get('/hrm/employees/stats').catch(() => null),
+    api.get('/tasks/stats/overview').catch(() => null),
+  ]);
+
+  const widgetData = extractData(widgetRes);
+  const inventoryItems = normalizeInventoryItemList(extractData(inventoryListRes));
+  const inventoryCategories = normalizeLookupCategories(extractData(inventoryCategoriesRes));
+  const inventoryModuleStats = extractData(inventoryRes);
+  const inventoryByCategoryData =
+    Array.isArray(inventoryModuleStats?.byCategory) ? inventoryModuleStats.byCategory : [];
+
+  return {
+    ...widgetData,
+    ...seed,
+    projects: { ...(widgetData.projects || {}), ...(seed.projects || {}), ...normalizeProjectsStats(extractData(projectsRes)) },
+    inventory: {
+      ...(widgetData.inventory || {}),
+      ...(seed.inventory || {}),
+      ...normalizeInventoryStats(
+        inventoryModuleStats,
+        inventoryByCategoryData,
+        inventoryItems,
+        inventoryCategories
+      ),
+    },
+    leads: { ...(widgetData.leads || {}), ...(seed.leads || {}), ...extractData(leadsRes) },
+    finance: { ...(widgetData.finance || {}), ...(seed.finance || {}), ...normalizeFinanceStats(extractData(financeRes)) },
+    surveys: { ...(widgetData.surveys || {}), ...(seed.surveys || {}), ...extractData(surveysRes) },
+    commissioning: { ...(widgetData.commissioning || {}), ...(seed.commissioning || {}), ...extractData(commissioningRes) },
+    service: { ...(widgetData.service || {}), ...(seed.service || {}), ...extractData(serviceRes) },
+    installation: { ...(widgetData.installation || {}), ...(seed.installation || {}), ...normalizeInstallationStats(extractData(installationRes)) },
+    quotation: { ...(widgetData.quotation || {}), ...(seed.quotation || {}), ...normalizeQuotationStats(extractData(quotationRes)) },
+    procurement: { ...(widgetData.procurement || {}), ...(seed.procurement || {}), ...extractData(procurementRes) },
+    employees: { ...(widgetData.employees || {}), ...(seed.employees || {}), ...normalizeEmployeeStats(extractData(employeesRes)) },
+    tasks: { ...(widgetData.tasks || {}), ...(seed.tasks || {}), ...normalizeTasksStats(extractData(tasksRes)) },
+    estimates: widgetData.estimates || seed.estimates || { total: 0, pending: 0, approved: 0 },
+    logistics: widgetData.logistics || seed.logistics || { total: 0, inTransit: 0, delivered: 0 },
+    compliance: widgetData.compliance || seed.compliance || { total: 0, pending: 0, compliant: 0 },
+    documents: widgetData.documents || seed.documents || { total: 0, pending: 0, approved: 0 },
+  };
+};
+
 const DashboardService = {
-  // Main widget data - try backend aggregated endpoint first, fallback to individual calls
   getWidgetData: async () => {
     try {
-      // Try the aggregated widget endpoint
-      const response = await api.get('/dashboard/widget');
-      console.log('[Dashboard API] Widget response:', response?.data);
-      
-      const data = response?.data?.data;
-      
-      // Check if we got valid data, otherwise use fallback
-      if (data && (data.leads?.total !== undefined || data.projects?.total !== undefined)) {
-        return data;
-      }
-      
-      // Fallback: fetch from individual endpoints
-      console.log('[Dashboard API] Widget empty, using fallback...');
-      return await DashboardService.getWidgetDataFallback();
+      return await mergeLiveModuleData();
     } catch (error) {
-      console.log('[Dashboard API] Widget failed, using fallback:', error.message);
-      return await DashboardService.getWidgetDataFallback();
+      console.error('[Dashboard API] Live dashboard fetch failed:', error);
+      return {};
     }
   },
 
-  // Fallback: fetch from individual module endpoints
   getWidgetDataFallback: async () => {
     try {
-      const [projectsRes, inventoryRes, leadsRes, financeRes, surveysRes, commissioningRes, serviceRes, installationRes, quotationRes, procurementRes, employeesRes] = await Promise.all([
-        api.get('/projects/stats').catch(() => null),
-        api.get('/inventory/stats').catch(() => null),
-        api.get('/leads/stats').catch(() => null),
-        api.get('/finance/dashboard-stats').catch(() => null),
-        api.get('/surveys/stats').catch(() => null),
-        api.get('/commissioning/stats').catch(() => null),
-        api.get('/service-amc/stats').catch(() => null),
-        api.get('/installation/stats').catch(() => null),
-        api.get('/quotation/stats').catch(() => null),
-        api.get('/procurement/stats').catch(() => null),
-        api.get('/hrm/employees/stats').catch(() => null),
-      ]);
-
-      const extractData = (res) => {
-        if (!res) return {};
-        const d = res?.data?.data !== undefined ? res.data.data : res.data;
-        return d || {};
-      };
-
-      return {
-        projects: extractData(projectsRes),
-        inventory: extractData(inventoryRes),
-        leads: extractData(leadsRes),
-        finance: extractData(financeRes),
-        surveys: extractData(surveysRes),
-        commissioning: extractData(commissioningRes),
-        service: extractData(serviceRes),
-        installation: extractData(installationRes),
-        quotation: extractData(quotationRes),
-        procurement: extractData(procurementRes),
-        employees: extractData(employeesRes),
-        estimates: { total: 0, pending: 0, approved: 0 },
-        logistics: { total: 0, inTransit: 0, delivered: 0 },
-        compliance: { total: 0, pending: 0, compliant: 0 },
-        documents: { total: 0, pending: 0, approved: 0 },
-      };
+      return await mergeLiveModuleData();
     } catch (error) {
       console.error('[Dashboard API] Fallback error:', error);
       return {};
@@ -189,11 +350,11 @@ const DashboardService = {
         inventory: '/inventory/stats',
         leads: '/leads/stats',
         finance: '/finance/dashboard-stats',
-        surveys: '/surveys/stats',
-        commissioning: '/commissioning/stats',
+        surveys: '/site-surveys/stats',
+        commissioning: '/commissionings/stats',
         service: '/service-amc/stats',
-        installation: '/installation/stats',
-        quotation: '/quotation/stats',
+        installation: '/installations/stats',
+        quotation: '/documents/estimates-proposals-quotations/stats',
         estimates: '/estimates/stats',
         procurement: '/procurement/stats',
         hrm: '/hrm/stats',
@@ -224,14 +385,46 @@ const DashboardService = {
   // Inventory Stats
   getInventoryStats: async () => {
     try {
-      const [stats, byCategory] = await Promise.all([
-        api.get('/inventory/stats'),
-        api.get('/inventory/by-category'),
+      const [stats, inventoryList, categories] = await Promise.all([
+        api.get('/dashboard/inventory-stats').catch(() => api.get('/inventory/stats')),
+        api.get('/inventory').catch(() => null),
+        api.get('/lookups/categories').catch(() => null),
       ]);
-      return { stats: stats?.data?.data || stats?.data || stats, byCategory: byCategory?.data?.data || byCategory?.data || byCategory };
+      const statsData = extractData(stats);
+      const byCategoryData = Array.isArray(statsData?.byCategory) ? statsData.byCategory : [];
+      const inventoryItems = normalizeInventoryItemList(extractData(inventoryList));
+      const lookupCategories = normalizeLookupCategories(extractData(categories));
+      const normalizedInventory = normalizeInventoryStats(statsData, byCategoryData, inventoryItems, lookupCategories);
+      return {
+        stats: normalizedInventory,
+        byCategory: normalizedInventory.byCategory,
+        categoryGraph: normalizedInventory.categoryGraph,
+        items: inventoryItems,
+        categories: lookupCategories,
+      };
     } catch (error) {
       console.error('Error fetching inventory stats:', error);
       return null;
+    }
+  },
+
+  getServiceStats: async () => {
+    try {
+      const response = await api.get('/dashboard/service-stats').catch(() => api.get('/service-amc/stats'));
+      return extractData(response);
+    } catch (error) {
+      console.error('Error fetching service stats:', error);
+      return null;
+    }
+  },
+
+  getDashboardMetrics: async () => {
+    try {
+      const response = await api.get('/dashboard/metrics');
+      return extractData(response);
+    } catch (error) {
+      console.error('Error fetching dashboard metrics:', error);
+      return {};
     }
   },
 
@@ -271,7 +464,7 @@ const DashboardService = {
   // Survey Stats
   getSurveyStats: async () => {
     try {
-      const response = await api.get('/surveys/stats');
+      const response = await api.get('/site-surveys/stats');
       return response?.data?.data || response?.data || response;
     } catch (error) {
       console.error('Error fetching survey stats:', error);
@@ -282,7 +475,7 @@ const DashboardService = {
   // Installation Stats
   getInstallationStats: async () => {
     try {
-      const response = await api.get('/installation/stats');
+      const response = await api.get('/installations/stats');
       return response?.data?.data || response?.data || response;
     } catch (error) {
       console.error('Error fetching installation stats:', error);
@@ -293,7 +486,7 @@ const DashboardService = {
   // Commissioning Stats
   getCommissioningStats: async () => {
     try {
-      const response = await api.get('/commissioning/stats');
+      const response = await api.get('/commissionings/stats');
       return response?.data?.data || response?.data || response;
     } catch (error) {
       console.error('Error fetching commissioning stats:', error);
@@ -304,8 +497,8 @@ const DashboardService = {
   // Quotation Stats
   getQuotationStats: async () => {
     try {
-      const response = await api.get('/quotation/stats');
-      return response?.data?.data || response?.data || response;
+      const response = await api.get('/documents/estimates-proposals-quotations/stats');
+      return normalizeQuotationStats(response?.data?.data || response?.data || response);
     } catch (error) {
       console.error('Error fetching quotation stats:', error);
       return null;

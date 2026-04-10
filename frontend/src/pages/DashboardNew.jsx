@@ -18,7 +18,8 @@ import {
   QuotationStatus2D, 
   ServiceTickets2D, 
   ProcurementStatus2D, 
-  InventoryCategory2D 
+  InventoryCategory2D,
+  ServiceTickets2D 
 } from '../components/dashboard/Charts2D';
 
 // Local Badge component (no Redux)
@@ -324,13 +325,20 @@ const SolarDashboard = ({ onNavigate }) => {
     const byCategory = widgetData?.inventory?.byCategory || [];
     if (byCategory && byCategory.length > 0) {
       return byCategory.map((cat, index) => ({
-        name: cat.name || 'Other',
-        value: cat.value || 0,
+        name: cat.category || cat.name || 'Other',
+        value: cat.count || cat.value || 0,
         fill: ['#3b82f6', '#a855f7', '#22c55e', '#f59e0b', '#06b6d4', '#ec4899'][index % 6],
       }));
     }
     return [];
   }, [widgetData]);
+
+  const inventoryStatusData = useMemo(() => [
+    { name: 'Low Stock', value: widgetData?.inventory?.lowStockItems || 0, fill: '#ef4444' },
+    { name: 'Out of Stock', value: widgetData?.inventory?.outOfStockItems || 0, fill: '#f59e0b' },
+    { name: 'Reserved', value: widgetData?.inventory?.reservedItems || 0, fill: '#a855f7' },
+    { name: 'Available', value: Math.max((widgetData?.inventory?.totalItems || 0) - (widgetData?.inventory?.lowStockItems || 0) - (widgetData?.inventory?.outOfStockItems || 0) - (widgetData?.inventory?.reservedItems || 0), 0), fill: '#22c55e' },
+  ], [widgetData]);
 
   const kpiData = useMemo(() => [
     {
@@ -448,13 +456,15 @@ const SolarDashboard = ({ onNavigate }) => {
   // Additional chart data from live backend
   const installationData = useMemo(() => {
     const total = widgetData?.installation?.total || 0;
-    const inProgress = widgetData?.installation?.inProgress || widgetData?.installation?.active || 0;
-    const completed = widgetData?.installation?.completed || widgetData?.installation?.finished || 0;
-    const pending = Math.max(0, total - inProgress - completed);
+    const inProgress = widgetData?.installation?.active || widgetData?.installation?.inProgress || 0;
+    const completed = widgetData?.installation?.completed || 0;
+    const delayed = widgetData?.installation?.delayed || 0;
+    const unassigned = widgetData?.installation?.unassigned || 0;
     return [
       { name: 'In Progress', value: inProgress, fill: '#22d3ee' },
       { name: 'Completed', value: completed, fill: '#22c55e' },
-      { name: 'Pending', value: pending, fill: '#f59e0b' },
+      { name: 'Delayed', value: delayed, fill: '#ef4444' },
+      { name: 'Unassigned', value: unassigned, fill: '#f59e0b' },
     ];
   }, [widgetData]);
 
@@ -889,6 +899,15 @@ const SolarDashboard = ({ onNavigate }) => {
           </div>
         </ChartCard>
 
+        <ChartCard title="📦 Inventory Status (Column Chart)" icon={Package}>
+          <div className="h-80">
+            <InstallationStatus2D data={inventoryStatusData} height={320} />
+          </div>
+        </ChartCard>
+      </div>
+
+      {/* 2D Charts Row 4 - Inventory by Category */}
+      <div className="grid grid-cols-1 gap-6">
         <ChartCard title="📦 Inventory by Category (Column Chart)" icon={Package}>
           <div className="h-80">
             <InventoryCategory2D data={categoryData} height={320} />

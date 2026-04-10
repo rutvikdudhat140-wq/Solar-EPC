@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell
+  PieChart, Pie, Cell, LineChart, Line
 } from 'recharts';
 import {
   FolderOpen, Users, ClipboardList, Package,
@@ -12,7 +12,7 @@ import {
   ArrowDownRight, Zap, FileText,
   Plus, Calendar, Activity, Database,
   Server, Shield, Sun, Briefcase, ShoppingCart,
-  HardHat, HeadphonesIcon, ChevronRight, RefreshCw,
+  HardHat, ChevronRight, RefreshCw,
   MoreHorizontal, Bell, Search, TrendingUp,
   Loader2
 } from 'lucide-react';
@@ -42,9 +42,9 @@ const defaultDashboardData = {
   projectPipeline: [],
   installationStatus: [],
   quotationStatus: [],
-  serviceTickets: [],
+  taskOverview: [],
   procurementStatus: [],
-  inventoryCategory: [],
+  surveyOverview: [],
   performanceMetrics: [],
   systemHealth: []
 };
@@ -90,6 +90,17 @@ const ChartCard = ({ title, children, icon: Icon }) => (
     </div>
   </div>
 );
+
+const EmptyChartState = ({ label = 'No live data available' }) => (
+  <div className="h-full flex items-center justify-center rounded-xl border border-dashed" style={{ borderColor: 'var(--border-base)' }}>
+    <div className="text-center">
+      <div className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{label}</div>
+      <div className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Data aate hi graph automatically render hoga</div>
+    </div>
+  </div>
+);
+
+const hasChartData = (items = []) => items.some((item) => Number(item?.value || 0) > 0);
 
 // Quick Action Button
 const QuickActionButton = ({ icon: Icon, label, onClick }) => (
@@ -199,9 +210,9 @@ const SolarOSDashboard = () => {
     projectPipeline: [],
     installationStatus: [],
     quotationStatus: [],
-    serviceTickets: [],
+    taskOverview: [],
     procurementStatus: [],
-    inventoryCategory: [],
+    surveyOverview: [],
     performanceMetrics: [],
     systemHealth: []
   });
@@ -211,10 +222,35 @@ const SolarOSDashboard = () => {
     if (isRefresh) setRefreshing(true);
     
     try {
+      const tenantId = localStorage.getItem('tenantId') || null;
+      console.log('[SolarOSDashboard] tenantId:', tenantId);
       console.log('[SolarOSDashboard] 🚀 Fetching dashboard data...');
       
       // Fetch widget data from all modules
-      const widgetData = await DashboardService.getWidgetData();
+      const [widgetData, inventoryStats, serviceStats] = await Promise.all([
+        DashboardService.getWidgetData(),
+        DashboardService.getInventoryStats(),
+        DashboardService.getServiceStats(),
+      ]);
+
+      const liveWidgetData = {
+        ...(widgetData || {}),
+        inventory: {
+          ...((widgetData || {}).inventory || {}),
+          ...((inventoryStats || {}).stats || {}),
+          byCategory: (inventoryStats || {}).byCategory || (widgetData || {}).inventory?.byCategory || [],
+          categoryGraph: (inventoryStats || {}).categoryGraph || (widgetData || {}).inventory?.categoryGraph || [],
+          items: (inventoryStats || {}).items || (widgetData || {}).inventory?.items || [],
+          categories: (inventoryStats || {}).categories || (widgetData || {}).inventory?.categories || [],
+        },
+        service: {
+          ...((widgetData || {}).service || {}),
+          ...(serviceStats || {}),
+        },
+      };
+
+      console.log('[SolarOSDashboard] Inventory stats response:', inventoryStats);
+      console.log('[SolarOSDashboard] Service stats response:', serviceStats);
       
       // Debug: Log the raw data to see what we're getting
       console.log('[SolarOSDashboard] 📊 Raw API Data:', widgetData);
@@ -229,16 +265,16 @@ const SolarOSDashboard = () => {
       console.log('  - Quotation:', widgetData.quotation);
       
       // Transform API data to dashboard format
-      const transformedData = transformApiData(widgetData);
+      const transformedData = transformApiData(liveWidgetData);
       
       console.log('[SolarOSDashboard] ✅ Transformed Data:', transformedData);
       console.log('[SolarOSDashboard] 📈 Charts Data:', {
         projectPipeline: transformedData.projectPipeline,
         installationStatus: transformedData.installationStatus,
         quotationStatus: transformedData.quotationStatus,
-        serviceTickets: transformedData.serviceTickets,
+        taskOverview: transformedData.taskOverview,
         procurementStatus: transformedData.procurementStatus,
-        inventoryCategory: transformedData.inventoryCategory
+        surveyOverview: transformedData.surveyOverview
       });
       
       setDashboardData(transformedData);
@@ -262,6 +298,15 @@ const SolarOSDashboard = () => {
       // If response has { success: true, data: {...} } structure, extract data
       data[key] = moduleData?.data || moduleData || {};
     });
+    
+    // Store previous data for trend comparison (using simple estimation)
+    const prevData = JSON.parse(localStorage.getItem('dashboard_prev_data') || '{}');
+    const calculateTrend = (current, key) => {
+      const previous = prevData[key] || current * 0.9; // Assume 10% growth if no previous data
+      if (previous === 0) return current > 0 ? '+100%' : '0%';
+      const change = ((current - previous) / previous) * 100;
+      return (change >= 0 ? '+' : '') + change.toFixed(0) + '%';
+    };
     
     console.log('[SolarOSDashboard] 📋 Normalized data:', {
       projects: data.projects,
@@ -307,8 +352,8 @@ const SolarOSDashboard = () => {
         id: 1, 
         label: 'Projects', 
         value: formatNumber(data.projects?.totalProjects || data.projects?.total || 0), 
-        trend: '+12%', 
-        trendUp: true, 
+        trend: calculateTrend(data.projects?.total || 0, 'projects'), 
+        trendUp: (data.projects?.total || 0) >= (prevData.projects || 0), 
         icon: FolderOpen, 
         variant: 'blue' 
       },
@@ -316,8 +361,8 @@ const SolarOSDashboard = () => {
         id: 2, 
         label: 'Leads', 
         value: formatNumber(data.leads?.total || 0), 
-        trend: '+8%', 
-        trendUp: true, 
+        trend: calculateTrend(data.leads?.total || 0, 'leads'), 
+        trendUp: (data.leads?.total || 0) >= (prevData.leads || 0), 
         icon: Users, 
         variant: 'purple' 
       },
@@ -325,73 +370,64 @@ const SolarOSDashboard = () => {
         id: 3, 
         label: 'Surveys', 
         value: formatNumber(data.surveys?.total || 0), 
-        trend: '+15%', 
-        trendUp: true, 
+        trend: calculateTrend(data.surveys?.total || 0, 'surveys'), 
+        trendUp: (data.surveys?.total || 0) >= (prevData.surveys || 0), 
         icon: ClipboardList, 
         variant: 'green' 
       },
       { 
         id: 4, 
-        label: 'Inventory', 
-        value: formatNumber(data.inventory?.totalItems || data.inventory?.total || 0), 
-        trend: data.inventory?.lowStockItems > 0 ? `-${data.inventory.lowStockItems}` : '+5%', 
-        trendUp: data.inventory?.lowStockItems === 0, 
-        icon: Package, 
-        variant: data.inventory?.lowStockItems > 0 ? 'amber' : 'emerald' 
-      },
-      { 
-        id: 5, 
         label: 'Employees', 
         value: formatNumber(data.employees?.totalEmployees || data.employees?.total || 0), 
-        trend: '+5%', 
-        trendUp: true, 
+        trend: calculateTrend(data.employees?.total || 0, 'employees'), 
+        trendUp: (data.employees?.total || 0) >= (prevData.employees || 0), 
         icon: Briefcase, 
         variant: 'indigo' 
       },
       { 
-        id: 6, 
+        id: 5, 
         label: 'Tasks', 
-        value: formatNumber(data.projects?.active || data.tasks?.total || 0), 
-        trend: '+18%', 
-        trendUp: true, 
+        value: formatNumber(data.tasks?.total || data.projects?.active || 0), 
+        trend: calculateTrend(data.tasks?.total || 0, 'tasks'), 
+        trendUp: (data.tasks?.total || 0) >= (prevData.tasks || 0), 
         icon: CheckCircle2, 
         variant: 'emerald' 
       },
       { 
-        id: 7, 
+        id: 6, 
         label: 'Commissioned', 
-        value: formatNumber(data.commissioning?.commissioned || data.commissioning?.completed || 0), 
-        trend: '+22%', 
-        trendUp: true, 
+        value: formatNumber(data.commissioning?.commissioned || data.commissioning?.completed || data.projects?.commissioned || data.projects?.completed || 0), 
+        trend: calculateTrend(data.commissioning?.completed || data.projects?.commissioned || data.projects?.completed || 0, 'commissioning'), 
+        trendUp: (data.commissioning?.completed || data.projects?.commissioned || data.projects?.completed || 0) >= (prevData.commissioning || 0), 
         icon: Zap, 
         variant: 'green' 
       },
       { 
-        id: 8, 
+        id: 7, 
         label: 'Revenue', 
         value: formatCurrency(data.finance?.totalValue || data.finance?.totalRevenue || 0), 
-        trend: '+25%', 
-        trendUp: true, 
+        trend: calculateTrend(data.finance?.totalRevenue || 0, 'revenue'), 
+        trendUp: (data.finance?.totalRevenue || 0) >= (prevData.revenue || 0), 
         icon: DollarSign, 
         variant: 'indigo' 
       }
     ];
 
-    // Second Row Metrics
+    // Second Row Metrics with dynamic trends
     const secondRowMetrics = [
-      { label: 'Total Projects', value: formatNumber(data.projects?.totalProjects || data.projects?.total || 0), change: '+12%' },
-      { label: 'Total Revenue', value: formatCurrency(data.finance?.totalValue || data.finance?.totalRevenue || 0), change: '+25%' },
-      { label: 'Active Leads', value: formatNumber(data.leads?.total || 0), change: '+8%' },
+      { label: 'Total Projects', value: formatNumber(data.projects?.totalProjects || data.projects?.total || 0), change: calculateTrend(data.projects?.total || 0, 'projects') },
+      { label: 'Total Revenue', value: formatCurrency(data.finance?.totalValue || data.finance?.totalRevenue || 0), change: calculateTrend(data.finance?.totalRevenue || 0, 'revenue') },
+      { label: 'Active Leads', value: formatNumber(data.leads?.total || 0), change: calculateTrend(data.leads?.total || 0, 'leads') },
       { 
         label: 'Inventory Alerts', 
         value: formatNumber(data.inventory?.lowStockItems || 0), 
         change: data.inventory?.lowStockItems > 0 ? `-${data.inventory.lowStockItems}` : '0',
         alert: (data.inventory?.lowStockItems || 0) > 0 
       },
-      { label: 'Quotations', value: formatNumber(data.quotation?.total || 0), change: '+10%' },
-      { label: 'Installations', value: formatNumber(data.installation?.total || 0), change: '+5%' },
+      { label: 'Quotations', value: formatNumber(data.quotation?.total || 0), change: calculateTrend(data.quotation?.total || 0, 'quotation') },
+      { label: 'Installations', value: formatNumber(data.installation?.total || 0), change: calculateTrend(data.installation?.total || 0, 'installation') },
       { label: 'Service Tickets', value: formatNumber(data.service?.openTickets || 0), change: data.service?.openTickets > 5 ? `-${data.service.openTickets}` : '0' },
-      { label: 'Procurement', value: formatNumber(data.procurement?.total || 0), change: '+2' }
+      { label: 'Procurement', value: formatNumber(data.procurement?.total || 0), change: calculateTrend(data.procurement?.total || 0, 'procurement') }
     ];
 
     // Project Pipeline Chart - always show all stages
@@ -399,7 +435,7 @@ const SolarOSDashboard = () => {
     const surveysTotal = data.surveys?.total || 0;
     const quotationsTotal = data.quotation?.total || 0;
     const installationsTotal = data.installation?.total || 0;
-    const commissionedTotal = data.commissioning?.commissioned || data.commissioning?.completed || data.projects?.commissioned || 0;
+    const commissionedTotal = data.commissioning?.commissioned || data.commissioning?.completed || data.projects?.commissioned || data.projects?.completed || 0;
     
     const projectPipeline = [
       { name: 'Leads', value: leadsTotal, fill: CHART_COLORS.blue },
@@ -433,15 +469,15 @@ const SolarOSDashboard = () => {
       { name: 'Rejected', value: quotationRejected || 0, fill: CHART_COLORS.red }
     ];
 
-    // Service Tickets Chart - always show all categories
-    const serviceOpen = data.service?.openTickets || data.service?.open || 0;
-    const serviceInProgress = data.service?.inProgressTickets || data.service?.inProgress || 0;
-    const serviceResolved = data.service?.resolvedTickets || data.service?.resolved || 0;
+    // Task Overview Chart - always show all categories
+    const taskPending = data.tasks?.pending || 0;
+    const taskInProgress = data.tasks?.inProgress || data.tasks?.['in-progress'] || 0;
+    const taskCompleted = data.tasks?.completed || 0;
     
-    const serviceTickets = [
-      { name: 'Open', value: serviceOpen || 0, fill: CHART_COLORS.red },
-      { name: 'In Progress', value: serviceInProgress || 0, fill: CHART_COLORS.orange },
-      { name: 'Resolved', value: serviceResolved || 0, fill: CHART_COLORS.green }
+    const taskOverview = [
+      { name: 'Pending', value: taskPending || 0, fill: CHART_COLORS.orange },
+      { name: 'In Progress', value: taskInProgress || 0, fill: CHART_COLORS.blue },
+      { name: 'Completed', value: taskCompleted || 0, fill: CHART_COLORS.green }
     ];
 
     // Procurement Status Chart - always show all categories
@@ -456,24 +492,16 @@ const SolarOSDashboard = () => {
       { name: 'In Progress', value: procurementInProgress || 0, fill: CHART_COLORS.blue }
     ];
 
-    // Inventory by Category - use real data from API
-    let inventoryCategory = [];
-    if (data.inventory?.byCategory && data.inventory.byCategory.length > 0) {
-      const colorKeys = Object.keys(CHART_COLORS);
-      inventoryCategory = data.inventory.byCategory.map((cat, index) => ({
-        name: cat.name || cat.category || 'Other',
-        value: cat.count || cat.quantity || cat.total || 0,
-        fill: CHART_COLORS[colorKeys[index % colorKeys.length]]
-      }));
-    } else {
-      inventoryCategory = [
-        { name: 'Solar Panels', value: 0, fill: CHART_COLORS.blue },
-        { name: 'Inverters', value: 0, fill: CHART_COLORS.purple },
-        { name: 'Batteries', value: 0, fill: CHART_COLORS.green },
-        { name: 'Mounting', value: 0, fill: CHART_COLORS.orange },
-        { name: 'Cables', value: 0, fill: CHART_COLORS.cyan }
-      ];
-    }
+    // Survey Overview Chart - use live survey module data
+    const surveyCompleted = data.surveys?.completed || data.surveys?.complete || 0;
+    const surveyPending = data.surveys?.pending || 0;
+    const surveyScheduled = data.surveys?.scheduled || data.surveys?.active || 0;
+
+    const surveyOverview = [
+      { name: 'Completed', value: surveyCompleted || 0, fill: CHART_COLORS.green },
+      { name: 'Pending', value: surveyPending || 0, fill: CHART_COLORS.orange },
+      { name: 'Scheduled', value: surveyScheduled || 0, fill: CHART_COLORS.purple }
+    ];
 
     // Performance Metrics
     const performanceMetrics = [
@@ -504,15 +532,31 @@ const SolarOSDashboard = () => {
       { label: 'Last Sync', value: lastUpdated ? formatLastUpdated(lastUpdated) : 'Just now', icon: RefreshCw }
     ];
 
+    // Save current data for next trend comparison
+    const dataToSave = {
+      projects: data.projects?.total || 0,
+      leads: data.leads?.total || 0,
+      surveys: data.surveys?.total || 0,
+      inventory: data.inventory?.totalAvailableStock || data.inventory?.totalStock || data.inventory?.totalItems || 0,
+      employees: data.employees?.total || 0,
+      tasks: data.tasks?.total || 0,
+      commissioning: data.commissioning?.completed || 0,
+      revenue: data.finance?.totalRevenue || 0,
+      quotation: data.quotation?.total || 0,
+      installation: data.installation?.total || 0,
+      procurement: data.procurement?.total || 0,
+    };
+    localStorage.setItem('dashboard_prev_data', JSON.stringify(dataToSave));
+
     return {
       summaryCards,
       secondRowMetrics,
       projectPipeline,
       installationStatus,
       quotationStatus,
-      serviceTickets,
+      taskOverview,
       procurementStatus,
-      inventoryCategory,
+      surveyOverview,
       performanceMetrics,
       systemHealth
     };
@@ -633,7 +677,7 @@ const SolarOSDashboard = () => {
       <div className="space-y-6">
         {/* Summary Cards Grid - Using Project's KPICard */}
         <section>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
             {dashboardData.summaryCards.map(card => (
               <KPICard 
                 key={card.id}
@@ -669,166 +713,192 @@ const SolarOSDashboard = () => {
         <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {/* Project Pipeline */}
           <ChartCard title="Project Pipeline" icon={TrendingUp}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dashboardData.projectPipeline}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
-                  tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
-                  axisLine={false} 
-                  tickLine={false} 
-                />
-                <YAxis 
-                  tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
-                  axisLine={false} 
-                  tickLine={false} 
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                  {dashboardData.projectPipeline.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            {hasChartData(dashboardData.projectPipeline) ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dashboardData.projectPipeline}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]} minPointSize={8}>
+                    {dashboardData.projectPipeline.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <EmptyChartState label="Project pipeline data nahi mila" />
+            )}
           </ChartCard>
 
           {/* Installation Status */}
           <ChartCard title="Installation Status" icon={HardHat}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dashboardData.installationStatus}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
-                  tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
-                  axisLine={false} 
-                  tickLine={false} 
-                />
-                <YAxis 
-                  tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
-                  axisLine={false} 
-                  tickLine={false} 
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                  {dashboardData.installationStatus.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            {hasChartData(dashboardData.installationStatus) ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dashboardData.installationStatus}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]} minPointSize={8}>
+                    {dashboardData.installationStatus.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <EmptyChartState label="Installation status data nahi mila" />
+            )}
           </ChartCard>
 
           {/* Quotation Status - Pie Chart */}
           <ChartCard title="Quotation Status" icon={FileText}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={dashboardData.quotationStatus}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={40}
-                  outerRadius={70}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {dashboardData.quotationStatus.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
+            {hasChartData(dashboardData.quotationStatus) ? (
+              <>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={dashboardData.quotationStatus}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={70}
+                      paddingAngle={4}
+                      dataKey="value"
+                    >
+                      {dashboardData.quotationStatus.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<CustomTooltip />} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex justify-center gap-4 mt-2">
+                  {dashboardData.quotationStatus.map((item, index) => (
+                    <div key={index} className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.fill }} />
+                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{item.name}</span>
+                    </div>
                   ))}
-                </Pie>
-                <Tooltip content={<CustomTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex justify-center gap-4 mt-2">
-              {dashboardData.quotationStatus.map((item, index) => (
-                <div key={index} className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.fill }} />
-                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{item.name}</span>
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <EmptyChartState label="Quotation status data nahi mila" />
+            )}
           </ChartCard>
 
-          {/* Service Tickets - Horizontal Bar */}
-          <ChartCard title="Service Tickets" icon={HeadphonesIcon}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dashboardData.serviceTickets} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" horizontal={false} />
-                <XAxis 
-                  type="number" 
-                  tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
-                  axisLine={false} 
-                  tickLine={false} 
-                />
-                <YAxis 
-                  dataKey="name" 
-                  type="category" 
-                  tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
-                  axisLine={false} 
-                  tickLine={false} 
-                  width={80} 
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24}>
-                  {dashboardData.serviceTickets.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+          {/* Task Overview - Horizontal Bar */}
+          <ChartCard title="Task Overview" icon={ClipboardList}>
+            {hasChartData(dashboardData.taskOverview) ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={dashboardData.taskOverview} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis 
+                    dataKey="name"
+                    tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke={CHART_COLORS.blue}
+                    strokeWidth={3}
+                    dot={{ r: 5, strokeWidth: 2, fill: CHART_COLORS.blue }}
+                    activeDot={{ r: 7, stroke: CHART_COLORS.blue, strokeWidth: 2, fill: '#fff' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <EmptyChartState label="Task overview data nahi mila" />
+            )}
           </ChartCard>
 
           {/* Procurement Status */}
           <ChartCard title="Procurement Status" icon={ShoppingCart}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dashboardData.procurementStatus}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
-                  tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
-                  axisLine={false} 
-                  tickLine={false} 
-                />
-                <YAxis 
-                  tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
-                  axisLine={false} 
-                  tickLine={false} 
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                  {dashboardData.procurementStatus.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            {hasChartData(dashboardData.procurementStatus) ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dashboardData.procurementStatus}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]} minPointSize={8}>
+                    {dashboardData.procurementStatus.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <EmptyChartState label="Procurement status data nahi mila" />
+            )}
           </ChartCard>
 
-          {/* Inventory by Category */}
-          <ChartCard title="Inventory by Category" icon={Package}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dashboardData.inventoryCategory}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
-                  tick={{ fontSize: 10, fill: 'var(--text-muted)' }} 
-                  axisLine={false} 
-                  tickLine={false} 
-                  interval={0} 
-                />
-                <YAxis 
-                  tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
-                  axisLine={false} 
-                  tickLine={false} 
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                  {dashboardData.inventoryCategory.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+          {/* Survey Overview */}
+          <ChartCard title="Survey Overview" icon={Calendar}>
+            {hasChartData(dashboardData.surveyOverview) ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dashboardData.surveyOverview}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fontSize: 10, fill: 'var(--text-muted)' }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                    interval={0} 
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 11, fill: 'var(--text-muted)' }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]} minPointSize={8}>
+                    {dashboardData.surveyOverview.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <EmptyChartState label="Survey overview data nahi mila" />
+            )}
           </ChartCard>
         </section>
 

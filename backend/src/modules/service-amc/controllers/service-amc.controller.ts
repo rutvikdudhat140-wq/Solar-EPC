@@ -54,7 +54,7 @@ export class ServiceAmcController {
     try {
       const user = req?.user;
       const tenantId = req.tenant?.id;
-      return this.ticketsService.getStats(tenantId, user);
+      return this.ticketsService.getDashboardStats(tenantId, user);
     } catch (error: any) {
       console.error('Error getting ticket stats:', error.message, error.stack);
       throw error;
@@ -314,7 +314,7 @@ export class ServiceAmcController {
       console.log('[Service Stats] tenantId:', tenantId);
       
       const [ticketStats, contracts, visits] = await Promise.all([
-        this.ticketsService.getStats(tenantId, user),
+        this.ticketsService.getDashboardStats(tenantId, user),
         this.amcContractsService.findAll({}, tenantId),
         this.visitsService.findAll({}, tenantId),
       ]);
