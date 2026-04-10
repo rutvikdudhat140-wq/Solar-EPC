@@ -401,7 +401,6 @@ const InventoryPage = ({ onNavigate }) => {
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({ totalItems: 0, totalValue: 0, lowStockItems: 0, outOfStockItems: 0 });
   const [inventoryStats, setInventoryStats] = useState(null);
-  const [itemsByCategory, setItemsByCategory] = useState([]);
   const [showEdit, setShowEdit] = useState(false);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [transferFromWarehouse, setTransferFromWarehouse] = useState('');
@@ -677,23 +676,6 @@ const InventoryPage = ({ onNavigate }) => {
     fetchInventoryStats();
   }, []);
 
-  // Fetch items by category for chart
-  useEffect(() => {
-    // Don't fetch if no token
-    const token = localStorage.getItem('solar_token') || localStorage.getItem('accessToken') || localStorage.getItem('token');
-    if (!token) return;
-
-    const fetchByCategory = async () => {
-      try {
-        const data = await api.get('/inventory/by-category');
-        setItemsByCategory(data.data || data || []);
-      } catch (err) {
-        // Error fetching by category
-      }
-    };
-    fetchByCategory();
-  }, []);
-
   // Fetch items from Items module (instead of inventory)
   useEffect(() => {
     // Don't fetch if no token
@@ -866,6 +848,26 @@ const InventoryPage = ({ onNavigate }) => {
       return itemMonthKey === inventoryMonthFilter;
     });
   }, [inventory, inventoryMonthFilter]);
+
+  // Build category chart data directly from inventory table rows
+  const dashboardCategoryChartData = useMemo(() => {
+    const grouped = filteredInventoryForDashboard.reduce((acc, item) => {
+      const rawCategory = String(item?.category || 'Uncategorized').trim() || 'Uncategorized';
+      const key = rawCategory.toLowerCase();
+      if (!acc[key]) {
+        acc[key] = { name: rawCategory, count: 0, totalStock: 0, totalAvailable: 0 };
+      }
+      const stock = Number(item?.stock) || 0;
+      const reserved = Number(item?.reserved) || 0;
+      acc[key].count += 1;
+      acc[key].totalStock += stock;
+      acc[key].totalAvailable += Math.max(stock - reserved, 0);
+      return acc;
+    }, {});
+
+    return Object.values(grouped)
+      .sort((a, b) => (b.totalAvailable || b.totalStock || 0) - (a.totalAvailable || a.totalStock || 0));
+  }, [filteredInventoryForDashboard]);
 
   // Calculate dynamic stats from filtered inventory for dashboard
   const dynamicStats = useMemo(() => {
@@ -1802,11 +1804,11 @@ const InventoryPage = ({ onNavigate }) => {
               <ResponsiveContainer width="100%" height={220}>
                 <PieChart margin={{ top: 20, right: 40, left: 40, bottom: 10 }}>
                   <Pie
-                    data={categories.map((cat, i) => ({
-                      name: cat,
-                      value: inventory.filter(item => item.category === cat).length,
+                    data={dashboardCategoryChartData.map((cat, i) => ({
+                      name: cat.name,
+                      value: cat.count,
                       color: ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4'][i % 6]
-                    })).filter(d => d.value > 0)}
+                    }))}
                     cx="50%"
                     cy="50%"
                     innerRadius={40}
@@ -1815,7 +1817,7 @@ const InventoryPage = ({ onNavigate }) => {
                     dataKey="value"
                     label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
                   >
-                    {categories.map((cat, i) => (
+                    {dashboardCategoryChartData.map((cat, i) => (
                       <Cell key={`cell-${i}`} fill={['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4'][i % 6]} stroke="white" strokeWidth={2} />
                     ))}
                   </Pie>
@@ -1891,7 +1893,7 @@ const InventoryPage = ({ onNavigate }) => {
                 <span className="text-[10px] text-[var(--text-muted)] bg-violet-50 px-2 py-1 rounded-full">Count</span>
               </div>
               <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={categories.map(cat => ({ name: cat, count: inventory.filter(i => i.category === cat).length })).filter(c => c.count > 0)} barSize={30}>
+                <BarChart data={dashboardCategoryChartData.map(cat => ({ name: cat.name, count: cat.count }))} barSize={30}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                   <XAxis dataKey="name" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} />

@@ -287,7 +287,8 @@ const CommissioningDashboard = ({ data, systems, onProjectClick }) => {
   // Calculate KPI data
   const kpiData = useMemo(() => {
     const total = systems?.length || 0;
-    const completed = systems?.filter(s => s.status === 'Completed' || s.status === 'Active').length || 0;
+    const completed = systems?.filter(s => s.status === 'Completed').length || 0;
+    const active = systems?.filter(s => s.status === 'Active').length || 0;
     const pending = systems?.filter(s => s.status === 'Pending').length || 0;
     const inProgress = systems?.filter(s => s.status === 'In Progress').length || 0;
 
@@ -309,6 +310,7 @@ const CommissioningDashboard = ({ data, systems, onProjectClick }) => {
     return {
       total,
       completed,
+      active,
       pending,
       inProgress,
       avgPR,
@@ -320,6 +322,7 @@ const CommissioningDashboard = ({ data, systems, onProjectClick }) => {
   // Chart data preparation
   const statusChartData = [
     { name: 'Completed', value: kpiData.completed, color: '#10b981' },
+    { name: 'Active', value: kpiData.active, color: '#3b82f6' },
     { name: 'Pending', value: kpiData.pending, color: '#f59e0b' },
     { name: 'In Progress', value: kpiData.inProgress, color: '#8b5cf6' },
   ];
@@ -340,7 +343,8 @@ const CommissioningDashboard = ({ data, systems, onProjectClick }) => {
 
       return {
         name: monthName,
-        completed: monthSystems.filter(s => s.status === 'Completed' || s.status === 'Active').length,
+        completed: monthSystems.filter(s => s.status === 'Completed').length,
+        active: monthSystems.filter(s => s.status === 'Active').length,
         pending: monthSystems.filter(s => s.status === 'Pending').length,
       };
     });
@@ -505,7 +509,7 @@ const CommissioningDashboard = ({ data, systems, onProjectClick }) => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
         <KPICard
           title="Total Projects"
           value={kpiData.total}
@@ -516,13 +520,22 @@ const CommissioningDashboard = ({ data, systems, onProjectClick }) => {
           trendValue="12% vs last month"
         />
         <KPICard
-          title="Commissioned"
+          title="Completed"
           value={kpiData.completed}
-          subtitle={`${((kpiData.completed / kpiData.total) * 100).toFixed(0)}% completion`}
+          subtitle={`${kpiData.total > 0 ? ((kpiData.completed / kpiData.total) * 100).toFixed(0) : 0}% completion`}
           icon={CheckCircle}
           color="emerald"
           trend="up"
           trendValue="8 new"
+        />
+        <KPICard
+          title="Active"
+          value={kpiData.active}
+          subtitle="In service"
+          icon={Activity}
+          color="purple"
+          trend="up"
+          trendValue="Ongoing"
         />
         <KPICard
           title="Pending"
@@ -534,10 +547,19 @@ const CommissioningDashboard = ({ data, systems, onProjectClick }) => {
           trendValue="3 resolved"
         />
         <KPICard
+          title="In Progress"
+          value={kpiData.inProgress}
+          subtitle="Active work"
+          icon={TrendingUp}
+          color="cyan"
+          trend="neutral"
+          trendValue="Ongoing"
+        />
+        <KPICard
           title="Avg PR %"
           value={`${kpiData.avgPR}%`}
           subtitle="Performance"
-          icon={Activity}
+          icon={Zap}
           color="purple"
           trend={kpiData.avgPR >= 78 ? 'up' : 'down'}
           trendValue={kpiData.avgPR >= 78 ? 'Above target' : 'Below target'}
@@ -546,7 +568,7 @@ const CommissioningDashboard = ({ data, systems, onProjectClick }) => {
           title="Capacity"
           value={`${kpiData.totalCapacity}`}
           subtitle="kW installed"
-          icon={Zap}
+          icon={Battery}
           color="cyan"
           trend="up"
           trendValue="All sites"
@@ -596,7 +618,9 @@ const CommissioningDashboard = ({ data, systems, onProjectClick }) => {
                 />
                 <Legend wrapperStyle={{ fontSize: '12px' }} />
                 <Area type="monotone" dataKey="completed" name="Completed" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorCompleted)" />
+                <Area type="monotone" dataKey="active" name="Active" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="#3b82f620" />
                 <Area type="monotone" dataKey="pending" name="Pending" stroke="#f59e0b" strokeWidth={2} fillOpacity={1} fill="url(#colorPending)" />
+                <Area type="monotone" dataKey="inProgress" name="In Progress" stroke="#8b5cf6" strokeWidth={2} fillOpacity={1} fill="#8b5cf620" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
