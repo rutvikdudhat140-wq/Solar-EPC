@@ -13,33 +13,38 @@ import { CreateLogisticsVendorDto, UpdateLogisticsVendorDto } from '../dto/creat
 export class LogisticsController {
   constructor(private readonly logisticsService: LogisticsService) {}
 
+  private getTenantId(req: any): string {
+    // TenantGuard sets req.tenant.id after resolving code to ObjectId
+    return req.tenant?.id || req.headers['x-tenant-id'] || req.user?.tenantId || '';
+  }
+
   // Dispatch routes
   @Get('dispatches')
   async findAll(@Req() req: any) {
     console.log(`[LOGISTICS CTRL] req.user =`, JSON.stringify(req.user));
     const user = req.user;
-    const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId || 'default';
+    const tenantId = this.getTenantId(req);
     const data = await this.logisticsService.findAll(user, tenantId);
     return { success: true, data };
   }
 
   @Get('dispatches/:id')
   async findOne(@Param('id') id: string, @Req() req: any) {
-    const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId || 'default';
+    const tenantId = this.getTenantId(req);
     const data = await this.logisticsService.findOne(id, tenantId);
     return { success: true, data };
   }
 
   @Post('dispatches')
   async create(@Body() createDto: Partial<Dispatch>, @Req() req: any) {
-    const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId || 'default';
+    const tenantId = this.getTenantId(req);
     const data = await this.logisticsService.create(createDto, tenantId);
     return { success: true, data, message: 'Dispatch created successfully' };
   }
 
   @Patch('dispatches/:id')
   async update(@Param('id') id: string, @Body() updateDto: Partial<Dispatch>, @Req() req: any) {
-    const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId || 'default';
+    const tenantId = this.getTenantId(req);
     const data = await this.logisticsService.update(id, updateDto, req.user, tenantId);
     return { success: true, data, message: 'Dispatch updated successfully' };
   }
@@ -47,7 +52,7 @@ export class LogisticsController {
   @Patch('dispatches/:id/status')
   async updateStatus(@Param('id') id: string, @Body('status') status: string, @Req() req: any) {
     const user = req.user;
-    const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId || 'default';
+    const tenantId = this.getTenantId(req);
     const data = await this.logisticsService.updateStatus(id, status, user, tenantId);
     return { success: true, data, message: 'Status updated successfully' };
   }
@@ -61,7 +66,7 @@ export class LogisticsController {
   @Get('stats')
   async getStats(@Req() req: any) {
     const user = req.user;
-    const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId || 'default';
+    const tenantId = this.getTenantId(req);
     const data = await this.logisticsService.getStats(user, tenantId);
     return { success: true, data };
   }
@@ -71,14 +76,14 @@ export class LogisticsController {
   async findAllVendors(@Req() req: any) {
     console.log(`[LOGISTICS CTRL vendors] req.user =`, JSON.stringify(req.user));
     const user = req.user;
-    const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId || 'default';
+    const tenantId = this.getTenantId(req);
     const data = await this.logisticsService.findAllVendors(user, tenantId);
     return { success: true, data };
   }
 
   @Get('vendors/:id')
   async findVendorById(@Param('id') id: string, @Req() req: any) {
-    const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId || 'default';
+    const tenantId = this.getTenantId(req);
     const data = await this.logisticsService.findVendorById(id, tenantId);
     return { success: true, data };
   }
@@ -87,7 +92,7 @@ export class LogisticsController {
   async createVendor(@Body() createDto: CreateLogisticsVendorDto, @Req() req: any) {
     try {
       console.log('[VENDOR CREATE] Received data:', JSON.stringify(createDto));
-      const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId || 'default';
+      const tenantId = this.getTenantId(req);
       const data = await this.logisticsService.createVendor(createDto, tenantId);
       console.log('[VENDOR CREATE] Saved vendor:', JSON.stringify(data));
       return { success: true, data, message: 'Vendor created successfully' };
@@ -100,7 +105,7 @@ export class LogisticsController {
   @Patch('vendors/:id')
   async updateVendor(@Param('id') id: string, @Body() updateDto: UpdateLogisticsVendorDto, @Req() req: any) {
     try {
-      const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId || 'default';
+      const tenantId = this.getTenantId(req);
       const data = await this.logisticsService.updateVendor(id, updateDto, tenantId);
       return { success: true, data, message: 'Vendor updated successfully' };
     } catch (error: any) {
@@ -112,7 +117,7 @@ export class LogisticsController {
 
   @Delete('vendors/:id')
   async deleteVendor(@Param('id') id: string, @Req() req: any) {
-    const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId || 'default';
+    const tenantId = this.getTenantId(req);
     await this.logisticsService.deleteVendor(id, tenantId);
     return { success: true, message: 'Vendor deleted successfully' };
   }
@@ -125,7 +130,7 @@ export class LogisticsController {
     @Body('quantity') quantity: number,
     @Req() req: any,
   ) {
-    const tenantId = req.headers['x-tenant-id'] || req.user?.tenantId || 'default';
+    const tenantId = this.getTenantId(req);
     const data = await this.logisticsService.vendorDelivery(id, itemName, quantity, tenantId);
     return { success: true, data, message: 'Stock added to inventory from vendor' };
   }

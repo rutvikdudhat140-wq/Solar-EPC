@@ -28,14 +28,16 @@ import { TenantGuard } from '../../../core/tenant/guards/tenant.guard';
 export class ComplianceController {
   constructor(private readonly complianceService: ComplianceService) {}
 
+  private getTenantId(req: any): string {
+    // TenantGuard sets req.tenant.id after resolving code to ObjectId
+    return req.tenant?.id || req.headers['x-tenant-id'] || '';
+  }
+
   // ==================== STATS ====================
 
   @Get('stats')
-  async getStats(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-  ) {
-    const tenantId = headerTenantId || queryTenantId;
+  async getStats(@Request() req: any) {
+    const tenantId = this.getTenantId(req);
     return this.complianceService.getStats(tenantId);
   }
 
@@ -43,12 +45,10 @@ export class ComplianceController {
 
   @Get('net-metering')
   async findAllNetMetering(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
     @Query('status') status?: string,
     @Request() req?: any,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     const user = req?.user ? {
       id: req.user.id,
       _id: req.user.id,
@@ -59,12 +59,10 @@ export class ComplianceController {
 
   @Get('net-metering/:applicationId')
   async findOneNetMetering(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
     @Param('applicationId') applicationId: string,
     @Request() req?: any,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     const user = req?.user ? {
       id: req.user.id,
       _id: req.user.id,
@@ -76,12 +74,10 @@ export class ComplianceController {
   @Post('net-metering')
   @HttpCode(HttpStatus.CREATED)
   async createNetMetering(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
     @Body() createDto: CreateNetMeteringDto,
     @Request() req?: any,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     const user = req?.user ? {
       id: req.user.id,
       _id: req.user.id,
@@ -92,22 +88,20 @@ export class ComplianceController {
 
   @Patch('net-metering/:applicationId')
   async updateNetMetering(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('applicationId') applicationId: string,
     @Body() updateDto: UpdateNetMeteringDto,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.updateNetMetering(tenantId, applicationId, updateDto);
   }
 
   @Delete('net-metering/:applicationId')
   async removeNetMetering(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('applicationId') applicationId: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.removeNetMetering(tenantId, applicationId);
   }
 
@@ -115,53 +109,48 @@ export class ComplianceController {
 
   @Get('subsidies')
   async findAllSubsidies(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Query('status') status?: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.findAllSubsidies(tenantId, status);
   }
 
   @Get('subsidies/:subsidyId')
   async findOneSubsidy(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('subsidyId') subsidyId: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.findOneSubsidy(tenantId, subsidyId);
   }
 
   @Post('subsidies')
   @HttpCode(HttpStatus.CREATED)
   async createSubsidy(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Body() createDto: CreateSubsidyDto,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.createSubsidy(tenantId, createDto);
   }
 
   @Patch('subsidies/:subsidyId')
   async updateSubsidy(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('subsidyId') subsidyId: string,
     @Body() updateDto: UpdateSubsidyDto,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.updateSubsidy(tenantId, subsidyId, updateDto);
   }
 
   @Delete('subsidies/:subsidyId')
   async removeSubsidy(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('subsidyId') subsidyId: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.removeSubsidy(tenantId, subsidyId);
   }
 
@@ -169,53 +158,48 @@ export class ComplianceController {
 
   @Get('inspections')
   async findAllInspections(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Query('status') status?: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.findAllInspections(tenantId, status);
   }
 
   @Get('inspections/:inspectionId')
   async findOneInspection(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('inspectionId') inspectionId: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.findOneInspection(tenantId, inspectionId);
   }
 
   @Post('inspections')
   @HttpCode(HttpStatus.CREATED)
   async createInspection(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Body() createDto: CreateInspectionDto,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.createInspection(tenantId, createDto);
   }
 
   @Patch('inspections/:inspectionId')
   async updateInspection(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('inspectionId') inspectionId: string,
     @Body() updateDto: UpdateInspectionDto,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.updateInspection(tenantId, inspectionId, updateDto);
   }
 
   @Delete('inspections/:inspectionId')
   async removeInspection(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('inspectionId') inspectionId: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.removeInspection(tenantId, inspectionId);
   }
 
@@ -223,54 +207,49 @@ export class ComplianceController {
 
   @Get('documents')
   async findAllDocuments(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Query('status') status?: string,
     @Query('category') category?: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.findAllDocuments(tenantId, status, category);
   }
 
   @Get('documents/:documentId')
   async findOneDocument(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('documentId') documentId: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.findOneDocument(tenantId, documentId);
   }
 
   @Post('documents')
   @HttpCode(HttpStatus.CREATED)
   async createDocument(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Body() createDto: CreateComplianceDocumentDto,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.createDocument(tenantId, createDto);
   }
 
   @Patch('documents/:documentId')
   async updateDocument(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('documentId') documentId: string,
     @Body() updateDto: UpdateComplianceDocumentDto,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.updateDocument(tenantId, documentId, updateDto);
   }
 
   @Delete('documents/:documentId')
   async removeDocument(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('documentId') documentId: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.complianceService.removeDocument(tenantId, documentId);
   }
 }

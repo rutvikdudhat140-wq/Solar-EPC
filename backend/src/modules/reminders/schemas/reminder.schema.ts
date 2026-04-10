@@ -76,6 +76,12 @@ export class Reminder extends Document {
   @Prop({ type: [String], default: ['in-app'] })
   notificationChannels!: string[];
 
+  @Prop({ enum: ['manual', 'event', 'synthetic'], default: 'manual' })
+  sourceKind!: 'manual' | 'event' | 'synthetic';
+
+  @Prop()
+  sourceKey?: string;
+
   // Tracking
   @Prop()
   lastTriggeredAt?: Date;

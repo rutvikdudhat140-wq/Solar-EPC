@@ -2,6 +2,7 @@ import { ValidationPipe, Inject, Injectable } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import multipart from '@fastify/multipart';
+import { FastifySocketIoAdapter } from './shared/adapters/fastify-socket-io.adapter';
 import { setServers } from 'dns';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './shared/filters/global-exception.filter';
@@ -135,9 +136,12 @@ async function bootstrap() {
   app.useGlobalInterceptors(new SuccessResponseInterceptor());
   app.useGlobalFilters(new GlobalExceptionFilter());
 
+  // Enable WebSocket support with Fastify adapter
+  app.useWebSocketAdapter(new FastifySocketIoAdapter(app));
+
   const port = Number(process.env.APP_PORT ?? 3000);
   await app.listen({ port, host: '0.0.0.0' });
-  
+
   // Run startup fix after server is ready
   await fixINV3552OnStartup(app);
 }

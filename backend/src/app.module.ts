@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { CoreConfigModule } from './core/config/core-config.module';
 import { DatabaseModule } from './shared/database/database.module';
 import { CommissioningModule } from './modules/commissioning/commissioning.module';
@@ -29,10 +30,12 @@ import { AutomationModule } from './modules/automation/automation.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { RemindersModule } from './modules/reminders/reminders.module';
 import { AppController } from './app.controller';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     CoreConfigModule,
     DatabaseModule,
     AuthModule,
@@ -63,6 +66,7 @@ import { AppController } from './app.controller';
     AutomationModule,
     TasksModule,
     DashboardModule,
+    RemindersModule,
   ],
   controllers: [AppController],
 })

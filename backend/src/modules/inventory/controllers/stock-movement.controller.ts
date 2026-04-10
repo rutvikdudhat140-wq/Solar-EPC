@@ -34,10 +34,14 @@ interface CreateStockMovementBody {
 export class StockMovementController {
   constructor(private readonly stockMovementService: StockMovementService) {}
 
+  private getTenantId(req: any): string {
+    // TenantGuard sets req.tenant.id after resolving code to ObjectId
+    return req.tenant?.id || req.headers['x-tenant-id'] || '';
+  }
+
   @Get()
   async findAll(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Query('itemId') itemId?: string,
     @Query('warehouseId') warehouseId?: string,
     @Query('type') type?: StockMovementType,
@@ -47,7 +51,7 @@ export class StockMovementController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = this.getTenantId(req);
     const query: any = {};
     
     if (itemId) query.itemId = itemId;
@@ -80,12 +84,11 @@ export class StockMovementController {
 
   @Get('stats')
   async getStats(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = this.getTenantId(req);
     const start = startDate ? new Date(startDate) : undefined;
     const end = endDate ? new Date(endDate) : undefined;
     return this.stockMovementService.getStats(tenantId, start, end);
@@ -93,13 +96,12 @@ export class StockMovementController {
 
   @Get('by-item/:itemId')
   async findByItem(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('itemId') itemId: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = this.getTenantId(req);
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 50;
     return this.stockMovementService.findByItem(tenantId, itemId, pageNum, limitNum);
@@ -107,13 +109,12 @@ export class StockMovementController {
 
   @Get('by-warehouse/:warehouseId')
   async findByWarehouse(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('warehouseId') warehouseId: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = this.getTenantId(req);
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 50;
     return this.stockMovementService.findByWarehouse(tenantId, warehouseId, pageNum, limitNum);
@@ -121,37 +122,30 @@ export class StockMovementController {
 
   @Get('ledger/:itemId')
   async getStockLedger(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Request() req: any,
     @Param('itemId') itemId: string,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = this.getTenantId(req);
     const start = startDate ? new Date(startDate) : undefined;
     const end = endDate ? new Date(endDate) : undefined;
     return this.stockMovementService.getStockLedger(tenantId, itemId, start, end);
   }
 
   @Get(':id')
-  async findOne(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('id') id: string,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async findOne(@Request() req: any, @Param('id') id: string) {
+    const tenantId = this.getTenantId(req);
     return this.stockMovementService.findOne(tenantId, id);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
     @Body() createDto: CreateStockMovementBody,
     @Request() req?: any,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = this.getTenantId(req);
     const createdBy = req?.user?.id || req?.user?._id;
     const createdByName = req?.user?.name || req?.user?.email;
 
@@ -163,12 +157,8 @@ export class StockMovementController {
   }
 
   @Delete(':id')
-  async remove(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('id') id: string,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async remove(@Request() req: any, @Param('id') id: string) {
+    const tenantId = this.getTenantId(req);
     return this.stockMovementService.remove(tenantId, id);
   }
 }

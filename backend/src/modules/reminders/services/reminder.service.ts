@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Reminder, ReminderDocument } from '../schemas/reminder.schema';
 import { CreateReminderDto, UpdateReminderDto, QueryReminderDto } from '../dto/reminder.dto';
+import { normalizeReminderModule } from '../constants/reminder-modules';
 
 @Injectable()
 export class ReminderService {
@@ -11,6 +12,13 @@ export class ReminderService {
   constructor(
     @InjectModel(Reminder.name) private readonly reminderModel: Model<ReminderDocument>,
   ) {}
+
+  private toObjectId(id: string): Types.ObjectId {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException(`Invalid ObjectId: ${id}`);
+    }
+    return new Types.ObjectId(id);
+  }
 
   // ==================== CRUD OPERATIONS ====================
 
@@ -26,13 +34,16 @@ export class ReminderService {
 
     const reminder = new this.reminderModel({
       ...dto,
-      tenantId: new Types.ObjectId(tenantId),
-      createdBy: new Types.ObjectId(dto.createdBy || userId),
-      assignedTo: new Types.ObjectId(dto.assignedTo),
+      module: normalizeReminderModule(dto.module),
+      tenantId: this.toObjectId(tenantId),
+      createdBy: this.toObjectId(dto.createdBy || userId),
+      assignedTo: this.toObjectId(dto.assignedTo),
       remindAt,
       status: 'pending',
       isTriggered: false,
       triggerCount: 0,
+      sourceKind: dto.sourceKind || 'manual',
+      sourceKey: dto.sourceKey,
     });
 
     const saved = await reminder.save();
@@ -46,21 +57,25 @@ export class ReminderService {
       isDeleted: false,
     };
 
-    // Role-based filtering
+    // Role-based filtering - only apply if no specific assignedTo filter requested
     if (userRole !== 'Admin' && userRole !== 'SuperAdmin') {
-      filter.assignedTo = new Types.ObjectId(userId);
+      if (query.assignedTo) {
+        // Non-admin can only view their own reminders even with assignedTo filter
+        filter.assignedTo = new Types.ObjectId(userId);
+      } else {
+        filter.assignedTo = new Types.ObjectId(userId);
+      }
+    } else if (query.assignedTo) {
+      // Admin can filter by specific assignedTo
+      filter.assignedTo = new Types.ObjectId(query.assignedTo);
     }
 
     if (query.module) {
-      filter.module = query.module;
+      filter.module = normalizeReminderModule(query.module);
     }
 
     if (query.priority && query.priority !== 'all') {
       filter.priority = query.priority;
-    }
-
-    if (query.assignedTo) {
-      filter.assignedTo = new Types.ObjectId(query.assignedTo);
     }
 
     // Handle status filter - don't overwrite with overdue filter
@@ -85,6 +100,8 @@ export class ReminderService {
       this.reminderModel.countDocuments(filter),
     ]);
 
+    this.logger.debug(`Found ${reminders.length} reminders for tenant ${tenantId}, user ${userId}, role ${userRole}`);
+    this.logger.debug(`Query filter: ${JSON.stringify(filter)}`);
     return { reminders, total };
   }
 
@@ -112,8 +129,8 @@ export class ReminderService {
     return reminder;
   }
 
-  async update(tenantId: string, id: string, userId: string, dto: UpdateReminderDto): Promise<any> {
-    const reminder = await this.findById(tenantId, id, 'Admin', userId);
+  async update(tenantId: string, id: string, userId: string, userRole: string, dto: UpdateReminderDto): Promise<any> {
+    const reminder = await this.findById(tenantId, id, userRole, userId);
 
     // Only creator or admin can update
     if (reminder.createdBy.toString() !== userId) {
@@ -143,8 +160,8 @@ export class ReminderService {
     return updated;
   }
 
-  async delete(tenantId: string, id: string, userId: string): Promise<void> {
-    const reminder = await this.findById(tenantId, id, 'Admin', userId);
+  async delete(tenantId: string, id: string, userId: string, userRole: string): Promise<void> {
+    const reminder = await this.findById(tenantId, id, userRole, userId);
 
     if (reminder.createdBy.toString() !== userId) {
       throw new BadRequestException('Only creator can delete reminder');
@@ -390,5 +407,95 @@ export class ReminderService {
       .sort({ remindAt: 1 })
       .populate('assignedTo', 'name email')
       .lean();
+  }
+
+  async upsertSyntheticReminder(
+    tenantId: string,
+    payload: {
+      title: string;
+      description?: string;
+      module: string;
+      dueDate: Date;
+      remindAt?: Date;
+      assignedTo: string;
+      createdBy: string;
+      priority?: 'low' | 'medium' | 'high' | 'critical';
+      type?: 'system' | 'custom' | 'smart';
+      notificationChannels?: string[];
+      metadata?: Record<string, any>;
+      sourceKey: string;
+      sourceKind?: 'manual' | 'event' | 'synthetic';
+      isCustom?: boolean;
+      triggerType?: 'date' | 'relative' | 'recurring';
+    },
+  ): Promise<any> {
+    const normalizedModule = normalizeReminderModule(payload.module);
+    const filter = {
+      tenantId: this.toObjectId(tenantId),
+      module: normalizedModule,
+      sourceKey: payload.sourceKey,
+      sourceKind: payload.sourceKind || 'synthetic',
+      isDeleted: false,
+      status: { $in: ['pending', 'overdue'] },
+    };
+
+    const update = {
+      title: payload.title,
+      description: payload.description || '',
+      module: normalizedModule,
+      dueDate: payload.dueDate,
+      remindAt: payload.remindAt || payload.dueDate,
+      assignedTo: this.toObjectId(payload.assignedTo),
+      createdBy: this.toObjectId(payload.createdBy),
+      priority: payload.priority || 'medium',
+      type: payload.type || 'smart',
+      notificationChannels: payload.notificationChannels || ['in-app'],
+      metadata: payload.metadata || {},
+      sourceKey: payload.sourceKey,
+      sourceKind: payload.sourceKind || 'synthetic',
+      isCustom: payload.isCustom ?? false,
+      triggerType: payload.triggerType || 'date',
+      status: 'pending',
+      isDeleted: false,
+      isTriggered: false,
+      updatedAt: new Date(),
+    };
+
+    return this.reminderModel.findOneAndUpdate(
+      filter,
+      {
+        $set: update,
+        $setOnInsert: {
+          tenantId: this.toObjectId(tenantId),
+          triggerCount: 0,
+          createdAt: new Date(),
+        },
+      },
+      { new: true, upsert: true },
+    ).lean();
+  }
+
+  async resolveSyntheticReminderState(
+    tenantId: string,
+    module: string,
+    activeSourceKeys: string[],
+    resolvedStatus: 'completed' | 'cancelled' = 'completed',
+  ): Promise<void> {
+    await this.reminderModel.updateMany(
+      {
+        tenantId: this.toObjectId(tenantId),
+        module: normalizeReminderModule(module),
+        sourceKind: 'synthetic',
+        isDeleted: false,
+        status: { $in: ['pending', 'overdue'] },
+        ...(activeSourceKeys.length > 0 ? { sourceKey: { $nin: activeSourceKeys } } : {}),
+      },
+      {
+        $set: {
+          status: resolvedStatus,
+          updatedAt: new Date(),
+        },
+      },
+    );
   }
 }

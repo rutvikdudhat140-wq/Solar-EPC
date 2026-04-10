@@ -14,80 +14,61 @@ export class ItemsController {
     private readonly inventoryService: InventoryService,
   ) {}
 
+  private getTenantId(req: any): string {
+    // TenantGuard sets req.tenant.id after resolving code to ObjectId
+    return req.tenant?.id || req.headers['x-tenant-id'] || '';
+  }
+
   @Get()
   async findAll(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
     @Query('search') search?: string,
     @Query('itemGroupId') itemGroupId?: string,
     @Req() req?: any,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = this.getTenantId(req);
     // Extract user with dataScope from JWT (same pattern as Finance controller)
     const user = req?.user ? {
       id: String(req.user.id || req.user._id),
       _id: String(req.user.id || req.user._id),
       dataScope: (req.user.dataScope as 'ALL' | 'ASSIGNED') || 'ALL',
     } : undefined;
-    console.log(`[ITEMS CTRL] user.dataScope:`, user?.dataScope);
+    console.log(`[ITEMS CTRL] tenantId: ${tenantId}, user.dataScope:`, user?.dataScope);
     return this.itemsService.findAll(tenantId, user, search, itemGroupId);
   }
 
   @Get(':id')
-  findOne(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('id') id: string,
-  ) {
-    const tenantId = headerTenantId || queryTenantId;
+  findOne(@Req() req: any, @Param('id') id: string) {
+    const tenantId = this.getTenantId(req);
     return this.itemsService.findOne(tenantId, id);
   }
 
   @Post()
-  create(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Body() createItemDto: CreateItemDto,
-  ) {
-    const tenantId = headerTenantId || queryTenantId;
+  create(@Req() req: any, @Body() createItemDto: CreateItemDto) {
+    const tenantId = this.getTenantId(req);
     return this.itemsService.create(tenantId, createItemDto);
   }
 
   @Patch(':id')
-  update(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('id') id: string,
-    @Body() updateItemDto: UpdateItemDto,
-  ) {
-    const tenantId = headerTenantId || queryTenantId;
+  update(@Req() req: any, @Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
+    const tenantId = this.getTenantId(req);
     return this.itemsService.update(tenantId, id, updateItemDto);
   }
 
   @Delete(':id')
-  remove(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('id') id: string,
-  ) {
-    const tenantId = headerTenantId || queryTenantId;
+  remove(@Req() req: any, @Param('id') id: string) {
+    const tenantId = this.getTenantId(req);
     return this.itemsService.remove(tenantId, id);
   }
 
   @Delete('bulk/delete')
-  bulkDelete(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Body('ids') ids: string[],
-  ) {
-    const tenantId = headerTenantId || queryTenantId;
+  bulkDelete(@Req() req: any, @Body('ids') ids: string[]) {
+    const tenantId = this.getTenantId(req);
     return this.itemsService.bulkDelete(tenantId, ids);
   }
 
   @Post(':id/stock-in')
   stockIn(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Req() req: any,
     @Param('id') id: string,
     @Body('quantity') quantity: number,
     @Body('poReference') poReference?: string,
@@ -95,31 +76,29 @@ export class ItemsController {
     @Body('remarks') remarks?: string,
     @Body('warehouse') warehouse?: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.itemsService.stockIn(tenantId, id, quantity, poReference, receivedDate, remarks, warehouse);
   }
 
   @Post(':id/stock-out')
   stockOut(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Req() req: any,
     @Param('id') id: string,
     @Body('quantity') quantity: number,
     @Body('projectId') projectId?: string,
     @Body('issuedDate') issuedDate?: string,
     @Body('remarks') remarks?: string,
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.itemsService.stockOut(tenantId, id, quantity, projectId, issuedDate, remarks);
   }
 
   @Post('transfers')
   transfer(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
+    @Req() req: any,
     @Body() transferDto: { fromInventoryId: string; toWarehouseId: string; quantity: number; remarks?: string },
   ) {
-    const tenantId = headerTenantId || queryTenantId;
+    const tenantId = this.getTenantId(req);
     return this.itemsService.transfer(tenantId, transferDto.fromInventoryId, transferDto.toWarehouseId, transferDto.quantity, transferDto.remarks);
   }
 }
