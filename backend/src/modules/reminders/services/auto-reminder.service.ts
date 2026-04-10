@@ -2,7 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Reminder, ReminderDocument } from '../schemas/reminder.schema';
+import { Reminder } from '../schemas/reminder.schema';
+import { ReminderService } from './reminder.service';
+import { User, UserDocument } from '../../../core/auth/schemas/user.schema';
 
 /**
  * Auto Reminder Service
@@ -13,7 +15,8 @@ export class AutoReminderService {
   private readonly logger = new Logger(AutoReminderService.name);
 
   constructor(
-    @InjectModel(Reminder.name) private readonly reminderModel: Model<ReminderDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly reminderService: ReminderService,
   ) {}
 
   // ==================== CRM REMINDERS ====================
@@ -225,17 +228,68 @@ export class AutoReminderService {
   // ==================== HELPER METHOD ====================
 
   private async createReminder(data: any): Promise<Reminder> {
-    const reminder = new this.reminderModel({
-      ...data,
+    const tenantId = String(data.tenantId);
+    const assignedTo = await this.resolveUserId(tenantId, data.assignedTo);
+    const createdBy = await this.resolveUserId(tenantId, data.createdBy || data.assignedTo);
+
+    const saved = await this.reminderService.upsertSyntheticReminder(tenantId, {
+      title: data.title,
+      description: data.description,
+      module: data.module,
+      dueDate: new Date(data.dueDate),
+      remindAt: data.remindAt ? new Date(data.remindAt) : (data.triggerDate ? new Date(data.triggerDate) : new Date(data.dueDate)),
+      assignedTo,
+      createdBy,
+      priority: data.priority,
+      type: data.type || 'system',
+      notificationChannels: data.notificationChannels || ['in-app'],
+      metadata: {
+        ...(data.metadata || {}),
+        referenceId: data.referenceId,
+        relativeTo: data.relativeTo,
+        offsetValue: data.offsetValue,
+        offsetUnit: data.offsetUnit,
+      },
+      sourceKey: `${data.module}:${String(data.referenceId || data.title).toLowerCase()}:${String(data.priority || 'medium').toLowerCase()}`,
+      sourceKind: 'event',
       isCustom: false,
-      isTriggered: false,
-      triggerCount: 0,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      triggerType: data.triggerType || 'date',
     });
 
-    const saved = await reminder.save();
-    this.logger.log(`Auto reminder created: ${saved._id} - ${saved.title}`);
-    return saved;
+    this.logger.log(`Auto reminder created: ${saved?._id || saved?.id} - ${data.title}`);
+    return saved as Reminder;
+  }
+
+  private async resolveUserId(tenantId: string, preferredUserId?: string): Promise<string> {
+    if (preferredUserId && Types.ObjectId.isValid(preferredUserId)) {
+      return preferredUserId;
+    }
+
+    const tenantFilter = Types.ObjectId.isValid(tenantId)
+      ? { tenantId: new Types.ObjectId(tenantId) }
+      : { tenantId };
+
+    const adminUser = await this.userModel.findOne({
+      ...tenantFilter,
+      isActive: true,
+      role: { $regex: 'admin', $options: 'i' },
+      isDeleted: { $ne: true },
+    }).select('_id').lean();
+
+    if (adminUser?._id) {
+      return String(adminUser._id);
+    }
+
+    const anyUser = await this.userModel.findOne({
+      ...tenantFilter,
+      isActive: true,
+      isDeleted: { $ne: true },
+    }).select('_id').lean();
+
+    if (!anyUser?._id) {
+      throw new Error(`Unable to resolve reminder assignee for tenant ${tenantId}`);
+    }
+
+    return String(anyUser._id);
   }
 }

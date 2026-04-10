@@ -1,7 +1,8 @@
 // ReminderWidget.js — Embeddable reminder widget for dashboards
 import React, { useState } from 'react';
-import { Bell, Clock, AlertTriangle, ChevronRight, Plus, Settings } from 'lucide-react';
+import { Bell, Clock, AlertTriangle, ChevronRight } from 'lucide-react';
 import { useReminders } from '../../context/ReminderContext';
+import { getReminderModuleInfo } from './reminderModules';
 
 const ReminderWidget = ({ onNavigateToReminders }) => {
     const {
@@ -44,21 +45,6 @@ const ReminderWidget = ({ onNavigateToReminders }) => {
             case 'low': return '#6b7280';
             default: return '#6b7280';
         }
-    };
-
-    const getModuleColor = (module) => {
-        const colors = {
-            sales: '#3b82f6',
-            survey: '#10b981',
-            design: '#8b5cf6',
-            finance: '#f59e0b',
-            procurement: '#06b6d4',
-            service: '#ef4444',
-            inventory: '#84cc16',
-            installation: '#f97316',
-            project: '#6366f1'
-        };
-        return colors[module] || '#6b7280';
     };
 
     return (
@@ -148,7 +134,8 @@ const ReminderWidget = ({ onNavigateToReminders }) => {
                     allDisplayReminders.map(reminder => {
                         const isOverdue = reminder.dueDate < new Date();
                         const priorityColor = getPriorityColor(reminder.priority);
-                        const moduleColor = getModuleColor(reminder.module);
+                        const moduleInfo = getReminderModuleInfo(reminder.module);
+                        const moduleColor = moduleInfo.color;
 
                         return (
                             <div
@@ -183,7 +170,7 @@ const ReminderWidget = ({ onNavigateToReminders }) => {
                                                 color: moduleColor
                                             }}
                                         >
-                                            {reminder.module}
+                                            {moduleInfo.label}
                                         </span>
                                         <span className={`text-xs font-bold ${isOverdue ? 'text-red-600' : 'text-[var(--text-muted)]'}`}>
                                             {formatTimeRemaining(reminder.dueDate)}

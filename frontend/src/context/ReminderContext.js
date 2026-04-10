@@ -1,495 +1,465 @@
-// ReminderContext.js — Centralized reminder management with real-time notifications
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { api } from '../lib/apiClient';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import reminderApi from '../lib/reminderApi';
+import { useAuth } from './AuthContext';
+import { getReminderModuleInfo, normalizeReminderModule } from '../components/Reminder/reminderModules';
+import { io } from 'socket.io-client';
 
 const ReminderContext = createContext();
-const TENANT_ID = 'solarcorp';
 
-export const useReminders = () => {
-    const context = useContext(ReminderContext);
-    if (!context) {
-        throw new Error('useReminders must be used within a ReminderProvider');
-    }
-    return context;
+const DEFAULT_SETTINGS = {
+  voiceAlerts: true,
+  smsNotifications: true,
+  inAppNotifications: true,
+  notificationSound: true,
+  autoMarkComplete: false,
+  reminderInterval: 15,
 };
 
-// Mock data for comprehensive reminder system
-const MOCK_REMINDERS = [
-    {
-        id: 'r1',
-        title: 'Follow up with Solar Tech Industries',
-        description: 'Contact customer about installation date confirmation',
-        module: 'sales',
-        priority: 'high',
-        type: 'followup',
-        dueDate: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
-        createdBy: 'sales-manager',
-        assignedTo: 'sales-rep',
-        status: 'pending',
-        recurring: false,
-        notificationChannels: ['in-app', 'sms'],
-        metadata: { leadId: 'L001', amount: 450000 }
-    },
-    {
-        id: 'r2',
-        title: 'Site survey deadline approaching',
-        description: 'Complete technical survey for Rajkot residential project',
-        module: 'survey',
-        priority: 'critical',
-        type: 'deadline',
-        dueDate: new Date(Date.now() + 4 * 60 * 60 * 1000), // 4 hours from now
-        createdBy: 'project-manager',
-        assignedTo: 'survey-engineer',
-        status: 'pending',
-        recurring: false,
-        notificationChannels: ['in-app', 'voice', 'sms'],
-        metadata: { projectId: 'P003', location: 'Rajkot' }
-    },
-    {
-        id: 'r3',
-        title: 'Design approval pending',
-        description: 'Customer approval required for solar panel layout design',
-        module: 'design',
-        priority: 'medium',
-        type: 'approval',
-        dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
-        createdBy: 'design-engineer',
-        assignedTo: 'sales-manager',
-        status: 'pending',
-        recurring: false,
-        notificationChannels: ['in-app'],
-        metadata: { designId: 'D012', customerId: 'C045' }
-    },
-    {
-        id: 'r4',
-        title: 'Invoice payment overdue',
-        description: 'Payment of ₹2,50,000 is 5 days overdue',
-        module: 'finance',
-        priority: 'critical',
-        type: 'payment',
-        dueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago (overdue)
-        createdBy: 'finance-manager',
-        assignedTo: 'accounts-team',
-        status: 'overdue',
-        recurring: false,
-        notificationChannels: ['in-app', 'sms'],
-        metadata: { invoiceId: 'INV-2024-089', amount: 250000 }
-    },
-    {
-        id: 'r5',
-        title: 'Material procurement deadline',
-        description: 'Order solar panels for March installations',
-        module: 'procurement',
-        priority: 'high',
-        type: 'procurement',
-        dueDate: new Date(Date.now() + 6 * 60 * 60 * 1000), // 6 hours from now
-        createdBy: 'procurement-officer',
-        assignedTo: 'procurement-team',
-        status: 'pending',
-        recurring: false,
-        notificationChannels: ['in-app', 'voice'],
-        metadata: { itemCount: 45, totalValue: 850000 }
-    },
-    {
-        id: 'r6',
-        title: 'Weekly maintenance check',
-        description: 'Scheduled maintenance for Ahmedabad solar farm',
-        module: 'service',
-        priority: 'medium',
-        type: 'maintenance',
-        dueDate: new Date(Date.now() + 48 * 60 * 60 * 1000), // 2 days from now
-        createdBy: 'service-manager',
-        assignedTo: 'technician',
-        status: 'pending',
-        recurring: true,
-        recurringPattern: 'weekly',
-        notificationChannels: ['in-app'],
-        metadata: { siteId: 'S012', capacity: '500kW' }
-    },
-    {
-        id: 'r7',
-        title: 'Inventory stock alert',
-        description: 'Solar inverters below minimum stock level',
-        module: 'inventory',
-        priority: 'high',
-        type: 'stock-alert',
-        dueDate: new Date(Date.now() + 1 * 60 * 60 * 1000), // 1 hour from now
-        createdBy: 'store-manager',
-        assignedTo: 'procurement-team',
-        status: 'pending',
-        recurring: false,
-        notificationChannels: ['in-app', 'sms'],
-        metadata: { itemName: 'Solar Inverters 5kW', currentStock: 8, minStock: 15 }
-    },
-    {
-        id: 'r8',
-        title: 'Installation team dispatch',
-        description: 'Team deployment for Surat residential installation',
-        module: 'installation',
-        priority: 'medium',
-        type: 'deployment',
-        dueDate: new Date(Date.now() + 12 * 60 * 60 * 1000), // 12 hours from now
-        createdBy: 'project-manager',
-        assignedTo: 'installation-supervisor',
-        status: 'pending',
-        recurring: false,
-        notificationChannels: ['in-app', 'voice'],
-        metadata: { teamSize: 4, duration: '3 days', location: 'Surat' }
-    }
-];
+const parseDate = (value) => {
+  if (!value) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+};
+
+const getReminderId = (reminder) => String(reminder?.id || reminder?._id || '');
+
+const normalizeReminder = (reminder = {}) => {
+  const assignedTo = reminder.assignedTo || null;
+  const createdBy = reminder.createdBy || null;
+
+  return {
+    ...reminder,
+    id: getReminderId(reminder),
+    module: normalizeReminderModule(reminder.module),
+    dueDate: parseDate(reminder.dueDate) || new Date(),
+    remindAt: parseDate(reminder.remindAt),
+    createdAt: parseDate(reminder.createdAt),
+    updatedAt: parseDate(reminder.updatedAt),
+    assignedTo,
+    createdBy,
+    notificationChannels: Array.isArray(reminder.notificationChannels)
+      ? reminder.notificationChannels
+      : ['in-app'],
+    metadata: reminder.metadata && typeof reminder.metadata === 'object' ? reminder.metadata : {},
+    recurring: Boolean(reminder.recurringPattern),
+  };
+};
+
+const getUserLabel = (userRef) => {
+  if (!userRef) return '';
+  if (typeof userRef === 'string') return userRef;
+  if (userRef.name) return userRef.name;
+  if (userRef.firstName || userRef.lastName) return `${userRef.firstName || ''} ${userRef.lastName || ''}`.trim();
+  if (userRef.email) return userRef.email;
+  return String(userRef.id || userRef._id || '');
+};
+
+export const useReminders = () => {
+  const context = useContext(ReminderContext);
+  if (!context) {
+    throw new Error('useReminders must be used within a ReminderProvider');
+  }
+  return context;
+};
 
 export const ReminderProvider = ({ children }) => {
-    const [reminders, setReminders] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [activeNotifications, setActiveNotifications] = useState([]);
-    const [settings, setSettings] = useState({
-        voiceAlerts: true,
-        smsNotifications: true,
-        inAppNotifications: true,
-        notificationSound: true,
-        autoMarkComplete: false,
-        reminderInterval: 15 // minutes
-    });
+  const { user } = useAuth();
+  const [reminders, setReminders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeNotifications, setActiveNotifications] = useState([]);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [wsConnected, setWsConnected] = useState(false);
+  const voiceRef = useRef(null);
+  const socketRef = useRef(null);
 
-    // Fetch reminders from API
-    const fetchReminders = useCallback(async () => {
-        try {
-            setLoading(true);
-            console.log('[DEBUG] Fetching reminders from API...');
-            const res = await api.get('/reminders', {
-                tenantId: TENANT_ID,
-                includeOverdue: true,
-                limit: 100
-            });
-            console.log('[DEBUG] API response:', res);
-            const data = res?.data?.reminders || res?.data?.data || [];
-            console.log('[DEBUG] Extracted data:', data);
-            console.log('[DEBUG] Data length:', data.length);
-            // Convert date strings to Date objects
-            const parsed = data.map(r => ({
-                ...r,
-                dueDate: r.dueDate ? new Date(r.dueDate) : new Date(),
-                createdAt: r.createdAt ? new Date(r.createdAt) : new Date(),
-                updatedAt: r.updatedAt ? new Date(r.updatedAt) : new Date()
-            }));
-            console.log('[DEBUG] Parsed reminders:', parsed);
-            setReminders(parsed);
-        } catch (err) {
-            console.error('[DEBUG] Error fetching reminders:', err);
-            console.error('[DEBUG] Error response:', err.response);
-            // Fallback to mock data if API fails
-            console.log('[DEBUG] Falling back to mock data');
-            setReminders(MOCK_REMINDERS);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+  const fetchReminders = useCallback(async (retryCount = 0) => {
+    setLoading(true);
+    try {
+      const response = await reminderApi.getAll({
+        includeOverdue: true,
+        limit: 250,
+        status: 'all',
+      });
+      console.log('[Reminders] Raw API response:', response);
 
-    // Initial fetch
-    useEffect(() => {
+      // Handle different response formats
+      let list = [];
+      if (response?.success && Array.isArray(response?.reminders)) {
+        // Standard format: { success: true, reminders: [...], total: n }
+        list = response.reminders;
+      } else if (Array.isArray(response?.reminders)) {
+        list = response.reminders;
+      } else if (Array.isArray(response?.data?.reminders)) {
+        list = response.data.reminders;
+      } else if (Array.isArray(response?.data)) {
+        list = response.data;
+      } else if (Array.isArray(response)) {
+        list = response;
+      }
+
+      console.log('[Reminders] Extracted list:', list.length, 'items');
+      console.log('[Reminders] Response keys:', Object.keys(response || {}));
+
+      if (list.length === 0) {
+        console.warn('[Reminders] No reminders found. Response:', response);
+      }
+
+      setReminders(list.map(normalizeReminder));
+      if (list.length === 0 && retryCount < 1) {
+        console.log('[Reminders] No reminders found, will retry once...');
+        setTimeout(() => fetchReminders(retryCount + 1), 2000);
+      }
+    } catch (error) {
+      console.error('[Reminders] Failed to fetch live reminders:', error);
+      if (retryCount < 2) {
+        console.log(`[Reminders] Retrying... (${retryCount + 1}/2)`);
+        setTimeout(() => fetchReminders(retryCount + 1), 3000);
+      } else {
+        setReminders([]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchReminders();
+  }, [fetchReminders]);
+
+  useEffect(() => {
+    const interval = setInterval(fetchReminders, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [fetchReminders]);
+
+  useEffect(() => {
+    if ('speechSynthesis' in window) {
+      voiceRef.current = window.speechSynthesis;
+    }
+  }, []);
+
+  // WebSocket connection for real-time reminders
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const token = localStorage.getItem('solar_token') || localStorage.getItem('accessToken') || localStorage.getItem('token');
+    if (!token) return;
+
+    const WS_URL = process.env.REACT_APP_API_BASE_URL?.replace('http', 'ws') || 'ws://localhost:3000';
+
+    try {
+      const socket = io(`${WS_URL}/reminders`, {
+        auth: { token },
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+      });
+
+      socketRef.current = socket;
+
+      socket.on('connect', () => {
+        console.log('[Reminder WebSocket] Connected');
+        setWsConnected(true);
+        socket.emit('subscribe-reminders');
+      });
+
+      socket.on('disconnect', () => {
+        console.log('[Reminder WebSocket] Disconnected');
+        setWsConnected(false);
+      });
+
+      socket.on('new-reminder', (data) => {
+        console.log('[Reminder WebSocket] New reminder:', data);
         fetchReminders();
-    }, [fetchReminders]);
-
-    // Refresh every 5 minutes
-    useEffect(() => {
-        const interval = setInterval(fetchReminders, 5 * 60 * 1000);
-        return () => clearInterval(interval);
-    }, [fetchReminders]);
-
-    const notificationTimeout = useRef(null);
-    const voiceRef = useRef(null);
-
-    // Initialize speech synthesis
-    useEffect(() => {
-        if ('speechSynthesis' in window) {
-            voiceRef.current = window.speechSynthesis;
-        }
-    }, []);
-
-    // Real-time reminder checking
-    useEffect(() => {
-        const checkReminders = () => {
-            const now = new Date();
-            const upcomingReminders = reminders.filter(reminder => {
-                if (reminder.status === 'completed' || reminder.status === 'cancelled') return false;
-
-                const timeDiff = reminder.dueDate - now;
-                const isUpcoming = timeDiff > 0 && timeDiff <= settings.reminderInterval * 60 * 1000;
-                const isOverdue = timeDiff < 0 && reminder.status !== 'overdue';
-
-                return isUpcoming || isOverdue;
-            });
-
-            upcomingReminders.forEach(reminder => {
-                triggerNotification(reminder);
-            });
-        };
-
-        // Check immediately and then every 5 minutes (reduced from 1 minute to prevent refresh loops)
-        checkReminders();
-        const interval = setInterval(checkReminders, 5 * 60 * 1000);
-
-        return () => clearInterval(interval);
-    }, [settings.reminderInterval]);
-
-    // Trigger notification for a reminder
-    const triggerNotification = useCallback((reminder) => {
-        const notificationId = `notif-${reminder.id}-${Date.now()}`;
-        const now = new Date();
-        const timeDiff = reminder.dueDate - now;
-        const isOverdue = timeDiff < 0;
-
-        // Update reminder status if overdue
-        if (isOverdue && reminder.status !== 'overdue') {
-            updateReminderStatus(reminder.id, 'overdue');
-        }
-
-        // Check if we already have an active notification for this reminder
-        const existingNotif = activeNotifications.find(n => n.reminderId === reminder.id);
-        if (existingNotif) return;
-
+        // Show notification
         const notification = {
-            id: notificationId,
-            reminderId: reminder.id,
-            title: reminder.title,
-            description: reminder.description,
-            priority: reminder.priority,
-            module: reminder.module,
-            timestamp: new Date(),
-            isOverdue,
-            timeToGo: isOverdue ? 'Overdue' : formatTimeRemaining(timeDiff),
-            channels: reminder.notificationChannels || ['in-app']
+          id: `ws-${Date.now()}`,
+          reminderId: data.data?.id,
+          title: data.data?.title || 'New Reminder',
+          description: data.data?.description,
+          priority: data.data?.priority,
+          module: data.data?.module,
+          timestamp: new Date(),
+          isOverdue: false,
+          timeToGo: 'Just received',
+          channels: ['in-app'],
         };
-
-        // Add to active notifications
-        setActiveNotifications(prev => [...prev, notification]);
-
-        // Trigger different notification channels
-        if (settings.inAppNotifications && notification.channels.includes('in-app')) {
-            showInAppNotification(notification);
-        }
-
-        if (settings.voiceAlerts && notification.channels.includes('voice')) {
-            speakNotification(notification);
-        }
-
-        if (settings.smsNotifications && notification.channels.includes('sms')) {
-            sendSMSNotification(notification);
-        }
-
-        // Auto-remove notification after 30 seconds
-        setTimeout(() => {
-            dismissNotification(notificationId);
-        }, 30000);
-    }, [activeNotifications, settings]);
-
-    // Show in-app notification
-    const showInAppNotification = (notification) => {
-        // This will be handled by the notification component
+        setActiveNotifications((prev) => [...prev, notification]);
         if (settings.notificationSound) {
-            playNotificationSound();
+          playNotificationSound();
         }
-    };
+      });
 
-    // Voice notification
-    const speakNotification = (notification) => {
-        if (voiceRef.current && settings.voiceAlerts) {
-            const utterance = new SpeechSynthesisUtterance(
-                `Reminder: ${notification.title}. ${notification.timeToGo}.`
-            );
-            utterance.voice = voiceRef.current.getVoices().find(voice => voice.lang === 'en-US') || null;
-            utterance.rate = 0.9;
-            utterance.pitch = 1.1;
-            voiceRef.current.speak(utterance);
+      socket.on('reminder-triggered', (data) => {
+        console.log('[Reminder WebSocket] Reminder triggered:', data);
+        fetchReminders();
+        const notification = {
+          id: `trigger-${Date.now()}`,
+          reminderId: data.data?.id,
+          title: data.data?.title || 'Reminder Alert',
+          description: data.data?.description,
+          priority: data.data?.priority,
+          module: data.data?.module,
+          timestamp: new Date(),
+          isOverdue: new Date(data.data?.dueDate) < new Date(),
+          timeToGo: new Date(data.data?.dueDate) < new Date() ? 'Overdue' : 'Due now',
+          channels: ['in-app'],
+        };
+        setActiveNotifications((prev) => [...prev, notification]);
+        if (settings.notificationSound) {
+          playNotificationSound();
         }
-    };
-
-    // SMS notification (mock implementation)
-    const sendSMSNotification = (notification) => {
-        console.log(`📱 SMS Sent: ${notification.title} - Due ${notification.timeToGo}`);
-        // In real implementation, integrate with SMS service like Twilio
-    };
-
-    // Play notification sound
-    const playNotificationSound = () => {
-        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYfBz2U4fTNfC4GMnzN8+BTEA1XqOfxuWYdBzuU3fTMfS4GNH/Q8+BVFAxXpuXzu2UcBTiN2fDHdSsFLYnQ9tqQPwkSY7zs4KdUEwlFnt7xwGoiBC14yPHdkUEPExzS7+ORS');
-        audio.volume = 0.3;
-        audio.play().catch(() => {
-            // Ignore audio play errors
-        });
-    };
-
-    // Utility functions
-    const formatTimeRemaining = (milliseconds) => {
-        const totalMinutes = Math.floor(milliseconds / (1000 * 60));
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-
-        if (hours > 0) {
-            return `${hours}h ${minutes}m`;
-        } else if (minutes > 0) {
-            return `${minutes}m`;
-        } else {
-            return 'Now';
+        if (settings.voiceAlerts) {
+          speakNotification(notification);
         }
-    };
+      });
 
-    // Reminder management functions with API integration
-    const addReminder = useCallback(async (reminderData) => {
-        try {
-            console.log('[DEBUG] Creating reminder:', reminderData);
-            const res = await api.post('/reminders', reminderData, { tenantId: TENANT_ID });
-            console.log('[DEBUG] Created reminder response:', res);
-            const newReminder = res?.data?.data || res?.data;
-            if (newReminder) {
-                setReminders(prev => [...prev, { ...newReminder, dueDate: new Date(newReminder.dueDate) }]);
-                // Refresh list to ensure sync
-                fetchReminders();
-                return newReminder.id;
-            }
-        } catch (err) {
-            console.error('[DEBUG] Error creating reminder:', err);
-            // Fallback to local creation
-            const newReminder = {
-                id: `r${Date.now()}`,
-                ...reminderData,
-                createdAt: new Date(),
-                status: 'pending'
-            };
-            setReminders(prev => [...prev, newReminder]);
-            return newReminder.id;
-        }
-    }, [fetchReminders]);
+      socket.on('reminder-updated', () => {
+        fetchReminders();
+      });
 
-    const updateReminder = useCallback((id, updates) => {
-        setReminders(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
-    }, []);
+      socket.on('reminder-completed', (data) => {
+        setActiveNotifications((prev) => prev.filter((n) => n.reminderId !== data.data?.id));
+        fetchReminders();
+      });
 
-    const updateReminderStatus = useCallback((id, status) => {
-        setReminders(prev => prev.map(r => r.id === id ? { ...r, status } : r));
-    }, []);
+      return () => {
+        socket.disconnect();
+        socketRef.current = null;
+      };
+    } catch (err) {
+      console.error('[Reminder WebSocket] Connection error:', err);
+    }
+  }, [user?.id, fetchReminders, settings.notificationSound, settings.voiceAlerts]);
 
-    const deleteReminder = useCallback((id) => {
-        setReminders(prev => prev.filter(r => r.id !== id));
-    }, []);
+  const playNotificationSound = useCallback(() => {
+    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYfBz2U4fTNfC4GMnzN8+BTEA1XqOfxuWYdBzuU3fTMfS4GNH/Q8+BVFAxXpuXzu2UcBTiN2fDHdSsFLYnQ9tqQPwkSY7zs4KdUEwlFnt7xwGoiBC14yPHdkUEPExzS7+ORS');
+    audio.volume = 0.3;
+    audio.play().catch(() => {});
+  }, []);
 
-    const dismissNotification = useCallback((notificationId) => {
-        setActiveNotifications(prev => prev.filter(n => n.id !== notificationId));
-    }, []);
+  const speakNotification = useCallback((notification) => {
+    if (!voiceRef.current || !settings.voiceAlerts) return;
+    const utterance = new SpeechSynthesisUtterance(`Reminder: ${notification.title}. ${notification.timeToGo}.`);
+    utterance.voice = voiceRef.current.getVoices().find((voice) => voice.lang === 'en-US') || null;
+    utterance.rate = 0.9;
+    utterance.pitch = 1.05;
+    voiceRef.current.speak(utterance);
+  }, [settings.voiceAlerts]);
 
-    const dismissAllNotifications = useCallback(() => {
-        setActiveNotifications([]);
-    }, []);
+  const dismissNotification = useCallback((notificationId) => {
+    setActiveNotifications((prev) => prev.filter((notification) => notification.id !== notificationId));
+  }, []);
 
-    const snoozeReminder = useCallback((id, snoozeMinutes = 15) => {
-        const newDueDate = new Date(Date.now() + snoozeMinutes * 60 * 1000);
-        updateReminder(id, { dueDate: newDueDate });
-    }, [updateReminder]);
+  const dismissAllNotifications = useCallback(() => {
+    setActiveNotifications([]);
+  }, []);
 
-    const markComplete = useCallback((id) => {
-        updateReminderStatus(id, 'completed');
-        // Remove any active notifications for this reminder
-        setActiveNotifications(prev => prev.filter(n => n.reminderId !== id));
-    }, [updateReminderStatus]);
+  const upcomingReminders = useMemo(() => {
+    const now = new Date();
+    return reminders
+      .filter((reminder) => reminder.status === 'pending' && reminder.dueDate > now)
+      .sort((left, right) => left.dueDate - right.dueDate);
+  }, [reminders]);
 
-    // Filter functions
-    const getUpcomingReminders = useCallback(() => {
-        const now = new Date();
-        return reminders
-            .filter(r => r.status === 'pending' && r.dueDate > now)
-            .sort((a, b) => a.dueDate - b.dueDate);
-    }, [reminders]);
+  const overdueReminders = useMemo(() => {
+    const now = new Date();
+    return reminders
+      .filter((reminder) => (reminder.status === 'pending' || reminder.status === 'overdue') && reminder.dueDate < now)
+      .sort((left, right) => left.dueDate - right.dueDate);
+  }, [reminders]);
 
-    const getOverdueReminders = useCallback(() => {
-        const now = new Date();
-        return reminders
-            .filter(r => (r.status === 'pending' || r.status === 'overdue') && r.dueDate < now)
-            .sort((a, b) => a.dueDate - b.dueDate);
-    }, [reminders]);
+  useEffect(() => {
+    const checkReminders = () => {
+      const now = new Date();
+      const thresholdMs = settings.reminderInterval * 60 * 1000;
+      const candidates = reminders.filter((reminder) => {
+        if (reminder.status === 'completed' || reminder.status === 'cancelled') return false;
+        const dueDate = reminder.dueDate;
+        const timeDiff = dueDate - now;
+        return timeDiff <= thresholdMs;
+      });
 
-    const getRemindersByModule = useCallback((module) => {
-        return reminders.filter(r => r.module === module);
-    }, [reminders]);
+      candidates.forEach((reminder) => {
+        const reminderId = reminder.id;
+        const alreadyActive = activeNotifications.some((notification) => notification.reminderId === reminderId);
+        if (alreadyActive) return;
 
-    const getRemindersByPriority = useCallback((priority) => {
-        return reminders.filter(r => r.priority === priority && r.status === 'pending');
-    }, [reminders]);
-
-    // Get reminders for current user based on role
-    const getRemindersForUser = useCallback((userRole, userEmail) => {
-        const roleModuleMap = {
-            'Sales': ['sales', 'crm', 'quotation'],
-            'Survey Engineer': ['survey'],
-            'Design Engineer': ['design'],
-            'Project Manager': ['project', 'installation', 'commissioning'],
-            'Store Manager': ['inventory', 'procurement'],
-            'Procurement Officer': ['procurement', 'logistics'],
-            'Finance': ['finance'],
-            'Technician': ['installation', 'service'],
-            'Service Manager': ['service', 'commissioning'],
-            'Admin': ['all']
+        const timeDiff = reminder.dueDate - now;
+        const isOverdue = timeDiff < 0 || reminder.status === 'overdue';
+        const notification = {
+          id: `notif-${reminderId}-${Date.now()}`,
+          reminderId,
+          title: reminder.title,
+          description: reminder.description,
+          priority: reminder.priority,
+          module: reminder.module,
+          timestamp: new Date(),
+          isOverdue,
+          timeToGo: isOverdue ? 'Overdue' : `${Math.max(1, Math.round(timeDiff / 60000))}m left`,
+          channels: reminder.notificationChannels || ['in-app'],
         };
 
-        const allowedModules = roleModuleMap[userRole] || ['all'];
+        setActiveNotifications((prev) => [...prev, notification]);
 
-        if (allowedModules.includes('all')) {
-            return reminders.filter(r => r.status !== 'completed' && r.status !== 'cancelled');
+        if (settings.notificationSound && notification.channels.includes('in-app')) {
+          playNotificationSound();
+        }
+        if (notification.channels.includes('voice')) {
+          speakNotification(notification);
         }
 
-        return reminders.filter(r => {
-            if (r.status === 'completed' || r.status === 'cancelled') return false;
-            return allowedModules.includes(r.module) ||
-                r.assignedTo === userEmail ||
-                r.createdBy === userEmail;
-        });
-    }, [reminders]);
-
-    const updateSettings = useCallback((newSettings) => {
-        setSettings(prev => ({ ...prev, ...newSettings }));
-    }, []);
-
-    const value = {
-        // Data
-        reminders,
-        activeNotifications,
-        settings,
-
-        // Actions
-        addReminder,
-        updateReminder,
-        updateReminderStatus,
-        deleteReminder,
-        markComplete,
-        snoozeReminder,
-
-        // Notifications
-        dismissNotification,
-        dismissAllNotifications,
-
-        // Filters
-        getUpcomingReminders,
-        getOverdueReminders,
-        getRemindersByModule,
-        getRemindersByPriority,
-
-        // Settings
-        updateSettings,
-
-        // Role-based filtering
-        getRemindersForUser,
-
-        // Stats
-        totalReminders: reminders.length,
-        upcomingCount: reminders.filter(r => r.status === 'pending' && r.dueDate > new Date()).length,
-        overdueCount: reminders.filter(r => (r.status === 'pending' || r.status === 'overdue') && r.dueDate < new Date()).length,
-        criticalCount: reminders.filter(r => r.priority === 'critical' && r.status === 'pending').length,
+        setTimeout(() => {
+          dismissNotification(notification.id);
+        }, 30000);
+      });
     };
 
-    return (
-        <ReminderContext.Provider value={value}>
-            {children}
-        </ReminderContext.Provider>
-    );
+    checkReminders();
+    const interval = setInterval(checkReminders, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [activeNotifications, dismissNotification, playNotificationSound, reminders, settings, speakNotification]);
+
+  const syncReminder = useCallback((nextReminder) => {
+    const normalized = normalizeReminder(nextReminder);
+    setReminders((prev) => {
+      const existingIndex = prev.findIndex((item) => item.id === normalized.id);
+      if (existingIndex === -1) return [normalized, ...prev];
+      const updated = [...prev];
+      updated[existingIndex] = normalized;
+      return updated;
+    });
+    return normalized;
+  }, []);
+
+  const addReminder = useCallback(async (payload) => {
+    const response = await reminderApi.create(payload);
+    const created = response?.data || response;
+    return syncReminder(created);
+  }, [syncReminder]);
+
+  const updateReminder = useCallback(async (id, updates) => {
+    const response = await reminderApi.update(id, updates);
+    const updated = response?.data || response;
+    return syncReminder(updated);
+  }, [syncReminder]);
+
+  const updateReminderStatus = useCallback(async (id, status) => {
+    return updateReminder(id, { status });
+  }, [updateReminder]);
+
+  const deleteReminder = useCallback(async (id) => {
+    await reminderApi.delete(id);
+    setReminders((prev) => prev.filter((reminder) => reminder.id !== id));
+    setActiveNotifications((prev) => prev.filter((notification) => notification.reminderId !== id));
+  }, []);
+
+  const snoozeReminder = useCallback(async (id, snoozeMinutes = 15) => {
+    const response = await reminderApi.snooze(id, snoozeMinutes);
+    const updated = response?.data || response;
+    return syncReminder(updated);
+  }, [syncReminder]);
+
+  const markComplete = useCallback(async (id) => {
+    const response = await reminderApi.complete(id);
+    const updated = response?.data || response;
+    setActiveNotifications((prev) => prev.filter((notification) => notification.reminderId !== id));
+    return syncReminder(updated);
+  }, [syncReminder]);
+
+  const getUpcomingReminders = useCallback(() => upcomingReminders, [upcomingReminders]);
+  const getOverdueReminders = useCallback(() => overdueReminders, [overdueReminders]);
+  const getRemindersByModule = useCallback(
+    (moduleId) => reminders.filter((reminder) => reminder.module === normalizeReminderModule(moduleId)),
+    [reminders],
+  );
+  const getRemindersByPriority = useCallback(
+    (priority) => reminders.filter((reminder) => reminder.priority === priority && reminder.status === 'pending'),
+    [reminders],
+  );
+
+  const getRemindersForUser = useCallback(() => {
+    if (!user) return reminders.filter((reminder) => reminder.status !== 'completed' && reminder.status !== 'cancelled');
+    const currentUserId = String(user.id || user._id || '');
+    const currentUserEmail = String(user.email || '').toLowerCase();
+    const isAdmin = ['admin', 'superadmin', 'super admin'].includes(String(user.role || '').toLowerCase()) || user.isSuperAdmin;
+
+    return reminders.filter((reminder) => {
+      if (reminder.status === 'completed' || reminder.status === 'cancelled') return false;
+      if (isAdmin) return true;
+
+      const assignedId = String(reminder.assignedTo?.id || reminder.assignedTo?._id || reminder.assignedTo || '');
+      const assignedEmail = String(reminder.assignedTo?.email || '').toLowerCase();
+      const createdId = String(reminder.createdBy?.id || reminder.createdBy?._id || reminder.createdBy || '');
+      const createdEmail = String(reminder.createdBy?.email || '').toLowerCase();
+
+      return assignedId === currentUserId
+        || createdId === currentUserId
+        || assignedEmail === currentUserEmail
+        || createdEmail === currentUserEmail;
+    });
+  }, [reminders, user]);
+
+  const updateSettings = useCallback((nextSettings) => {
+    setSettings((prev) => ({ ...prev, ...nextSettings }));
+  }, []);
+
+  const counts = useMemo(() => {
+    const pending = reminders.filter((reminder) => reminder.status === 'pending').length;
+    const completed = reminders.filter((reminder) => reminder.status === 'completed').length;
+    const overdue = overdueReminders.length;
+    const critical = reminders.filter((reminder) => reminder.priority === 'critical' && reminder.status === 'pending').length;
+    return {
+      totalReminders: reminders.length,
+      pendingCount: pending,
+      completedCount: completed,
+      upcomingCount: upcomingReminders.length,
+      overdueCount: overdue,
+      criticalCount: critical,
+    };
+  }, [overdueReminders.length, reminders, upcomingReminders.length]);
+
+  const value = {
+    reminders,
+    loading,
+    activeNotifications,
+    settings,
+    wsConnected,
+    addReminder,
+    updateReminder,
+    updateReminderStatus,
+    deleteReminder,
+    markComplete,
+    snoozeReminder,
+    dismissNotification,
+    dismissAllNotifications,
+    getUpcomingReminders,
+    getOverdueReminders,
+    getRemindersByModule,
+    getRemindersByPriority,
+    getRemindersForUser,
+    updateSettings,
+    fetchReminders,
+    normalizeReminder,
+    getReminderId,
+    getReminderModuleInfo,
+    getUserLabel,
+    ...counts,
+  };
+
+  return (
+    <ReminderContext.Provider value={value}>
+      {children}
+    </ReminderContext.Provider>
+  );
 };
 
 export default ReminderProvider;

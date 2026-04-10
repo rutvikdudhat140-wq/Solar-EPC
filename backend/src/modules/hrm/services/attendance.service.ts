@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import axios from 'axios';
+// import axios from 'axios';
 import { Attendance, AttendanceDocument, AttendanceStatus } from '../schemas/attendance.schema';
 import { Employee, EmployeeSchema } from '../schemas/employee.schema';
 import { CheckInDto, CheckOutDto } from '../dto/attendance.dto';
@@ -456,40 +456,17 @@ export class AttendanceService {
     }
 
     try {
-      const res = await axios.get('https://nominatim.openstreetmap.org/reverse', {
-        params: {
-          format: 'json',
-          lat,
-          lon: lng,
-          zoom: 18,
-          addressdetails: 1,
-        },
-        headers: {
-          'User-Agent': 'SolarOS-Attendance/1.0',
-        },
-        timeout: 10000,
-      });
+      // TODO: Re-enable axios call when package is available
+      // const res = await axios.get('https://nominatim.openstreetmap.org/reverse', {
+      //   params: { format: 'json', lat, lon: lng, zoom: 18, addressdetails: 1 },
+      //   headers: { 'User-Agent': 'SolarOS-Attendance/1.0' },
+      //   timeout: 10000,
+      // });
+      // const data = res?.data;
+      // const addr = data?.address || {};
 
-      const data = res?.data;
-      const addr = data?.address || {};
-
-      const addressParts = [
-        addr.neighbourhood,
-        addr.suburb,
-        addr.village,
-        addr.town,
-        addr.city,
-        addr.county,
-        addr.state_district,
-        addr.state,
-        addr.postcode,
-        addr.country,
-      ].filter(Boolean);
-
-      const address = addressParts.length > 0
-        ? Array.from(new Set(addressParts)).join(', ')
-        : (data?.display_name || '');
-
+      // Mock address for now
+      const address = `Location at ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
       return { address };
     } catch (e) {
       return { address: '' };

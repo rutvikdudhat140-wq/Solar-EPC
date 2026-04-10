@@ -26,13 +26,11 @@ export class InventoryController {
 
   @Get()
   async findAll(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
     @Query('category') category?: string,
     @Query('search') search?: string,
     @Request() req?: any,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     const user = req.user ? {
       id: String(req.user.id || req.user._id),
       _id: String(req.user.id || req.user._id),
@@ -43,11 +41,9 @@ export class InventoryController {
 
   @Get('categories')
   async getCategories(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
     @Request() req?: any,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     const user = req.user ? {
       id: String(req.user.id || req.user._id),
       _id: String(req.user.id || req.user._id),
@@ -58,11 +54,9 @@ export class InventoryController {
 
   @Get('units')
   async getUnits(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
     @Request() req?: any,
   ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     const user = req.user ? {
       id: String(req.user.id || req.user._id),
       _id: String(req.user.id || req.user._id),
@@ -73,11 +67,10 @@ export class InventoryController {
 
   @Get('stats')
   async getStats(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
     @Request() req?: any,
   ) {
-    const tenantId = headerTenantId || queryTenantId || '';
+    // TenantGuard sets req.tenant.id after resolving code to ObjectId
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     const user = req.user ? {
       id: String(req.user.id || req.user._id),
       _id: String(req.user.id || req.user._id),
@@ -88,12 +81,8 @@ export class InventoryController {
   }
 
   @Get('by-category')
-  async getItemsByCategory(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Request() req?: any,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || '';
+  async getItemsByCategory(@Request() req?: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     const user = req.user ? {
       id: String(req.user.id || req.user._id),
       _id: String(req.user.id || req.user._id),
@@ -103,148 +92,88 @@ export class InventoryController {
   }
 
   @Get(':itemId')
-  async findOne(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('itemId') itemId: string,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async findOne(@Param('itemId') itemId: string, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.findOne(tenantId, itemId);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Body() createDto: CreateInventoryDto,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async create(@Body() createDto: CreateInventoryDto, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.create(tenantId, createDto);
   }
 
   @Patch(':itemId')
-  async update(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('itemId') itemId: string,
-    @Body() updateDto: UpdateInventoryDto,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async update(@Param('itemId') itemId: string, @Body() updateDto: UpdateInventoryDto, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.update(tenantId, itemId, updateDto);
   }
 
   @Post(':itemId/stock-in')
-  async stockIn(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('itemId') itemId: string,
-    @Body() stockInDto: StockInDto,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async stockIn(@Param('itemId') itemId: string, @Body() stockInDto: StockInDto, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.stockIn(tenantId, itemId, stockInDto);
   }
 
   @Post(':itemId/stock-out')
-  async stockOut(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('itemId') itemId: string,
-    @Body() stockOutDto: StockOutDto,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async stockOut(@Param('itemId') itemId: string, @Body() stockOutDto: StockOutDto, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.stockOut(tenantId, itemId, stockOutDto);
   }
 
   @Post('transfers')
-  async transfer(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Body() transferDto: { fromInventoryId: string; toWarehouseId: string; quantity: number; remarks?: string },
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async transfer(@Body() transferDto: { fromInventoryId: string; toWarehouseId: string; quantity: number; remarks?: string }, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.transfer(tenantId, transferDto.fromInventoryId, transferDto.toWarehouseId, transferDto.quantity, transferDto.remarks);
   }
 
   @Delete(':itemId')
-  async remove(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('itemId') itemId: string,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async remove(@Param('itemId') itemId: string, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.remove(tenantId, itemId);
   }
 
   @Post('reservations')
   @HttpCode(HttpStatus.CREATED)
-  async createReservation(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Body() createDto: CreateReservationDto,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async createReservation(@Body() createDto: CreateReservationDto, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.createReservation(tenantId, createDto);
   }
 
   @Get('reservations/by-project/:projectId')
-  async getReservationsByProject(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('projectId') projectId: string,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async getReservationsByProject(@Param('projectId') projectId: string, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.getReservationsByProject(tenantId, projectId);
   }
 
   @Get('reservations/by-item/:itemId')
-  async getReservationsByItem(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('itemId') itemId: string,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async getReservationsByItem(@Param('itemId') itemId: string, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.getReservationsByItem(tenantId, itemId);
   }
 
   @Get(':itemId/with-reservations')
-  async findOneWithReservations(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('itemId') itemId: string,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async findOneWithReservations(@Param('itemId') itemId: string, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.findOneWithReservations(tenantId, itemId);
   }
 
   @Patch('reservations/:reservationId')
-  async updateReservation(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('reservationId') reservationId: string,
-    @Body() updateDto: UpdateReservationDto,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async updateReservation(@Param('reservationId') reservationId: string, @Body() updateDto: UpdateReservationDto, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.updateReservation(tenantId, reservationId, updateDto);
   }
 
   @Patch('reservations/:reservationId/cancel')
-  async cancelReservation(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('reservationId') reservationId: string,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async cancelReservation(@Param('reservationId') reservationId: string, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.cancelReservation(tenantId, reservationId);
   }
 
   @Patch('reservations/:reservationId/fulfill')
-  async fulfillReservation(
-    @Headers('x-tenant-id') headerTenantId: string,
-    @Query('tenantId') queryTenantId: string,
-    @Param('reservationId') reservationId: string,
-  ) {
-    const tenantId = headerTenantId || queryTenantId || 'solarcorp';
+  async fulfillReservation(@Param('reservationId') reservationId: string, @Request() req: any) {
+    const tenantId = req.tenant?.id || req.headers['x-tenant-id'] || '';
     return this.inventoryService.fulfillReservation(tenantId, reservationId);
   }
 }

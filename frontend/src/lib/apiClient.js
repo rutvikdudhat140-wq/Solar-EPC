@@ -34,6 +34,17 @@ export const apiClient = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
+const getTenantIdFromToken = () => {
+    try {
+        const token = localStorage.getItem('solar_token') || localStorage.getItem('accessToken') || localStorage.getItem('token');
+        if (!token) return null;
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.tenantId || null;
+    } catch {
+        return null;
+    }
+};
+
 const getTenantId = () => {
     try {
         // TenantId stored separately (for pre-login requests)
@@ -41,14 +52,15 @@ const getTenantId = () => {
         if (storedTenantId && storedTenantId !== 'default') {
             return storedTenantId;
         }
+        // Try to get from JWT token
+        const tokenTenantId = getTenantIdFromToken();
+        if (tokenTenantId) {
+            return tokenTenantId;
+        }
         // Return null for superadmin or not logged in
         return null;
     } catch {
-        const storedTenantId = localStorage.getItem('tenantId');
-        if (storedTenantId && storedTenantId !== 'default') {
-            return storedTenantId;
-        }
-        return null;
+        return getTenantIdFromToken();
     }
 };
 

@@ -248,7 +248,8 @@ export class EmployeeController {
     @Req() req: any,
   ) {
     await this.checkPermission(req, 'employees', 'edit');
-    const tenantId = req.tenant?.id || req.user?.tenantId || req.headers?.['x-tenant-id'] || req.query?.tenantId || 'default';
+    // TenantGuard sets req.tenant.id after resolving code to ObjectId
+    const tenantId = req.tenant?.id || req.headers?.['x-tenant-id'] || req.user?.tenantId || '';
 
     // Check data scope - can only edit if has access to this employee
     const scopeFilter = await this.getDataScopeFilter(req, 'employees');

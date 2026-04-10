@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard';
+import { TenantGuard } from '../../../core/tenant/guards/tenant.guard';
 import { ReminderService } from '../services/reminder.service';
+import { ReminderRuleSyncService } from '../services/reminder-rule-sync.service';
 import { CreateReminderDto, UpdateReminderDto, QueryReminderDto, SnoozeReminderDto } from '../dto/reminder.dto';
 
 interface RequestWithUser extends Request {
@@ -10,15 +12,22 @@ interface RequestWithUser extends Request {
     tenantId?: string;
     role?: string;
   };
+  tenant?: {
+    id: string;
+  };
 }
 
 @Controller('reminders')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TenantGuard)
 export class ReminderController {
-  constructor(private readonly reminderService: ReminderService) {}
+  constructor(
+    private readonly reminderService: ReminderService,
+    private readonly reminderRuleSyncService: ReminderRuleSyncService,
+  ) {}
 
   private getTenantId(req: RequestWithUser): string {
-    const tid = req.headers['x-tenant-id'] as string || req.user?.tenantId;
+    // TenantGuard sets req.tenant.id after resolving tenant code to ObjectId
+    const tid = req.tenant?.id || req.headers['x-tenant-id'] as string || req.user?.tenantId;
     if (!tid) {
       throw new Error('Tenant ID required');
     }
@@ -78,7 +87,8 @@ export class ReminderController {
   async update(@Req() req: RequestWithUser, @Param('id') id: string, @Body() dto: UpdateReminderDto) {
     const tenantId = this.getTenantId(req);
     const userId = req.user.id;
-    const reminder = await this.reminderService.update(tenantId, id, userId, dto);
+    const userRole = req.user.role || 'User';
+    const reminder = await this.reminderService.update(tenantId, id, userId, userRole, dto);
     return { success: true, data: reminder };
   }
 
@@ -86,7 +96,8 @@ export class ReminderController {
   async delete(@Req() req: RequestWithUser, @Param('id') id: string) {
     const tenantId = this.getTenantId(req);
     const userId = req.user.id;
-    await this.reminderService.delete(tenantId, id, userId);
+    const userRole = req.user.role || 'User';
+    await this.reminderService.delete(tenantId, id, userId, userRole);
     return { success: true, message: 'Reminder deleted' };
   }
 
@@ -112,5 +123,22 @@ export class ReminderController {
     const userId = req.user.id;
     const reminder = await this.reminderService.cancel(tenantId, id, userId);
     return { success: true, data: reminder };
+  }
+
+  @Post('admin/sync-synthetic')
+  async syncSynthetic(@Req() req: RequestWithUser) {
+    const tenantId = this.getTenantId(req);
+    const userRole = req.user.role || 'User';
+    
+    if (userRole !== 'Admin' && userRole !== 'SuperAdmin') {
+      return { success: false, message: 'Admin access required' };
+    }
+    
+    try {
+      await this.reminderRuleSyncService.syncSyntheticReminders();
+      return { success: true, message: 'Synthetic reminder sync triggered' };
+    } catch (error: any) {
+      return { success: false, message: error?.message || 'Sync failed' };
+    }
   }
 }

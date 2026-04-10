@@ -1,492 +1,338 @@
-// RemindersPage.js �’Comprehensive reminder management interface
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
- Bell, Plus, Filter, Search, Clock, AlertTriangle, CheckCircle,
- Settings, Calendar, Users, DollarSign, Package, Wrench,
- Volume2, MessageSquare, Smartphone, Eye, EyeOff, Play,
- Pause, RotateCcw, Trash2, Archive, Star, MapPin, FileText
+  Bell,
+  CheckCircle,
+  Clock,
+  RotateCcw,
+  Search,
+  Trash2,
+  Volume2,
+  Smartphone,
+  Plus,
 } from 'lucide-react';
 import { useReminders } from '../context/ReminderContext';
 import AddReminderModal from '../components/Reminder/AddReminderModal';
-
-const MODULE_ICONS = {
- sales: Users,
- survey: MapPin,
- design: FileText,
- finance: DollarSign,
- procurement: Package,
- service: Wrench,
- inventory: Package,
- installation: Wrench,
- project: Calendar
-};
-
-const MODULE_COLORS = {
- sales: '#3b82f6',
- survey: '#10b981',
- design: '#8b5cf6',
- finance: '#f59e0b',
- procurement: '#06b6d4',
- service: '#ef4444',
- inventory: '#84cc16',
- installation: '#f97316',
- project: '#6366f1'
-};
+import { getReminderModuleInfo, REMINDER_MODULES } from '../components/Reminder/reminderModules';
 
 const PRIORITY_COLORS = {
- critical: '#ef4444',
- high: '#f59e0b',
- medium: '#3b82f6',
- low: '#6b7280'
+  critical: '#ef4444',
+  high: '#f59e0b',
+  medium: '#3b82f6',
+  low: '#6b7280',
+};
+
+const formatDateTime = (date) => new Intl.DateTimeFormat('en-IN', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+}).format(new Date(date));
+
+const getTimeStatus = (dueDate, status) => {
+  const now = new Date();
+  const timeDiff = dueDate - now;
+
+  if (status === 'completed') return { text: 'Completed', color: '#10b981' };
+  if (timeDiff < 0) return { text: 'Overdue', color: '#ef4444' };
+  if (timeDiff < 60 * 60 * 1000) return { text: 'Due Soon', color: '#f59e0b' };
+  return { text: 'Upcoming', color: '#6b7280' };
 };
 
 const RemindersPage = () => {
- const {
- reminders,
- activeNotifications,
- settings,
- addReminder,
- updateReminder,
- deleteReminder,
- markComplete,
- snoozeReminder,
- dismissNotification,
- dismissAllNotifications,
- getUpcomingReminders,
- getOverdueReminders,
- getRemindersByPriority,
- updateSettings,
- upcomingCount,
- overdueCount,
- criticalCount,
- totalReminders
- } = useReminders();
+  const {
+    reminders,
+    activeNotifications,
+    settings,
+    deleteReminder,
+    markComplete,
+    snoozeReminder,
+    dismissNotification,
+    dismissAllNotifications,
+    getUpcomingReminders,
+    getOverdueReminders,
+    getRemindersByPriority,
+    updateSettings,
+    upcomingCount,
+    overdueCount,
+    criticalCount,
+    totalReminders,
+    getUserLabel,
+  } = useReminders();
 
- const [activeTab, setActiveTab] = useState('all');
- const [filterModule, setFilterModule] = useState('all');
- const [filterPriority, setFilterPriority] = useState('all');
- const [searchQuery, setSearchQuery] = useState('');
- const [showAddModal, setShowAddModal] = useState(false);
- const [showSettings, setShowSettings] = useState(false);
- const [selectedReminder, setSelectedReminder] = useState(null);
+  const [activeTab, setActiveTab] = useState('all');
+  const [filterModule, setFilterModule] = useState('all');
+  const [filterPriority, setFilterPriority] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
- // Filter and search reminders
- const filteredReminders = useMemo(() => {
- let filtered = reminders;
+  const filteredReminders = useMemo(() => {
+    let filtered = reminders;
 
- // Filter by tab
- if (activeTab === 'upcoming') {
- filtered = getUpcomingReminders();
- } else if (activeTab === 'overdue') {
- filtered = getOverdueReminders();
- } else if (activeTab === 'critical') {
- filtered = getRemindersByPriority('critical');
- } else if (activeTab === 'completed') {
- filtered = reminders.filter(r => r.status === 'completed');
- }
+    if (activeTab === 'upcoming') {
+      filtered = getUpcomingReminders();
+    } else if (activeTab === 'overdue') {
+      filtered = getOverdueReminders();
+    } else if (activeTab === 'critical') {
+      filtered = getRemindersByPriority('critical');
+    } else if (activeTab === 'completed') {
+      filtered = reminders.filter((reminder) => reminder.status === 'completed');
+    }
 
- // Filter by module
- if (filterModule !== 'all') {
- filtered = filtered.filter(r => r.module === filterModule);
- }
+    if (filterModule !== 'all') {
+      filtered = filtered.filter((reminder) => reminder.module === filterModule);
+    }
 
- // Filter by priority
- if (filterPriority !== 'all') {
- filtered = filtered.filter(r => r.priority === filterPriority);
- }
+    if (filterPriority !== 'all') {
+      filtered = filtered.filter((reminder) => reminder.priority === filterPriority);
+    }
 
- // Search filter
- if (searchQuery) {
- filtered = filtered.filter(r =>
- r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
- r.description.toLowerCase().includes(searchQuery.toLowerCase())
- );
- }
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((reminder) =>
+        reminder.title.toLowerCase().includes(query)
+        || String(reminder.description || '').toLowerCase().includes(query),
+      );
+    }
 
- return filtered;
- }, [reminders, activeTab, filterModule, filterPriority, searchQuery, getUpcomingReminders, getOverdueReminders, getRemindersByPriority]);
+    return [...filtered].sort((left, right) => left.dueDate - right.dueDate);
+  }, [activeTab, filterModule, filterPriority, getOverdueReminders, getRemindersByPriority, getUpcomingReminders, reminders, searchQuery]);
 
- const formatDateTime = (date) => {
- return new Intl.DateTimeFormat('en-IN', {
- dateStyle: 'medium',
- timeStyle: 'short'
- }).format(new Date(date));
- };
+  return (
+    <div className="space-y-6">
+      <section className="glass-card p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">Reminder Center</h1>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">
+              Live reminders from all modules with manual creation and API-backed actions.
+            </p>
+          </div>
 
- const getTimeStatus = (dueDate, status) => {
- const now = new Date();
- const timeDiff = dueDate - now;
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowSettings((prev) => !prev)}
+              className="rounded-lg border border-[var(--border-base)] bg-[var(--bg-base)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)]"
+            >
+              Notification Settings
+            </button>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-2 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90"
+            >
+              <Plus size={16} />
+              New Reminder
+            </button>
+          </div>
+        </div>
 
- if (status === 'completed') return { text: 'Completed', color: '#10b981' };
- if (timeDiff < 0) return { text: 'Overdue', color: '#ef4444' };
- if (timeDiff < 60 * 60 * 1000) return { text: 'Due Soon', color: '#f59e0b' };
- return { text: 'Upcoming', color: '#6b7280' };
- };
+        <div className="mt-5 grid grid-cols-2 gap-4 xl:grid-cols-4">
+          {[
+            { label: 'Total', value: totalReminders, color: 'var(--primary)' },
+            { label: 'Upcoming', value: upcomingCount, color: 'var(--success)' },
+            { label: 'Overdue', value: overdueCount, color: 'var(--error)' },
+            { label: 'Critical', value: criticalCount, color: '#f97316' },
+          ].map((card) => (
+            <div key={card.label} className="rounded-xl border border-[var(--border-base)] bg-[var(--bg-base)] p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">{card.label}</p>
+              <p className="mt-2 text-3xl font-black" style={{ color: card.color }}>{card.value}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
- const ReminderCard = ({ reminder }) => {
- const ModuleIcon = MODULE_ICONS[reminder.module] || Bell;
- const moduleColor = MODULE_COLORS[reminder.module] || '#6b7280';
- const priorityColor = PRIORITY_COLORS[reminder.priority] || '#6b7280';
- const timeStatus = getTimeStatus(reminder.dueDate, reminder.status);
+      {showSettings && (
+        <section className="glass-card p-5">
+          <h2 className="mb-4 text-lg font-bold text-[var(--text-primary)]">Notification Settings</h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {[
+              { key: 'inAppNotifications', label: 'In-App Notifications' },
+              { key: 'notificationSound', label: 'Notification Sound' },
+              { key: 'voiceAlerts', label: 'Voice Alerts' },
+              { key: 'smsNotifications', label: 'SMS Notifications' },
+            ].map((setting) => (
+              <label key={setting.key} className="flex items-center justify-between rounded-xl border border-[var(--border-base)] bg-[var(--bg-base)] px-4 py-3">
+                <span className="text-sm font-medium text-[var(--text-primary)]">{setting.label}</span>
+                <input
+                  type="checkbox"
+                  checked={Boolean(settings[setting.key])}
+                  onChange={(event) => updateSettings({ [setting.key]: event.target.checked })}
+                />
+              </label>
+            ))}
+          </div>
+        </section>
+      )}
 
- return (
- <div className="bg-[var(--bg-elevated)] border border-[var(--border-base)] rounded-xl p-4 hover:border-[var(--border-hover)] transition-all duration-200">
- {/* Header */}
- <div className="flex items-start justify-between mb-3">
- <div className="flex items-center gap-3">
- <div className="p-2 rounded-lg" style={{ backgroundColor: moduleColor + '20', color: moduleColor }}>
- <ModuleIcon size={16} />
- </div>
- <div>
- <h3 className="font-bold text-[var(--text-primary)] text-sm leading-tight">{reminder.title}</h3>
- <p className="text-xs text-[var(--text-muted)] mt-0.5 capitalize">{reminder.module} �’{reminder.type}</p>
- </div>
- </div>
- <div className="flex items-center gap-2">
- <div
- className="w-2 h-2 rounded-full"
- style={{ backgroundColor: priorityColor }}
- title={`${reminder.priority} priority`}
- />
- <span
- className="text-xs font-bold px-2 py-1 rounded-md"
- style={{
- color: timeStatus.color,
- backgroundColor: timeStatus.color + '20'
- }}
- >
- {timeStatus.text}
- </span>
- </div>
- </div>
+      {activeNotifications.length > 0 && (
+        <section className="glass-card p-5">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-[var(--text-primary)]">Active Alerts</h2>
+            <button onClick={dismissAllNotifications} className="text-sm font-medium text-red-400 hover:text-red-300">
+              Dismiss All
+            </button>
+          </div>
+          <div className="space-y-3">
+            {activeNotifications.map((notification) => (
+              <div key={notification.id} className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/5 p-4">
+                <Bell size={18} className="text-red-400" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">{notification.title}</p>
+                  <p className="text-xs text-[var(--text-muted)]">{notification.description}</p>
+                </div>
+                <button onClick={() => dismissNotification(notification.id)} className="text-sm font-medium text-red-400 hover:text-red-300">
+                  Dismiss
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
- {/* Description */}
- <p className="text-sm text-[var(--text-secondary)] mb-3 line-clamp-2">
- {reminder.description}
- </p>
+      <section className="glass-card p-5">
+        <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center">
+          <div className="relative flex-1">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search reminders..."
+              className="w-full rounded-lg border border-[var(--border-base)] bg-[var(--bg-base)] py-2 pl-9 pr-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none"
+            />
+          </div>
 
- {/* Due Date */}
- <div className="flex items-center gap-2 mb-3 text-xs text-[var(--text-muted)]">
- <Clock size={12} />
- <span>Due: {formatDateTime(reminder.dueDate)}</span>
- </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <select
+              value={filterModule}
+              onChange={(event) => setFilterModule(event.target.value)}
+              className="rounded-lg border border-[var(--border-base)] bg-[var(--bg-base)] px-3 py-2 text-sm text-[var(--text-primary)] focus:border-[var(--primary)] focus:outline-none"
+            >
+              <option value="all">All Modules</option>
+              {REMINDER_MODULES.map((module) => (
+                <option key={module.id} value={module.id}>{module.label}</option>
+              ))}
+            </select>
 
- {/* Metadata */}
- {reminder.metadata && (
- <div className="mb-3 p-2 bg-[var(--bg-base)] rounded-lg">
- <div className="grid grid-cols-2 gap-2 text-xs">
- {Object.entries(reminder.metadata).map(([key, value]) => (
- <div key={key}>
- <span className="text-[var(--text-muted)] capitalize">{key.replace(/([A-Z])/g, ' $1').toLowerCase()}: </span>
- <span className="text-[var(--text-primary)] font-medium">{value}</span>
- </div>
- ))}
- </div>
- </div>
- )}
+            <select
+              value={filterPriority}
+              onChange={(event) => setFilterPriority(event.target.value)}
+              className="rounded-lg border border-[var(--border-base)] bg-[var(--bg-base)] px-3 py-2 text-sm text-[var(--text-primary)] focus:border-[var(--primary)] focus:outline-none"
+            >
+              <option value="all">All Priorities</option>
+              {Object.keys(PRIORITY_COLORS).map((priority) => (
+                <option key={priority} value={priority}>{priority}</option>
+              ))}
+            </select>
+          </div>
+        </div>
 
- {/* Notification Channels */}
- <div className="flex items-center gap-2 mb-3">
- <span className="text-xs text-[var(--text-muted)]">Alerts:</span>
- {reminder.notificationChannels?.includes('in-app') && (
- <Bell size={12} className="text-[var(--text-muted)]" />
- )}
- {reminder.notificationChannels?.includes('voice') && (
- <Volume2 size={12} className="text-[var(--text-muted)]" />
- )}
- {reminder.notificationChannels?.includes('sms') && (
- <Smartphone size={12} className="text-[var(--text-muted)]" />
- )}
- </div>
+        <div className="mb-4 flex flex-wrap gap-2">
+          {[
+            { id: 'all', label: 'All' },
+            { id: 'upcoming', label: 'Upcoming' },
+            { id: 'overdue', label: 'Overdue' },
+            { id: 'critical', label: 'Critical' },
+            { id: 'completed', label: 'Completed' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${activeTab === tab.id
+                ? 'bg-[var(--primary)] text-white'
+                : 'bg-[var(--bg-base)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'}`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
- {/* Actions */}
- <div className="flex items-center gap-2 pt-2 border-t border-[var(--border-base)]">
- {reminder.status === 'pending' && (
- <>
- <button
- onClick={() => markComplete(reminder.id)}
- className="flex-1 px-3 py-2 bg-[var(--success)] text-white rounded-lg text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
- >
- <CheckCircle size={12} />
- Complete
- </button>
- <button
- onClick={() => snoozeReminder(reminder.id, 30)}
- className="px-3 py-2 bg-[var(--bg-overlay)] border border-[var(--border-base)] rounded-lg text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors flex items-center gap-1"
- >
- <RotateCcw size={12} />
- 30m
- </button>
- </>
- )}
- <button
- onClick={() => setSelectedReminder(reminder)}
- className="px-3 py-2 bg-[var(--bg-overlay)] border border-[var(--border-base)] rounded-lg text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors"
- >
- <Eye size={12} />
- </button>
- </div>
- </div>
- );
- };
+        <div className="grid gap-4 xl:grid-cols-2">
+          {filteredReminders.map((reminder) => {
+            const moduleInfo = getReminderModuleInfo(reminder.module);
+            const ModuleIcon = moduleInfo.icon;
+            const timeStatus = getTimeStatus(reminder.dueDate, reminder.status);
+            const priorityColor = PRIORITY_COLORS[reminder.priority] || '#6b7280';
 
- const StatsCard = ({ label, value, icon: Icon, color, onClick, isActive }) => (
- <div
- className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${isActive
- ? 'border-[var(--primary)] bg-[var(--primary)]10'
- : 'border-[var(--border-base)] bg-[var(--bg-elevated)] hover:border-[var(--border-hover)]'
- }`}
- onClick={onClick}
- >
- <div className="flex items-center justify-between">
- <div>
- <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">{label}</p>
- <p className="text-2xl font-black tabular-nums" style={{ color }}>{value}</p>
- </div>
- <div className="p-2 rounded-lg" style={{ backgroundColor: color + '20', color }}>
- <Icon size={20} />
- </div>
- </div>
- </div>
- );
+            return (
+              <article key={reminder.id} className="rounded-xl border border-[var(--border-base)] bg-[var(--bg-base)] p-4 transition-colors hover:border-[var(--border-hover)]">
+                <div className="mb-3 flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg p-2" style={{ backgroundColor: `${moduleInfo.color}20`, color: moduleInfo.color }}>
+                      <ModuleIcon size={16} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-[var(--text-primary)]">{reminder.title}</h3>
+                      <p className="mt-0.5 text-xs text-[var(--text-muted)]">{moduleInfo.label} · {reminder.metadata?.subtype || reminder.type}</p>
+                    </div>
+                  </div>
 
- return (
- <div className="p-6 space-y-6">
- {/* Header */}
- <div className="flex items-center justify-between">
- <div>
- <h1 className="text-2xl font-black text-[var(--text-primary)]">Reminder Center</h1>
- <p className="text-sm text-[var(--text-muted)] mt-1">
- Centralized notification and reminder management system
- </p>
- </div>
- <div className="flex items-center gap-3">
- <button
- onClick={() => setShowSettings(!showSettings)}
- className="p-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-base)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors"
- >
- <Settings size={18} />
- </button>
- <button
- onClick={() => setShowAddModal(true)}
- className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg font-bold text-sm hover:opacity-90 transition-opacity flex items-center gap-2"
- >
- <Plus size={16} />
- Add Reminder
- </button>
- </div>
- </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full" style={{ backgroundColor: priorityColor }} />
+                    <span
+                      className="rounded-md px-2 py-1 text-xs font-bold"
+                      style={{ color: timeStatus.color, backgroundColor: `${timeStatus.color}20` }}
+                    >
+                      {timeStatus.text}
+                    </span>
+                  </div>
+                </div>
 
- {/* Active Notifications */}
- {activeNotifications.length > 0 && (
- <div className="bg-gradient-to-r from-[var(--warning)]20 to-[var(--error)]20 border-l-4 border-[var(--warning)] p-4 rounded-lg">
- <div className="flex items-center justify-between mb-3">
- <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
- <Bell size={16} className="text-[var(--warning)]" />
- Active Notifications ({activeNotifications.length})
- </h3>
- <button
- onClick={dismissAllNotifications}
- className="text-xs font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
- >
- Dismiss All
- </button>
- </div>
- <div className="space-y-2">
- {activeNotifications.slice(0, 3).map(notification => (
- <div key={notification.id} className="flex items-center justify-between p-3 bg-[var(--bg-elevated)] rounded-lg">
- <div>
- <p className="font-medium text-sm text-[var(--text-primary)]">{notification.title}</p>
- <p className="text-xs text-[var(--text-muted)]">{notification.timeToGo} �’{notification.module}</p>
- </div>
- <button
- onClick={() => dismissNotification(notification.id)}
- className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
- >
- �’��
- </button>
- </div>
- ))}
- </div>
- </div>
- )}
+                <p className="mb-3 text-sm text-[var(--text-secondary)]">{reminder.description}</p>
 
- {/* Stats */}
- <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
- <StatsCard
- label="Total"
- value={totalReminders}
- icon={Bell}
- color="#6366f1"
- onClick={() => setActiveTab('all')}
- isActive={activeTab === 'all'}
- />
- <StatsCard
- label="Upcoming"
- value={upcomingCount}
- icon={Clock}
- color="#10b981"
- onClick={() => setActiveTab('upcoming')}
- isActive={activeTab === 'upcoming'}
- />
- <StatsCard
- label="Overdue"
- value={overdueCount}
- icon={AlertTriangle}
- color="#ef4444"
- onClick={() => setActiveTab('overdue')}
- isActive={activeTab === 'overdue'}
- />
- <StatsCard
- label="Critical"
- value={criticalCount}
- icon={Star}
- color="#f59e0b"
- onClick={() => setActiveTab('critical')}
- isActive={activeTab === 'critical'}
- />
- </div>
+                <div className="mb-3 flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                  <Clock size={12} />
+                  <span>Due: {formatDateTime(reminder.dueDate)}</span>
+                </div>
 
- {/* Filters */}
- <div className="flex flex-wrap items-center gap-4 p-4 bg-[var(--bg-elevated)] rounded-xl border border-[var(--border-base)]">
- <div className="flex items-center gap-2">
- <Search size={16} className="text-[var(--text-muted)]" />
- <input
- type="text"
- placeholder="Search reminders..."
- value={searchQuery}
- onChange={(e) => setSearchQuery(e.target.value)}
- className="px-3 py-2 bg-[var(--bg-base)] border border-[var(--border-base)] rounded-lg text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--primary)] focus:outline-none transition-colors"
- />
- </div>
+                <div className="mb-3 flex flex-wrap items-center gap-3 text-xs text-[var(--text-muted)]">
+                  {reminder.notificationChannels?.includes('in-app') && <Bell size={12} />}
+                  {reminder.notificationChannels?.includes('voice') && <Volume2 size={12} />}
+                  {reminder.notificationChannels?.includes('sms') && <Smartphone size={12} />}
+                  {reminder.assignedTo && <span>Assigned: {getUserLabel(reminder.assignedTo)}</span>}
+                </div>
 
- <select
- value={filterModule}
- onChange={(e) => setFilterModule(e.target.value)}
- className="px-3 py-2 bg-[var(--bg-base)] border border-[var(--border-base)] rounded-lg text-sm text-[var(--text-primary)] focus:border-[var(--primary)] focus:outline-none transition-colors"
- >
- <option value="all">All Modules</option>
- <option value="sales">Sales</option>
- <option value="survey">Survey</option>
- <option value="design">Design</option>
- <option value="finance">Finance</option>
- <option value="procurement">Procurement</option>
- <option value="service">Service</option>
- <option value="inventory">Inventory</option>
- <option value="installation">Installation</option>
- </select>
+                <div className="flex items-center gap-2 border-t border-[var(--border-base)] pt-3">
+                  {reminder.status === 'pending' && (
+                    <>
+                      <button
+                        onClick={() => markComplete(reminder.id)}
+                        className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-[var(--success)] px-3 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90"
+                      >
+                        <CheckCircle size={12} />
+                        Complete
+                      </button>
+                      <button
+                        onClick={() => snoozeReminder(reminder.id, 30)}
+                        className="flex items-center gap-1 rounded-lg border border-[var(--border-base)] bg-[var(--bg-overlay)] px-3 py-2 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)]"
+                      >
+                        <RotateCcw size={12} />
+                        30m
+                      </button>
+                    </>
+                  )}
 
- <select
- value={filterPriority}
- onChange={(e) => setFilterPriority(e.target.value)}
- className="px-3 py-2 bg-[var(--bg-base)] border border-[var(--border-base)] rounded-lg text-sm text-[var(--text-primary)] focus:border-[var(--primary)] focus:outline-none transition-colors"
- >
- <option value="all">All Priorities</option>
- <option value="critical">Critical</option>
- <option value="high">High</option>
- <option value="medium">Medium</option>
- <option value="low">Low</option>
- </select>
- </div>
+                  <button
+                    onClick={() => deleteReminder(reminder.id)}
+                    className="rounded-lg bg-red-500/10 p-2 text-red-400 transition-colors hover:bg-red-500/20"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
 
- {/* Reminders Grid */}
- <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
- {filteredReminders.map(reminder => (
- <ReminderCard key={reminder.id} reminder={reminder} />
- ))}
- </div>
+        {filteredReminders.length === 0 && (
+          <div className="py-12 text-center">
+            <Bell size={24} className="mx-auto mb-3 text-[var(--text-faint)]" />
+            <p className="text-sm text-[var(--text-muted)]">No reminders match the current filters.</p>
+          </div>
+        )}
+      </section>
 
- {filteredReminders.length === 0 && (
- <div className="text-center py-12">
- <div className="w-20 h-20 rounded-3xl bg-[var(--bg-elevated)] border border-[var(--border-base)] flex items-center justify-center text-4xl mx-auto mb-4">
- �’�
- </div>
- <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">No reminders found</h3>
- <p className="text-sm text-[var(--text-muted)]">
- {searchQuery || filterModule !== 'all' || filterPriority !== 'all'
- ? 'Try adjusting your filters'
- : 'Create your first reminder to get started'}
- </p>
- </div>
- )}
-
- {/* Settings Panel */}
- {showSettings && (
- <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
- <div className="bg-[var(--bg-elevated)] rounded-xl p-6 w-full max-w-md mx-4 border border-[var(--border-base)]">
- <div className="flex items-center justify-between mb-6">
- <h3 className="text-lg font-bold text-[var(--text-primary)]">Notification Settings</h3>
- <button
- onClick={() => setShowSettings(false)}
- className="p-1 rounded text-[var(--text-muted)] hover:text-[var(--text-primary)]"
- >
- �’��
- </button>
- </div>
-
- <div className="space-y-4">
- <div className="flex items-center justify-between">
- <label className="text-sm font-medium text-[var(--text-primary)]">Voice Alerts</label>
- <button
- onClick={() => updateSettings({ voiceAlerts: !settings.voiceAlerts })}
- className={`w-12 h-6 rounded-full transition-colors ${settings.voiceAlerts ? 'bg-[var(--primary)]' : 'bg-[var(--bg-overlay)]'
- }`}
- >
- <div className={`w-5 h-5 bg-[var(--bg-surface)] rounded-full transition-transform ${settings.voiceAlerts ? 'translate-x-6' : 'translate-x-0.5'
- }`} />
- </button>
- </div>
-
- <div className="flex items-center justify-between">
- <label className="text-sm font-medium text-[var(--text-primary)]">SMS Notifications</label>
- <button
- onClick={() => updateSettings({ smsNotifications: !settings.smsNotifications })}
- className={`w-12 h-6 rounded-full transition-colors ${settings.smsNotifications ? 'bg-[var(--primary)]' : 'bg-[var(--bg-overlay)]'
- }`}
- >
- <div className={`w-5 h-5 bg-[var(--bg-surface)] rounded-full transition-transform ${settings.smsNotifications ? 'translate-x-6' : 'translate-x-0.5'
- }`} />
- </button>
- </div>
-
- <div className="flex items-center justify-between">
- <label className="text-sm font-medium text-[var(--text-primary)]">Notification Sound</label>
- <button
- onClick={() => updateSettings({ notificationSound: !settings.notificationSound })}
- className={`w-12 h-6 rounded-full transition-colors ${settings.notificationSound ? 'bg-[var(--primary)]' : 'bg-[var(--bg-overlay)]'
- }`}
- >
- <div className={`w-5 h-5 bg-[var(--bg-surface)] rounded-full transition-transform ${settings.notificationSound ? 'translate-x-6' : 'translate-x-0.5'
- }`} />
- </button>
- </div>
-
- <div>
- <label className="text-sm font-medium text-[var(--text-primary)] block mb-2">
- Reminder Interval: {settings.reminderInterval} minutes
- </label>
- <input
- type="range"
- min="5"
- max="60"
- step="5"
- value={settings.reminderInterval}
- onChange={(e) => updateSettings({ reminderInterval: parseInt(e.target.value) })}
- className="w-full"
- />
- </div>
- </div>
- </div>
- </div>
- )}
-
- {/* Add Reminder Modal */}
- <AddReminderModal
- isOpen={showAddModal}
- onClose={() => setShowAddModal(false)}
- />
- </div>
- );
+      <AddReminderModal isOpen={showAddModal} onClose={() => setShowAddModal(false)} />
+    </div>
+  );
 };
 
 export default RemindersPage;

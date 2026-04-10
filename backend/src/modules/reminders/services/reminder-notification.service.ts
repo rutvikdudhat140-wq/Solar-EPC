@@ -1,8 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, forwardRef, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Reminder } from '../schemas/reminder.schema';
 import { NotificationLog, NotificationLogDocument } from '../schemas/notification-log.schema';
+import { ReminderGateway } from '../gateways/reminder.gateway';
 
 @Injectable()
 export class ReminderNotificationService {
@@ -10,6 +11,8 @@ export class ReminderNotificationService {
 
   constructor(
     @InjectModel(NotificationLog.name) private readonly notificationLogModel: Model<NotificationLogDocument>,
+    @Inject(forwardRef(() => ReminderGateway))
+    private readonly reminderGateway: ReminderGateway,
   ) {}
 
   /**
@@ -51,14 +54,36 @@ export class ReminderNotificationService {
    * In-app notification (real-time via WebSocket or stored for polling)
    */
   private async sendInAppNotification(reminder: Reminder): Promise<void> {
-    this.logger.log(`[IN-APP] Reminder: ${reminder.title} for user ${reminder.assignedTo}`);
-    
-    // In a real implementation, this would:
-    // 1. Emit WebSocket event to user's room
-    // 2. Store in notification collection for polling
-    // 3. Update user's unread notification count
-    
-    // For now, just log it
+    const userId = reminder.assignedTo.toString();
+    this.logger.log(`[IN-APP] Reminder: ${reminder.title} for user ${userId}`);
+
+    // Emit real-time WebSocket event to user's room
+    if (this.reminderGateway) {
+      this.reminderGateway.notifyReminderTriggered(userId, {
+        id: reminder._id,
+        title: reminder.title,
+        description: reminder.description,
+        priority: reminder.priority,
+        dueDate: reminder.dueDate,
+        module: reminder.module,
+        type: reminder.type,
+      });
+      this.logger.log(`[WEBSOCKET] Sent real-time notification to user ${userId}`);
+    }
+
+    // Also broadcast to tenant for admin/manager visibility
+    if (reminder.tenantId) {
+      const tenantId = reminder.tenantId.toString();
+      this.reminderGateway?.broadcastToTenant(tenantId, 'reminder-triggered', {
+        id: reminder._id,
+        title: reminder.title,
+        assignedTo: userId,
+        priority: reminder.priority,
+        dueDate: reminder.dueDate,
+        module: reminder.module,
+      });
+    }
+
     return Promise.resolve();
   }
 

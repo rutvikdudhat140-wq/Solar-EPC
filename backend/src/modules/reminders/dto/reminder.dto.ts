@@ -84,6 +84,14 @@ export class CreateReminderDto {
   @IsObject()
   @IsOptional()
   metadata?: any;
+
+  @IsEnum(['manual', 'event', 'synthetic'])
+  @IsOptional()
+  sourceKind?: 'manual' | 'event' | 'synthetic';
+
+  @IsString()
+  @IsOptional()
+  sourceKey?: string;
 }
 
 export class UpdateReminderDto {
@@ -149,6 +157,14 @@ export class UpdateReminderDto {
   @IsObject()
   @IsOptional()
   metadata?: any;
+
+  @IsEnum(['manual', 'event', 'synthetic'])
+  @IsOptional()
+  sourceKind?: 'manual' | 'event' | 'synthetic';
+
+  @IsString()
+  @IsOptional()
+  sourceKey?: string;
 }
 
 export class SnoozeReminderDto {
