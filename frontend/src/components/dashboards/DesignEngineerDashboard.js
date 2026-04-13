@@ -1,4 +1,4 @@
-// DesignEngineerDashboard.js Ã¢â‚¬â€ Design Engineer role dashboard (redesigned)
+// DesignEngineerDashboard.js "" Design Engineer role dashboard (redesigned)
 import React from 'react';
 import {
     BarChart, Bar, PieChart, Pie, Cell, LineChart, Line,
@@ -83,7 +83,7 @@ const DesignEngineerDashboard = () => {
 
             <SectionHeader
                 title="Design Engineer Dashboard"
-                subtitle="System design Ã‚Â· BOQ generation Ã‚Â· CAD approval workflow"
+                subtitle="System design •· BOQ generation •· CAD approval workflow"
                 icon={PenTool}
                 accent={C.primary}
                 badge="Design Studio"
@@ -188,7 +188,7 @@ const DesignEngineerDashboard = () => {
                                 <div className="w-2 h-8 rounded-full" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
                                 <div className="flex-1">
                                     <p className="text-[12.5px] font-semibold text-[var(--text-primary)]">{s.type}</p>
-                                    <p className="text-[10px] text-[var(--text-muted)]">{s.count} systems Ã‚Â· {s.capacity} kWp total</p>
+                                    <p className="text-[10px] text-[var(--text-muted)]">{s.count} systems •· {s.capacity} kWp total</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[14px] font-bold tabular-nums" style={{ color: CHART_COLORS[i % CHART_COLORS.length] }}>{s.count}</p>
@@ -222,7 +222,7 @@ const DesignEngineerDashboard = () => {
                 {[
                     { icon: CheckCircle, title: 'CAD approved: Rajkot 100kW Industrial', meta: 'Client: TexTile Pvt Ltd', time: '1h ago', status: 'Approved', statusColor: '#10b981' },
                     { icon: PenTool, title: 'Design started: Surat Rooftop 50kW', meta: 'Residential system design', time: '3h ago', status: 'In Progress', statusColor: C.primary },
-                    { icon: Calculator, title: 'BOQ generated: Vadodara Factory 200kW', meta: 'Total value: Ã¢â€šÂ¹18.5L', time: '5h ago', status: 'Sent', statusColor: '#f59e0b' },
+                    { icon: Calculator, title: 'BOQ generated: Vadodara Factory 200kW', meta: 'Total value: ₹18.5L', time: '5h ago', status: 'Sent', statusColor: '#f59e0b' },
                     { icon: AlertCircle, title: 'Revision requested: Ahmedabad Mall', meta: 'Client requested panel layout', time: '1d ago', status: 'Revision', statusColor: '#ef4444' },
                     { icon: Archive, title: 'Design archived: Gandhinagar 25kW', meta: 'Project completed & closed', time: '2d ago', status: 'Closed', statusColor: 'var(--text-muted)' },
                 ].map((item, i) => (

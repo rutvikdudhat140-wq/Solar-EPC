@@ -1,4 +1,4 @@
-// Solar OS �’� Lead Management Module (Enterprise Edition)
+// Solar OS �’� Lead Management Module (Enterprise Edition)
 import React, { useState, useMemo, useCallback } from 'react';
 import {
  Plus, Phone, Mail, MapPin, TrendingUp, Users, Zap, Eye,
@@ -20,9 +20,9 @@ import CanAccess from '../components/CanAccess';
 
 const fmt = CURRENCY.format;
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // CONSTANTS
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const SOURCES = ['All', 'Website', 'Referral', 'Campaign', 'Walk-in', 'LinkedIn', 'Facebook Ads', 'Google Ads'];
 const CITIES = ['All', 'Ahmedabad', 'Surat', 'Rajkot', 'Vadodara', 'Morbi', 'Anand', 'Mumbai', 'Pune', 'Chennai', 'Gandhinagar'];
 const STAGE_FILTERS = ['All', ...PIPELINE_STAGES.map(s => s.label)];
@@ -39,9 +39,9 @@ const ACTIVITY_COLORS = { call: '#22c55e', email: '#3b82f6', whatsapp: '#25d366'
 const getStage = (id) => PIPELINE_STAGES.find(s => s.id === id) || PIPELINE_STAGES[0];
 const getScoreTier = (score) => SCORE_TIERS.find(t => score >= t.min) || SCORE_TIERS[2];
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // MICRO COMPONENTS
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ScoreBadge = ({ score, size = 'sm' }) => {
  const tier = getScoreTier(score);
  const Icon = tier.icon;
@@ -51,7 +51,7 @@ const ScoreBadge = ({ score, size = 'sm' }) => {
  style={{ color: tier.color, background: tier.bg, borderColor: `${tier.color}40` }}
  >
  <Icon size={size === 'lg' ? 13 : 10} />
- {tier.label} �’�¡· {score}
+ {tier.label} �’�¡· {score}
  </span>
  );
 };
@@ -103,9 +103,9 @@ const MiniKPI = ({ label, value, sub, icon: Icon, color }) => (
  </div>
 );
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // KANBAN CARD
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const LeadCard = ({ lead, onSelect, isDragging }) => {
  const tier = getScoreTier(lead.score);
  const Icon = tier.icon;
@@ -156,9 +156,9 @@ const LeadCard = ({ lead, onSelect, isDragging }) => {
  );
 };
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // KANBAN BOARD
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const KanbanBoard = ({ leads, onSelect, onStageChange }) => {
  const [dragging, setDragging] = useState(null);
  const [dragOver, setDragOver] = useState(null);
@@ -219,9 +219,9 @@ const KanbanBoard = ({ leads, onSelect, onStageChange }) => {
  );
 };
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // TABLE ROW (redesigned to match screenshot)
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // Avatar colours keyed by first letter
 const AVATAR_PALETTE = ['#f59e0b', '#3b82f6', '#22c55e', '#ec4899', '#8b5cf6', '#f97316', '#14b8a6', '#ef4444', '#a855f7', '#06b6d4'];
 const avatarColor = (name = '') => AVATAR_PALETTE[name.charCodeAt(0) % AVATAR_PALETTE.length];
@@ -282,7 +282,7 @@ const TableRow = ({ lead, onSelect, selected, onToggle }) => {
  <div className="flex items-center gap-1.5">
  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
  style={{ color: tier.color, background: tier.bg, border: `1px solid ${tier.color}40` }}>
- {tier.label} �’�¡· {lead.score}
+ {tier.label} �’�¡· {lead.score}
  </span>
  </div>
  </td>
@@ -338,9 +338,9 @@ const TableRow = ({ lead, onSelect, selected, onToggle }) => {
  );
 };
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // AI SCORE BREAKDOWN
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const AIScoreBreakdown = ({ lead }) => {
  const factors = [
  { label: 'Monthly Bill', score: Math.min(100, Math.round(lead.monthlyBill / 1800)), icon: DollarSign },
@@ -372,9 +372,9 @@ const AIScoreBreakdown = ({ lead }) => {
  );
 };
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // COMMUNICATION TIMELINE
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const CommunicationTimeline = ({ activities }) => {
  if (!activities || activities.length === 0)
  return <p className="text-[11px] text-[var(--text-faint)] text-center py-8">No activities yet</p>;
@@ -406,9 +406,9 @@ const CommunicationTimeline = ({ activities }) => {
  );
 };
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
-// LEAD DETAIL MODAL �’� 360�’�¡VIEW
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// LEAD DETAIL MODAL �’� 360�’�¡VIEW
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const LeadDetailModal = ({ lead, onClose, onNavigate }) => {
  const [tab, setTab] = useState('overview');
  if (!lead) return null;
@@ -491,7 +491,7 @@ const LeadDetailModal = ({ lead, onClose, onNavigate }) => {
  {[
  { label: 'System Size', value: lead.kw, icon: Zap },
  { label: 'Project Value', value: fmt(lead.value), icon: DollarSign },
- { label: 'Monthly Bill', value: `�’${(lead.monthlyBill / 1000).toFixed(0)}K`, icon: Activity },
+ { label: 'Monthly Bill', value: `�’${(lead.monthlyBill / 1000).toFixed(0)}K`, icon: Activity },
  { label: 'Roof Area', value: `${lead.roofArea} sqft`, icon: Building2 },
  { label: 'Budget', value: fmt(lead.budget), icon: Target },
  { label: 'Lead Age', value: `${lead.age} days`, icon: Clock },
@@ -667,7 +667,7 @@ const LeadDetailModal = ({ lead, onClose, onNavigate }) => {
  { label: 'Roof Type', value: lead.roofType },
  { label: 'Roof Area', value: `${lead.roofArea} sqft` },
  { label: 'Location', value: `${lead.city}, ${lead.state}` },
- { label: 'Coordinates', value: `${lead.lat}�’�¡N, ${lead.lng}�’�¡E` },
+ { label: 'Coordinates', value: `${lead.lat}�’�¡N, ${lead.lng}�’�¡E` },
  ].map(r => (
  <div key={r.label} className="flex justify-between border-b border-[var(--border-subtle)] pb-2">
  <span className="text-[11px] text-[var(--text-faint)]">{r.label}</span>
@@ -681,7 +681,7 @@ const LeadDetailModal = ({ lead, onClose, onNavigate }) => {
  <div className="flex-1 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-base)] flex flex-col items-center justify-center min-h-36 text-center p-4">
  <MapPin size={24} className="text-[var(--accent)] mb-2" />
  <p className="text-xs font-semibold text-[var(--text-primary)]">{lead.city}, {lead.state}</p>
- <p className="text-[10px] text-[var(--text-faint)] mt-1">{lead.lat}�’�¡N �’�¡· {lead.lng}�’�¡E</p>
+ <p className="text-[10px] text-[var(--text-faint)] mt-1">{lead.lat}�’�¡N �’�¡· {lead.lng}�’�¡E</p>
  <p className="text-[10px] text-[var(--text-faint)] mt-1">Map integration ready (Mapbox / Google)</p>
  </div>
  </div>
@@ -701,7 +701,7 @@ const LeadDetailModal = ({ lead, onClose, onNavigate }) => {
  <p className="text-xs font-bold text-[var(--text-primary)] mb-3">Energy Requirement</p>
  <div className="space-y-3">
  {[
- { label: 'Monthly Bill', value: `�’${lead.monthlyBill.toLocaleString()}` },
+ { label: 'Monthly Bill', value: `�’${lead.monthlyBill.toLocaleString()}` },
  { label: 'Monthly Consumption', value: `~${Math.round(lead.monthlyBill / 8)} kWh/mo` },
  { label: 'System Size', value: lead.kw },
  { label: 'Annual Generation', value: `~${parseFloat(lead.kw) * 1400} kWh` },
@@ -718,7 +718,7 @@ const LeadDetailModal = ({ lead, onClose, onNavigate }) => {
  <div className="space-y-3">
  {[
  { label: 'Investment', value: fmt(lead.value) },
- { label: 'Annual Saving', value: `�’${Math.round(lead.monthlyBill * 12 * 0.85).toLocaleString()}` },
+ { label: 'Annual Saving', value: `�’${Math.round(lead.monthlyBill * 12 * 0.85).toLocaleString()}` },
  { label: 'Payback Period', value: `${(lead.value / (lead.monthlyBill * 12 * 0.85)).toFixed(1)} yrs` },
  { label: '25-Year ROI', value: `${Math.round(((lead.monthlyBill * 12 * 0.85 * 25 - lead.value) / lead.value) * 100)}%` },
  ].map(r => (
@@ -751,7 +751,7 @@ const LeadDetailModal = ({ lead, onClose, onNavigate }) => {
  </div>
  <div className="flex-1 min-w-0">
  <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{d.name}</p>
- <p className="text-[10px] text-[var(--text-faint)]">{d.size} �’�¡· {d.date}</p>
+ <p className="text-[10px] text-[var(--text-faint)]">{d.size} �’�¡· {d.date}</p>
  </div>
  <button className="p-1.5 rounded hover:bg-[var(--bg-elevated)] text-[var(--text-faint)] hover:text-[var(--text-primary)]"><Download size={12} /></button>
  </div>
@@ -766,7 +766,7 @@ const LeadDetailModal = ({ lead, onClose, onNavigate }) => {
  <p className="text-xs font-bold text-[var(--text-primary)] mb-4">Activity Logs</p>
  <div className="space-y-2">
  {[
- { text: `Stage changed �’�Â¢ ${getStage(lead.stage).label}`, by: 'Ravi Sharma', ts: lead.lastContact + ' 10:00' },
+ { text: `Stage changed �’�¢ ${getStage(lead.stage).label}`, by: 'Ravi Sharma', ts: lead.lastContact + ' 10:00' },
  { text: `Lead assigned to ${lead.assignedTo}`, by: 'Admin User', ts: lead.created + ' 14:05' },
  { text: 'Lead created from ' + lead.source, by: 'System', ts: lead.created + ' 14:00' },
  ].map((l, i) => (
@@ -774,7 +774,7 @@ const LeadDetailModal = ({ lead, onClose, onNavigate }) => {
  <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] mt-1.5 shrink-0" />
  <div className="flex-1">
  <p className="text-xs text-[var(--text-primary)]">{l.text}</p>
- <p className="text-[10px] text-[var(--text-faint)] mt-0.5">{l.ts} �’�¡· {l.by}</p>
+ <p className="text-[10px] text-[var(--text-faint)] mt-0.5">{l.ts} �’�¡· {l.by}</p>
  </div>
  </div>
  ))}
@@ -787,9 +787,9 @@ const LeadDetailModal = ({ lead, onClose, onNavigate }) => {
  );
 };
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // ADD LEAD MODAL (3-step)
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const AddLeadModal = ({ open, onClose }) => {
  const [step, setStep] = useState(0);
  const [form, setForm] = useState({ name: '', company: '', phone: '', email: '', source: 'Website', city: '', kw: '', monthlyBill: '', roofType: 'RCC Flat', budget: '', assignedTo: 'Ravi Sharma', category: 'Commercial', stage: 'new' });
@@ -832,13 +832,13 @@ const AddLeadModal = ({ open, onClose }) => {
  <div className="space-y-3">
  <div className="grid grid-cols-2 gap-3">
  <FormField label="System Size (kW)"><Input placeholder="50" value={form.kw} onChange={e => set('kw', e.target.value)} /></FormField>
- <FormField label="Monthly Bill (�’)"><Input placeholder="45000" value={form.monthlyBill} onChange={e => set('monthlyBill', e.target.value)} /></FormField>
+ <FormField label="Monthly Bill (�’)"><Input placeholder="45000" value={form.monthlyBill} onChange={e => set('monthlyBill', e.target.value)} /></FormField>
  </div>
  <div className="grid grid-cols-2 gap-3">
  <FormField label="Roof Type"><Select value={form.roofType} onChange={e => set('roofType', e.target.value)}>{['RCC Flat', 'Industrial Shed', 'Tin Sheet', 'Sloped Tile'].map(t => <option key={t}>{t}</option>)}</Select></FormField>
  <FormField label="Category"><Select value={form.category} onChange={e => set('category', e.target.value)}>{CATS.slice(1).map(c => <option key={c}>{c}</option>)}</Select></FormField>
  </div>
- <FormField label="Budget (�’)"><Input placeholder="300000" value={form.budget} onChange={e => set('budget', e.target.value)} /></FormField>
+ <FormField label="Budget (�’)"><Input placeholder="300000" value={form.budget} onChange={e => set('budget', e.target.value)} /></FormField>
  <div className="glass-card p-3 flex items-center gap-2 border-l-2 border-[var(--accent)]">
  <Zap size={12} className="text-[var(--accent)] shrink-0" />
  <p className="text-[10px] text-[var(--text-muted)]">AI score will be calculated automatically from the data above.</p>
@@ -857,7 +857,7 @@ const AddLeadModal = ({ open, onClose }) => {
  <p className="text-xs font-bold text-[var(--accent)] mb-2">Auto-Actions on Create</p>
  <div className="space-y-1">
  {['Duplicate detection (phone + email)', 'Auto-tag by source', 'AI score calculation', 'SLA timer start (2hr contact)', `Assign to ${form.assignedTo}`].map(a => (
- <p key={a} className="text-[10px] text-[var(--text-muted)]">�’�“œ {a}</p>
+ <p key={a} className="text-[10px] text-[var(--text-muted)]">�’�“œ {a}</p>
  ))}
  </div>
  </div>
@@ -865,9 +865,9 @@ const AddLeadModal = ({ open, onClose }) => {
  )}
 
  <div className="flex justify-between mt-6 pt-4 border-t border-[var(--border-base)]">
- <Button variant="ghost" size="sm" onClick={step === 0 ? onClose : () => setStep(s => s - 1)}>{step === 0 ? 'Cancel' : '�’Back'}</Button>
+ <Button variant="ghost" size="sm" onClick={step === 0 ? onClose : () => setStep(s => s - 1)}>{step === 0 ? 'Cancel' : '�’Back'}</Button>
  {step < STEPS.length - 1
- ? <Button variant="primary" size="sm" onClick={() => setStep(s => s + 1)}>Next �’�Â¢</Button>
+ ? <Button variant="primary" size="sm" onClick={() => setStep(s => s + 1)}>Next �’�¢</Button>
  : <Button variant="primary" size="sm" onClick={onClose} className="flex items-center gap-1.5"><Plus size={12} />Create Lead</Button>
  }
  </div>
@@ -875,9 +875,9 @@ const AddLeadModal = ({ open, onClose }) => {
  );
 };
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // IMPORT MODAL
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const ImportModal = ({ open, onClose }) => {
  const [drag, setDrag] = useState(false);
  return (
@@ -899,7 +899,7 @@ const ImportModal = ({ open, onClose }) => {
  </div>
  </div>
  <div className="glass-card p-3 border-l-2 border-[var(--accent)]">
- <p className="text-[10px] text-[var(--text-muted)]"><span className="text-[var(--accent)] font-bold">Auto on import:</span> Duplicate detection �’�¡· AI scoring �’�¡· Source tagging �’�¡· Auto-assignment</p>
+ <p className="text-[10px] text-[var(--text-muted)]"><span className="text-[var(--accent)] font-bold">Auto on import:</span> Duplicate detection �’�¡· AI scoring �’�¡· Source tagging �’�¡· Auto-assignment</p>
  </div>
  <div className="flex gap-2">
  <Button variant="ghost" size="sm" className="flex-1" onClick={onClose}>Cancel</Button>
@@ -911,9 +911,9 @@ const ImportModal = ({ open, onClose }) => {
  );
 };
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // FUNNEL CHART
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const FunnelChart = ({ leads }) => {
  const stages = PIPELINE_STAGES.filter(s => s.id !== 'lost');
  const counts = stages.map(s => ({ ...s, count: leads.filter(l => l.stage === s.id).length, value: leads.filter(l => l.stage === s.id).reduce((a, l) => a + l.value, 0) }));
@@ -937,7 +937,7 @@ const FunnelChart = ({ leads }) => {
  </div>
  <span className="text-[10px] text-[var(--text-faint)] w-20 text-right shrink-0">{fmt(s.value)}</span>
  {conv !== null && (
- <span className={`text-[9px] font-bold w-10 text-right shrink-0 ${parseInt(conv) < 50 ? 'text-red-400' : 'text-green-400'}`}>{conv}%�’�</span>
+ <span className={`text-[9px] font-bold w-10 text-right shrink-0 ${parseInt(conv) < 50 ? 'text-red-400' : 'text-green-400'}`}>{conv}%�’�</span>
  )}
  </div>
  </div>
@@ -947,9 +947,9 @@ const FunnelChart = ({ leads }) => {
  );
 };
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // ANALYTICS PANEL
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const AnalyticsPanel = ({ leads }) => {
  const sourceData = useMemo(() => {
  const map = {};
@@ -968,9 +968,9 @@ const AnalyticsPanel = ({ leads }) => {
  return (
  <div className="space-y-4">
  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
- <MiniKPI label="Total Pipeline" value={`�’${(leads.reduce((a, l) => a + l.value, 0) / 100000).toFixed(1)}L`} sub={`${leads.length} leads`} icon={TrendingUp} color="#f59e0b" />
- <MiniKPI label="Hot Leads" value={hotCount} sub="Score �’� 75" icon={Flame} color="#f97316" />
- <MiniKPI label="Win Rate" value={`${closedPct}%`} sub={`${wonCount} won �’�¡· ${lostCount} lost`} icon={Target} color="#22c55e" />
+ <MiniKPI label="Total Pipeline" value={`�’${(leads.reduce((a, l) => a + l.value, 0) / 100000).toFixed(1)}L`} sub={`${leads.length} leads`} icon={TrendingUp} color="#f59e0b" />
+ <MiniKPI label="Hot Leads" value={hotCount} sub="Score �’� 75" icon={Flame} color="#f97316" />
+ <MiniKPI label="Win Rate" value={`${closedPct}%`} sub={`${wonCount} won �’�¡· ${lostCount} lost`} icon={Target} color="#22c55e" />
  <MiniKPI label="SLA Breaches" value={leads.filter(l => l.slaBreached).length} sub="Needs action" icon={AlertTriangle} color="#ef4444" />
  </div>
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -1025,7 +1025,7 @@ const AnalyticsPanel = ({ leads }) => {
  <div className="flex-1 min-w-0">
  <div className="flex items-center justify-between">
  <span className="text-[11px] font-semibold text-[var(--text-primary)] truncate">{rep}</span>
- <span className="text-[10px] text-[var(--text-faint)] shrink-0">{count} �’�¡· {conv}%</span>
+ <span className="text-[10px] text-[var(--text-faint)] shrink-0">{count} �’�¡· {conv}%</span>
  </div>
  <div className="h-1.5 mt-1 rounded-full bg-[var(--bg-elevated)] overflow-hidden">
  <div className="h-full rounded-full" style={{ width: `${(count / leads.length) * 100}%`, background: 'var(--accent)' }} />
@@ -1041,9 +1041,9 @@ const AnalyticsPanel = ({ leads }) => {
  );
 };
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // LEADS DASHBOARD
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 
 // Monthly pipeline data (12 months)
 const MONTHLY_PIPELINE = [
@@ -1061,7 +1061,7 @@ const MONTHLY_PIPELINE = [
  { month: 'Dec', contacted: 16000, opportunity: 21000, totalContacted: 12000 },
 ];
 
-// New leads heatmap (days �’��weeks)
+// New leads heatmap (days �’��weeks)
 const HEATMAP_DATA = {
  days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
  weeks: ['W1', 'W2', 'W3', 'W4'],
@@ -1227,7 +1227,7 @@ const LeadsDashboard = ({ leads, onSelectLead, onNavigate }) => {
  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm inline-block bg-[#3b82f6]" />Opportunity <strong className="text-[var(--text-primary)] ml-0.5">22900</strong></span>
  <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm inline-block bg-[#f59e0b]" />Total Contacted <strong className="text-[var(--text-primary)] ml-0.5">12566</strong></span>
  </div>
- <span className="text-[10px] text-[var(--text-faint)] bg-[var(--bg-elevated)] px-2 py-1 rounded-lg border border-[var(--border-base)]">2024 �’� 2026</span>
+ <span className="text-[10px] text-[var(--text-faint)] bg-[var(--bg-elevated)] px-2 py-1 rounded-lg border border-[var(--border-base)]">2024 �’� 2026</span>
  </div>
  <div className="flex gap-2" style={{ height: 140 }}>
  {/* Y-axis */}
@@ -1510,7 +1510,7 @@ const LeadsDashboard = ({ leads, onSelectLead, onNavigate }) => {
  <div className="space-y-2.5">
  {stateCounts.map((c, i) => (
  <div key={c.city} className="flex items-center gap-2.5">
- <span className="text-base shrink-0 leading-none">�’�Æ’�³</span>
+ <span className="text-base shrink-0 leading-none">�’�f�³</span>
  <div className="flex-1 min-w-0">
  <div className="flex items-center justify-between mb-0.5">
  <p className="text-[11px] font-semibold text-[var(--text-primary)] truncate">{c.city}</p>
@@ -1528,7 +1528,7 @@ const LeadsDashboard = ({ leads, onSelectLead, onNavigate }) => {
  );
  };
 
- // Recent Leads Table �’matches screenshot exactly
+ // Recent Leads Table �’matches screenshot exactly
  const RecentLeadsTable = () => (
  <div className="glass-card overflow-hidden">
  <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-base)]">
@@ -1636,9 +1636,9 @@ const LeadsDashboard = ({ leads, onSelectLead, onNavigate }) => {
  );
 };
 
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 // MAIN CRM PAGE
-// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const CRMPage = ({ onNavigate }) => {
  const [view, setView] = useState('dashboard');
  const [search, setSearch] = useState('');
@@ -1701,7 +1701,7 @@ const CRMPage = ({ onNavigate }) => {
  return (
  <div className="space-y-5 animate-fade-in">
 
- {/* �’�’PAGE HEADER �’�’*/}
+ {/* �’�’PAGE HEADER �’�’*/}
  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
  <div>
  <h1 className="text-xl font-extrabold text-[var(--text-primary)] flex items-center gap-2.5">
@@ -1711,7 +1711,7 @@ const CRMPage = ({ onNavigate }) => {
  Lead Management
  </h1>
  <p className="text-xs text-[var(--text-faint)] mt-1">
- {leads.length} leads �’�¡· {hotCount} hot �’�¡· �’{(totalPipeline / 100000).toFixed(1)}L pipeline
+ {leads.length} leads �’�¡· {hotCount} hot �’�¡· �’{(totalPipeline / 100000).toFixed(1)}L pipeline
  </p>
  </div>
  <div className="flex items-center gap-2 flex-wrap">
@@ -1727,12 +1727,12 @@ const CRMPage = ({ onNavigate }) => {
  </div>
  </div>
 
- {/* �’�’KPI CARDS �’hidden in dashboard (it has its own strip) �’�’*/}
+ {/* �’�’KPI CARDS �’hidden in dashboard (it has its own strip) �’�’*/}
  {view !== 'dashboard' && (
  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
  {[
- { label: 'Total Pipeline', value: `�’${(totalPipeline / 100000).toFixed(1)}L`, sub: `${leads.length} active leads`, icon: TrendingUp, color: '#f59e0b' },
- { label: 'Hot Leads', value: hotCount, sub: 'Score �’� 75', icon: Flame, color: '#f97316' },
+ { label: 'Total Pipeline', value: `�’${(totalPipeline / 100000).toFixed(1)}L`, sub: `${leads.length} active leads`, icon: TrendingUp, color: '#f59e0b' },
+ { label: 'Hot Leads', value: hotCount, sub: 'Score �’� 75', icon: Flame, color: '#f97316' },
  { label: 'Win Rate', value: `${convRate}%`, sub: `${wonLeads.length} of ${closedLeads.length} closed`, icon: Target, color: '#22c55e' },
  { label: 'SLA Alerts', value: breachedCount, sub: breachedCount > 0 ? 'Immediate action' : 'All within SLA', icon: AlertTriangle, color: breachedCount > 0 ? '#ef4444' : '#22c55e' },
  ].map(k => {
@@ -1753,16 +1753,16 @@ const CRMPage = ({ onNavigate }) => {
  </div>
  )}
 
- {/* �’�’SLA BANNER �’�’*/}
+ {/* �’�’SLA BANNER �’�’*/}
  {view !== 'dashboard' && breachedCount > 0 && (
  <div className="flex items-center gap-3 p-3 rounded-xl bg-red-500/10 border border-red-500/25">
  <AlertTriangle size={14} className="text-red-400 shrink-0" />
- <p className="text-xs text-red-400"><strong>{breachedCount} leads</strong> have breached SLA �’contact them immediately.</p>
- <button className="ml-auto text-[10px] text-red-400 underline whitespace-nowrap" onClick={() => { setSortKey('age'); setSortDir('desc'); }}>Sort by age �’�Â¢</button>
+ <p className="text-xs text-red-400"><strong>{breachedCount} leads</strong> have breached SLA �’contact them immediately.</p>
+ <button className="ml-auto text-[10px] text-red-400 underline whitespace-nowrap" onClick={() => { setSortKey('age'); setSortDir('desc'); }}>Sort by age �’�¢</button>
  </div>
  )}
 
- {/* �’�’AI INSIGHT BANNER �’�’*/}
+ {/* �’�’AI INSIGHT BANNER �’�’*/}
  {view !== 'dashboard' && (
  <div className="flex items-start gap-3 p-3.5 rounded-xl border border-[var(--accent)]/20 bg-[var(--accent)]/5">
  <div className="w-7 h-7 rounded-lg bg-[var(--accent)]/15 border border-[var(--accent)]/25 flex items-center justify-center shrink-0 mt-0.5">
@@ -1771,17 +1771,17 @@ const CRMPage = ({ onNavigate }) => {
  <div>
  <p className="text-xs font-bold text-[var(--accent)] mb-0.5">AI Sales Insight</p>
  <p className="text-xs text-[var(--text-muted)] leading-relaxed">
- <strong className="text-[var(--text-secondary)]">Deepika Shah (L004)</strong> in negotiation �’decision expected Feb 28. Prioritise follow-up.
- <span className="mx-1.5 text-[var(--text-faint)]">�’�¡·</span>
- <strong className="text-[var(--text-secondary)]">Sanjay Patel (L013)</strong> score 93 �’highest value in pipeline at �’6.72L. Close this week.
+ <strong className="text-[var(--text-secondary)]">Deepika Shah (L004)</strong> in negotiation �’decision expected Feb 28. Prioritise follow-up.
+ <span className="mx-1.5 text-[var(--text-faint)]">�’�¡·</span>
+ <strong className="text-[var(--text-secondary)]">Sanjay Patel (L013)</strong> score 93 �’highest value in pipeline at �’6.72L. Close this week.
  </p>
  </div>
  </div>
  )}
 
- {/* �’�’TOOLBAR �’�’*/}
+ {/* �’�’TOOLBAR �’�’*/}
  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
- {/* Search �’hidden in dashboard view */}
+ {/* Search �’hidden in dashboard view */}
  {view !== 'dashboard' && (
  <div className="relative flex-1 min-w-0">
  <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
@@ -1823,7 +1823,7 @@ const CRMPage = ({ onNavigate }) => {
  })}
  </div>
 
- {/* Filters button �’hidden in dashboard view */}
+ {/* Filters button �’hidden in dashboard view */}
  {view !== 'dashboard' && (
  <button
  onClick={() => setShowFilters(f => !f)}
@@ -1841,7 +1841,7 @@ const CRMPage = ({ onNavigate }) => {
  </div>
  </div>
 
- {/* �’�’FILTERS �’�’*/}
+ {/* �’�’FILTERS �’�’*/}
  {view !== 'dashboard' && showFilters && (
  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 p-3 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-base)]">
  {[
@@ -1868,7 +1868,7 @@ const CRMPage = ({ onNavigate }) => {
  </div>
  )}
 
- {/* �’�’BULK ACTIONS �’�’*/}
+ {/* �’�’BULK ACTIONS �’�’*/}
  {view !== 'dashboard' && selected.length > 0 && (
  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[var(--accent)]/8 border border-[var(--accent)]/20">
  <span className="text-[11px] font-bold text-[var(--accent)]">{selected.length} selected</span>
@@ -1901,12 +1901,12 @@ const CRMPage = ({ onNavigate }) => {
  </div>
  )}
 
- {/* �’�’LEADS DASHBOARD �’�’*/}
+ {/* �’�’LEADS DASHBOARD �’�’*/}
  {view === 'dashboard' && (
  <LeadsDashboard leads={leads} onSelectLead={setDetailLead} onNavigate={onNavigate} />
  )}
 
- {/* �’�’RESULTS COUNT �’�’*/}
+ {/* �’�’RESULTS COUNT �’�’*/}
  {view !== 'dashboard' && (
  <div className="flex items-center justify-between gap-3 px-1">
  <p className="text-[11px] text-[var(--text-faint)]">
@@ -1922,7 +1922,7 @@ const CRMPage = ({ onNavigate }) => {
  </div>
  )}
 
- {/* �’�’MAIN CONTENT + SIDEBAR �’�’*/}
+ {/* �’�’MAIN CONTENT + SIDEBAR �’�’*/}
  {view !== 'dashboard' && (
  <div className={`flex gap-4 ${view === 'analytics' ? '' : 'items-start'}`}>
 
@@ -1995,12 +1995,12 @@ const CRMPage = ({ onNavigate }) => {
  </table>
  </div>
 
- {/* �’�’Pagination �’�’*/}
+ {/* �’�’Pagination �’�’*/}
  {totalPages > 1 && (
  <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border-base)] bg-[var(--bg-surface)]">
  <p className="text-[11px] text-[var(--text-faint)]">
  Page <strong className="text-[var(--text-primary)]">{page}</strong> of{' '}
- <strong className="text-[var(--text-primary)]">{totalPages}</strong> �’�¡·{' '}
+ <strong className="text-[var(--text-primary)]">{totalPages}</strong> �’�¡·{' '}
  {filtered.length} results
  </p>
  <div className="flex items-center gap-1">
@@ -2008,7 +2008,7 @@ const CRMPage = ({ onNavigate }) => {
  disabled={page === 1}
  onClick={() => setPage(p => p - 1)}
  className="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-[var(--border-base)] text-[var(--text-faint)] hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
- >�’Prev</button>
+ >�’Prev</button>
  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
  const p = Math.max(1, Math.min(page - 2, totalPages - 4)) + i;
  if (p < 1 || p > totalPages) return null;
@@ -2024,7 +2024,7 @@ const CRMPage = ({ onNavigate }) => {
  disabled={page === totalPages}
  onClick={() => setPage(p => p + 1)}
  className="px-2.5 py-1 rounded-lg text-[11px] font-medium border border-[var(--border-base)] text-[var(--text-faint)] hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
- >Next �’�Â¢</button>
+ >Next �’�¢</button>
  </div>
  </div>
  )}
@@ -2044,7 +2044,7 @@ const CRMPage = ({ onNavigate }) => {
  {view === 'analytics' && <AnalyticsPanel leads={filtered} />}
  </div>
 
- {/* Alerts Sidebar �’only in table/kanban view */}
+ {/* Alerts Sidebar �’only in table/kanban view */}
  {view !== 'analytics' && (
  <div className="w-60 shrink-0 hidden xl:flex flex-col gap-3 sticky top-4 self-start">
 
@@ -2065,7 +2065,7 @@ const CRMPage = ({ onNavigate }) => {
  <AlertTriangle size={11} className="text-red-400 shrink-0 mt-0.5" />
  <div className="min-w-0">
  <p className="text-[11px] font-semibold text-[var(--text-primary)] truncate leading-tight">{l.name}</p>
- <p className="text-[10px] text-red-400 mt-0.5">SLA breached �’�¡· {l.age}d</p>
+ <p className="text-[10px] text-red-400 mt-0.5">SLA breached �’�¡· {l.age}d</p>
  </div>
  </div>
  ))}
@@ -2074,7 +2074,7 @@ const CRMPage = ({ onNavigate }) => {
  <Flame size={11} className="text-[var(--accent)] shrink-0 mt-0.5" />
  <div className="min-w-0">
  <p className="text-[11px] font-semibold text-[var(--text-primary)] truncate leading-tight">{l.name}</p>
- <p className="text-[10px] text-[var(--accent)] mt-0.5">Hot �’�¡· {l.score} �’�¡· {fmt(l.value)}</p>
+ <p className="text-[10px] text-[var(--accent)] mt-0.5">Hot �’�¡· {l.score} �’�¡· {fmt(l.value)}</p>
  </div>
  </div>
  ))}
@@ -2083,12 +2083,12 @@ const CRMPage = ({ onNavigate }) => {
  <Clock size={11} className="text-amber-400 shrink-0 mt-0.5" />
  <div className="min-w-0">
  <p className="text-[11px] font-semibold text-[var(--text-primary)] truncate leading-tight">{l.name}</p>
- <p className="text-[10px] text-amber-400 mt-0.5">{l.age}d old �’�¡· stale</p>
+ <p className="text-[10px] text-amber-400 mt-0.5">{l.age}d old �’�¡· stale</p>
  </div>
  </div>
  ))}
  {leads.filter(l => l.slaBreached).length === 0 && leads.filter(l => l.age >= 14).length === 0 && (
- <p className="text-[11px] text-[var(--text-faint)] text-center py-4">All clear �’�“œ</p>
+ <p className="text-[11px] text-[var(--text-faint)] text-center py-4">All clear �’�“œ</p>
  )}
  </div>
  </div>
@@ -2137,7 +2137,7 @@ const CRMPage = ({ onNavigate }) => {
  </div>
  <div className="flex-1 min-w-0">
  <p className="text-[11px] font-semibold text-[var(--text-primary)] truncate">{u.name}</p>
- <p className="text-[9px] text-[var(--text-faint)]">{repLeads.length} leads �’�¡· {repWon} won</p>
+ <p className="text-[9px] text-[var(--text-faint)]">{repLeads.length} leads �’�¡· {repWon} won</p>
  </div>
  </div>
  );
@@ -2149,7 +2149,7 @@ const CRMPage = ({ onNavigate }) => {
  </div>
  )} {/* end view !== 'dashboard' */}
 
- {/* �’�’MODALS �’�’*/}
+ {/* �’�’MODALS �’�’*/}
  <LeadDetailModal lead={detailLead} onClose={() => setDetailLead(null)} onNavigate={onNavigate} />
  <AddLeadModal open={addOpen} onClose={() => setAddOpen(false)} />
  <ImportModal open={importOpen} onClose={() => setImportOpen(false)} />

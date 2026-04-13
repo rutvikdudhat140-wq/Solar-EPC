@@ -1,4 +1,4 @@
-// FinanceDashboard.js Ã¢â‚¬â€ Finance role dashboard (redesigned)
+// FinanceDashboard.js a€" Finance role dashboard (redesigned)
 import React, { useMemo } from 'react';
 import {
     AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line,
@@ -61,7 +61,7 @@ const FinanceDashboard = ({
             return true;
         });
         
-        console.log('Ã°Å¸â€œÅ  CashFlow Filter:', { 
+        console.log('CashFlow Filter:', { 
             calendarFilterYear, 
             calendarFilterMonth, 
             invoiceCount: filteredInvoices.length,
@@ -89,9 +89,9 @@ const FinanceDashboard = ({
             console.log('  Invoice:', inv.id || inv._id, '| Amount:', paidAmount, '| Month:', monthKey);
         });
         
-        console.log('Ã°Å¸â€™Â° CashFlow Calculated Total:', calculatedTotal);
-        console.log('Ã°Å¸Å½Â¯ Expected Total (totalCollected prop):', totalCollected);
-        console.log('Ã°Å¸â€œÅ  Difference:', calculatedTotal - totalCollected);
+        console.log('CashFlow Calculated Total:', calculatedTotal);
+        console.log('Expected Total (totalCollected prop):', totalCollected);
+        console.log('Difference:', calculatedTotal - totalCollected);
         
         return Array.from(monthlyMap.values());
     }, [invoices, manualAdjustments, calendarFilterYear, calendarFilterMonth, calendarFilterDay, totalCollected]);
@@ -197,7 +197,7 @@ const FinanceDashboard = ({
 
             <SectionHeader
                 title="Finance Dashboard"
-                subtitle="Cash flow Ã‚Â· Invoicing Ã‚Â· Payables Ã‚Â· Compliance"
+                subtitle="Cash flow • Invoicing • Payables • Compliance"
                 icon={DollarSign}
                 accent={C.primary}
                 badge="Financial Hub"
@@ -356,7 +356,7 @@ const FinanceDashboard = ({
 
                 <ChartCard 
                     title="Compliance Status" 
-                    subtitle="GST Ã‚Â· TDS Ã‚Â· Audit filings"
+                    subtitle="GST • TDS • Audit filings"
                     headerRight={
                         <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (

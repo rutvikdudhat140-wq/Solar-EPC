@@ -1,4 +1,4 @@
-// NotificationSystem.js Ã¢â‚¬â€ Real-time notification display component
+// NotificationSystem.js "" Real-time notification display component
 import React, { useEffect, useState } from 'react';
 import { Bell, X, Clock, AlertTriangle, CheckCircle, Volume2, Smartphone } from 'lucide-react';
 import { useReminders } from '../context/ReminderContext';

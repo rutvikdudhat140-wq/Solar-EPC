@@ -3,15 +3,15 @@ import { X, Bell, Calendar, Clock, RotateCcw, Repeat, User, AlertCircle, Mail, M
 import { useReminders } from '../context/ReminderContext';
 
 const MODULES = [
-  { id: 'crm', label: 'CRM / Sales', icon: 'Ã°Å¸â€˜Â¥' },
-  { id: 'hrm', label: 'HRM', icon: 'Ã°Å¸â€˜â€' },
-  { id: 'finance', label: 'Finance', icon: 'Ã°Å¸â€™Â°' },
-  { id: 'inventory', label: 'Inventory', icon: 'Ã°Å¸â€œÂ¦' },
-  { id: 'procurement', label: 'Procurement', icon: 'Ã°Å¸â€ºâ€™' },
-  { id: 'project', label: 'Projects', icon: 'Ã°Å¸â€œâ€¹' },
-  { id: 'service', label: 'Service', icon: 'Ã°Å¸â€Â§' },
-  { id: 'installation', label: 'Installation', icon: 'Ã°Å¸Ââ€”Ã¯Â¸Â' },
-  { id: 'general', label: 'General', icon: 'Ã°Å¸â€œÅ’' },
+  { id: 'crm', label: 'CRM / Sales', icon: '🔥' },
+  { id: 'hrm', label: 'HRM', icon: '👤' },
+  { id: 'finance', label: 'Finance', icon: '💰' },
+  { id: 'inventory', label: 'Inventory', icon: '📦' },
+  { id: 'procurement', label: 'Procurement', icon: '🛒' },
+  { id: 'project', label: 'Projects', icon: '📊' },
+  { id: 'service', label: 'Service', icon: '🔧' },
+  { id: 'installation', label: 'Installation', icon: '🔨' },
+  { id: 'general', label: 'General', icon: '📝' },
 ];
 
 const PRIORITIES = [
