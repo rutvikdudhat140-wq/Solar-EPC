@@ -81,6 +81,14 @@ export const ReminderProvider = ({ children }) => {
   const socketRef = useRef(null);
 
   const fetchReminders = useCallback(async (retryCount = 0) => {
+    // Check if user is authenticated before fetching
+    const token = localStorage.getItem('solar_token') || localStorage.getItem('accessToken') || localStorage.getItem('token');
+    if (!token) {
+      setReminders([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await reminderApi.getAll({
@@ -119,6 +127,12 @@ export const ReminderProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('[Reminders] Failed to fetch live reminders:', error);
+      // If error is 401 Unauthorized, don't retry
+      if (error?.response?.status === 401 || error?.status === 401) {
+        console.log('[Reminders] Unauthorized (401), clearing reminders and stopping retries');
+        setReminders([]);
+        return;
+      }
       if (retryCount < 2) {
         console.log(`[Reminders] Retrying... (${retryCount + 1}/2)`);
         setTimeout(() => fetchReminders(retryCount + 1), 3000);
@@ -131,13 +145,15 @@ export const ReminderProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    if (!user?.id) return;
     fetchReminders();
-  }, [fetchReminders]);
+  }, [fetchReminders, user]);
 
   useEffect(() => {
+    if (!user?.id) return;
     const interval = setInterval(fetchReminders, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [fetchReminders]);
+  }, [fetchReminders, user]);
 
   useEffect(() => {
     if ('speechSynthesis' in window) {

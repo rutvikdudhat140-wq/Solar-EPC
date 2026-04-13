@@ -57,17 +57,28 @@ export class ReminderService {
       isDeleted: false,
     };
 
+    // Determine if user has admin-like access (same logic as visibility-filter.ts)
+    const roleLower = (userRole || '').toLowerCase();
+    const isAdminLike = roleLower === 'admin'
+      || roleLower === 'superadmin'
+      || roleLower === 'super-admin'
+      || roleLower === 'super_admin'
+      || roleLower === 'manager'
+      || roleLower === 'hr-manager'
+      || roleLower === 'hr_manager'
+      || roleLower === 'project-manager'
+      || roleLower === 'project_manager'
+      || userRole === 'SuperAdmin'; // Also check original case
+
     // Role-based filtering - only apply if no specific assignedTo filter requested
-    if (userRole !== 'Admin' && userRole !== 'SuperAdmin') {
-      if (query.assignedTo) {
-        // Non-admin can only view their own reminders even with assignedTo filter
-        filter.assignedTo = new Types.ObjectId(userId);
-      } else {
-        filter.assignedTo = new Types.ObjectId(userId);
-      }
+    if (!isAdminLike) {
+      // Non-admin users can only view their own reminders
+      filter.assignedTo = new Types.ObjectId(userId);
+      this.logger.debug(`Non-admin user ${userId} (role: ${userRole}) - filtering to only their assigned reminders`);
     } else if (query.assignedTo) {
       // Admin can filter by specific assignedTo
       filter.assignedTo = new Types.ObjectId(query.assignedTo);
+      this.logger.debug(`Admin user filtering by assignedTo: ${query.assignedTo}`);
     }
 
     if (query.module) {
@@ -112,8 +123,22 @@ export class ReminderService {
       isDeleted: false,
     };
 
-    if (userRole !== 'Admin' && userRole !== 'SuperAdmin') {
+    // Determine if user has admin-like access (same logic as visibility-filter.ts)
+    const roleLower = (userRole || '').toLowerCase();
+    const isAdminLike = roleLower === 'admin'
+      || roleLower === 'superadmin'
+      || roleLower === 'super-admin'
+      || roleLower === 'super_admin'
+      || roleLower === 'manager'
+      || roleLower === 'hr-manager'
+      || roleLower === 'hr_manager'
+      || roleLower === 'project-manager'
+      || roleLower === 'project_manager'
+      || userRole === 'SuperAdmin'; // Also check original case
+
+    if (!isAdminLike) {
       filter.assignedTo = new Types.ObjectId(userId);
+      this.logger.debug(`Non-admin user ${userId} (role: ${userRole}) - can only access their own reminders`);
     }
 
     const reminder = await this.reminderModel
@@ -242,10 +267,10 @@ export class ReminderService {
 
   // ==================== SCHEDULER OPERATIONS ====================
 
-  async getPendingRemindersToTrigger(): Promise<any[]> {
+  async getPendingRemindersToTrigger(tenantId?: string): Promise<any[]> {
     const now = new Date();
-
-    return this.reminderModel.find({
+    
+    const filter: any = {
       status: 'pending',
       remindAt: { $lte: now },
       isTriggered: false,
@@ -254,7 +279,14 @@ export class ReminderService {
         { snoozedUntil: { $exists: false } },
         { snoozedUntil: { $lte: now } },
       ],
-    }).lean();
+    };
+
+    // Add tenant filter if provided
+    if (tenantId && Types.ObjectId.isValid(tenantId)) {
+      filter.tenantId = new Types.ObjectId(tenantId);
+    }
+
+    return this.reminderModel.find(filter).lean();
   }
 
   async markTriggered(id: string): Promise<void> {
@@ -265,14 +297,21 @@ export class ReminderService {
     });
   }
 
-  async updateOverdueReminders(): Promise<number> {
+  async updateOverdueReminders(tenantId?: string): Promise<number> {
     const now = new Date();
 
+    const filter: any = {
+      status: 'pending',
+      dueDate: { $lt: now },
+    };
+
+    // Add tenant filter if provided
+    if (tenantId && Types.ObjectId.isValid(tenantId)) {
+      filter.tenantId = new Types.ObjectId(tenantId);
+    }
+
     const result = await this.reminderModel.updateMany(
-      {
-        status: 'pending',
-        dueDate: { $lt: now },
-      },
+      filter,
       {
         status: 'overdue',
       }

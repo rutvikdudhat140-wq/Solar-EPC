@@ -2,7 +2,9 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ReminderService } from '../services/reminder.service';
 import { ReminderNotificationService } from '../services/reminder-notification.service';
+import { TenantService } from '../../superadmin/services/tenant.service';
 import { Reminder } from '../schemas/reminder.schema';
+import { TenantDocument } from '../../superadmin/schemas/tenant.schema';
 
 @Injectable()
 export class ReminderScheduler implements OnModuleInit {
@@ -12,6 +14,7 @@ export class ReminderScheduler implements OnModuleInit {
   constructor(
     private readonly reminderService: ReminderService,
     private readonly notificationService: ReminderNotificationService,
+    private readonly tenantService: TenantService,
   ) {}
 
   onModuleInit() {
@@ -32,25 +35,57 @@ export class ReminderScheduler implements OnModuleInit {
     this.logger.debug('Processing reminders...');
 
     try {
-      // Step 1: Update overdue reminders
-      const overdueCount = await this.reminderService.updateOverdueReminders();
-      if (overdueCount > 0) {
-        this.logger.log(`Marked ${overdueCount} reminders as overdue`);
+      // Step 1: Get all active tenants
+      const tenants = await this.tenantService.findAll({ status: 'active' });
+      this.logger.debug(`Found ${tenants.length} active tenants`);
+
+      let totalRemindersProcessed = 0;
+      let totalOverdueMarked = 0;
+
+      // Step 2: Process each tenant separately
+      for (const tenant of tenants) {
+        const tenantId = (tenant as TenantDocument)._id.toString();
+        
+        try {
+          // Update overdue reminders for this tenant
+          const overdueCount = await this.reminderService.updateOverdueReminders(tenantId);
+          if (overdueCount > 0) {
+            this.logger.log(`Tenant ${tenant.slug}: Marked ${overdueCount} reminders as overdue`);
+            totalOverdueMarked += overdueCount;
+          }
+
+          // Get pending reminders to trigger for this tenant
+          const remindersToTrigger = await this.reminderService.getPendingRemindersToTrigger(tenantId);
+
+          if (remindersToTrigger.length === 0) {
+            continue;
+          }
+
+          this.logger.log(`Tenant ${tenant.slug}: Found ${remindersToTrigger.length} reminders to trigger`);
+
+          // Process each reminder for this tenant
+          for (const reminder of remindersToTrigger) {
+            await this.triggerReminder(reminder);
+            totalRemindersProcessed++;
+          }
+        } catch (tenantError) {
+          this.logger.error(`Error processing reminders for tenant ${tenant.slug}:`, tenantError);
+          // Continue with next tenant
+        }
       }
 
-      // Step 2: Get pending reminders to trigger
-      const remindersToTrigger = await this.reminderService.getPendingRemindersToTrigger();
-
-      if (remindersToTrigger.length === 0) {
-        this.logger.debug('No reminders to trigger');
-        return;
+      // Also process any reminders without tenantId (legacy data)
+      const legacyReminders = await this.reminderService.getPendingRemindersToTrigger();
+      if (legacyReminders.length > 0) {
+        this.logger.warn(`Found ${legacyReminders.length} legacy reminders without tenantId`);
+        for (const reminder of legacyReminders) {
+          await this.triggerReminder(reminder);
+          totalRemindersProcessed++;
+        }
       }
 
-      this.logger.log(`Found ${remindersToTrigger.length} reminders to trigger`);
-
-      // Step 3: Process each reminder
-      for (const reminder of remindersToTrigger) {
-        await this.triggerReminder(reminder);
+      if (totalOverdueMarked > 0 || totalRemindersProcessed > 0) {
+        this.logger.log(`Scheduler completed: ${totalOverdueMarked} overdue marked, ${totalRemindersProcessed} reminders triggered`);
       }
 
     } catch (error) {
