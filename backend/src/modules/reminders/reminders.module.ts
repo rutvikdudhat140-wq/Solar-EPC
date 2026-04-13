@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { JwtModule } from '@nestjs/jwt';
 import { DashboardModule } from '../dashboard/dashboard.module';
+import { SuperadminModule } from '../superadmin/superadmin.module';
 import { Tenant, TenantSchema } from '../../core/tenant/schemas/tenant.schema';
 import { User, UserSchema } from '../../core/auth/schemas/user.schema';
 import { Task, TaskSchema } from '../tasks/schemas/task.schema';
@@ -30,6 +31,7 @@ import { NotificationLog, NotificationLogSchema } from './schemas/notification-l
   imports: [
     ScheduleModule.forRoot(),
     DashboardModule,
+    SuperadminModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your-secret-key',
       signOptions: { expiresIn: '7d' },
