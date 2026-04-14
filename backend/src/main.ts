@@ -136,11 +136,11 @@ async function bootstrap() {
   app.useGlobalInterceptors(new SuccessResponseInterceptor());
   app.useGlobalFilters(new GlobalExceptionFilter());
 
-  // Enable WebSocket support with Fastify adapter
-  app.useWebSocketAdapter(new FastifySocketIoAdapter(app));
-
   const port = Number(process.env.APP_PORT ?? 3000);
   await app.listen({ port, host: '0.0.0.0' });
+
+  // Enable WebSocket support with Fastify adapter (after server is listening)
+  app.useWebSocketAdapter(new FastifySocketIoAdapter(app));
 
   // Run startup fix after server is ready
   await fixINV3552OnStartup(app);
