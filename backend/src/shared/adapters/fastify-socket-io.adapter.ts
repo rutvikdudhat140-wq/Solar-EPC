@@ -1,18 +1,22 @@
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { ServerOptions } from 'socket.io';
+import { Server, ServerOptions } from 'socket.io';
 import { INestApplication } from '@nestjs/common';
 
 export class FastifySocketIoAdapter extends IoAdapter {
-  constructor(app: INestApplication) {
+  constructor(private readonly app: INestApplication) {
     super(app);
   }
 
   createIOServer(port: number, options?: ServerOptions): any {
-    const adapter = this.httpServer;
-    const fastifyInstance = (adapter as any).getInstance?.() || adapter;
-    const server = fastifyInstance.server || fastifyInstance;
+    // Get the Fastify instance and raw HTTP server
+    const httpAdapter = this.app.getHttpAdapter();
+    const fastifyInstance = httpAdapter.getInstance();
+    // Fastify stores the raw Node.js HTTP server in .server property
+    const rawHttpServer = fastifyInstance.server;
 
-    return super.createIOServer(port, {
+    // Create Socket.IO server directly attached to raw HTTP server
+    // Don't use super.createIOServer() as it has issues with Fastify
+    const io = new Server(rawHttpServer, {
       ...options,
       cors: {
         origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:5173'],
@@ -20,5 +24,7 @@ export class FastifySocketIoAdapter extends IoAdapter {
       },
       transports: ['websocket', 'polling'],
     });
+
+    return io;
   }
 }
