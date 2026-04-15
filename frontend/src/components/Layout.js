@@ -202,12 +202,12 @@ const Layout = ({ currentPage, onNavigate, children }) => {
   // Card layout class
   const cardClass = c.cardLayout === 'borderless' ? 'card-borderless' : c.cardLayout === 'shadow' ? 'card-shadow' : '';
 
-  // Topbar has custom color → use white text
+  // Topbar has custom color   use white text
   const topbarHasCustomColor = c.topbarColor && c.topbarColor !== 'white';
   const topbarTextCls = topbarHasCustomColor ? 'text-white/80' : 'text-[var(--text-faint)]';
   const topbarTextPrimaryCls = topbarHasCustomColor ? 'text-white' : 'text-[var(--text-primary)]';
 
-  // Sidebar has custom color → use custom text
+  // Sidebar has custom color   use custom text
   const sidebarHasCustomColor = (c.sidebarColor && c.sidebarColor !== 'default') || c.sidebarBg;
 
   return (
@@ -778,7 +778,7 @@ const Layout = ({ currentPage, onNavigate, children }) => {
             ))}
           </nav>
 
-          {/* AI Engine badge "” only when sidebar is expanded */}
+          {/* AI Engine badge "  only when sidebar is expanded */}
           {showLabels && (
             <div className="m-3 p-3.5 rounded-xl border border-[var(--primary)]/20"
               style={{ background: 'linear-gradient(135deg, var(--primary-glow) 0%, rgba(34,211,238,0.05) 100%)' }}>

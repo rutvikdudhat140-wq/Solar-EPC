@@ -1,4 +1,4 @@
-// EnhancedSolarSurveyStudio.js — Main orchestrator with Full 3D Map integration
+// EnhancedSolarSurveyStudio.js   Main orchestrator with Full 3D Map integration
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSolarSurveyStore } from './useSolarSurveyStore';
 import Enhanced3DScene from './Enhanced3DScene';
@@ -15,10 +15,10 @@ import SurveyBottomBar from './SurveyBottomBar';
 // View Mode Switcher Component
 const ViewModeSwitcher = ({ currentMode, onModeChange, isTransitioning }) => {
     const modes = [
-        { id: '2D', label: '2D Map', icon: '🗺️', description: 'Satellite view with drawing tools' },
-        { id: '3D', label: '3D View', icon: '🏗️', description: 'Interactive 3D visualization' },
-        { id: 'SPLIT', label: 'Split View', icon: '⚖️', description: 'Side-by-side 2D and 3D' },
-        { id: 'OVERVIEW', label: 'Overview', icon: '👁️', description: 'Bird\'s eye view analysis' }
+        { id: '2D', label: '2D Map', icon: '   ', description: 'Satellite view with drawing tools' },
+        { id: '3D', label: '3D View', icon: '   ', description: 'Interactive 3D visualization' },
+        { id: 'SPLIT', label: 'Split View', icon: '  ', description: 'Side-by-side 2D and 3D' },
+        { id: 'OVERVIEW', label: 'Overview', icon: '   ', description: 'Bird\'s eye view analysis' }
     ];
 
     return (
@@ -140,7 +140,7 @@ const EnhancedStatsHUD = () => {
                 alignItems: 'center',
                 gap: 6
             }}>
-                📊 Survey Statistics
+                   Survey Statistics
             </div>
 
             <div style={{
@@ -190,7 +190,7 @@ const EnhancedStatsHUD = () => {
                     fontWeight: 600,
                     cursor: 'pointer'
                 }}>
-                    📄 Export Report
+                       Export Report
                 </button>
                 <button style={{
                     flex: 1,
@@ -203,7 +203,7 @@ const EnhancedStatsHUD = () => {
                     fontWeight: 600,
                     cursor: 'pointer'
                 }}>
-                    💾 Save Design
+                       Save Design
                 </button>
             </div>
         </div>
@@ -359,7 +359,7 @@ const EnhancedSolarSurveyStudio = () => {
                             fontWeight: '600',
                             zIndex: 20
                         }}>
-                            3D Map Mode • Full Zoom Enabled
+                            3D Map Mode   Full Zoom Enabled
                         </div>
                     </div>
                 );
@@ -397,7 +397,7 @@ const EnhancedSolarSurveyStudio = () => {
                             fontWeight: '600',
                             zIndex: 20
                         }}>
-                            Overview Mode • Full 3D Environment
+                            Overview Mode   Full 3D Environment
                         </div>
                     </div>
                 );
@@ -516,7 +516,7 @@ const EnhancedSolarSurveyStudio = () => {
                         maxWidth: 480,
                         boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)'
                     }}>
-                        <div style={{ fontSize: 64, marginBottom: 20 }}>🌞</div>
+                        <div style={{ fontSize: 64, marginBottom: 20 }}>  </div>
                         <h1 style={{
                             color: '#f1f5f9',
                             fontSize: 24,
@@ -546,9 +546,9 @@ const EnhancedSolarSurveyStudio = () => {
                             fontSize: 13,
                             color: '#64748b'
                         }}>
-                            <div>🗺️ Interactive Maps</div>
-                            <div>🤖 AI Panel Placement</div>
-                            <div>📊 Live Analysis</div>
+                            <div>    Interactive Maps</div>
+                            <div>   AI Panel Placement</div>
+                            <div>   Live Analysis</div>
                         </div>
                         <button
                             onClick={() => setShowIntro(false)}
@@ -566,7 +566,7 @@ const EnhancedSolarSurveyStudio = () => {
                                 marginRight: 12
                             }}
                         >
-                            🚀 Start Survey
+                               Start Survey
                         </button>
                         <button
                             onClick={() => {
@@ -585,7 +585,7 @@ const EnhancedSolarSurveyStudio = () => {
                                 cursor: 'pointer'
                             }}
                         >
-                            📚 Quick Guide
+                               Quick Guide
                         </button>
                     </div>
                 </div>
@@ -612,7 +612,7 @@ const EnhancedSolarSurveyStudio = () => {
                         backdropFilter: 'blur(12px)',
                         textAlign: 'center'
                     }}>
-                        <div style={{ fontSize: 24, marginBottom: 8 }}>⚡</div>
+                        <div style={{ fontSize: 24, marginBottom: 8 }}> </div>
                         <div style={{ color: '#f1f5f9', fontSize: 14, fontWeight: 600 }}>
                             Switching View Mode...
                         </div>

@@ -1,11 +1,11 @@
-// useSolarSurveyStore.js — Enhanced Solar Survey Design Store
+// useSolarSurveyStore.js   Enhanced Solar Survey Design Store
 // Handles: map boundaries, exclusion zones, panel auto-fill, shadow analysis, 3D state, measurements
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 
 const generateId = () => `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-// ── Geo Utilities ─────────────────────────────────────────────────────────────
+//    Geo Utilities                                                              
 const DEG2RAD = Math.PI / 180;
 const EARTH_R = 6371000; // meters
 
@@ -43,7 +43,7 @@ export const localMetersToLatlng = (x, y, centroid) => {
     };
 };
 
-// Polygon area using Shoelace formula (m²)
+// Polygon area using Shoelace formula (m )
 export const polygonArea = (points) => {
     let area = 0;
     const n = points.length;
@@ -76,7 +76,7 @@ const getBounds = (points) => ({
     maxY: Math.max(...points.map(p => p.y)),
 });
 
-// ── Sun Position Calculator ───────────────────────────────────────────────────
+//    Sun Position Calculator                                                    
 export const calculateSunPosition = (hour, dayOfYear, latitude) => {
     const declination = 23.45 * Math.sin(DEG2RAD * (360 / 365) * (dayOfYear - 81));
     const hourAngle = (hour - 12) * 15; // degrees
@@ -102,7 +102,7 @@ export const calculateSunPosition = (hour, dayOfYear, latitude) => {
     };
 };
 
-// ── Shadow Calculator ─────────────────────────────────────────────────────────
+//    Shadow Calculator                                                          
 export const calculatePanelShadow = (panel, sunPosition, panelHeight = 0.5) => {
     if (sunPosition.altitude <= 0) return null; // sun below horizon
     const shadowLength = panelHeight / Math.tan(sunPosition.altitudeRad);
@@ -113,28 +113,28 @@ export const calculatePanelShadow = (panel, sunPosition, panelHeight = 0.5) => {
 
 // Enhanced store with new features
 const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
-    // ── Map State ───────────────────────────────────────────────────────────
+    //    Map State                                                            
     mapCenter: { lat: 21.1702, lng: 72.8311 }, // Surat default
     mapZoom: 19,
     mapType: 'satellite', // 'satellite' | 'roadmap' | 'hybrid'
 
-    // ── Drawing State ───────────────────────────────────────────────────────
+    //    Drawing State                                                        
     activeTool: 'select', // 'select' | 'drawBoundary' | 'drawExclusion' | 'addPanel' | 'measure' | 'delete'
     isDrawing: false,
     drawingPoints: [], // temporary points while drawing
 
-    // ── Boundaries (roof areas) ─────────────────────────────────────────────
+    //    Boundaries (roof areas)                                              
     boundaries: [], // { id, name, latlngs: [{lat,lng}], localPoints: [{x,y}], centroid, area, color, height, panels:[] }
     selectedBoundaryId: null,
 
-    // ── Exclusion Zones ─────────────────────────────────────────────────────
+    //    Exclusion Zones                                                      
     exclusionZones: [], // { id, boundaryId, latlngs, localPoints, area, type: 'obstacle'|'shade'|'vent'|'custom', label }
     selectedExclusionId: null,
 
-    // ── Panels (auto-filled inside boundaries) ──────────────────────────────
+    //    Panels (auto-filled inside boundaries)                               
     panels: [], // { id, boundaryId, localX, localY, lat, lng, width, height, tilt, azimuth, shaded, power, shadeFactor }
 
-    // ── Panel Configuration ─────────────────────────────────────────────────
+    //    Panel Configuration                                                  
     panelConfig: {
         width: 2.0,          // meters
         height: 1.0,         // meters
@@ -148,23 +148,23 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
         setback: 0.5,        // distance from boundary edge (meters)
     },
 
-    // ── Solar Analysis ──────────────────────────────────────────────────────
+    //    Solar Analysis                                                       
     analysis: {
         totalPanels: 0,
         totalCapacityKW: 0,
-        usableArea: 0,       // m²
-        totalArea: 0,        // m²
-        exclusionArea: 0,    // m²
+        usableArea: 0,       // m 
+        totalArea: 0,        // m 
+        exclusionArea: 0,    // m 
         coverageRatio: 0,    // %
         estimatedAnnualKWh: 0,
         shadedPanels: 0,
         avgShadeFactor: 0,
-        irradiance: 1800,    // kWh/m²/year (India avg)
+        irradiance: 1800,    // kWh/m /year (India avg)
         performanceRatio: 0.78,
         co2Offset: 0,        // tonnes/year
     },
 
-    // ── Sun Simulation ──────────────────────────────────────────────────────
+    //    Sun Simulation                                                       
     sunSimulation: {
         enabled: false,
         hour: 12,
@@ -174,7 +174,7 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
         speed: 1,
     },
 
-    // ── View State ──────────────────────────────────────────────────────────
+    //    View State                                                           
     viewMode: '2D', // '2D', '3D', 'SPLIT', 'OVERVIEW'
     cameraTransition: false,
     isTransitioning: false,
@@ -188,11 +188,11 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
     showPanelNumbers: false,
     show3DBuildings: true,
 
-    // ── History ─────────────────────────────────────────────────────────────
+    //    History                                                              
     history: [],
     historyIndex: -1,
 
-    // ── Measurement ─────────────────────────────────────────────────────────
+    //    Measurement                                                          
     measurePoints: [],
     measureDistance: 0,
 
@@ -229,22 +229,22 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
         preset: 'standard'
     },
 
-    // ═════════════════════════════════════════════════════════════════════════
+    //                                                                          
     // ACTIONS
-    // ═════════════════════════════════════════════════════════════════════════
+    //                                                                          
 
-    // ── Map Actions ─────────────────────────────────────────────────────────
+    //    Map Actions                                                          
     setMapCenter: (center) => set({ mapCenter: center }),
     setMapZoom: (zoom) => set({ mapZoom: zoom }),
     setMapType: (type) => set({ mapType: type }),
 
-    // ── Tool Actions ────────────────────────────────────────────────────────
+    //    Tool Actions                                                         
     setActiveTool: (tool) => set({ activeTool: tool, isDrawing: tool === 'drawBoundary' || tool === 'drawExclusion' }),
     setViewMode: (mode) => set({ viewMode: mode }),
     setCameraTransition: (transitioning) => set({ cameraTransition: transitioning }),
     setIsTransitioning: (transitioning) => set({ isTransitioning: transitioning }),
 
-    // ── Boundary Actions ────────────────────────────────────────────────────
+    //    Boundary Actions                                                     
     addBoundary: (latlngs, name) => {
         const { points, centroid } = latlngToLocalMeters(latlngs);
         const area = polygonArea(points);
@@ -291,7 +291,7 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
 
     selectBoundary: (id) => set({ selectedBoundaryId: id, selectedExclusionId: null }),
 
-    // ── Exclusion Zone Actions ──────────────────────────────────────────────
+    //    Exclusion Zone Actions                                               
     addExclusionZone: (latlngs, boundaryId, type = 'obstacle', label) => {
         const { points } = latlngToLocalMeters(latlngs);
         // Convert exclusion to boundary-local coordinates
@@ -344,7 +344,7 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
 
     selectExclusion: (id) => set({ selectedExclusionId: id }),
 
-    // ── Panel Auto-Fill ─────────────────────────────────────────────────────
+    //    Panel Auto-Fill                                                      
     autoFillPanels: (boundaryId) => {
         const state = get();
         const boundary = state.boundaries.find(b => b.id === boundaryId);
@@ -433,14 +433,14 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
         get().recalculateAnalysis();
     },
 
-    // ── Shadow Analysis ─────────────────────────────────────────────────────
+    //    Shadow Analysis                                                      
     runShadowAnalysis: () => {
         const state = get();
         const { hour, dayOfYear, latitude } = state.sunSimulation;
         const sunPos = calculateSunPosition(hour, dayOfYear, latitude);
 
         if (sunPos.altitude <= 2) {
-            // Sun too low — all panels shaded
+            // Sun too low   all panels shaded
             set(s => ({
                 panels: s.panels.map(p => ({ ...p, shaded: true, shadeFactor: 0.1 })),
             }));
@@ -500,7 +500,7 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
         get().recalculateAnalysis();
     },
 
-    // ── Analysis Recalculation ──────────────────────────────────────────────
+    //    Analysis Recalculation                                               
     recalculateAnalysis: () => {
         const state = get();
         const totalPanels = state.panels.length;
@@ -544,12 +544,12 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
         });
     },
 
-    // ── Panel Config ────────────────────────────────────────────────────────
+    //    Panel Config                                                         
     updatePanelConfig: (updates) => {
         set(s => ({ panelConfig: { ...s.panelConfig, ...updates } }));
     },
 
-    // ── Sun Simulation ──────────────────────────────────────────────────────
+    //    Sun Simulation                                                       
     updateSunSimulation: (updates) => {
         set(s => ({ sunSimulation: { ...s.sunSimulation, ...updates } }));
         if (get().sunSimulation.enabled) {
@@ -563,7 +563,7 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
         if (enabled) get().runShadowAnalysis();
     },
 
-    // ── View Toggles ────────────────────────────────────────────────────────
+    //    View Toggles                                                         
     toggleShowGrid: () => set(s => ({ showGrid: !s.showGrid })),
     toggleShowShadows: () => set(s => ({ showShadows: !s.showShadows })),
     toggleShowLabels: () => set(s => ({ showLabels: !s.showLabels })),
@@ -571,7 +571,7 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
     toggleShowExclusions: () => set(s => ({ showExclusions: !s.showExclusions })),
     toggleShow3DBuildings: () => set(s => ({ show3DBuildings: !s.show3DBuildings })),
 
-    // ── Measurement ─────────────────────────────────────────────────────────
+    //    Measurement                                                          
     addMeasurePoint: (latlng) => {
         const pts = [...get().measurePoints, latlng];
         let dist = 0;
@@ -804,7 +804,7 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
         }
     })),
 
-    // ── History ─────────────────────────────────────────────────────────────
+    //    History                                                              
     _saveHistory: () => {
         const s = get();
         const snapshot = {
@@ -848,7 +848,7 @@ const useSolarSurveyStoreDefault = create(subscribeWithSelector((set, get) => ({
     canUndo: () => get().historyIndex > 0,
     canRedo: () => get().historyIndex < get().history.length - 1,
 
-    // ── Reset ───────────────────────────────────────────────────────────────
+    //    Reset                                                                
     reset: () => set({
         boundaries: [],
         exclusionZones: [],

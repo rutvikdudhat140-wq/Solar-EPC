@@ -445,7 +445,7 @@ const CommissioningDashboard = ({ data, systems, onProjectClick }) => {
       key: 'commissionDate', title: 'Commissioned', sortable: true, render: (v) => (
         <div className="flex items-center gap-1 text-sm text-gray-600">
           <Calendar className="w-3.5 h-3.5" />
-          {v ? new Date(v).toLocaleDateString() : '—'}
+          {v ? new Date(v).toLocaleDateString() : ' '}
         </div>
       )
     },
@@ -453,7 +453,7 @@ const CommissioningDashboard = ({ data, systems, onProjectClick }) => {
       key: 'warrantyPanel', title: 'Warranty', sortable: true, render: (v) => (
         <div className="flex items-center gap-1 text-sm">
           <Shield className="w-3.5 h-3.5 text-gray-400" />
-          {v ? new Date(v).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '—'}
+          {v ? new Date(v).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : ' '}
         </div>
       )
     },

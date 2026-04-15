@@ -1,4 +1,4 @@
-// SurveyMap.js — Interactive Leaflet map with satellite imagery, boundary/exclusion drawing
+// SurveyMap.js   Interactive Leaflet map with satellite imagery, boundary/exclusion drawing
 // Uses: react-leaflet, leaflet-draw, ESRI World Imagery (free satellite tiles)
 import React, { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Polygon, Polyline, Marker, Tooltip, useMap, useMapEvents, ZoomControl } from 'react-leaflet';
@@ -14,7 +14,7 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
-// ── Tile Layer URLs ───────────────────────────────────────────────────────────
+//    Tile Layer URLs                                                            
 const TILE_LAYERS = {
     satellite: {
         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -35,7 +35,7 @@ const TILE_LAYERS = {
 
 const HYBRID_LABELS = 'https://stamen-tiles.a.ssl.fastly.net/toner-labels/{z}/{x}/{y}.png';
 
-// ── Solar Panel Rectangles on Map ─────────────────────────────────────────────
+//    Solar Panel Rectangles on Map                                              
 const PanelOverlays = React.memo(({ panels, showShadows, sunSimulation }) => {
     const sunPos = sunSimulation.enabled
         ? calculateSunPosition(sunSimulation.hour, sunSimulation.dayOfYear, sunSimulation.latitude)
@@ -108,7 +108,7 @@ const PanelOverlays = React.memo(({ panels, showShadows, sunSimulation }) => {
     );
 });
 
-// ── Measurement Line ──────────────────────────────────────────────────────────
+//    Measurement Line                                                           
 const MeasurementOverlay = () => {
     const { measurePoints, measureDistance } = useSolarSurveyStore();
     if (measurePoints.length < 1) return null;
@@ -135,7 +135,7 @@ const MeasurementOverlay = () => {
     );
 };
 
-// ── Drawing Controller ────────────────────────────────────────────────────────
+//    Drawing Controller                                                         
 const DrawingController = () => {
     const map = useMap();
     const drawControlRef = useRef(null);
@@ -250,7 +250,7 @@ const DrawingController = () => {
     return null;
 };
 
-// ── Map Click Handler ─────────────────────────────────────────────────────────
+//    Map Click Handler                                                          
 const MapClickHandler = () => {
     const { activeTool, addMeasurePoint } = useSolarSurveyStore();
 
@@ -265,7 +265,7 @@ const MapClickHandler = () => {
     return null;
 };
 
-// ── Map State Sync ────────────────────────────────────────────────────────────
+//    Map State Sync                                                             
 const MapStateSync = () => {
     const map = useMap();
     const { setMapCenter, setMapZoom } = useSolarSurveyStore();
@@ -283,7 +283,7 @@ const MapStateSync = () => {
     return null;
 };
 
-// ── Fly-to when center changes ────────────────────────────────────────────────
+//    Fly-to when center changes                                                 
 const MapFlyTo = ({ center, zoom }) => {
     const map = useMap();
     const prevCenter = useRef(center);
@@ -298,7 +298,7 @@ const MapFlyTo = ({ center, zoom }) => {
     return null;
 };
 
-// ── Exclusion Zone Visual ─────────────────────────────────────────────────────
+//    Exclusion Zone Visual                                                      
 const ExclusionZoneOverlays = React.memo(() => {
     const { exclusionZones, selectedExclusionId, showExclusions } = useSolarSurveyStore();
     if (!showExclusions) return null;
@@ -333,7 +333,7 @@ const ExclusionZoneOverlays = React.memo(() => {
                         <Tooltip sticky>
                             <div style={{ fontSize: 11 }}>
                                 <strong>{zone.label}</strong><br />
-                                {zone.area.toFixed(1)} m² · {zone.type}
+                                {zone.area.toFixed(1)} m    {zone.type}
                             </div>
                         </Tooltip>
                     </Polygon>
@@ -343,7 +343,7 @@ const ExclusionZoneOverlays = React.memo(() => {
     );
 });
 
-// ── Boundary Polygon Overlays ─────────────────────────────────────────────────
+//    Boundary Polygon Overlays                                                  
 const BoundaryOverlays = React.memo(() => {
     const { boundaries, selectedBoundaryId, showLabels } = useSolarSurveyStore();
 
@@ -370,7 +370,7 @@ const BoundaryOverlays = React.memo(() => {
                                 <div style={{ fontSize: 11, fontWeight: 700, textAlign: 'center' }}>
                                     {boundary.name}<br />
                                     <span style={{ fontWeight: 400, fontSize: 10, color: '#666' }}>
-                                        {boundary.area.toFixed(1)} m²
+                                        {boundary.area.toFixed(1)} m 
                                     </span>
                                 </div>
                             </Tooltip>
@@ -382,9 +382,9 @@ const BoundaryOverlays = React.memo(() => {
     );
 });
 
-// ══════════════════════════════════════════════════════════════════════════════
+//                                                                               
 // MAIN SURVEY MAP COMPONENT
-// ══════════════════════════════════════════════════════════════════════════════
+//                                                                               
 const SurveyMap = () => {
     const {
         mapCenter, mapZoom, mapType,
@@ -440,11 +440,11 @@ const SurveyMap = () => {
                     display: 'flex', alignItems: 'center', gap: 8,
                 }}>
                     <span style={{ fontSize: 16 }}>
-                        {activeTool === 'drawExclusion' ? '🚫' : '✏️'}
+                        {activeTool === 'drawExclusion' ? '  ' : '  '}
                     </span>
                     {activeTool === 'drawExclusion'
-                        ? 'Click to draw exclusion zone — click first point to close'
-                        : 'Click to draw boundary — click first point to close'}
+                        ? 'Click to draw exclusion zone   click first point to close'
+                        : 'Click to draw boundary   click first point to close'}
                     <button
                         onClick={() => useSolarSurveyStore.getState().setActiveTool('select')}
                         style={{
@@ -466,7 +466,7 @@ const SurveyMap = () => {
                     fontSize: 12, fontWeight: 700, zIndex: 1000,
                     display: 'flex', alignItems: 'center', gap: 8,
                 }}>
-                    📏 Click points to measure distance
+                       Click points to measure distance
                     <button
                         onClick={() => {
                             useSolarSurveyStore.getState().clearMeasure();

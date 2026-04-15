@@ -1,4 +1,4 @@
-// Universal KPI Card — Inventory Style across all modules
+// Universal KPI Card   Inventory Style across all modules
 
 import React from 'react';
 
@@ -11,29 +11,29 @@ import { cn } from '../../lib/utils';
 
  * KPICard props:
 
- *  label      — string (title)
+ *  label        string (title)
 
- *  value      — string | number
+ *  value        string | number
 
- *  sub        — string (subtitle)
+ *  sub          string (subtitle)
 
- *  icon       — Lucide icon component
+ *  icon         Lucide icon component
 
- *  trend      — string (e.g. "+23%")
+ *  trend        string (e.g. "+23%")
 
- *  trendUp    — bool
+ *  trendUp      bool
 
- *  variant    — string (emerald | blue | amber | red | purple | indigo | cyan)
+ *  variant      string (emerald | blue | amber | red | purple | indigo | cyan)
 
- *  className  — string
+ *  className    string
 
- *  style      — object
+ *  style        object
 
- *  onClick    — function
+ *  onClick      function
 
- *  loading    — boolean
+ *  loading      boolean
 
- *  tags       — array of strings (optional tags to show at bottom)
+ *  tags         array of strings (optional tags to show at bottom)
 
  */
 

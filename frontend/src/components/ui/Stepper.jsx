@@ -1,12 +1,12 @@
-// Stepper — config-driven workflow step display
+// Stepper   config-driven workflow step display
 import React from 'react';
 import { Check } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 /**
  * Stepper props:
- *  steps   — [{ name, status: 'Done'|'In Progress'|'Pending', date? }]
- *  compact — bool (horizontal pill style)
+ *  steps     [{ name, status: 'Done'|'In Progress'|'Pending', date? }]
+ *  compact   bool (horizontal pill style)
  */
 export const Stepper = ({ steps = [], compact = false }) => {
     if (compact) {

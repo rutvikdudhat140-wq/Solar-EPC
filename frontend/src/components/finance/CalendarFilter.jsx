@@ -126,7 +126,7 @@ const CalendarFilter = ({ onDateChange, initialYear, initialMonth, initialDay, a
     setIsOpen(false);
   };
 
-  // Generate year range: current year ± 10 years
+  // Generate year range: current year   10 years
   const currentYear = currentDate.getFullYear();
   const yearRange = Array.from({ length: 21 }, (_, i) => currentYear - 10 + i);
 

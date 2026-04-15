@@ -1,4 +1,4 @@
-// SurveyRightPanel.js — Properties panel: Panel config, Analysis, Sun simulation
+// SurveyRightPanel.js   Properties panel: Panel config, Analysis, Sun simulation
 import React, { useState, useEffect, useRef } from 'react';
 import { useSolarSurveyStore, calculateSunPosition } from './useSolarSurveyStore';
 import {
@@ -6,7 +6,7 @@ import {
     Thermometer, Clock
 } from 'lucide-react';
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+//    Sub-components                                                             
 const SectionTitle = ({ icon: Icon, title, open, onToggle, badge }) => (
     <button onClick={onToggle} style={{
         display: 'flex', alignItems: 'center', gap: 6, width: '100%',
@@ -76,7 +76,7 @@ const MetaRow = ({ label, value, color }) => (
     </div>
 );
 
-// ── Sun Position Display ──────────────────────────────────────────────────────
+//    Sun Position Display                                                       
 const SunDial = ({ hour, dayOfYear, latitude }) => {
     const sunPos = calculateSunPosition(hour, dayOfYear, latitude);
     const canvasRef = useRef(null);
@@ -133,15 +133,15 @@ const SunDial = ({ hour, dayOfYear, latitude }) => {
         <div style={{ textAlign: 'center', marginBottom: 8 }}>
             <canvas ref={canvasRef} width={100} height={100} style={{ borderRadius: '50%' }} />
             <div style={{ fontSize: 9, color: '#64748b', marginTop: 4 }}>
-                Alt: {sunPos.altitude.toFixed(1)}° · Az: {sunPos.azimuth.toFixed(1)}°
+                Alt: {sunPos.altitude.toFixed(1)}    Az: {sunPos.azimuth.toFixed(1)} 
             </div>
         </div>
     );
 };
 
-// ══════════════════════════════════════════════════════════════════════════════
+//                                                                               
 // MAIN RIGHT PANEL
-// ══════════════════════════════════════════════════════════════════════════════
+//                                                                               
 const SurveyRightPanel = () => {
     const {
         analysis, panelConfig, updatePanelConfig,
@@ -189,7 +189,7 @@ const SurveyRightPanel = () => {
             fontSize: 12, color: '#e2e8f0', zIndex: 20,
         }}>
 
-            {/* ═══ SOLAR ANALYSIS ══════════════════════════════════════════════════ */}
+            {/*     SOLAR ANALYSIS                                                    */}
             <SectionTitle icon={BarChart3} title="Solar Analysis" open={sections.analysis}
                 onToggle={() => toggle('analysis')} badge={`${analysis.totalPanels} panels`} />
             {sections.analysis && (
@@ -199,7 +199,7 @@ const SurveyRightPanel = () => {
                         <StatCard icon={Zap} label="DC Capacity" value={analysis.totalCapacityKW} unit="kWp" color="#f59e0b" />
                         <StatCard icon={TrendingUp} label="Annual Gen." value={(analysis.estimatedAnnualKWh / 1000).toFixed(1)} unit="MWh" color="#22c55e" />
                         <StatCard icon={Sun} label="Total Panels" value={analysis.totalPanels} unit="" color="#3b82f6" />
-                        <StatCard icon={Leaf} label="CO₂ Offset" value={analysis.co2Offset} unit="t/yr" color="#10b981" />
+                        <StatCard icon={Leaf} label="CO  Offset" value={analysis.co2Offset} unit="t/yr" color="#10b981" />
                     </div>
 
                     {/* Detail rows */}
@@ -207,9 +207,9 @@ const SurveyRightPanel = () => {
                         padding: '8px 10px', borderRadius: 6,
                         background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
                     }}>
-                        <MetaRow label="Total Area" value={`${analysis.totalArea} m²`} />
-                        <MetaRow label="Usable Area" value={`${analysis.usableArea} m²`} color="#22c55e" />
-                        <MetaRow label="Exclusion Area" value={`${analysis.exclusionArea} m²`} color="#ef4444" />
+                        <MetaRow label="Total Area" value={`${analysis.totalArea} m `} />
+                        <MetaRow label="Usable Area" value={`${analysis.usableArea} m `} color="#22c55e" />
+                        <MetaRow label="Exclusion Area" value={`${analysis.exclusionArea} m `} color="#ef4444" />
                         <MetaRow label="Coverage Ratio" value={`${analysis.coverageRatio}%`} color="#f59e0b" />
                         <MetaRow label="Shaded Panels" value={`${analysis.shadedPanels}`} color={analysis.shadedPanels > 0 ? '#f59e0b' : '#22c55e'} />
                         <MetaRow label="Avg Shade Factor" value={`${(analysis.avgShadeFactor * 100).toFixed(0)}%`} />
@@ -229,7 +229,7 @@ const SurveyRightPanel = () => {
                 </div>
             )}
 
-            {/* ═══ SELECTED AREA ═══════════════════════════════════════════════════ */}
+            {/*     SELECTED AREA                                                     */}
             {selectedBoundary && (
                 <>
                     <SectionTitle icon={Settings2} title={selectedBoundary.name}
@@ -242,7 +242,7 @@ const SurveyRightPanel = () => {
                                 background: `${selectedBoundary.color}10`,
                                 border: `1px solid ${selectedBoundary.color}30`,
                             }}>
-                                <MetaRow label="Area" value={`${selectedBoundary.area.toFixed(1)} m²`} color={selectedBoundary.color} />
+                                <MetaRow label="Area" value={`${selectedBoundary.area.toFixed(1)} m `} color={selectedBoundary.color} />
                                 <MetaRow label="Panels" value={selectedPanels.length} color="#22c55e" />
                                 <MetaRow label="Capacity" value={`${((selectedPanels.length * panelConfig.power) / 1000).toFixed(2)} kWp`} color="#f59e0b" />
                             </div>
@@ -288,7 +288,7 @@ const SurveyRightPanel = () => {
                 </>
             )}
 
-            {/* ═══ PANEL CONFIGURATION ═════════════════════════════════════════════ */}
+            {/*     PANEL CONFIGURATION                                               */}
             <SectionTitle icon={Settings2} title="Panel Configuration"
                 open={sections.panelConfig} onToggle={() => toggle('panelConfig')} />
             {sections.panelConfig && (
@@ -306,7 +306,7 @@ const SurveyRightPanel = () => {
                                     color: panelConfig.orientation === o ? 'var(--primary, #3b82f6)' : '#64748b',
                                     fontSize: 10, fontWeight: 600, cursor: 'pointer', textTransform: 'capitalize',
                                 }}>
-                                {o === 'landscape' ? '▬' : '▮'} {o}
+                                {o === 'landscape' ? ' ' : ' '} {o}
                             </button>
                         ))}
                     </div>
@@ -321,10 +321,10 @@ const SurveyRightPanel = () => {
                         min={100} max={800} step={5} unit="W"
                         onChange={v => updatePanelConfig({ power: v })} color="#f59e0b" />
                     <Slider label="Panel Tilt" value={panelConfig.tilt}
-                        min={0} max={45} step={1} unit="°"
+                        min={0} max={45} step={1} unit=" "
                         onChange={v => updatePanelConfig({ tilt: v })} />
                     <Slider label="Azimuth" value={panelConfig.azimuth}
-                        min={0} max={360} step={5} unit="°"
+                        min={0} max={360} step={5} unit=" "
                         onChange={v => updatePanelConfig({ azimuth: v })} />
                     <Slider label="Spacing" value={panelConfig.spacing}
                         min={0} max={1} step={0.01} unit="m"
@@ -338,7 +338,7 @@ const SurveyRightPanel = () => {
                 </div>
             )}
 
-            {/* ═══ SUN SIMULATION ══════════════════════════════════════════════════ */}
+            {/*     SUN SIMULATION                                                    */}
             <SectionTitle icon={Sun} title="Sun Simulation"
                 open={sections.sunSim} onToggle={() => toggle('sunSim')}
                 badge={sunSimulation.enabled ? 'ON' : 'OFF'} />
@@ -383,7 +383,7 @@ const SurveyRightPanel = () => {
                                 min={1} max={365} step={1} color="#fbbf24"
                                 onChange={v => updateSunSimulation({ dayOfYear: v })} />
                             <Slider label="Latitude" value={sunSimulation.latitude}
-                                min={-60} max={60} step={0.1} unit="°"
+                                min={-60} max={60} step={0.1} unit=" "
                                 onChange={v => updateSunSimulation({ latitude: v })} />
 
                             {/* Animate button */}
@@ -399,7 +399,7 @@ const SurveyRightPanel = () => {
                                         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                                     }}>
                                     <Clock size={11} />
-                                    {sunSimulation.animate ? '⏸ Pause' : '▶ Animate Day'}
+                                    {sunSimulation.animate ? '  Pause' : '  Animate Day'}
                                 </button>
                                 <button onClick={runShadowAnalysis}
                                     style={{
@@ -416,13 +416,13 @@ const SurveyRightPanel = () => {
                 </div>
             )}
 
-            {/* ═══ QUICK TIPS ══════════════════════════════════════════════════════ */}
+            {/*     QUICK TIPS                                                        */}
             <div style={{
                 margin: '10px 14px', padding: '10px 12px', borderRadius: 8,
                 background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.12)',
             }}>
                 <div style={{ fontSize: 10, color: '#94a3b8', lineHeight: 1.6 }}>
-                    💡 <strong style={{ color: '#e2e8f0' }}>Quick Start:</strong><br />
+                       <strong style={{ color: '#e2e8f0' }}>Quick Start:</strong><br />
                     1. Use <strong>Draw Area</strong> to outline a roof<br />
                     2. Click <strong>Auto-Fill Panels</strong> to populate<br />
                     3. Draw <strong>Exclusion Zones</strong> for obstacles<br />

@@ -1,4 +1,4 @@
-// FinanceDashboard.js a€" Finance role dashboard (redesigned)
+// FinanceDashboard.js a "  Finance role dashboard (redesigned)
 import React, { useMemo } from 'react';
 import {
     AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line,
@@ -197,7 +197,7 @@ const FinanceDashboard = ({
 
             <SectionHeader
                 title="Finance Dashboard"
-                subtitle="Cash flow • Invoicing • Payables • Compliance"
+                subtitle="Cash flow   Invoicing   Payables   Compliance"
                 icon={DollarSign}
                 accent={C.primary}
                 badge="Financial Hub"
@@ -356,7 +356,7 @@ const FinanceDashboard = ({
 
                 <ChartCard 
                     title="Compliance Status" 
-                    subtitle="GST • TDS • Audit filings"
+                    subtitle="GST   TDS   Audit filings"
                     headerRight={
                         <div className="flex items-center gap-1 bg-[var(--bg-overlay)] rounded-lg p-1">
                             {['All', 'Today', 'Week', 'Month', 'Quarter', 'Year'].map((filter) => (

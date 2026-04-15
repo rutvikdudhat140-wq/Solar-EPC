@@ -391,7 +391,7 @@ const SiteSurveyDashboard = ({ surveys = [], loading = false, onRefresh }) => {
             }`} />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{activity.client}</p>
-              <p className="text-[11px] text-[var(--text-muted)]">{activity.city} • {activity.capacity}</p>
+              <p className="text-[11px] text-[var(--text-muted)]">{activity.city}   {activity.capacity}</p>
             </div>
             <span className="text-[10px] text-[var(--text-muted)]">
               {isToday(new Date(activity.time)) ? 'Today' :

@@ -1,4 +1,4 @@
-// QuickStartGuide.js — Interactive guide for new enhanced features
+// QuickStartGuide.js   Interactive guide for new enhanced features
 import React, { useState } from 'react';
 import { X, ChevronLeft, ChevronRight, Play, Zap, Map, Box, Ruler } from 'lucide-react';
 
@@ -6,7 +6,7 @@ const GUIDE_STEPS = [
     {
         id: 'welcome',
         title: 'Welcome to Enhanced Solar Survey',
-        icon: '🌞',
+        icon: '  ',
         content: (
             <div>
                 <p style={{ marginBottom: 16, color: '#94a3b8', lineHeight: 1.6 }}>
@@ -19,10 +19,10 @@ const GUIDE_STEPS = [
                     gap: 12
                 }}>
                     {[
-                        { icon: '🗺️', label: 'Interactive Maps', desc: 'Satellite view with drawing tools' },
-                        { icon: '🏗️', label: '3D Visualization', desc: 'Realistic 3D scene rendering' },
-                        { icon: '🤖', label: 'AI Panel Placement', desc: 'Smart auto-generation' },
-                        { icon: '📐', label: 'Precise Measurements', desc: 'Real-time distance tools' }
+                        { icon: '   ', label: 'Interactive Maps', desc: 'Satellite view with drawing tools' },
+                        { icon: '   ', label: '3D Visualization', desc: 'Realistic 3D scene rendering' },
+                        { icon: '  ', label: 'AI Panel Placement', desc: 'Smart auto-generation' },
+                        { icon: '  ', label: 'Precise Measurements', desc: 'Real-time distance tools' }
                     ].map(feature => (
                         <div key={feature.label} style={{
                             padding: 12,
@@ -55,7 +55,7 @@ const GUIDE_STEPS = [
     {
         id: 'view-modes',
         title: 'Master the View Modes',
-        icon: '👁️',
+        icon: '   ',
         content: (
             <div>
                 <p style={{ marginBottom: 16, color: '#94a3b8', lineHeight: 1.6 }}>
@@ -76,7 +76,7 @@ const GUIDE_STEPS = [
                             shortcut: 'Best for panel placement and shadow analysis'
                         },
                         {
-                            icon: '⚖️',
+                            icon: '  ',
                             label: 'Split View',
                             desc: 'Side-by-side 2D and 3D',
                             shortcut: 'Compare perspectives simultaneously'
@@ -106,7 +106,7 @@ const GUIDE_STEPS = [
                                     {mode.label}
                                 </div>
                                 <div style={{ fontSize: 10, color: '#64748b' }}>
-                                    {mode.desc} • {mode.shortcut}
+                                    {mode.desc}   {mode.shortcut}
                                 </div>
                             </div>
                         </div>
@@ -118,7 +118,7 @@ const GUIDE_STEPS = [
     {
         id: 'drawing-tools',
         title: 'Drawing & Area Definition',
-        icon: '✏️',
+        icon: '  ',
         content: (
             <div>
                 <p style={{ marginBottom: 16, color: '#94a3b8', lineHeight: 1.6 }}>
@@ -138,7 +138,7 @@ const GUIDE_STEPS = [
                         color: '#22c55e',
                         marginBottom: 4
                     }}>
-                        📐 Step-by-Step Process
+                           Step-by-Step Process
                     </div>
                     <ol style={{
                         fontSize: 10,
@@ -155,9 +155,9 @@ const GUIDE_STEPS = [
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {[
-                        { tool: '📐 Draw Area', desc: 'Outline installation boundaries' },
-                        { tool: '⬜ Rectangle', desc: 'Quick rectangular areas' },
-                        { tool: '🚫 Exclude Area', desc: 'Mark obstacles and no-go zones' }
+                        { tool: '   Draw Area', desc: 'Outline installation boundaries' },
+                        { tool: '  Rectangle', desc: 'Quick rectangular areas' },
+                        { tool: '   Exclude Area', desc: 'Mark obstacles and no-go zones' }
                     ].map(item => (
                         <div key={item.tool} style={{
                             display: 'flex',
@@ -179,7 +179,7 @@ const GUIDE_STEPS = [
     {
         id: 'smart-panels',
         title: 'AI-Powered Panel Placement',
-        icon: '🤖',
+        icon: '  ',
         content: (
             <div>
                 <p style={{ marginBottom: 16, color: '#94a3b8', lineHeight: 1.6 }}>
@@ -199,7 +199,7 @@ const GUIDE_STEPS = [
                         color: '#fbbf24',
                         marginBottom: 4
                     }}>
-                        ⚡ Smart Features
+                          Smart Features
                     </div>
                     <ul style={{
                         fontSize: 10,
@@ -227,7 +227,7 @@ const GUIDE_STEPS = [
                         cursor: 'not-allowed',
                         opacity: 0.7
                     }}>
-                        ⚡ Auto-Generate Panels
+                          Auto-Generate Panels
                     </button>
                     <div style={{ fontSize: 9, color: '#64748b', textAlign: 'center' }}>
                         Available after defining areas
@@ -239,7 +239,7 @@ const GUIDE_STEPS = [
     {
         id: 'measurements',
         title: 'Precise Measurements',
-        icon: '📏',
+        icon: '  ',
         content: (
             <div>
                 <p style={{ marginBottom: 16, color: '#94a3b8', lineHeight: 1.6 }}>
@@ -276,7 +276,7 @@ const GUIDE_STEPS = [
                         fontWeight: 600,
                         marginBottom: 4
                     }}>
-                        💡 Pro Tips
+                           Pro Tips
                     </div>
                     <ul style={{
                         fontSize: 9,
@@ -285,7 +285,7 @@ const GUIDE_STEPS = [
                         lineHeight: 1.4,
                         margin: 0
                     }}>
-                        <li>Measurements automatically convert units (cm → m → km)</li>
+                        <li>Measurements automatically convert units (cm   m   km)</li>
                         <li>All measurements are saved and can be exported</li>
                         <li>Toggle visibility with the eye icon</li>
                         <li>Delete individual measurements from the panel</li>
@@ -297,10 +297,10 @@ const GUIDE_STEPS = [
     {
         id: 'getting-started',
         title: 'Ready to Start?',
-        icon: '🚀',
+        icon: '  ',
         content: (
             <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
+                <div style={{ fontSize: 48, marginBottom: 16 }}>  </div>
                 <p style={{ marginBottom: 20, color: '#94a3b8', lineHeight: 1.6 }}>
                     You're all set! Start by switching to <strong>2D Map View</strong> and
                     drawing your first installation area.
@@ -329,12 +329,12 @@ const GUIDE_STEPS = [
                         textAlign: 'left'
                     }}>
                         {[
-                            '□ Switch to 2D Map View',
-                            '□ Draw installation areas',
-                            '□ Add exclusion zones if needed',
-                            '□ Switch to 3D View',
-                            '□ Generate panels automatically',
-                            '□ Analyze performance metrics'
+                            '  Switch to 2D Map View',
+                            '  Draw installation areas',
+                            '  Add exclusion zones if needed',
+                            '  Switch to 3D View',
+                            '  Generate panels automatically',
+                            '  Analyze performance metrics'
                         ].map(item => (
                             <label key={item} style={{
                                 color: '#64748b',

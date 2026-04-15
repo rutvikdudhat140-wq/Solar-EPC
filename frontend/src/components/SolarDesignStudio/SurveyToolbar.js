@@ -1,4 +1,4 @@
-// SurveyToolbar.js — Top toolbar for Solar Survey Design
+// SurveyToolbar.js   Top toolbar for Solar Survey Design
 import React from 'react';
 import { useSolarSurveyStore } from './useSolarSurveyStore';
 import {
@@ -67,7 +67,7 @@ const SurveyToolbar = ({ projectName, onClose }) => {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '0 12px', flexShrink: 0, zIndex: 30,
         }}>
-            {/* ── Left: Breadcrumb + Project Name ───────────────────────────────── */}
+            {/*    Left: Breadcrumb + Project Name                                   */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{
                     width: 32, height: 32, borderRadius: 8,
@@ -75,19 +75,19 @@ const SurveyToolbar = ({ projectName, onClose }) => {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 14,
                 }}>
-                    ☀️
+                      
                 </div>
                 <div>
                     <div style={{ fontSize: 12, fontWeight: 700, color: '#f1f5f9' }}>
                         Solar Survey Studio
                     </div>
                     <div style={{ fontSize: 10, color: '#64748b' }}>
-                        {projectName || 'New Project'} › Design
+                        {projectName || 'New Project'}   Design
                     </div>
                 </div>
             </div>
 
-            {/* ── Center: Drawing Tools ─────────────────────────────────────────── */}
+            {/*    Center: Drawing Tools                                             */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <ToolBtn icon={MousePointer2} label="Select" active={activeTool === 'select'}
                     onClick={() => setActiveTool('select')} />
@@ -133,13 +133,13 @@ const SurveyToolbar = ({ projectName, onClose }) => {
                                 textTransform: 'uppercase',
                             }}
                         >
-                            {mode === 'split' ? '⬒ Split' : mode}
+                            {mode === 'split' ? '  Split' : mode}
                         </button>
                     ))}
                 </div>
             </div>
 
-            {/* ── Right: Actions ────────────────────────────────────────────────── */}
+            {/*    Right: Actions                                                    */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <ToolBtn icon={Save} label="Save" onClick={exportDesign} />
                 <ToolBtn icon={Download} label="Export" onClick={exportDesign} />

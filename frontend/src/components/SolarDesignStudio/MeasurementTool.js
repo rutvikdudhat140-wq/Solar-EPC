@@ -1,4 +1,4 @@
-// MeasurementTool.js — Interactive measurement tool for 3D and 2D views
+// MeasurementTool.js   Interactive measurement tool for 3D and 2D views
 import React, { useRef, useState, useCallback } from 'react';
 import { useSolarSurveyStore } from './useSolarSurveyStore';
 import { Ruler, X, Check, RotateCcw } from 'lucide-react';
@@ -143,7 +143,7 @@ const MeasurementPanel = () => {
                             cursor: 'pointer'
                         }}
                     >
-                        👁️
+                           
                     </button>
                     {measurements.length > 0 && (
                         <button
@@ -158,7 +158,7 @@ const MeasurementPanel = () => {
                                 cursor: 'pointer'
                             }}
                         >
-                            🗑️
+                               
                         </button>
                     )}
                 </div>

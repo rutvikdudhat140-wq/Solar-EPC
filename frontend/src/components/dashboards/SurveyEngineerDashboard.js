@@ -1,4 +1,4 @@
-// SurveyEngineerDashboard.js "" Survey Engineer role dashboard (redesigned)
+// SurveyEngineerDashboard.js ""  Survey Engineer role dashboard (redesigned)
 import React from 'react';
 import {
     BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -74,7 +74,7 @@ const SurveyEngineerDashboard = () => {
 
             <SectionHeader
                 title="Survey Engineer Dashboard"
-                subtitle="Site feasibility •· Shadow analysis •· Field reports"
+                subtitle="Site feasibility    Shadow analysis    Field reports"
                 icon={MapPin}
                 accent={C.primary}
                 badge="Field Mode"
@@ -247,7 +247,7 @@ const SurveyEngineerDashboard = () => {
                         </span>,
                         r.feasibility != null
                             ? <span className="font-bold tabular-nums" style={{ color: r.feasibility >= 85 ? '#10b981' : '#f59e0b' }}>{r.feasibility}%</span>
-                            : <span className="text-[var(--text-muted)] italic text-[11px]">""</span>,
+                            : <span className="text-[var(--text-muted)] italic text-[11px]">"" </span>,
                         <button className="text-[11px] text-[var(--primary)] hover:underline">View Report</button>,
                     ])}
                 />
@@ -256,8 +256,8 @@ const SurveyEngineerDashboard = () => {
             {/* Activity */}
             <ChartCard title="Recent Field Activity" subtitle="Latest survey updates">
                 {[
-                    { icon: MapPin, title: 'Site survey completed: Rajkot Factory', meta: 'Feasibility: 92% "" Optimal', time: '1h ago', status: 'Done', statusColor: '#10b981' },
-                    { icon: Camera, title: 'Photos uploaded: Green Valley Residency', meta: '48 images •· shadow analysis', time: '3h ago', status: 'Review', statusColor: C.primary },
+                    { icon: MapPin, title: 'Site survey completed: Rajkot Factory', meta: 'Feasibility: 92% ""  Optimal', time: '1h ago', status: 'Done', statusColor: '#10b981' },
+                    { icon: Camera, title: 'Photos uploaded: Green Valley Residency', meta: '48 images    shadow analysis', time: '3h ago', status: 'Review', statusColor: C.primary },
                     { icon: AlertTriangle, title: 'Obstruction found: West Wing Complex', meta: 'Adjacent building shadows', time: '5h ago', status: 'Issue', statusColor: '#ef4444' },
                     { icon: FileText, title: 'Report submitted: Surat Commercial Hub', meta: '85% feasibility approved', time: '1d ago', status: 'Approved', statusColor: '#10b981' },
                     { icon: Clock, title: 'Survey scheduled: Vadodara Warehouse', meta: 'Tomorrow 10:00 AM', time: '1d ago', status: 'Scheduled', statusColor: '#8b5cf6' },

@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 /**
- * Generic Modal — controlled by `open` or `isOpen` prop
+ * Generic Modal   controlled by `open` or `isOpen` prop
  * Sizes: sm (400px) | md (560px) | lg (720px) | xl (900px) | full
  */
 export const Modal = ({ open, isOpen, onClose, title, description, size = 'md', zIndex = 100, children, footer }) => {

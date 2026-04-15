@@ -1,4 +1,4 @@
-// SolarSurveyStudio.js — Main Solar Survey Design System orchestrator
+// SolarSurveyStudio.js   Main Solar Survey Design System orchestrator
 // Full-screen studio: Map 2D + 3D + drawing tools + panel auto-fill + shadow analysis
 import React, { useEffect } from 'react';
 import SurveyMap from './SurveyMap';
@@ -9,7 +9,7 @@ import SurveyRightPanel from './SurveyRightPanel';
 import SurveyBottomBar from './SurveyBottomBar';
 import { useSolarSurveyStore } from './useSolarSurveyStore';
 
-// ── Compass Rose ──────────────────────────────────────────────────────────────
+//    Compass Rose                                                               
 const CompassRose = () => (
     <div style={{
         position: 'absolute', top: 12, right: 12,
@@ -28,7 +28,7 @@ const CompassRose = () => (
     </div>
 );
 
-// ── Mini Stats HUD ────────────────────────────────────────────────────────────
+//    Mini Stats HUD                                                             
 const StatsHUD = () => {
     const { analysis, panels, sunSimulation } = useSolarSurveyStore();
     if (panels.length === 0) return null;
@@ -72,7 +72,7 @@ const StatsHUD = () => {
     );
 };
 
-// ── Empty State ───────────────────────────────────────────────────────────────
+//    Empty State                                                                
 const EmptyState3D = () => (
     <div style={{
         position: 'absolute', top: '50%', left: '50%',
@@ -86,7 +86,7 @@ const EmptyState3D = () => (
             backdropFilter: 'blur(12px)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
         }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>🏗️</div>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>   </div>
             <p style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 15, marginBottom: 6 }}>
                 No Areas Defined Yet
             </p>
@@ -99,9 +99,9 @@ const EmptyState3D = () => (
     </div>
 );
 
-// ══════════════════════════════════════════════════════════════════════════════
+//                                                                               
 // MAIN COMPONENT
-// ══════════════════════════════════════════════════════════════════════════════
+//                                                                               
 const SolarSurveyStudio = ({ onClose, projectName, initialLat, initialLng }) => {
     const { viewMode, reset, boundaries, setMapCenter } = useSolarSurveyStore();
 

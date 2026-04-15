@@ -15,7 +15,7 @@ import { toast } from '../ui/Toast';
 import { Modal } from '../ui/Modal';
 import { automationApi } from '../../services/automationApi';
 
-// ─── CONSTANTS ───────────────────────────────────────────────────────────
+//     CONSTANTS                                                            
 
 const OPERATORS = [
   { value: 'eq', label: 'equals', types: ['string', 'number', 'boolean', 'date'] },
@@ -48,7 +48,7 @@ const ACTION_TYPES = [
   { value: 'update_status', label: 'Update Status', icon: RefreshCw, color: '#a855f7' },
 ];
 
-// ─── MAIN COMPONENT ─────────────────────────────────────────────────────
+//     MAIN COMPONENT                                                      
 
 export default function AutomationBuilder({ tenantId, user }) {
   const [rules, setRules] = useState([]);
@@ -74,7 +74,7 @@ export default function AutomationBuilder({ tenantId, user }) {
     actionNodes: [],
   });
 
-  // ─── DATA LOADING ──────────────────────────────────────────────────────
+  //     DATA LOADING                                                       
 
   const loadData = useCallback(async () => {
     try {
@@ -124,7 +124,7 @@ export default function AutomationBuilder({ tenantId, user }) {
     loadData();
   }, [loadData]);
 
-  // ─── HANDLERS ──────────────────────────────────────────────────────────
+  //     HANDLERS                                                           
 
   const handleCreateRule = () => {
     setSelectedRule(null);
@@ -218,7 +218,7 @@ export default function AutomationBuilder({ tenantId, user }) {
     setShowExecutionModal(true);
   };
 
-  // ─── CONDITION BUILDER ──────────────────────────────────────────────────
+  //     CONDITION BUILDER                                                   
 
   const addCondition = (parentPath = []) => {
     const newCondition = {
@@ -290,7 +290,7 @@ export default function AutomationBuilder({ tenantId, user }) {
     });
   };
 
-  // ─── ACTION BUILDER ────────────────────────────────────────────────────
+  //     ACTION BUILDER                                                     
 
   const addAction = () => {
     const nodeId = `action_${Date.now()}`;
@@ -343,7 +343,7 @@ export default function AutomationBuilder({ tenantId, user }) {
     });
   };
 
-  // ─── RENDER ─────────────────────────────────────────────────────────────
+  //     RENDER                                                              
 
   if (loading) {
     return (
@@ -387,7 +387,7 @@ export default function AutomationBuilder({ tenantId, user }) {
             Automation Rules
           </h2>
           <p className="text-xs text-[var(--text-faint)] mt-0.5">
-            {stats?.rules?.active || 0} active • {stats?.rules?.total || 0} total
+            {stats?.rules?.active || 0} active   {stats?.rules?.total || 0} total
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -466,7 +466,7 @@ export default function AutomationBuilder({ tenantId, user }) {
   );
 }
 
-// ─── SUB-COMPONENTS ─────────────────────────────────────────────────────
+//     SUB-COMPONENTS                                                      
 
 function RuleEditor({
   formData,
@@ -520,7 +520,7 @@ function RuleEditor({
             type="text"
             value={formData.name}
             onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
-            placeholder="e.g., Lead Qualified → Create Survey"
+            placeholder="e.g., Lead Qualified   Create Survey"
             className="w-full mt-1 px-3 py-2 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
           />
         </div>
@@ -711,7 +711,7 @@ function RuleEditor({
   );
 }
 
-// ─── CONDITION TREE COMPONENT ────────────────────────────────────────────
+//     CONDITION TREE COMPONENT                                             
 
 function ConditionTree({ tree, path, onUpdate, onRemove, onAdd }) {
   if (tree.type === 'condition') {
@@ -806,7 +806,7 @@ function ConditionNode({ condition, path, onUpdate, onRemove }) {
   );
 }
 
-// ─── ACTION NODE COMPONENT ────────────────────────────────────────────────
+//     ACTION NODE COMPONENT                                                 
 
 function ActionNode({ action, index, isFirst, isLast, onUpdate, onRemove, onMoveUp, onMoveDown }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -1058,7 +1058,7 @@ function ActionConfig({ type, config, onChange }) {
   }
 }
 
-// ─── RULES LIST COMPONENT ────────────────────────────────────────────────
+//     RULES LIST COMPONENT                                                 
 
 function RulesList({ rules, onEdit, onToggle, onDelete }) {
   if (rules.length === 0) {
@@ -1109,9 +1109,9 @@ function RulesList({ rules, onEdit, onToggle, onDelete }) {
                   <Zap size={10} />
                   {rule.trigger?.event}
                 </span>
-                <span>•</span>
+                <span> </span>
                 <span>{rule.actionNodes?.length || 0} actions</span>
-                <span>•</span>
+                <span> </span>
                 <span>Runs: {rule.executionCount || 0}</span>
               </div>
             </div>
@@ -1146,7 +1146,7 @@ function RulesList({ rules, onEdit, onToggle, onDelete }) {
   );
 }
 
-// ─── EXECUTION HISTORY COMPONENT ────────────────────────────────────────
+//     EXECUTION HISTORY COMPONENT                                         
 
 function ExecutionHistory({ executions, onView }) {
   if (executions.length === 0) {
@@ -1206,7 +1206,7 @@ function StatusIcon({ status }) {
   return icons[status] || <Clock size={16} className="text-gray-400" />;
 }
 
-// ─── MODAL COMPONENTS ─────────────────────────────────────────────────────
+//     MODAL COMPONENTS                                                      
 
 function TemplateModal({ templates, onApply, onClose }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -1310,7 +1310,7 @@ function ExecutionDetailModal({ execution, onClose }) {
                     {result.actionType}
                   </p>
                   <p className="text-[10px] text-[var(--text-faint)]">
-                    {result.nodeId} • {result.durationMs}ms
+                    {result.nodeId}   {result.durationMs}ms
                   </p>
                   {result.errorMessage && (
                     <p className="text-[10px] text-red-400 mt-1">{result.errorMessage}</p>

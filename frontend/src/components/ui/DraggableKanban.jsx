@@ -69,7 +69,7 @@ const KanbanCard = ({ item, onClick }) => {
           <span className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] text-[var(--text-muted)] border border-[var(--border-subtle)]">
             {item.id}
           </span>
-          <span className="text-[9px] text-[var(--text-muted)]">•</span>
+          <span className="text-[9px] text-[var(--text-muted)]"> </span>
           <span className="text-[9px] text-[var(--text-muted)]">{item.inverterSerial ? 'Inv: ' + item.inverterSerial.slice(-4) : 'No serial'}</span>
         </div>
 
@@ -135,7 +135,7 @@ const KanbanColumn = ({ status, items, onDrop, onCardClick }) => {
           </span>
         </div>
         <div className="flex items-center gap-2 text-[9px] text-[var(--text-muted)] pl-4">
-          <span>{items.length} systems</span><span>·</span><span>{totalKW} kW</span>
+          <span>{items.length} systems</span><span> </span><span>{totalKW} kW</span>
         </div>
       </div>
 

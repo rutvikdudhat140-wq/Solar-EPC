@@ -1,4 +1,4 @@
-// TechnicianDashboard.js a€" Technician role dashboard (redesigned)
+// TechnicianDashboard.js a "  Technician role dashboard (redesigned)
 import React from 'react';
 import {
     BarChart, Bar, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid,
@@ -76,7 +76,7 @@ const TechnicianDashboard = () => {
 
             <SectionHeader
                 title="Technician Dashboard"
-                subtitle="Field tasks •. Installation progress •. Service activities"
+                subtitle="Field tasks  . Installation progress  . Service activities"
                 icon={Wrench}
                 accent={C.primary}
                 badge="Field Ops"
@@ -226,7 +226,7 @@ const TechnicianDashboard = () => {
                         key={i}
                         icon={Wrench}
                         accent={log.status === 'Resolved' || log.status === 'Completed' ? '#10b981' : C.primary}
-                        title={`${log.issue} a€" ${log.site}`}
+                        title={`${log.issue} a "  ${log.site}`}
                         meta={log.date}
                         status={log.status}
                         statusColor={log.status === 'Resolved' || log.status === 'Completed' ? '#10b981' : C.primary}
@@ -236,9 +236,9 @@ const TechnicianDashboard = () => {
                 )}
                 {/* Static fallback logs */}
                 {serviceLogData.length === 0 && [
-                    { icon: Zap, title: 'Inverter fault resolved: Site A', meta: 'Grid sync issue a€" replaced fuse', time: '2h ago', status: 'Resolved', statusColor: '#10b981' },
+                    { icon: Zap, title: 'Inverter fault resolved: Site A', meta: 'Grid sync issue a "  replaced fuse', time: '2h ago', status: 'Resolved', statusColor: '#10b981' },
                     { icon: Battery, title: 'Panel cleaning done: Site B', meta: '40 panels cleaned, efficiency +8%', time: '4h ago', status: 'Done', statusColor: '#10b981' },
-                    { icon: AlertTriangle, title: 'Mounting issue flagged: Site C', meta: 'Corrosion on clamps a€" ordered parts', time: '6h ago', status: 'Pending', statusColor: '#f59e0b' },
+                    { icon: AlertTriangle, title: 'Mounting issue flagged: Site C', meta: 'Corrosion on clamps a "  ordered parts', time: '6h ago', status: 'Pending', statusColor: '#f59e0b' },
                     { icon: Settings, title: 'MPPT calibration: Factory D', meta: 'Optimized for summer irradiance', time: '1d ago', status: 'Done', statusColor: '#10b981' },
                 ].map((item, i) => (
                     <ActivityItem key={i} {...item} accent={item.statusColor} />

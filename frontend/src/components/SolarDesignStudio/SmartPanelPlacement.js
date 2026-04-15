@@ -1,4 +1,4 @@
-// SmartPanelPlacement.js — Intelligent panel placement system with manual overrides
+// SmartPanelPlacement.js   Intelligent panel placement system with manual overrides
 import React, { useState, useRef, useCallback } from 'react';
 import { useSolarSurveyStore } from './useSolarSurveyStore';
 
@@ -104,7 +104,7 @@ const PanelPlacementEngine = {
 
     // Calculate optimal tilt angle based on latitude
     calculateOptimalTilt: (latitude) => {
-        // Simple formula: optimal tilt ≈ latitude (with adjustments)
+        // Simple formula: optimal tilt   latitude (with adjustments)
         return Math.max(10, Math.min(45, Math.abs(latitude)));
     },
 
@@ -158,7 +158,7 @@ const PanelSelector = ({ position, onSelect, onExclude, onDelete }) => {
                     marginBottom: 4
                 }}
             >
-                📋 Select Panel
+                   Select Panel
             </button>
             <button
                 onClick={onExclude}
@@ -174,7 +174,7 @@ const PanelSelector = ({ position, onSelect, onExclude, onDelete }) => {
                     marginBottom: 4
                 }}
             >
-                🚫 Mark as Excluded
+                   Mark as Excluded
             </button>
             <button
                 onClick={onDelete}
@@ -189,7 +189,7 @@ const PanelSelector = ({ position, onSelect, onExclude, onDelete }) => {
                     cursor: 'pointer'
                 }}
             >
-                🗑️ Delete Panel
+                    Delete Panel
             </button>
         </div>
     );
@@ -344,7 +344,7 @@ const SmartPanelPlacement = () => {
                     fontWeight: 700,
                     marginBottom: 12
                 }}>
-                    🤖 Smart Panel Placement
+                       Smart Panel Placement
                 </div>
 
                 {selectedAreaId ? (
@@ -364,7 +364,7 @@ const SmartPanelPlacement = () => {
                                 cursor: isPlacing ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            {isPlacing ? '⏳ Generating...' : '⚡ Auto-Generate Panels'}
+                            {isPlacing ? '  Generating...' : '  Auto-Generate Panels'}
                         </button>
 
                         {/* Smart Fill */}
@@ -382,7 +382,7 @@ const SmartPanelPlacement = () => {
                                 cursor: isPlacing ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            🧩 Fill Remaining Spaces
+                               Fill Remaining Spaces
                         </button>
 
                         {/* Clear All */}
@@ -398,7 +398,7 @@ const SmartPanelPlacement = () => {
                                 cursor: 'pointer'
                             }}
                         >
-                            🗑️ Clear All Panels
+                                Clear All Panels
                         </button>
                     </div>
                 ) : (
@@ -500,7 +500,7 @@ const SmartPanelPlacement = () => {
                         backdropFilter: 'blur(12px)',
                         textAlign: 'center'
                     }}>
-                        <div style={{ fontSize: 32, marginBottom: 8 }}>🤖</div>
+                        <div style={{ fontSize: 32, marginBottom: 8 }}>  </div>
                         <div style={{ color: '#f1f5f9', fontSize: 14, fontWeight: 600, marginBottom: 4 }}>
                             Generating Optimal Panel Layout...
                         </div>
