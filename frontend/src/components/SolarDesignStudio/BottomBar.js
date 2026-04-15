@@ -1,4 +1,4 @@
-// BottomBar.js — Map/view toggle bottom controls
+// BottomBar.js   Map/view toggle bottom controls
 import React from 'react';
 
 const BtnGroup = ({ children }) => (
@@ -24,7 +24,7 @@ const CtrlBtn = ({ icon, label, active, onClick, hasArrow }) => (
     >
         <span>{icon}</span>
         <span>{label}</span>
-        {hasArrow && <span style={{ fontSize: 10, marginLeft: 2 }}>▼</span>}
+        {hasArrow && <span style={{ fontSize: 10, marginLeft: 2 }}> </span>}
     </button>
 );
 
@@ -36,19 +36,19 @@ const BottomBar = ({ mapType, setMapType, solar3D, setSolar3D }) => (
         pointerEvents: 'auto',
     }}>
         <BtnGroup>
-            <CtrlBtn icon="🗺" label="Dual Map" />
-            <CtrlBtn icon="📐" label="Resize" />
+            <CtrlBtn icon="  " label="Dual Map" />
+            <CtrlBtn icon="  " label="Resize" />
         </BtnGroup>
         <BtnGroup>
             <CtrlBtn
-                icon="🌍"
+                icon="  "
                 label="Google"
                 hasArrow
                 active={mapType === 'google'}
                 onClick={() => setMapType('google')}
             />
             <CtrlBtn
-                icon="🛰"
+                icon="  "
                 label="Google Solar 3D"
                 hasArrow
                 active={solar3D}

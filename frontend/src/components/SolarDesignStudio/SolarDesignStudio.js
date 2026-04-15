@@ -1,4 +1,4 @@
-// SolarDesignStudio.js — Full-screen design studio modal/page
+// SolarDesignStudio.js   Full-screen design studio modal/page
 // Integrates: Three.js 3D scene + LIVE Google Maps 2D + Arka360-style UI
 import React, { useState, useEffect } from 'react';
 import Scene3D from './Scene3D';
@@ -21,7 +21,7 @@ const WarningBadge = () => (
         cursor: 'pointer', zIndex: 5, fontSize: 18,
         boxShadow: '0 0 12px rgba(245,158,11,0.3)',
     }}>
-        ⚠️
+          
     </div>
 );
 
@@ -35,7 +35,7 @@ const CompassRose = () => (
         fontSize: 20, cursor: 'pointer', zIndex: 5,
         boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
     }}>
-        🧭
+          
     </div>
 );
 
@@ -49,7 +49,7 @@ const ChatBtn = () => (
         fontSize: 18, cursor: 'pointer', zIndex: 5,
         boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
     }}>
-        💬
+          
     </div>
 );
 
@@ -78,7 +78,7 @@ const SolarDesignStudio = ({ onClose, projectName, designName, initialLat, initi
             zIndex: 9999,
             fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         }}>
-            {/* ── Top Toolbar ─────────────────────────────────────────────────── */}
+            {/*    Top Toolbar                                                     */}
             <StudioToolbar
                 projectName={projectName}
                 designName={designName}
@@ -87,7 +87,7 @@ const SolarDesignStudio = ({ onClose, projectName, designName, initialLat, initi
                 setViewMode={setViewMode}
             />
 
-            {/* ── Main Body ───────────────────────────────────────────────────── */}
+            {/*    Main Body                                                       */}
             <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
 
                 {/* Left sidebar tools */}
@@ -132,12 +132,12 @@ const SolarDesignStudio = ({ onClose, projectName, designName, initialLat, initi
                                 borderRadius: 16, padding: '24px 32px',
                                 backdropFilter: 'blur(12px)',
                             }}>
-                                <div style={{ fontSize: 40, marginBottom: 10 }}>🏗️</div>
+                                <div style={{ fontSize: 40, marginBottom: 10 }}>   </div>
                                 <p style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 14, marginBottom: 6 }}>
                                     Solar Design Studio Ready
                                 </p>
                                 <p style={{ color: '#64748b', fontSize: 12, lineHeight: 1.6 }}>
-                                    Use <strong style={{ color: '#3b82f6' }}>⬡ Draw Roof</strong> tool to draw a roof polygon<br />
+                                    Use <strong style={{ color: '#3b82f6' }}>  Draw Roof</strong> tool to draw a roof polygon<br />
                                     or click <strong style={{ color: '#3b82f6' }}>+ Add New Roof Model</strong> in the right panel
                                 </p>
                             </div>

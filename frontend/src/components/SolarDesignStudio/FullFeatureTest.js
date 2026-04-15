@@ -1,4 +1,4 @@
-// FullFeatureTest.js — Comprehensive test component to showcase all 3D capabilities
+// FullFeatureTest.js   Comprehensive test component to showcase all 3D capabilities
 import React, { useState, useEffect } from 'react';
 import { useSolarSurveyStore } from './useSolarSurveyStore';
 
@@ -118,7 +118,7 @@ const FullFeatureTest = () => {
                 marginBottom: '20px',
                 textAlign: 'center'
             }}>
-                🎯 Full 3D System Test Results
+                   Full 3D System Test Results
             </h2>
 
             <div style={{ marginBottom: '20px' }}>
@@ -140,7 +140,7 @@ const FullFeatureTest = () => {
                             fontSize: '20px',
                             marginRight: '12px'
                         }}>
-                            {result.passed ? '✅' : '❌'}
+                            {result.passed ? ' ' : ' '}
                         </span>
                         <div style={{ flex: 1 }}>
                             <div style={{
@@ -196,7 +196,7 @@ const FullFeatureTest = () => {
                     fontWeight: '600',
                     marginBottom: '12px'
                 }}>
-                    🚀 Enhanced Features Active
+                       Enhanced Features Active
                 </h3>
                 <div style={{
                     display: 'grid',
@@ -204,14 +204,14 @@ const FullFeatureTest = () => {
                     gap: '8px',
                     fontSize: '12px'
                 }}>
-                    <div style={{ color: '#f1f5f9' }}>✅ Full 3D Environment</div>
-                    <div style={{ color: '#f1f5f9' }}>✅ Unlimited Zoom (1x-500x)</div>
-                    <div style={{ color: '#f1f5f9' }}>✅ 360° Camera Freedom</div>
-                    <div style={{ color: '#f1f5f9' }}>✅ Interactive 3D Drawing</div>
-                    <div style={{ color: '#f1f5f9' }}>✅ Three.js Integration</div>
-                    <div style={{ color: '#f1f5f9' }}>✅ No Google Maps Dependency</div>
-                    <div style={{ color: '#f1f5f9' }}>✅ Professional Rendering</div>
-                    <div style={{ color: '#f1f5f9' }}>✅ Real-time Performance</div>
+                    <div style={{ color: '#f1f5f9' }}>  Full 3D Environment</div>
+                    <div style={{ color: '#f1f5f9' }}>  Unlimited Zoom (1x-500x)</div>
+                    <div style={{ color: '#f1f5f9' }}>  360  Camera Freedom</div>
+                    <div style={{ color: '#f1f5f9' }}>  Interactive 3D Drawing</div>
+                    <div style={{ color: '#f1f5f9' }}>  Three.js Integration</div>
+                    <div style={{ color: '#f1f5f9' }}>  No Google Maps Dependency</div>
+                    <div style={{ color: '#f1f5f9' }}>  Professional Rendering</div>
+                    <div style={{ color: '#f1f5f9' }}>  Real-time Performance</div>
                 </div>
             </div>
 
@@ -232,7 +232,7 @@ const FullFeatureTest = () => {
                         marginRight: '12px'
                     }}
                 >
-                    🔄 Run Tests Again
+                       Run Tests Again
                 </button>
                 <button
                     onClick={() => {
@@ -249,7 +249,7 @@ const FullFeatureTest = () => {
                         cursor: 'pointer'
                     }}
                 >
-                    ✅ Continue with 3D Experience
+                      Continue with 3D Experience
                 </button>
             </div>
         </div>

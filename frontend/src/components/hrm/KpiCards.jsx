@@ -3,8 +3,8 @@ import { TrendingUp, Users, AlertTriangle, Wallet, Activity, CheckCircle, Clock,
 
 const CURRENCY = {
   format: (value) => {
-    if (value === null || value === undefined || value === 0) return '—';
-    return `₹${Number(value).toLocaleString('en-IN')}`;
+    if (value === null || value === undefined || value === 0) return ' ';
+    return ` ${Number(value).toLocaleString('en-IN')}`;
   }
 };
 

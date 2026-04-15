@@ -1,4 +1,4 @@
-// Full3DMapView.js — Complete 3D map experience using Three.js with full zoom capabilities
+// Full3DMapView.js   Complete 3D map experience using Three.js with full zoom capabilities
 import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {
@@ -146,7 +146,7 @@ const DrawingTool = ({ onAreaComplete }) => {
                         borderRadius: '8px',
                         fontSize: '14px'
                     }}>
-                        Click to add points • Double-click or click near first point to close
+                        Click to add points   Double-click or click near first point to close
                     </div>
                 </Html>
             )}
@@ -434,7 +434,7 @@ const Full3DMapView = () => {
                     zIndex: 10,
                     backdropFilter: 'blur(8px)'
                 }}>
-                    🏗️ Click points on the ground to draw building outline • Double-click to finish
+                        Click points on the ground to draw building outline   Double-click to finish
                 </div>
             )}
 
@@ -450,7 +450,7 @@ const Full3DMapView = () => {
                 fontSize: '12px',
                 zIndex: 10
             }}>
-                3D Mode • Full Zoom Enabled
+                3D Mode   Full Zoom Enabled
             </div>
 
             {/* Camera Controls Guide */}
@@ -490,7 +490,7 @@ const Full3DMapView = () => {
                         backdropFilter: 'blur(16px)',
                         boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
                     }}>
-                        <div style={{ fontSize: 56, marginBottom: 16 }}>🌍</div>
+                        <div style={{ fontSize: 56, marginBottom: 16 }}>  </div>
                         <h3 style={{
                             color: '#f1f5f9',
                             fontWeight: 700,

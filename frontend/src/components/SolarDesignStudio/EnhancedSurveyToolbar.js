@@ -1,4 +1,4 @@
-// EnhancedSurveyToolbar.js — Advanced toolbar with 2D/3D tools and smart features
+// EnhancedSurveyToolbar.js   Advanced toolbar with 2D/3D tools and smart features
 import React, { useState } from 'react';
 import { useSolarSurveyStore } from './useSolarSurveyStore';
 import {
@@ -132,7 +132,7 @@ const ToolbarSection = ({ title, children, collapsible = false }) => {
                             transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
                             transition: 'transform 0.2s ease'
                         }}>
-                            ⌄
+                             
                         </span>
                     )}
                 </div>

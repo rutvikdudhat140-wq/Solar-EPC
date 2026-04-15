@@ -1,4 +1,4 @@
-// RightPanel.js — Properties panel matching Arka360 right sidebar
+// RightPanel.js   Properties panel matching Arka360 right sidebar
 import React from 'react';
 import { useSolarStore } from './useSolarStore';
 
@@ -140,10 +140,10 @@ const RightPanel = ({ projectName, designName }) => {
     return (
         <div style={panelStyle}>
 
-            {/* ── Home Summary ─────────────────────────────────────────────────── */}
+            {/*    Home Summary                                                     */}
             <div style={{ ...sectionStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ fontWeight: 700, fontSize: 13 }}>Home Summary</span>
-                <span style={{ fontSize: 16, color: '#64748b', cursor: 'pointer' }}>∨</span>
+                <span style={{ fontSize: 16, color: '#64748b', cursor: 'pointer' }}> </span>
             </div>
 
             <div style={sectionStyle}>
@@ -161,14 +161,14 @@ const RightPanel = ({ projectName, designName }) => {
                 <MetaRow label="Optimizer Quantity" value="0" />
             </div>
 
-            {/* ── Add Roof Button ───────────────────────────────────────────────── */}
+            {/*    Add Roof Button                                                   */}
             <div style={sectionStyle}>
                 <ActionBtn variant="primary" onClick={handleAddDefaultRoof}>
                     + Add New Roof Model
                 </ActionBtn>
             </div>
 
-            {/* ── Roof List ────────────────────────────────────────────────────── */}
+            {/*    Roof List                                                        */}
             {roofs.length > 0 && (
                 <div style={sectionStyle}>
                     <SectionTitle>Roof Models ({roofs.length})</SectionTitle>
@@ -200,7 +200,7 @@ const RightPanel = ({ projectName, designName }) => {
                                     <span style={{ fontSize: 10, color: '#f59e0b' }}>{rPanels.length} panels</span>
                                 </div>
                                 <div style={{ fontSize: 10, color: '#475569', marginTop: 2 }}>
-                                    Area: {(roof.area || 0).toFixed(1)} m²
+                                    Area: {(roof.area || 0).toFixed(1)} m 
                                 </div>
                             </div>
                         );
@@ -208,13 +208,13 @@ const RightPanel = ({ projectName, designName }) => {
                 </div>
             )}
 
-            {/* ── Selected Roof — Summary ───────────────────────────────────────── */}
+            {/*    Selected Roof   Summary                                           */}
             {selectedRoof && (
                 <>
                     <div style={sectionStyle}>
                         <SectionTitle>Summary</SectionTitle>
                         <MetaRow label="Model Number" value={selectedRoof.id} />
-                        <MetaRow label="Model Area" value={`${(selectedRoof.area || 0).toFixed(3)} m²`} />
+                        <MetaRow label="Model Area" value={`${(selectedRoof.area || 0).toFixed(3)} m `} />
                         <MetaRow
                             label="Panel Count"
                             value={`${roofPanels.length} panels`}
@@ -222,7 +222,7 @@ const RightPanel = ({ projectName, designName }) => {
                         />
                     </div>
 
-                    {/* ── Dormer Buttons ───────────────────────────────────────────── */}
+                    {/*    Dormer Buttons                                               */}
                     <div style={sectionStyle}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 6 }}>
                             <ActionBtn onClick={() => deleteRoof(selectedRoofId)}>Delete</ActionBtn>
@@ -232,25 +232,25 @@ const RightPanel = ({ projectName, designName }) => {
                         </div>
                     </div>
 
-                    {/* ── Panel Buttons ────────────────────────────────────────────── */}
+                    {/*    Panel Buttons                                                */}
                     <div style={sectionStyle}>
                         <SectionTitle>Panel Layout</SectionTitle>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                             <ActionBtn variant="primary" onClick={() => autoFillPanels(selectedRoofId)}>
-                                ⚡ Auto-Fill Panels
+                                  Auto-Fill Panels
                             </ActionBtn>
                             <ActionBtn onClick={() => clearPanelsOnRoof(selectedRoofId)}>
-                                🗑 Clear Panels
+                                   Clear Panels
                             </ActionBtn>
                         </div>
                         {roofPanels.length > 0 && (
                             <div style={{ marginTop: 8, fontSize: 11, color: '#64748b' }}>
-                                {roofPanels.length} panels · {((roofPanels.length * (panelSettings?.power || 400)) / 1000).toFixed(2)} kWp
+                                {roofPanels.length} panels   {((roofPanels.length * (panelSettings?.power || 400)) / 1000).toFixed(2)} kWp
                             </div>
                         )}
                     </div>
 
-                    {/* ── Roof Model Properties ────────────────────────────────────── */}
+                    {/*    Roof Model Properties                                        */}
                     <div style={sectionStyle}>
                         <SectionTitle>Roof Model Properties</SectionTitle>
 
@@ -265,34 +265,34 @@ const RightPanel = ({ projectName, designName }) => {
                             label="Panel Tilt"
                             value={panelSettings?.tilt || 20}
                             min={0} max={45} step={0.5}
-                            unit="°"
+                            unit=" "
                             onChange={(v) => updatePanelSettings({ tilt: v })}
                         />
                         <Slider
                             label="Panel Azimuth"
                             value={panelSettings?.azimuth || 180}
                             min={0} max={360} step={5}
-                            unit="°"
+                            unit=" "
                             onChange={(v) => updatePanelSettings({ azimuth: v })}
                         />
 
                         <Toggle label="Ignored" checked={ignored} onChange={setIgnored} />
                     </div>
 
-                    {/* ── Obstacles ────────────────────────────────────────────────── */}
+                    {/*    Obstacles                                                    */}
                     <div style={sectionStyle}>
                         <SectionTitle>Obstacles</SectionTitle>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                             <ActionBtn onClick={() => addObstacle({ type: 'tree', roofId: selectedRoofId })}>
-                                🌲 Add Tree
+                                   Add Tree
                             </ActionBtn>
                             <ActionBtn onClick={() => addObstacle({ type: 'tank', roofId: selectedRoofId })}>
-                                🛢 Water Tank
+                                   Water Tank
                             </ActionBtn>
                         </div>
                     </div>
 
-                    {/* ── Update / Cancel ───────────────────────────────────────────── */}
+                    {/*    Update / Cancel                                               */}
                     <div style={{ padding: '12px 16px', display: 'flex', gap: 8 }}>
                         <ActionBtn>Cancel</ActionBtn>
                         <ActionBtn variant="primary" onClick={() => recalculate()}>
@@ -302,7 +302,7 @@ const RightPanel = ({ projectName, designName }) => {
                 </>
             )}
 
-            {/* ── Sun Path Simulation ──────────────────────────────────────────── */}
+            {/*    Sun Path Simulation                                              */}
             <div style={sectionStyle}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: sunPath ? 12 : 0 }}>
                     <div>
@@ -310,7 +310,7 @@ const RightPanel = ({ projectName, designName }) => {
                         <span style={{
                             marginLeft: 6, fontSize: 9, padding: '1px 5px', borderRadius: 4,
                             background: 'rgba(59,130,246,0.15)', color: '#3b82f6', fontWeight: 700,
-                        }}>ℹ</span>
+                        }}> </span>
                     </div>
                     <Toggle label="" checked={sunPath} onChange={setSunPath} />
                 </div>

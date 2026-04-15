@@ -1,4 +1,4 @@
-// SalesDashboard.js a€" Sales role dashboard with lead status cards and workflow
+// SalesDashboard.js a "  Sales role dashboard with lead status cards and workflow
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     Users, Activity, CheckCircle, MapPin, ArrowRight,
@@ -18,7 +18,7 @@ import { toast } from '../../components/ui/Toast';
 
 const C = ROLE_COLORS.sales;
 
-// a"€a"€ Lead Status KPI Card a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
+// a"  a"   Lead Status KPI Card a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  
 const LeadStatusCard = ({ title, value, change, icon: Icon, color, subtitle, trend, onClick }) => (
     <div 
         onClick={onClick}
@@ -51,7 +51,7 @@ const LeadStatusCard = ({ title, value, change, icon: Icon, color, subtitle, tre
     </div>
 );
 
-// a"€a"€ CRM Lead Card (for Site Survey Scheduled section) a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
+// a"  a"   CRM Lead Card (for Site Survey Scheduled section) a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  
 const CRMLeadCard = ({ lead, onMoveToPending }) => (
     <div 
         onClick={() => onMoveToPending(lead)}
@@ -67,13 +67,13 @@ const CRMLeadCard = ({ lead, onMoveToPending }) => (
             </div>
             <div className="text-right">
                 <p className="text-[10px] font-bold text-amber-500">{lead.kw || '0kW'}</p>
-                <p className="text-[9px] text-[var(--text-muted)]">{lead.city || 'a€"'}</p>
+                <p className="text-[9px] text-[var(--text-muted)]">{lead.city || 'a " '}</p>
             </div>
         </div>
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--border-subtle)]">
             <div className="flex items-center gap-1 text-[9px] text-[var(--text-muted)]">
                 <Calendar size={10} />
-                <span>Due: {lead.nextFollowUp || 'a€"'}</span>
+                <span>Due: {lead.nextFollowUp || 'a " '}</span>
             </div>
             <span className="text-[9px] text-amber-500 font-medium flex items-center gap-1">
                 Click to Move Pending <ArrowRight size={10} />
@@ -82,7 +82,7 @@ const CRMLeadCard = ({ lead, onMoveToPending }) => (
     </div>
 );
 
-// a"€a"€ Survey Card (for Active/In Progress section) a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
+// a"  a"   Survey Card (for Active/In Progress section) a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  
 const SurveyCard = ({ survey, onComplete, onFillForm }) => (
     <div className="p-3 rounded-xl bg-[var(--bg-elevated)] border border-emerald-500/30 hover:border-emerald-500/60 transition-all">
         <div className="flex items-center gap-3">
@@ -91,7 +91,7 @@ const SurveyCard = ({ survey, onComplete, onFillForm }) => (
             </div>
             <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-[var(--text-primary)] truncate">{survey.customerName}</p>
-                <p className="text-[10px] text-[var(--text-muted)] truncate">{survey.site || 'a€"'}</p>
+                <p className="text-[10px] text-[var(--text-muted)] truncate">{survey.site || 'a " '}</p>
             </div>
             <div className="text-right">
                 <p className="text-[10px] font-bold text-emerald-500">{survey.estimatedKw}kW</p>
@@ -107,7 +107,7 @@ const SurveyCard = ({ survey, onComplete, onFillForm }) => (
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--border-subtle)]">
             <div className="flex items-center gap-1 text-[9px] text-[var(--text-muted)]">
                 <Calendar size={10} />
-                <span>{survey.scheduledDate || 'a€"'}</span>
+                <span>{survey.scheduledDate || 'a " '}</span>
             </div>
             {survey.status === 'pending' && onFillForm && (
                 <button
@@ -131,7 +131,7 @@ const SurveyCard = ({ survey, onComplete, onFillForm }) => (
     </div>
 );
 
-// a"€a"€ Main Dashboard Component a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
+// a"  a"   Main Dashboard Component a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  
 const SalesDashboard = () => {
     const { data, loading } = useRoleDashboard();
     const [crmLeads, setCrmLeads] = useState([]);
@@ -287,7 +287,7 @@ const SalesDashboard = () => {
             <div className="flex items-center justify-between">
                 <SectionHeader
                     title="Sales Dashboard"
-                    subtitle="Lead management • Pipeline tracking • Site surveys"
+                    subtitle="Lead management   Pipeline tracking   Site surveys"
                     icon={Target}
                     accent={C.primary}
                     badge="Sales Hub"
@@ -302,7 +302,7 @@ const SalesDashboard = () => {
                 </button>
             </div>
 
-            {/* a"€a"€ Lead Status Cards a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€ */}
+            {/* a"  a"   Lead Status Cards a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"   */}
             <Grid4>
                 <LeadStatusCard
                     title="Active Leads"
@@ -342,7 +342,7 @@ const SalesDashboard = () => {
                 />
             </Grid4>
 
-            {/* a"€a"€ Site Survey Scheduled (From CRM) Section a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€ */}
+            {/* a"  a"   Site Survey Scheduled (From CRM) Section a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"   */}
             <div className="glass-card p-5">
                 <div className="flex items-center justify-between mb-4">
                     <div>
@@ -396,7 +396,7 @@ const SalesDashboard = () => {
                 )}
             </div>
 
-            {/* a"€a"€ Survey Workflow Sections a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€ */}
+            {/* a"  a"   Survey Workflow Sections a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"   */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Pending Surveys */}
                 <div className="glass-card p-5">
@@ -479,7 +479,7 @@ const SalesDashboard = () => {
                 </div>
             </div>
 
-            {/* a"€a"€ Recent Leads Table a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€ */}
+            {/* a"  a"   Recent Leads Table a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"   */}
             <ChartCard 
                 title="Recent Leads" 
                 subtitle="Latest lead activity"
@@ -500,7 +500,7 @@ const SalesDashboard = () => {
                             </div>
                             <span className="font-medium text-[var(--text-primary)]">{lead.name}</span>
                         </div>,
-                        <span key={`comp-${lead._id || lead.id}`} className="text-[var(--text-secondary)]">{lead.company || 'a€"'}</span>,
+                        <span key={`comp-${lead._id || lead.id}`} className="text-[var(--text-secondary)]">{lead.company || 'a " '}</span>,
                         <span key={`stage-${lead._id || lead.id}`} className={`text-[10px] px-2 py-0.5 rounded-full ${
                             lead.stage === 'won' ? 'bg-emerald-500/10 text-emerald-500' :
                             lead.stage === 'lost' ? 'bg-red-500/10 text-red-500' :

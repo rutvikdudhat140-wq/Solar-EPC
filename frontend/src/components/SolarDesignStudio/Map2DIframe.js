@@ -87,7 +87,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
         };
 
         addRoof(roofData);
-        alert(`✅ Roof added at location!\nLat: ${mapCenter.lat.toFixed(6)}\nLng: ${mapCenter.lng.toFixed(6)}\n\nSwitch to 3D view to see it.`);
+        alert(`  Roof added at location!\nLat: ${mapCenter.lat.toFixed(6)}\nLng: ${mapCenter.lng.toFixed(6)}\n\nSwitch to 3D view to see it.`);
     };
 
     return (
@@ -157,7 +157,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
                                     padding: 0,
                                 }}
                             >
-                                ✕
+                                 
                             </button>
                         </div>
                         <p style={{
@@ -166,7 +166,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
                             margin: '4px 0 0 0',
                             lineHeight: 1.4,
                         }}>
-                            No API key required! 🎉
+                            No API key required!   
                         </p>
                     </div>
 
@@ -178,7 +178,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
                             color: '#f1f5f9',
                             marginBottom: 8,
                         }}>
-                            📍 Current Location
+                               Current Location
                         </h4>
                         <div style={{
                             padding: '8px 10px',
@@ -203,7 +203,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
                             color: '#f1f5f9',
                             marginBottom: 8,
                         }}>
-                            🎯 Go to Coordinates
+                               Go to Coordinates
                         </h4>
                         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
                             <div style={{ flex: 1 }}>
@@ -277,7 +277,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
                             color: '#f1f5f9',
                             marginBottom: 8,
                         }}>
-                            📌 Quick Locations (India)
+                               Quick Locations (India)
                         </h4>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                             {presetLocations.map((preset, idx) => (
@@ -319,7 +319,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
                             color: '#f1f5f9',
                             marginBottom: 8,
                         }}>
-                            🗺️ Map View
+                                Map View
                         </h4>
                         <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
                             <button
@@ -336,7 +336,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
                                     cursor: 'pointer',
                                 }}
                             >
-                                🛰️ Satellite
+                                    Satellite
                             </button>
                             <button
                                 onClick={() => setMapType('roadmap')}
@@ -352,7 +352,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
                                     cursor: 'pointer',
                                 }}
                             >
-                                🗺️ Map
+                                    Map
                             </button>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -381,7 +381,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
                             color: '#f1f5f9',
                             marginBottom: 8,
                         }}>
-                            🏠 Solar Roof
+                               Solar Roof
                         </h4>
                         <button
                             onClick={addRoofAtLocation}
@@ -409,7 +409,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
                             marginTop: 6,
                             lineHeight: 1.4,
                         }}>
-                            Creates a 20m×20m roof at map center. Switch to 3D view to customize.
+                            Creates a 20m 20m roof at map center. Switch to 3D view to customize.
                         </p>
                     </div>
 
@@ -445,7 +445,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
                             margin: 0,
                             lineHeight: 1.5,
                         }}>
-                            💡 <strong>Tip:</strong> Use Google Maps in iframe for viewing. For advanced features (panel placement on map), use Map2DEnhanced with API key.
+                               <strong>Tip:</strong> Use Google Maps in iframe for viewing. For advanced features (panel placement on map), use Map2DEnhanced with API key.
                         </p>
                     </div>
                 </div>
@@ -523,7 +523,7 @@ const Map2DIframe = ({ lat = 21.1702, lng = 72.8311 }) => {
                 zIndex: 100,
                 backdropFilter: 'blur(8px)',
             }}>
-                🎯 Center: {mapCenter.lat.toFixed(5)}, {mapCenter.lng.toFixed(5)}
+                   Center: {mapCenter.lat.toFixed(5)}, {mapCenter.lng.toFixed(5)}
             </div>
         </div>
     );

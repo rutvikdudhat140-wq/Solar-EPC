@@ -1,5 +1,5 @@
-// Solar OS — Theme Customizer (Offcanvas Panel)
-// Fixed settings gear icon → slide-in panel → ALL options dynamically functional
+// Solar OS   Theme Customizer (Offcanvas Panel)
+// Fixed settings gear icon   slide-in panel   ALL options dynamically functional
 import React, { useState, useEffect, useRef } from 'react';
 import {
     X, Sun, Moon, Monitor, Layout, Columns, PanelLeft,
@@ -7,9 +7,9 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
-/* ═══════════════════════════════════════════
+/*                                            
    CONFIGURATION
-   ═══════════════════════════════════════════ */
+                                               */
 
 const SIDEBAR_COLORS = [
     { id: 'default', color: '#ffffff', border: '#e2e8f0' },
@@ -66,9 +66,9 @@ const SIDEBAR_SIZES = [
     { id: 'hover', label: 'Hover View' },
 ];
 
-/* ═══════════════════════════════════════════
+/*                                            
    ACCORDION SECTION
-   ═══════════════════════════════════════════ */
+                                               */
 const Section = ({ title, icon: Icon, defaultOpen = true, children }) => {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     return (
@@ -92,9 +92,9 @@ const Section = ({ title, icon: Icon, defaultOpen = true, children }) => {
     );
 };
 
-/* ═══════════════════════════════════════════
+/*                                            
    LAYOUT OPTION CARD
-   ═══════════════════════════════════════════ */
+                                               */
 const LayoutCard = ({ label, active, onClick, children }) => (
     <button
         onClick={onClick}
@@ -116,9 +116,9 @@ const LayoutCard = ({ label, active, onClick, children }) => (
     </button>
 );
 
-/* ═══════════════════════════════════════════
+/*                                            
    COLOR SWATCH
-   ═══════════════════════════════════════════ */
+                                               */
 const ColorSwatch = ({ color, gradient, active, onClick }) => (
     <button
         onClick={onClick}
@@ -132,9 +132,9 @@ const ColorSwatch = ({ color, gradient, active, onClick }) => (
     </button>
 );
 
-/* ═══════════════════════════════════════════
+/*                                            
    RADIO PILL
-   ═══════════════════════════════════════════ */
+                                               */
 const RadioPill = ({ icon: Icon, label, active, onClick }) => (
     <button
         onClick={onClick}
@@ -148,9 +148,9 @@ const RadioPill = ({ icon: Icon, label, active, onClick }) => (
     </button>
 );
 
-/* ═══════════════════════════════════════════
+/*                                            
    LAYOUT THUMBNAILS (SVG mini previews)
-   ═══════════════════════════════════════════ */
+                                               */
 const LayoutThumb = ({ type }) => {
     const bar = 'var(--accent)';
     const bg = 'var(--bg-raised)';
@@ -214,9 +214,9 @@ const LayoutThumb = ({ type }) => {
     return thumbs[type] || thumbs.default;
 };
 
-/* ═══════════════════════════════════════════
+/*                                            
    MAIN COMPONENT
-   ═══════════════════════════════════════════ */
+                                               */
 const ThemeCustomizer = () => {
     const [open, setOpen] = useState(false);
     const { theme, setTheme, themes, customization, setCustomization, resetCustomization } = useTheme();
@@ -249,7 +249,7 @@ const ThemeCustomizer = () => {
 
     return (
         <>
-            {/* ════ FLOATING TRIGGER BUTTON ════ */}
+            {/*      FLOATING TRIGGER BUTTON      */}
             <button
                 onClick={() => setOpen(o => !o)}
                 className="theme-customizer-trigger fixed right-0 z-[9999] flex items-center justify-center w-11 h-11 rounded-l-xl shadow-2xl transition-all duration-300 hover:w-12 group"
@@ -270,14 +270,14 @@ const ThemeCustomizer = () => {
                 </svg>
             </button>
 
-            {/* ════ BACKDROP ════ */}
+            {/*      BACKDROP      */}
             <div
                 className={`fixed inset-0 z-[10000] bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
                     }`}
                 onClick={() => setOpen(false)}
             />
 
-            {/* ════ OFFCANVAS PANEL ════ */}
+            {/*      OFFCANVAS PANEL      */}
             <div
                 ref={panelRef}
                 className={`fixed top-0 right-0 z-[10001] h-full w-[360px] max-w-[90vw] flex flex-col transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] ${open ? 'translate-x-0' : 'translate-x-full'
@@ -288,7 +288,7 @@ const ThemeCustomizer = () => {
                     boxShadow: open ? '-8px 0 40px rgba(0,0,0,0.25), -2px 0 8px rgba(0,0,0,0.1)' : 'none',
                 }}
             >
-                {/* ── HEADER ── */}
+                {/*    HEADER    */}
                 <div
                     className="flex items-center justify-between px-5 py-4 shrink-0"
                     style={{
@@ -320,10 +320,10 @@ const ThemeCustomizer = () => {
                     </button>
                 </div>
 
-                {/* ── BODY (scrollable) ── */}
+                {/*    BODY (scrollable)    */}
                 <div className="flex-1 overflow-y-auto overscroll-contain">
 
-                    {/* ─── SELECT LAYOUTS ─── */}
+                    {/*     SELECT LAYOUTS     */}
                     <Section title="Select Layouts" icon={Layout}>
                         <div className="grid grid-cols-3 gap-2.5">
                             {LAYOUT_OPTIONS.map(opt => (
@@ -339,7 +339,7 @@ const ThemeCustomizer = () => {
                         </div>
                     </Section>
 
-                    {/* ─── LAYOUT WIDTH ─── */}
+                    {/*     LAYOUT WIDTH     */}
                     <Section title="Layout Width" icon={Columns} defaultOpen={false}>
                         <div className="flex gap-3">
                             <RadioPill
@@ -357,7 +357,7 @@ const ThemeCustomizer = () => {
                         </div>
                     </Section>
 
-                    {/* ─── CARD LAYOUT ─── */}
+                    {/*     CARD LAYOUT     */}
                     <Section title="Card Layout" icon={Layers} defaultOpen={false}>
                         <div className="grid grid-cols-3 gap-2.5">
                             {['bordered', 'borderless', 'shadow'].map(opt => (
@@ -377,7 +377,7 @@ const ThemeCustomizer = () => {
                         </div>
                     </Section>
 
-                    {/* ─── SIDEBAR COLOR ─── */}
+                    {/*     SIDEBAR COLOR     */}
                     <Section title="Sidebar Color" icon={PanelLeft} defaultOpen={false}>
                         <div className="flex items-center gap-3 flex-wrap">
                             {SIDEBAR_COLORS.map(sc => (
@@ -391,7 +391,7 @@ const ThemeCustomizer = () => {
                         </div>
                     </Section>
 
-                    {/* ─── COLOR MODE ─── */}
+                    {/*     COLOR MODE     */}
                     <Section title="Color Mode" icon={Palette}>
                         <div className="grid grid-cols-2 gap-3">
                             {themes.map(t => {
@@ -418,7 +418,7 @@ const ThemeCustomizer = () => {
                         </div>
                     </Section>
 
-                    {/* ─── SIDEBAR SIZE ─── */}
+                    {/*     SIDEBAR SIZE     */}
                     <Section title="Sidebar Size" icon={PanelLeft} defaultOpen={false}>
                         <div className="grid grid-cols-3 gap-2.5">
                             {SIDEBAR_SIZES.map(opt => (
@@ -434,7 +434,7 @@ const ThemeCustomizer = () => {
                         </div>
                     </Section>
 
-                    {/* ─── TOP BAR COLOR ─── */}
+                    {/*     TOP BAR COLOR     */}
                     <Section title="Top Bar Color" icon={Palette} defaultOpen={false}>
                         <div className="flex items-center gap-3 flex-wrap">
                             {TOPBAR_COLORS.map(tc => (
@@ -449,7 +449,7 @@ const ThemeCustomizer = () => {
                         </div>
                     </Section>
 
-                    {/* ─── SIDEBAR BACKGROUND ─── */}
+                    {/*     SIDEBAR BACKGROUND     */}
                     <Section title="Sidebar Background" defaultOpen={false}>
                         <div className="flex items-center gap-3 flex-wrap">
                             {SIDEBAR_BG_IMAGES.map(bg => (
@@ -472,7 +472,7 @@ const ThemeCustomizer = () => {
                         </div>
                     </Section>
 
-                    {/* ─── THEME COLORS ─── */}
+                    {/*     THEME COLORS     */}
                     <Section title="Theme Colors" icon={Palette} defaultOpen={false}>
                         <div className="flex items-center gap-3 flex-wrap">
                             {THEME_COLORS.map(tc => (
@@ -488,7 +488,7 @@ const ThemeCustomizer = () => {
 
                 </div>
 
-                {/* ── FOOTER ── */}
+                {/*    FOOTER    */}
                 <div className="shrink-0 p-4 border-t border-[var(--border-base)]" style={{ background: 'var(--bg-raised)' }}>
                     <div className="flex gap-3">
                         <button

@@ -1,4 +1,4 @@
-// Advanced Solar Design Studio — Zustand Store with Full Manual Control
+// Advanced Solar Design Studio   Zustand Store with Full Manual Control
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 
@@ -22,7 +22,7 @@ const snapToGrid = (value, gridSize) => Math.round(value / gridSize) * gridSize;
 
 export const useSolarStore = create(
     subscribeWithSelector((set, get) => ({
-        // ── Core State ────────────────────────────────────────────────────────────
+        //    Core State                                                             
         roofs: [],
         selectedRoofId: null,
         editingRoofId: null,
@@ -34,14 +34,14 @@ export const useSolarStore = create(
         obstacles: [],
         selectedObstacleIds: [],
 
-        // ── UI State ──────────────────────────────────────────────────────────────
+        //    UI State                                                               
         activeTool: 'select', // 'select' | 'drawRoof' | 'editRoof' | 'addPanel' | 'autofill' | 'delete'
         viewMode: '2d', // '2d' | '3d'
         isDrawing: false,
         isEditing: false,
         isDragging: false,
 
-        // ── Panel Settings ───────────────────────────────────────────────────────
+        //    Panel Settings                                                        
         panelSettings: {
             width: 2.0,          // meters
             height: 1.0,         // meters
@@ -55,24 +55,24 @@ export const useSolarStore = create(
             gridSize: 0.1,       // meters
         },
 
-        // ── Roof Settings ────────────────────────────────────────────────────────
+        //    Roof Settings                                                         
         roofSettings: {
             height: 3.0,         // meters above ground
             color: '#2a2a3a',
             selectedColor: '#1e3a5f',
         },
 
-        // ── Solar Analysis ───────────────────────────────────────────────────────
+        //    Solar Analysis                                                        
         solarAnalysis: {
             totalPanels: 0,
             totalDCCapacity: 0,  // kW
             estimatedGeneration: 0, // kWh/year
             shadedPanels: [],
             efficiency: 0.85,    // system efficiency
-            irradiance: 1800,    // kWh/m²/year
+            irradiance: 1800,    // kWh/m /year
         },
 
-        // ── Sun Simulation ───────────────────────────────────────────────────────
+        //    Sun Simulation                                                        
         sunSimulation: {
             enabled: false,
             hour: 12,            // 0-24
@@ -82,14 +82,14 @@ export const useSolarStore = create(
             timezone: 5.5,       // UTC offset
         },
 
-        // ── History (Undo/Redo) ──────────────────────────────────────────────────
+        //    History (Undo/Redo)                                                   
         history: {
             states: [],
             currentIndex: -1,
             maxSize: 50,
         },
 
-        // ── View Settings ────────────────────────────────────────────────────────
+        //    View Settings                                                         
         viewSettings: {
             showGrid: true,
             showShadows: true,
@@ -99,7 +99,7 @@ export const useSolarStore = create(
             mapZoom: 20,
         },
 
-        // ── History Actions ──────────────────────────────────────────────────────
+        //    History Actions                                                       
         saveStateToHistory: () => {
             const state = get();
             const currentState = {
@@ -160,7 +160,7 @@ export const useSolarStore = create(
         canUndo: () => get().history.currentIndex > 0,
         canRedo: () => get().history.currentIndex < get().history.states.length - 1,
 
-        // ── Roof Actions ──────────────────────────────────────────────────────────
+        //    Roof Actions                                                           
         addRoof: (roofData) => {
             get().saveStateToHistory();
             const roof = {
@@ -206,7 +206,7 @@ export const useSolarStore = create(
 
         stopEditingRoof: () => set({ editingRoofId: null, activeTool: 'select' }),
 
-        // ── Panel Actions ─────────────────────────────────────────────────────────
+        //    Panel Actions                                                          
         addPanel: (panelData) => {
             get().saveStateToHistory();
             const settings = get().panelSettings;
@@ -350,7 +350,7 @@ export const useSolarStore = create(
             });
         },
 
-        // ── Auto-Fill Panels ──────────────────────────────────────────────────────
+        //    Auto-Fill Panels                                                       
         autoFillPanels: (roofId) => {
             get().saveStateToHistory();
             const state = get();
@@ -438,13 +438,13 @@ export const useSolarStore = create(
             get().recalculateSolarAnalysis();
         },
 
-        // ── Solar Analysis ────────────────────────────────────────────────────────
+        //    Solar Analysis                                                         
         recalculateSolarAnalysis: () => {
             const state = get();
             const totalPanels = state.panels.length;
             const totalDCCapacity = (totalPanels * state.panelSettings.power) / 1000; // kW
 
-            // Estimated annual generation = DC Capacity × Irradiance × Efficiency × Performance Ratio
+            // Estimated annual generation = DC Capacity   Irradiance   Efficiency   Performance Ratio
             const estimatedGeneration =
                 totalDCCapacity *
                 state.solarAnalysis.irradiance *
@@ -468,7 +468,7 @@ export const useSolarStore = create(
             get().recalculateSolarAnalysis();
         },
 
-        // ── Sun Simulation ────────────────────────────────────────────────────────
+        //    Sun Simulation                                                         
         updateSunSimulation: (updates) => {
             set(state => ({
                 sunSimulation: { ...state.sunSimulation, ...updates }
@@ -484,7 +484,7 @@ export const useSolarStore = create(
             }));
         },
 
-        // ── Panel Settings ────────────────────────────────────────────────────────
+        //    Panel Settings                                                         
         updatePanelSettings: (updates) => {
             set(state => ({
                 panelSettings: { ...state.panelSettings, ...updates }
@@ -500,7 +500,7 @@ export const useSolarStore = create(
             }));
         },
 
-        // ── Obstacle Actions ──────────────────────────────────────────────────────
+        //    Obstacle Actions                                                       
         addObstacle: (obstacleData) => {
             get().saveStateToHistory();
             const obstacle = {
@@ -544,7 +544,7 @@ export const useSolarStore = create(
 
         clearObstacleSelection: () => set({ selectedObstacleIds: [] }),
 
-        // ── View & UI Actions ─────────────────────────────────────────────────────
+        //    View & UI Actions                                                      
         setActiveTool: (tool) => set({ activeTool: tool }),
 
         setViewMode: (mode) => set({ viewMode: mode }),
@@ -588,7 +588,7 @@ export const useSolarStore = create(
             }));
         },
 
-        // ── Save/Load Design ──────────────────────────────────────────────────────
+        //    Save/Load Design                                                       
         saveDesign: () => {
             const state = get();
             const design = {
@@ -666,12 +666,12 @@ export const useSolarStore = create(
             });
         },
 
-        // ── Recalculate (Legacy compatibility) ───────────────────────────────────
+        //    Recalculate (Legacy compatibility)                                    
         recalculate: () => {
             get().recalculateSolarAnalysis();
         },
 
-        // ── Reset ─────────────────────────────────────────────────────────────────
+        //    Reset                                                                  
         reset: () => {
             const defaultPanelSettings = {
                 width: 2.0,

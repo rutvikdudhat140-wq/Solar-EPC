@@ -1,4 +1,4 @@
-// SurveyLeftSidebar.js — Tool palette + quick actions for survey design
+// SurveyLeftSidebar.js   Tool palette + quick actions for survey design
 import React, { useState } from 'react';
 import { useSolarSurveyStore } from './useSolarSurveyStore';
 import {
@@ -7,7 +7,7 @@ import {
     RotateCcw, Navigation
 } from 'lucide-react';
 
-// ── Preset Locations ──────────────────────────────────────────────────────────
+//    Preset Locations                                                           
 const presets = [
     { name: 'Surat', lat: 21.1702, lng: 72.8311 },
     { name: 'Delhi NCR', lat: 28.5431, lng: 77.3358 },
@@ -98,7 +98,7 @@ const SurveyLeftSidebar = () => {
             fontSize: 12, color: '#e2e8f0', zIndex: 20,
         }}>
 
-            {/* ── Drawing Tools ─────────────────────────────────────────────────── */}
+            {/*    Drawing Tools                                                     */}
             <SectionHeader title="Drawing Tools" icon={Pentagon} open={openSections.tools} onToggle={() => toggle('tools')} />
             {openSections.tools && (
                 <div style={{ padding: '6px 10px 10px' }}>
@@ -130,7 +130,7 @@ const SurveyLeftSidebar = () => {
                 </div>
             )}
 
-            {/* ── Location Search ───────────────────────────────────────────────── */}
+            {/*    Location Search                                                   */}
             <SectionHeader title="Location" icon={MapPin} open={openSections.location} onToggle={() => toggle('location')} />
             {openSections.location && (
                 <div style={{ padding: '6px 10px 10px' }}>
@@ -187,7 +187,7 @@ const SurveyLeftSidebar = () => {
                 </div>
             )}
 
-            {/* ── Boundary Areas ────────────────────────────────────────────────── */}
+            {/*    Boundary Areas                                                    */}
             <SectionHeader title="Areas" icon={Layers} open={openSections.areas} onToggle={() => toggle('areas')} count={boundaries.length} />
             {openSections.areas && (
                 <div style={{ padding: '6px 10px 10px' }}>
@@ -229,8 +229,8 @@ const SurveyLeftSidebar = () => {
                                         </button>
                                     </div>
                                     <div style={{ fontSize: 10, color: '#64748b', marginTop: 4, display: 'flex', gap: 8 }}>
-                                        <span>{b.area.toFixed(1)} m²</span>
-                                        <span>•</span>
+                                        <span>{b.area.toFixed(1)} m </span>
+                                        <span> </span>
                                         <span style={{ color: '#22c55e' }}>{bPanels.length} panels</span>
                                     </div>
                                     {isSelected && (
@@ -260,7 +260,7 @@ const SurveyLeftSidebar = () => {
                 </div>
             )}
 
-            {/* ── Exclusion Zones ───────────────────────────────────────────────── */}
+            {/*    Exclusion Zones                                                   */}
             <SectionHeader title="Exclusion Zones" icon={Ban}
                 open={openSections.exclusions} onToggle={() => toggle('exclusions')}
                 count={exclusionZones.length} />
@@ -299,7 +299,7 @@ const SurveyLeftSidebar = () => {
                                 }}>
                                     <div>
                                         <div style={{ fontSize: 10, fontWeight: 600, color: '#f87171' }}>{ez.label}</div>
-                                        <div style={{ fontSize: 9, color: '#64748b' }}>{ez.area.toFixed(1)} m² · {ez.type}</div>
+                                        <div style={{ fontSize: 9, color: '#64748b' }}>{ez.area.toFixed(1)} m    {ez.type}</div>
                                     </div>
                                     <button onClick={() => deleteExclusionZone(ez.id)}
                                         style={{ background: 'none', border: 'none', color: '#475569', cursor: 'pointer', padding: 2 }}>
@@ -312,7 +312,7 @@ const SurveyLeftSidebar = () => {
                 </div>
             )}
 
-            {/* ── Bottom Reset ──────────────────────────────────────────────────── */}
+            {/*    Bottom Reset                                                      */}
             <div style={{ marginTop: 'auto', padding: '10px 10px' }}>
                 <button onClick={reset} style={{
                     width: '100%', padding: '7px 10px', borderRadius: 6,

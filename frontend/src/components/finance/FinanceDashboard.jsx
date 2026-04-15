@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useEffect, useState, useRef } from 'react';
+ import React, { useMemo, useEffect, useState, useRef } from 'react';
 import {
   TrendingUp, TrendingDown, DollarSign, IndianRupee, Clock,
   FileText, CheckCircle, AlertCircle, BarChart3, PieChart,
@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 
 const fmt = (amount) => {
-  if (amount === null || amount === undefined || isNaN(amount)) return '₹0';
+  if (amount === null || amount === undefined || isNaN(amount)) return ' 0';
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
@@ -21,27 +21,27 @@ const fmt = (amount) => {
 };
 
 const formatL = (value) => {
-  if (!value || isNaN(value)) return '₹0';
+  if (!value || isNaN(value)) return ' 0';
   // For values less than 1 Lakh, show in thousands with K suffix
   if (value >= 1000 && value < 100000) {
     const thousands = Math.round(value / 1000);
-    return `₹${thousands}K`;
+    return ` ${thousands}K`;
   } else if (value < 1000) {
     // For very small values, show as is
-    return `₹${Math.round(value)}`;
+    return ` ${Math.round(value)}`;
   }
   // For values 1 Lakh and above, show in Lakhs
   const lakhs = Math.round(value / 100000);
-  return `₹${lakhs}L`;
+  return ` ${lakhs}L`;
 };
 
 const formatAxisCurrency = (value) => {
-  if (!value || isNaN(value)) return '₹0';
+  if (!value || isNaN(value)) return ' 0';
   // Always show in thousands (K) for Y-axis
   if (value >= 1000) {
-    return `₹${(value / 1000).toFixed(0)}K`;
+    return ` ${(value / 1000).toFixed(0)}K`;
   } else {
-    return `₹${value}`;
+    return ` ${value}`;
   }
 };
 
@@ -874,12 +874,12 @@ const ReceivableAgingChart = ({ invoices }) => {
         
         // If no valid date found, skip this invoice
         if (!dueDate || isNaN(dueDate.getTime())) {
-          console.warn(`  ❌ No valid date found! Skipping.`);
+          console.warn(`    No valid date found! Skipping.`);
           return;
         }
         
         console.log(`  Parsed Due Date:`, dueDate.toISOString());
-        console.log(`  Balance: ₹${inv.balance}`);
+        console.log(`  Balance:  ${inv.balance}`);
         
         // Calculate days from the due/invoice date to NOW
         const timeDiff = now.getTime() - dueDate.getTime();
@@ -891,19 +891,19 @@ const ReceivableAgingChart = ({ invoices }) => {
         // Categorize based on days since due/invoice date
         if (daysDiff < 0) {
           buckets['0-30 Days'] += inv.balance;
-          console.log(`  📦 Bucket: 0-30 Days (FUTURE DATE - ${Math.abs(daysDiff)} days ahead)`);
+          console.log(`     Bucket: 0-30 Days (FUTURE DATE - ${Math.abs(daysDiff)} days ahead)`);
         } else if (daysDiff <= 30) {
           buckets['0-30 Days'] += inv.balance;
-          console.log(`  📦 Bucket: 0-30 Days (${daysDiff} days overdue)`);
+          console.log(`     Bucket: 0-30 Days (${daysDiff} days overdue)`);
         } else if (daysDiff <= 60) {
           buckets['31-60 Days'] += inv.balance;
-          console.log(`  ⏰ Bucket: 31-60 Days (${daysDiff} days overdue)`);
+          console.log(`    Bucket: 31-60 Days (${daysDiff} days overdue)`);
         } else if (daysDiff <= 90) {
           buckets['61-90 Days'] += inv.balance;
-          console.log(`  ⚠️ Bucket: 61-90 Days (${daysDiff} days overdue)`);
+          console.log(`     Bucket: 61-90 Days (${daysDiff} days overdue)`);
         } else {
           buckets['90+ Days'] += inv.balance;
-          console.log(`  🔴 Bucket: 90+ Days (${daysDiff} days overdue)`);
+          console.log(`     Bucket: 90+ Days (${daysDiff} days overdue)`);
         }
       });
     
@@ -915,10 +915,10 @@ const ReceivableAgingChart = ({ invoices }) => {
     console.log('========================\n');
 
     return [
-      { bucket: '0-30 Days', amount: buckets['0-30 Days'], color: '#10b981', gradientStart: '#10b981', gradientEnd: '#059669', icon: '📊' },
-      { bucket: '31-60 Days', amount: buckets['31-60 Days'], color: '#3b82f6', gradientStart: '#3b82f6', gradientEnd: '#2563eb', icon: '⏰' },
-      { bucket: '61-90 Days', amount: buckets['61-90 Days'], color: '#f59e0b', gradientStart: '#f59e0b', gradientEnd: '#d97706', icon: '⚠️' },
-      { bucket: '90+ Days', amount: buckets['90+ Days'], color: '#ef4444', gradientStart: '#ef4444', gradientEnd: '#dc2626', icon: '🔴' },
+      { bucket: '0-30 Days', amount: buckets['0-30 Days'], color: '#10b981', gradientStart: '#10b981', gradientEnd: '#059669', icon: '  ' },
+      { bucket: '31-60 Days', amount: buckets['31-60 Days'], color: '#3b82f6', gradientStart: '#3b82f6', gradientEnd: '#2563eb', icon: ' ' },
+      { bucket: '61-90 Days', amount: buckets['61-90 Days'], color: '#f59e0b', gradientStart: '#f59e0b', gradientEnd: '#d97706', icon: '  ' },
+      { bucket: '90+ Days', amount: buckets['90+ Days'], color: '#ef4444', gradientStart: '#ef4444', gradientEnd: '#dc2626', icon: '  ' },
     ];
   }, [invoices]);
 
@@ -1556,7 +1556,7 @@ const ExpenseByCategoryChart = ({ transactionAnalytics }) => {
             animationDuration={1500}
             animationBegin={200}
             radius={[0, 8, 8, 0]}
-            label={({ value }) => `₹${(value / 1000).toFixed(1)}L`}
+            label={({ value }) => ` ${(value / 1000).toFixed(1)}L`}
             labelPosition="right"
             onMouseEnter={(_, index) => setHoveredCategory(index)}
             onMouseLeave={() => setHoveredCategory(null)}
@@ -1827,7 +1827,7 @@ const RecentActivity = ({ invoices, payments, manualAdjustments }) => {
                   {activity.type}
                 </span>
                 <span className="text-[10px] text-[var(--text-muted)]">
-                  {activity.date ? new Date(activity.date).toLocaleDateString() : '—'}
+                  {activity.date ? new Date(activity.date).toLocaleDateString() : ' '}
                 </span>
               </div>
               <div className="text-[11px] text-[var(--text-muted)] truncate">

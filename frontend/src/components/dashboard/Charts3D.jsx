@@ -5,9 +5,9 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Text, Html, OrbitControls, Environment, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 // 3D CYLINDER BAR - For Installation Status (vertical cylinders)
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 function CylinderBar3D({ position, height, color, label, value, maxValue, isHovered, onHover }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
@@ -71,9 +71,9 @@ function CylinderBar3D({ position, height, color, label, value, maxValue, isHove
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 // 3D HORIZONTAL BAR - For Service Tickets (horizontal layout)
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 function HorizontalBar3D({ position, width, color, label, value, maxValue, isHovered, onHover }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
@@ -137,9 +137,9 @@ function HorizontalBar3D({ position, width, color, label, value, maxValue, isHov
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 // 3D FLOATING PIE SLICE - For Quotations (floating effect with different heights)
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 function FloatingSlice3D({ startAngle, endAngle, color, label, value, total, isHovered, onHover, index }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
@@ -223,9 +223,9 @@ function FloatingSlice3D({ startAngle, endAngle, color, label, value, total, isH
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 // 3D DONUT SLICE - Enhanced for Project Pipeline
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 function DonutSlice3D({ startAngle, endAngle, color, label, value, total, isHovered, onHover }) {
   const meshRef = useRef();
   const [hovered, setHovered] = useState(false);
@@ -311,9 +311,9 @@ function DonutSlice3D({ startAngle, endAngle, color, label, value, total, isHove
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 // 3D STACKED COLUMN - For Procurement
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 function StackedColumn3D({ position, segments, colors, labels, values, total, isHovered, onHover }) {
   const groupRef = useRef();
   const [hovered, setHovered] = useState(false);
@@ -376,9 +376,9 @@ function StackedColumn3D({ position, segments, colors, labels, values, total, is
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 // EXPORTED CHART COMPONENTS - Each with unique styling
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 
 // 1. PROJECT PIPELINE - 3D Donut Chart (Enhanced)
 export function ProjectPipeline3D({ data, height = 320 }) {

@@ -1,4 +1,4 @@
-// ReminderWidget.js — Embeddable reminder widget for dashboards
+// ReminderWidget.js   Embeddable reminder widget for dashboards
 import React, { useState } from 'react';
 import { Bell, Clock, AlertTriangle, ChevronRight } from 'lucide-react';
 import { useReminders } from '../../context/ReminderContext';
@@ -109,7 +109,7 @@ const ReminderWidget = ({ onNavigateToReminders }) => {
                         {activeNotifications.slice(0, 2).map(notification => (
                             <div key={notification.id} className="text-xs text-[var(--text-secondary)]">
                                 <span className="font-medium">{notification.title}</span>
-                                <span className="text-[var(--text-muted)] ml-2">• {notification.timeToGo}</span>
+                                <span className="text-[var(--text-muted)] ml-2">  {notification.timeToGo}</span>
                             </div>
                         ))}
                         {activeNotifications.length > 2 && (
@@ -191,7 +191,7 @@ const ReminderWidget = ({ onNavigateToReminders }) => {
                                                 className="text-xs px-2 py-1 rounded bg-[var(--success)] text-white hover:opacity-90 transition-opacity"
                                                 title="Mark complete"
                                             >
-                                                ✓
+                                                 
                                             </button>
                                         </div>
                                     )}
@@ -209,7 +209,7 @@ const ReminderWidget = ({ onNavigateToReminders }) => {
                         onClick={onNavigateToReminders}
                         className="text-xs font-bold text-[var(--primary)] hover:underline"
                     >
-                        View All {upcomingCount + overdueCount} Reminders →
+                        View All {upcomingCount + overdueCount} Reminders  
                     </button>
                 </div>
             )}

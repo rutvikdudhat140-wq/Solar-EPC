@@ -1,4 +1,4 @@
-// Enhanced3DScene.js — Advanced 3D visualization with photorealistic building details
+// Enhanced3DScene.js   Advanced 3D visualization with photorealistic building details
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {
@@ -703,7 +703,7 @@ const Enhanced3DScene = () => {
                         backdropFilter: 'blur(12px)',
                         boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
                     }}>
-                        <div style={{ fontSize: 48, marginBottom: 12 }}>🏗️</div>
+                        <div style={{ fontSize: 48, marginBottom: 12 }}>   </div>
                         <p style={{
                             color: '#f1f5f9',
                             fontWeight: 700,

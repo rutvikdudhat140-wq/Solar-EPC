@@ -1,4 +1,4 @@
-// Universal DataTable — fully schema-driven, server-side pagination, column toggle, 3-dot menu, bulk actions
+// Universal DataTable   fully schema-driven, server-side pagination, column toggle, 3-dot menu, bulk actions
 
 import React, { useState, useMemo, useRef, useCallback } from 'react';
 
@@ -16,41 +16,41 @@ import { Input } from './Input';
 
  * DataTable props:
 
- *  columns         — [{ key, header, render?, sortable?, width? }]
+ *  columns           [{ key, header, render?, sortable?, width? }]
 
- *  data            — current page rows
+ *  data              current page rows
 
- *  total           — total records (server-side)
+ *  total             total records (server-side)
 
- *  page            — current page (1-based)
+ *  page              current page (1-based)
 
- *  pageSize        — rows per page
+ *  pageSize          rows per page
 
- *  onPageChange    — (page) => void
+ *  onPageChange      (page) => void
 
- *  onPageSizeChange— (size) => void
+ *  onPageSizeChange  (size) => void
 
- *  onSort          — ({ key, dir }) => void
+ *  onSort            ({ key, dir }) => void
 
- *  search          — string
+ *  search            string
 
- *  onSearch        — (val) => void
+ *  onSearch          (val) => void
 
- *  rowActions      — [{ label, icon, onClick(row), danger?, show?: (row) => boolean }]
+ *  rowActions        [{ label, icon, onClick(row), danger?, show?: (row) => boolean }]
 
- *  bulkActions     — [{ label, icon, onClick(selectedRows) }]
+ *  bulkActions       [{ label, icon, onClick(selectedRows) }]
 
- *  loading         — bool
+ *  loading           bool
 
- *  emptyText       — string
+ *  emptyText         string
 
- *  selectedRows    — Set<id>
+ *  selectedRows      Set<id>
 
- *  onSelectRows    — (Set) => void
+ *  onSelectRows      (Set) => void
 
- *  rowKey          — field name (default 'id')
+ *  rowKey            field name (default 'id')
 
- *  toolbar         — React node (injected right side of toolbar)
+ *  toolbar           React node (injected right side of toolbar)
 
  */
 
@@ -96,7 +96,7 @@ const DataTable = ({
 
     expandedRowKey = null,      // key of the currently expanded row
 
-    renderExpanded = null,      // (row) => ReactNode — content to show inside expanded row
+    renderExpanded = null,      // (row) => ReactNode   content to show inside expanded row
     
     hiddenCols: controlledHiddenCols,  // Controlled hidden columns from parent
     
@@ -328,7 +328,7 @@ const DataTable = ({
 
         <div className={cn('flex flex-col gap-3', className)}>
 
-            {/* ── Toolbar ── */}
+            {/*    Toolbar    */}
 
             <div className="flex items-center gap-2 flex-wrap">
 
@@ -361,7 +361,7 @@ const DataTable = ({
 
                             <Input
 
-                                placeholder="Search…"
+                                placeholder="Search "
 
                                 value={search}
 
@@ -435,7 +435,7 @@ const DataTable = ({
 
 
 
-            {/* ── Table ── */}
+            {/*    Table    */}
 
             <div className="rounded-xl border border-[var(--border-base)] overflow-hidden">
 
@@ -588,7 +588,7 @@ const DataTable = ({
 
                                             <td key={`${row[rowKey] ?? index}-${col.key}-${colIdx}`} className="px-3 py-2 text-[12px] text-[var(--text-primary)] bg-[var(--bg-surface)] group-hover:bg-[var(--bg-hover)] transition-colors">
 
-                                                {col.render ? col.render(row[col.key], row) : row[col.key] ?? '—'}
+                                                {col.render ? col.render(row[col.key], row) : row[col.key] ?? ' '}
 
                                             </td>
 
@@ -623,7 +623,7 @@ const DataTable = ({
 
                                     </tr>
 
-                                    {/* ── Inline expanded detail row ── */}
+                                    {/*    Inline expanded detail row    */}
                                     {renderExpanded && expandedRowKey === (row[rowKey] || index) && (
                                         <tr className="border-b border-[var(--border-base)] bg-[var(--bg-elevated)]">
                                             <td colSpan={visibleColumns.length + (selectionEnabled ? 1 : 0) + (allRowActions.length ? 1 : 0)} className="px-0 py-0">
@@ -641,7 +641,7 @@ const DataTable = ({
                 </div>
             </div>
 
-            {/* ── Floating Menu ── */}
+            {/*    Floating Menu    */}
 
             {openMenuIndex !== null && data[openMenuIndex] && (
 
@@ -711,7 +711,7 @@ const DataTable = ({
 
 
 
-            {/* ── Pagination ── */}
+            {/*    Pagination    */}
 
             <div className="flex items-center justify-between gap-3 flex-wrap">
 
@@ -753,7 +753,7 @@ const DataTable = ({
 
                             onKeyDown={handleJump}
 
-                            placeholder="Page…"
+                            placeholder="Page "
 
                             className="w-12 h-7 px-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-base)] text-[var(--text-secondary)] text-[11px] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all"
 
@@ -765,7 +765,7 @@ const DataTable = ({
 
                     <span>
 
-                        {total === 0 ? '0' : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, total)}`} of {total}
+                        {total === 0 ? '0' : `${(page - 1) * pageSize + 1} ${Math.min(page * pageSize, total)}`} of {total}
 
                     </span>
 

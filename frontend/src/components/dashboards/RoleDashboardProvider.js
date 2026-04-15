@@ -1,4 +1,4 @@
-// RoleDashboardProvider.js — Central data provider for role-based dashboards
+// RoleDashboardProvider.js   Central data provider for role-based dashboards
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -12,7 +12,7 @@ export const useRoleDashboard = () => {
     return context;
 };
 
-// ─── Mock data generators ──────────────────────────────────────────────────────
+//     Mock data generators                                                       
 
 const generateSalesData = () => ({
     leads: {
@@ -260,7 +260,7 @@ const generateServiceData = () => ({
     ],
 });
 
-// ─── Provider ──────────────────────────────────────────────────────────────────
+//     Provider                                                                   
 
 export const RoleDashboardProvider = ({ children, overrideRole }) => {
     const auth = useAuth();

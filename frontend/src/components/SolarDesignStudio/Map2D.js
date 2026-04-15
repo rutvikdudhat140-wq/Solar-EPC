@@ -1,8 +1,8 @@
-// Map2D.js — Google Maps satellite view with polygon drawing
+// Map2D.js   Google Maps satellite view with polygon drawing
 import React, { useEffect, useRef, useCallback } from 'react';
 import { useSolarStore } from './useSolarStore';
 
-/* Converts a google.maps LatLng path → local X/Z meters (relative to centroid) */
+/* Converts a google.maps LatLng path   local X/Z meters (relative to centroid) */
 function pathToLocalXZ(path) {
     const points = [];
     for (let i = 0; i < path.getLength(); i++) {
@@ -87,7 +87,7 @@ const Map2D = ({ lat = 28.54317, lng = 77.335763 }) => {
     // Load Google Maps script
     useEffect(() => {
         if (window.google) { initMap(); return; }
-        if (!GMAPS_KEY) return; // No key — show placeholder
+        if (!GMAPS_KEY) return; // No key   show placeholder
 
         const script = document.createElement('script');
         script.src = `https://maps.googleapis.com/maps/api/js?key=${GMAPS_KEY}&libraries=drawing,geometry,places`;
@@ -142,7 +142,7 @@ const Map2D = ({ lat = 28.54317, lng = 77.335763 }) => {
                     border: '1px solid rgba(59,130,246,0.2)',
                     backdropFilter: 'blur(12px)', maxWidth: 460,
                 }}>
-                    <div style={{ fontSize: 48, marginBottom: 12 }}>🛰️</div>
+                    <div style={{ fontSize: 48, marginBottom: 12 }}>   </div>
                     <p style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 16, marginBottom: 8 }}>
                         Satellite Map View
                     </p>
@@ -154,10 +154,10 @@ const Map2D = ({ lat = 28.54317, lng = 77.335763 }) => {
                         background: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.3)',
                         color: '#3b82f6', fontSize: 11, fontWeight: 600, marginBottom: 12,
                     }}>
-                        Switch to 3D View to design with full Three.js engine →
+                        Switch to 3D View to design with full Three.js engine  
                     </div>
                     <p style={{ color: '#475569', fontSize: 11 }}>
-                        Latitude: {lat.toFixed(6)} · Longitude: {lng.toFixed(6)}
+                        Latitude: {lat.toFixed(6)}   Longitude: {lng.toFixed(6)}
                     </p>
                 </div>
             </div>
@@ -176,7 +176,7 @@ const Map2D = ({ lat = 28.54317, lng = 77.335763 }) => {
                     fontWeight: 600, padding: '6px 16px', borderRadius: 20,
                     pointerEvents: 'none', zIndex: 10,
                 }}>
-                    Click to draw roof polygon — double-click to finish
+                    Click to draw roof polygon   double-click to finish
                 </div>
             )}
 
@@ -187,7 +187,7 @@ const Map2D = ({ lat = 28.54317, lng = 77.335763 }) => {
                 fontSize: 10, padding: '2px 8px', borderRadius: 4,
                 fontFamily: 'monospace', pointerEvents: 'none',
             }}>
-                x: — y: — z: —
+                x:   y:   z:  
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-// UI component barrel export — add new components here only
+// UI component barrel export   add new components here only
 export { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from './Card';
 export { Badge, StatusBadge } from './Badge';
 export { Button } from './Button';
