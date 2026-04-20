@@ -271,13 +271,33 @@ export const ReminderProvider = ({ children }) => {
     voiceRef.current.speak(utterance);
   }, [settings.voiceAlerts]);
 
-  const dismissNotification = useCallback((notificationId) => {
+  const dismissNotification = useCallback(async (notificationId) => {
+    // Find the notification to get the reminderId
+    const notification = activeNotifications.find((n) => n.id === notificationId);
+    if (notification?.reminderId) {
+      try {
+        // Cancel the reminder on the backend
+        await reminderApi.cancel(notification.reminderId);
+      } catch (error) {
+        console.error('Failed to cancel reminder:', error);
+      }
+    }
     setActiveNotifications((prev) => prev.filter((notification) => notification.id !== notificationId));
-  }, []);
+  }, [activeNotifications]);
 
-  const dismissAllNotifications = useCallback(() => {
+  const dismissAllNotifications = useCallback(async () => {
+    // Cancel all reminders associated with active notifications
+    const cancelPromises = activeNotifications.map((notification) => {
+      if (notification?.reminderId) {
+        return reminderApi.cancel(notification.reminderId).catch((error) => {
+          console.error('Failed to cancel reminder:', error);
+        });
+      }
+      return Promise.resolve();
+    });
+    await Promise.all(cancelPromises);
     setActiveNotifications([]);
-  }, []);
+  }, [activeNotifications]);
 
   const upcomingReminders = useMemo(() => {
     const now = new Date();
@@ -391,6 +411,13 @@ export const ReminderProvider = ({ children }) => {
     return syncReminder(updated);
   }, [syncReminder]);
 
+  const cancelReminder = useCallback(async (id) => {
+    const response = await reminderApi.cancel(id);
+    const updated = response?.data || response;
+    setActiveNotifications((prev) => prev.filter((notification) => notification.reminderId !== id));
+    return syncReminder(updated);
+  }, [syncReminder]);
+
   const getUpcomingReminders = useCallback(() => upcomingReminders, [upcomingReminders]);
   const getOverdueReminders = useCallback(() => overdueReminders, [overdueReminders]);
   const getRemindersByModule = useCallback(
@@ -454,6 +481,7 @@ export const ReminderProvider = ({ children }) => {
     updateReminderStatus,
     deleteReminder,
     markComplete,
+    cancelReminder,
     snoozeReminder,
     dismissNotification,
     dismissAllNotifications,

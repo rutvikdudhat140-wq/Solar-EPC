@@ -77,7 +77,7 @@ import AttendancePageV3 from './pages/AttendancePageV3';
 import IntelligenceDashboardPage from './pages/IntelligenceDashboardPage';
 
 import RemindersPage from './pages/RemindersPage';
-import HrmPermissionsPage from './pages/HrmPermissionsPage';
+import HrmPermissionsPage from './pages/HRMPermissionsPage';
 import ProfilePage from './pages/ProfilePage';
 import TasksPage from './pages/TasksPage';
 import NotificationSystem from './components/NotificationSystem';

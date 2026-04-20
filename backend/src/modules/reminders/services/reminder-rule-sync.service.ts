@@ -108,6 +108,7 @@ export class ReminderRuleSyncService {
         'dashboard:low-stock',
         'Low stock items need attention',
         `${summary.lowStockItems} inventory items are below recommended stock levels.`,
+
         'high',
         new Date(Date.now() + 6 * 60 * 60 * 1000),
         { metric: 'lowStockItems', value: summary.lowStockItems },

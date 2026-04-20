@@ -212,8 +212,16 @@ export class SiteSurveysService {
               const engineerName = typeof lead.assignedTo === 'object' && lead.assignedTo !== null
                 ? (lead.assignedTo as any).name || String(lead.assignedTo)
                 : String(lead.assignedTo);
-              surveyObj.engineer = engineerName;
-              surveyObj.solarConsultant = engineerName;
+              
+              // Only override engineer field if survey doesn't already have one
+              if (!surveyObj.engineer || surveyObj.engineer === 'Unassigned' || surveyObj.engineer === '') {
+                surveyObj.engineer = engineerName;
+              }
+              
+              // Only override solarConsultant field if survey doesn't already have one
+              if (!surveyObj.solarConsultant || surveyObj.solarConsultant === 'Unassigned' || surveyObj.solarConsultant === '') {
+                surveyObj.solarConsultant = engineerName;
+              }
             }
             // Add lead source data dynamically
             (surveyObj as any).leadSource = lead.source;
@@ -255,7 +263,7 @@ export class SiteSurveysService {
   private async resolveAssigneeForTenant(
     assignedTo: string,
     tid: Types.ObjectId,
-  ): Promise<{ assigneeId: Types.ObjectId; assigneeName?: string }> {
+  ): Promise<{ assigneeId: Types.ObjectId; assigneeName?: string; isEmployee: boolean }> {
     // Accept either a User _id, Employee _id, User.id, or Employee.employeeId
     const UserModel = (this.surveyModel as any).db.model('User');
     const EmployeeModel = (this.surveyModel as any).db.model('Employee');
@@ -270,16 +278,16 @@ export class SiteSurveysService {
         .exec();
       if (userDoc) {
         const built = String((userDoc as any).name || `${(userDoc as any).firstName || ''} ${(userDoc as any).lastName || ''}`.trim()).trim();
-        return { assigneeId: objId, assigneeName: built || undefined };
+        return { assigneeId: objId, assigneeName: built || undefined, isEmployee: false };
       }
 
       const empDoc = await EmployeeModel.findOne({ _id: objId, tenantId: tid })
-        .select('firstName lastName')
+        .select('firstName lastName tenantId')
         .lean()
         .exec();
       if (empDoc) {
         const built = String(`${(empDoc as any).firstName || ''} ${(empDoc as any).lastName || ''}`.trim()).trim();
-        return { assigneeId: objId, assigneeName: built || undefined };
+        return { assigneeId: objId, assigneeName: built || undefined, isEmployee: true };
       }
     }
 
@@ -290,16 +298,16 @@ export class SiteSurveysService {
       .exec();
     if (userDoc && (userDoc as any)._id) {
       const built = String((userDoc as any).name || `${(userDoc as any).firstName || ''} ${(userDoc as any).lastName || ''}`.trim()).trim();
-      return { assigneeId: new Types.ObjectId((userDoc as any)._id.toString()), assigneeName: built || undefined };
+      return { assigneeId: new Types.ObjectId((userDoc as any)._id.toString()), assigneeName: built || undefined, isEmployee: false };
     }
 
     const empDoc = await EmployeeModel.findOne({ employeeId: assignedTo, tenantId: tid })
-      .select('_id firstName lastName')
+      .select('_id firstName lastName tenantId')
       .lean()
       .exec();
     if (empDoc && (empDoc as any)._id) {
       const built = String(`${(empDoc as any).firstName || ''} ${(empDoc as any).lastName || ''}`.trim()).trim();
-      return { assigneeId: new Types.ObjectId((empDoc as any)._id.toString()), assigneeName: built || undefined };
+      return { assigneeId: new Types.ObjectId((empDoc as any)._id.toString()), assigneeName: built || undefined, isEmployee: true };
     }
 
     throw new BadRequestException('Invalid assignedTo user ID');
@@ -367,7 +375,7 @@ export class SiteSurveysService {
     const survey = await this.findOne(id, tenantId, user);
 
     if (survey.status !== SurveyStatus.PENDING) {
-      throw new Error(`Cannot move to Active: Survey is currently ${survey.status}`);
+      throw new BadRequestException(`Cannot move to Active: Survey is currently ${survey.status}`);
     }
 
     const rawAssignedBy = (user?._id ? user._id.toString() : user?.id) || undefined;
@@ -386,9 +394,9 @@ export class SiteSurveysService {
     }
 
     const rawAssignedTo = (moveDto as any)?.assignedTo;
-    const { assigneeId: assignedToId, assigneeName: resolvedAssigneeName } = rawAssignedTo
+    const { assigneeId: assignedToId, assigneeName: resolvedAssigneeName, isEmployee } = rawAssignedTo
       ? await this.resolveAssigneeForTenant(String(rawAssignedTo), effectiveTid)
-      : { assigneeId: undefined as any, assigneeName: undefined };
+      : { assigneeId: undefined as any, assigneeName: undefined, isEmployee: false };
 
     // Tenant-authoritative update: ensure state transition works even if visibility filtering would hide the survey.
     const filter: any = {
@@ -397,21 +405,30 @@ export class SiteSurveysService {
       _id: (survey as any)._id,
     };
 
+    const updateData: any = {
+      status: SurveyStatus.ACTIVE,
+      assignedBy: assignedById || (survey as any).assignedBy,
+      engineer: moveDto.engineer || resolvedAssigneeName || survey.engineer,
+      solarConsultant: moveDto.solarConsultant || resolvedAssigneeName || survey.solarConsultant,
+      activeData: {
+        ...moveDto.activeData,
+        startedAt: new Date()
+      },
+      notes: moveDto.notes || survey.notes,
+      updatedAt: new Date()
+    };
+
+    if (isEmployee) {
+      updateData.assignedEmployeeId = rawAssignedTo;
+      updateData.assignedTo = undefined;
+    } else {
+      updateData.assignedTo = assignedToId || (survey as any).assignedTo;
+      updateData.assignedEmployeeId = (survey as any).assignedEmployeeId;
+    }
+
     const updatedSurvey = await this.surveyModel.findOneAndUpdate(
       filter,
-      {
-        status: SurveyStatus.ACTIVE,
-        assignedTo: assignedToId || (survey as any).assignedTo,
-        assignedBy: assignedById || (survey as any).assignedBy,
-        engineer: moveDto.engineer || resolvedAssigneeName || survey.engineer,
-        solarConsultant: moveDto.solarConsultant || resolvedAssigneeName || survey.solarConsultant,
-        activeData: {
-          ...moveDto.activeData,
-          startedAt: new Date()
-        },
-        notes: moveDto.notes || survey.notes,
-        updatedAt: new Date()
-      },
+      updateData,
       { new: true }
     ).exec();
 
@@ -422,13 +439,42 @@ export class SiteSurveysService {
     return updatedSurvey;
   }
 
-  // Move survey from Active to Complete
+  // Move survey from Active to Complete (idempotent - if already complete, updates completeData)
   async moveToComplete(id: string, moveDto: MoveToCompleteDto, tenantId?: string, user?: UserWithVisibility): Promise<SiteSurvey> {
     // First verify the survey exists and belongs to tenant
     const survey = await this.findOne(id, tenantId, user);
 
+    // If survey is already complete, we still update the completeData and return it
+    if (survey.status === SurveyStatus.COMPLETE) {
+      // Update completeData with new information
+      const filter = this.buildCompleteFilter(tenantId, user, {
+        $or: [{ _id: id }, { surveyId: id }]
+      });
+
+      const updatedSurvey = await this.surveyModel.findOneAndUpdate(
+        filter,
+        {
+          completeData: {
+            ...survey.completeData,
+            ...moveDto.completeData,
+            completionDate: survey.completeData?.completionDate || new Date()
+          },
+          notes: moveDto.notes || survey.notes,
+          updatedAt: new Date()
+        },
+        { new: true }
+      ).exec();
+
+      if (!updatedSurvey) {
+        throw new NotFoundException(`Survey with ID ${id} not found`);
+      }
+
+      return updatedSurvey;
+    }
+
+    // Normal flow: survey must be ACTIVE to move to COMPLETE
     if (survey.status !== SurveyStatus.ACTIVE) {
-      throw new Error(`Cannot move to Complete: Survey is currently ${survey.status}`);
+      throw new BadRequestException(`Cannot move to Complete: Survey is currently ${survey.status}. Only ACTIVE surveys can be completed.`);
     }
 
     const filter = this.buildCompleteFilter(tenantId, user, {
@@ -608,7 +654,7 @@ export class SiteSurveysService {
       throw new BadRequestException('Tenant context is required for assigning surveys');
     }
 
-    const { assigneeId: assignedToId, assigneeName } = await this.resolveAssigneeForTenant(String(assignDto.assignedTo), effectiveTid);
+    const { assigneeId: assignedToId, assigneeName, isEmployee } = await this.resolveAssigneeForTenant(String(assignDto.assignedTo), effectiveTid);
 
     const filter: any = {
       tenantId: effectiveTid,
@@ -616,16 +662,24 @@ export class SiteSurveysService {
       _id: (survey as any)._id,
     };
 
+    const updateData: any = {
+      assignedBy: assignedById,
+      engineer: assigneeName || survey.engineer,
+      solarConsultant: assigneeName || survey.solarConsultant,
+      updatedAt: new Date()
+    };
+
+    if (isEmployee) {
+      updateData.assignedEmployeeId = assignDto.assignedTo;
+      updateData.assignedTo = undefined;
+    } else {
+      updateData.assignedTo = assignedToId;
+      updateData.assignedEmployeeId = undefined;
+    }
+
     const updatedSurvey = await this.surveyModel.findOneAndUpdate(
       filter,
-      {
-        assignedTo: assignedToId,
-        assignedBy: assignedById,
-        // Also update the engineer field to match assignment
-        engineer: assigneeName || survey.engineer,
-        solarConsultant: assigneeName || survey.solarConsultant,
-        updatedAt: new Date()
-      },
+      updateData,
       { new: true }
     ).exec();
 

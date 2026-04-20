@@ -143,11 +143,14 @@ export class SiteSurvey {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
   createdBy?: Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, index: true })
   assignedTo?: Types.ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, index: true })
   assignedBy?: Types.ObjectId;
+
+  @Prop({ type: String, default: '' })
+  assignedEmployeeId?: string;
 
   // Timestamps
   @Prop({ type: Date })

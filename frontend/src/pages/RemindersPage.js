@@ -75,6 +75,9 @@ const RemindersPage = () => {
       filtered = getRemindersByPriority('critical');
     } else if (activeTab === 'completed') {
       filtered = reminders.filter((reminder) => reminder.status === 'completed');
+    } else if (activeTab === 'all') {
+      // Show all reminders except cancelled ones
+      filtered = reminders.filter((reminder) => reminder.status !== 'cancelled');
     }
 
     if (filterModule !== 'all') {
