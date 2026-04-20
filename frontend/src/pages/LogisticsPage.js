@@ -342,7 +342,7 @@ const VendorVisualizationView = ({ vendors }) => {
   return (
     <div className="space-y-4">
       {/* Summary Stats */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="glass-card p-3 text-center">
           <div className="text-2xl font-bold text-[var(--text-primary)]">{vendors.length}</div>
           <div className="text-[10px] text-[var(--text-muted)]">Total Vendors</div>
@@ -687,7 +687,7 @@ const DispatchVisualizationView = ({ dispatches }) => {
   return (
     <div className="space-y-4">
       {/* Summary Stats */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="glass-card p-3 text-center">
           <div className="text-2xl font-bold text-[var(--text-primary)]">{dispatches.length}</div>
           <div className="text-[10px] text-[var(--text-muted)]">Total Dispatches</div>
@@ -1851,7 +1851,7 @@ const LogisticsPage = () => {
                 <Package size={12} className="text-[var(--accent-light)]" />
                 <span>Dispatches Overview - Shipment tracking and delivery status</span>
               </p>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div onClick={() => handleCardClick('inTransit')} className="cursor-pointer transition-transform hover:scale-105">
                   <KPICard title="Total Shipments In Transit" value={inTransit} icon={Truck} sub="Shipments currently moving" variant="indigo" />
                 </div>
@@ -1900,7 +1900,7 @@ const LogisticsPage = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Input placeholder="Search dispatches…" value={search}
-                onChange={e => setSearch(e.target.value)} className="h-8 text-xs w-52" />
+                onChange={e => setSearch(e.target.value)} className="h-8 text-xs w-full sm:w-52" />
             </div>
             <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
               <Package size={14} className="text-[var(--accent-light)]" /> 
