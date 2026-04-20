@@ -636,7 +636,7 @@ const CommissioningDashboard = ({ logs }) => {
  <div className="flex items-center gap-3">
  <CalendarDays size={20} className="text-[var(--primary)]" />
  <span className="text-sm font-bold text-[var(--text-primary)]">Filter by Date:</span>
- <div className="flex gap-2 flex-wrap">
+ <div className="flex gap-2 overflow-x-auto max-w-full scrollbar-thin pb-1 sm:pb-0">
  <button
  onClick={() => setDateRange('7days')}
  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
@@ -1669,7 +1669,7 @@ const [assignDept, setAssignDept] = useState('');
 
  {/* KPI Cards - Finance module style with glass-card */}
  {showCardsInViews && (
- <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
  <KPICard 
  label="Total Commissionings" 
  value={logs.length} 
@@ -1710,7 +1710,7 @@ const [assignDept, setAssignDept] = useState('');
 
  <div className="flex items-center justify-between">
  {view !== 'table' && view !== 'dashboard' && (
- <Input placeholder="Search Commissionings�’" value={search} onChange={e=>setSearch(e.target.value)} className="w-80" />
+ <Input placeholder="Search Commissionings--" value={search} onChange={e=>setSearch(e.target.value)} className="w-full sm:w-80" />
  )}
  </div>
 
