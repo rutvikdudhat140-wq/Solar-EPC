@@ -1297,7 +1297,7 @@ const ProjectPage = () => {
  <div className="animate-fade-in space-y-5">
  <PageHeader
  title="Project Management"
- subtitle="Track all EPC projects �’�¡· milestones �’�¡· progress �’�¡· delivery"
+ subtitle="Track all EPC projects • milestones • progress • delivery"
  tabs={[
  { id: 'dashboard', label: 'Dashboard', icon: BarChart2 },
  { id: 'kanban', label: 'Kanban', icon: LayoutGrid },
@@ -1579,7 +1579,7 @@ const ProjectPage = () => {
  </div>
  <div className="flex items-center gap-1.5 mb-1">
  <span className={`text-xs font-medium ${isGood ? 'text-green-500' : metric.reverse ? 'text-amber-500' : 'text-red-500'}`}>
- {isGood ? '�’�“œ On Track' : metric.reverse ? '�’ High Risk' : '�’� Below Target'}
+ {isGood ? '✓ On Track' : metric.reverse ? '⚠ High Risk' : '✗ Below Target'}
  </span>
  </div>
  <p className="text-[10px] text-[var(--text-faint)] italic">{metric.hint}</p>
