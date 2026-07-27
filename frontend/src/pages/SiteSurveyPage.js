@@ -994,12 +994,11 @@ const PendingToActiveModal = ({ isOpen, onClose, survey, onSubmit, onAssign }) =
  }
  try {
  await onSubmit({
- assignedTo: formData.engineerId,
- engineer: formData.engineerName,
- solarConsultant: formData.engineerName,
- scheduledDate: formData.surveyDate,
- notes: formData.notes,
- activeData: { assignedAt: new Date().toISOString(), scheduledDate: formData.surveyDate }
+   assignedTo: formData.engineerId,
+   engineer: formData.engineerName,
+   solarConsultant: formData.engineerName,
+   notes: formData.notes,
+   activeData: { startedAt: new Date().toISOString() }
  });
  } catch (e) {
  toast.error(e?.response?.data?.message || e?.message || 'Failed to start survey');
@@ -1128,7 +1127,16 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
  ? format(new Date(completeData.completionDate), 'yyyy-MM-dd')
  : prev.completionDate,
  panelPlacementDetails: completeData.panelPlacementDetails ?? prev.panelPlacementDetails,
- finalDrawing: completeData.finalDrawing || prev.finalDrawing,
+ finalDrawing: (() => {
+   try {
+     if (completeData.finalRoofLayout) {
+       return JSON.parse(completeData.finalRoofLayout);
+     }
+   } catch (e) {
+     console.warn('Failed to parse finalRoofLayout:', e);
+   }
+   return completeData.finalDrawing || prev.finalDrawing;
+ })(),
  }));
  setEditForm({
  clientName: survey.clientName || '',
@@ -1231,7 +1239,18 @@ const ActiveToCompleteModal = ({ isOpen, onClose, survey, onSubmit, isAdmin, onS
  <Button variant="ghost" onClick={onClose}>{survey?.status === 'complete' ? 'Close' : 'Cancel'}</Button>
  {survey?.status !== 'complete' && (
  <Button
- onClick={() => onSubmit({ completeData: { ...formData, completionDate: new Date().toISOString() } })}
+ onClick={() => onSubmit({
+   completeData: {
+     finalImages: formData.finalImages,
+     finalRoofLayout: JSON.stringify(formData.finalDrawing),
+     panelPlacementDetails: formData.panelPlacementDetails,
+     finalNotes: formData.finalNotes,
+     engineerApproval: formData.engineerApproval,
+     engineerName: formData.engineerName,
+     completionDate: new Date().toISOString(),
+     approvedAt: formData.engineerApproval ? new Date().toISOString() : undefined
+   }
+ })}
  disabled={uploading || !formData.engineerApproval}
  className="bg-[var(--green)] hover:bg-[var(--green)]"
  >
@@ -2259,21 +2278,188 @@ const SiteSurveyPage = () => {
  };
  }, [fetchSurveys]);
 
- const handleMoveToActive = async (formData) => {
- try {
- await siteSurveysApi.moveToActive(selectedSurvey._id || selectedSurvey.surveyId, formData);
- toast.success('Survey assigned and moved to Active');
- setPendingModalOpen(false); setSelectedSurvey(null); fetchSurveys();
- } catch { toast.error('Failed to update survey'); }
- };
+  const handleMoveToActive = async (formData) => {
+    try {
+      let surveyId = selectedSurvey._id || selectedSurvey.surveyId;
+      let currentSurvey = selectedSurvey;
+      
+      // If this is a lead placeholder, we need to check if a real survey exists
+      if (selectedSurvey?.isFromLead) {
+        console.log('[handleMoveToActive] Handling lead placeholder, checking for existing survey...');
+        
+        try {
+          // First, try to get the existing survey for this lead
+          const existingSurvey = await siteSurveysApi.getByLeadId(selectedSurvey.leadId || selectedSurvey._id);
+          
+          if (existingSurvey?.data) {
+            // A real survey exists, use its ID
+            console.log('[handleMoveToActive] Found existing survey:', existingSurvey.data._id);
+            surveyId = existingSurvey.data._id;
+            currentSurvey = existingSurvey.data;
+          } else {
+            // No survey exists, create one from the lead
+            console.log('[handleMoveToActive] Creating survey from lead...');
+            const leadData = {
+              leadId: selectedSurvey.leadId || selectedSurvey._id,
+              clientName: selectedSurvey.clientName || 'Unknown',
+              city: selectedSurvey.city || 'Unknown',
+              projectCapacity: selectedSurvey.projectCapacity || 'To be determined',
+              engineer: formData.engineer || selectedSurvey.engineer || 'Unassigned',
+              assignedTo: formData.assignedTo || selectedSurvey.assignedTo
+            };
+            
+            const createdSurvey = await siteSurveysApi.createFromLead(leadData);
+            if (createdSurvey?.data) {
+              surveyId = createdSurvey.data._id;
+              currentSurvey = createdSurvey.data;
+              console.log('[handleMoveToActive] Created survey with ID:', surveyId);
+            }
+          }
+        } catch (err) {
+          console.log('[handleMoveToActive] Error checking/creating survey from lead:', err);
+        }
+      } else {
+        // For non-lead surveys, fetch fresh data to get current status
+        try {
+          console.log('[handleMoveToActive] Fetching fresh survey data for:', surveyId);
+          const freshResponse = await siteSurveysApi.getById(surveyId);
+          currentSurvey = freshResponse?.data || freshResponse;
+          console.log('[handleMoveToActive] Fresh survey data:', currentSurvey);
+        } catch (err) {
+          console.log('[handleMoveToActive] Could not fetch fresh data, using selectedSurvey');
+        }
+      }
+      
+      // Check current status from fresh data
+      const status = (currentSurvey?.status ?? '').toString().trim().toLowerCase();
+      console.log('[handleMoveToActive] Survey ID:', surveyId, 'Current Status:', status);
 
- const handleMoveToComplete = async (formData) => {
- try {
- await siteSurveysApi.moveToComplete(selectedSurvey._id || selectedSurvey.surveyId, formData);
- toast.success('Survey completed successfully');
- setCompleteModalOpen(false); setSelectedSurvey(null); fetchSurveys();
- } catch { toast.error('Failed to complete survey'); }
- };
+      if (status !== 'pending') {
+        if (status === 'complete') {
+          toast.info('This survey is already completed. Refreshing the list...');
+        } else if (status === 'active') {
+          toast.info('This survey is already active. Refreshing the list...');
+        } else {
+          toast.error(`Cannot assign: Survey is currently ${status}`);
+        }
+        setPendingModalOpen(false);
+        setSelectedSurvey(null);
+        fetchSurveys();
+        return;
+      }
+      
+      const result = await siteSurveysApi.moveToActive(surveyId, formData);
+      const updatedSurvey = result?.data || result;
+      
+      toast.success('Survey assigned and moved to Active');
+      
+      // Immediately update the UI state to show the correct engineer
+      // Remove the lead placeholder and add the updated survey
+      setSurveys(prevSurveys => {
+        // Filter out the lead placeholder (if it exists)
+        const filtered = prevSurveys.filter(s => {
+          // If this is the lead placeholder that was just converted
+          if (s.isFromLead && s._id === selectedSurvey?._id) {
+            return false; // Remove it
+          }
+          // If this is the survey that was just updated
+          if (s._id === surveyId || s.surveyId === surveyId) {
+            return false; // Remove old version
+          }
+          return true;
+        });
+        
+        // Add the updated survey with correct engineer
+        if (updatedSurvey) {
+          return [...filtered, updatedSurvey];
+        }
+        return filtered;
+      });
+      
+      setPendingModalOpen(false);
+      setSelectedSurvey(null);
+      
+      // Still call fetchSurveys to get fresh data from server
+      // but UI already shows correct engineer immediately
+      fetchSurveys();
+    } catch (error) {
+      console.error('Failed to move survey to active:', error);
+      const errorMsg = error?.response?.data?.message || error?.message || 'Failed to update survey';
+      toast.error(errorMsg);
+    }
+  };
+
+  const handleMoveToComplete = async (formData) => {
+    try {
+      let surveyId = selectedSurvey._id || selectedSurvey.surveyId;
+      
+      // If this is a lead placeholder, we need to check if a real survey exists
+      if (selectedSurvey?.isFromLead) {
+        console.log('[handleMoveToComplete] Handling lead placeholder, checking for existing survey...');
+        
+        try {
+          // First, try to get the existing survey for this lead
+          const existingSurvey = await siteSurveysApi.getByLeadId(selectedSurvey.leadId || selectedSurvey._id);
+          
+          if (existingSurvey?.data) {
+            // A real survey exists, use its ID
+            console.log('[handleMoveToComplete] Found existing survey:', existingSurvey.data._id);
+            surveyId = existingSurvey.data._id;
+            
+            // Check if the existing survey is in active state (required for completion)
+            if (existingSurvey.data.status === 'complete') {
+              toast.info('This survey is already completed. Refreshing the list...');
+              setCompleteModalOpen(false);
+              setSelectedSurvey(null);
+              fetchSurveys();
+              return;
+            }
+            if (existingSurvey.data.status !== 'active') {
+              toast.error(`Cannot complete: Survey is currently ${existingSurvey.data.status}. It must be active to complete.`);
+              return;
+            }
+          } else {
+            // No survey exists - can't complete a non-existent survey
+            toast.error('Cannot complete: No survey exists for this lead. Please start the survey first.');
+            return;
+          }
+        } catch (err) {
+          console.log('[handleMoveToComplete] Error checking survey from lead:', err);
+          // Continue with original ID - the backend will handle the error
+        }
+      } else {
+        // For non-lead surveys, fetch fresh data to get current status
+        try {
+          console.log('[handleMoveToComplete] Fetching fresh survey data for:', surveyId);
+          const freshResponse = await siteSurveysApi.getById(surveyId);
+          const freshSurvey = freshResponse?.data || freshResponse;
+          console.log('[handleMoveToComplete] Fresh survey data:', freshSurvey);
+          
+          if (freshSurvey && freshSurvey.status === 'complete') {
+            toast.info('This survey is already completed. Refreshing the list...');
+            setCompleteModalOpen(false);
+            setSelectedSurvey(null);
+            fetchSurveys();
+            return;
+          }
+          if (freshSurvey && freshSurvey.status !== 'active') {
+            toast.error(`Cannot complete: Survey is currently ${freshSurvey.status}. It must be active to complete.`);
+            return;
+          }
+        } catch (err) {
+          console.log('[handleMoveToComplete] Could not fetch fresh data, using selectedSurvey');
+        }
+      }
+      
+      await siteSurveysApi.moveToComplete(surveyId, formData);
+      toast.success('Survey completed successfully');
+      setCompleteModalOpen(false); setSelectedSurvey(null); fetchSurveys();
+    } catch (error) {
+      console.error('Failed to complete survey:', error);
+      const errorMsg = error?.response?.data?.message || error?.message || 'Failed to complete survey';
+      toast.error(errorMsg);
+    }
+  };
 
  const handleDelete = async (survey) => {
  if (!window.confirm(`Delete ${survey.isFromLead ? 'lead' : 'survey'} for ${survey.clientName}?`)) return;
@@ -2289,7 +2475,7 @@ const SiteSurveyPage = () => {
  fetchSurveys();
  } catch (err) {
  console.error('Delete error:', err);
- toast.error(err?.response?.data?.message || `Failed to delete ${survey.isFromLead ? 'lead' : 'survey'}`);
+ toast.error(err?.message || `Failed to delete ${survey.isFromLead ? 'lead' : 'survey'}`);
  }
  };
 

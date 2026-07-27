@@ -79,7 +79,7 @@ const ReminderSidebar = ({ isOpen, onClose }) => {
     } else if (activeTab === 'overdue') {
       filtered = getOverdueReminders();
     } else if (activeTab === 'all') {
-      filtered = reminders.filter((reminder) => reminder.status !== 'completed');
+      filtered = reminders.filter((reminder) => reminder.status !== 'completed' && reminder.status !== 'cancelled');
     }
 
     if (filterModule !== 'all') {

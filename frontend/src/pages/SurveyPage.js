@@ -1,5 +1,5 @@
 // Site Survey Management - Consistent UI Design
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
  Plus, MapPin, Calendar, CheckCircle, Zap, List, LayoutGrid,
  Eye, ChevronRight, Trash2, Edit2, Search, User,
@@ -13,9 +13,10 @@ import { toast } from '../components/ui/Toast';
 import { KPICard } from '../components/ui/KPICard';
 import { useAuditLog } from '../hooks/useAuditLog';
 import { usePermissions } from '../hooks/usePermissions';
+import { siteSurveysApi } from '../services/siteSurveysApi';
 
 const SurveyPage = () => {
- // �’�’State Management �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // State Management
  const [surveys, setSurveys] = useState([]);
  const [loading, setLoading] = useState(true);
  const [search, setSearch] = useState('');
@@ -41,45 +42,26 @@ const SurveyPage = () => {
  const { logCreate, logDelete } = useAuditLog('Survey');
  const { can } = usePermissions();
 
- // �’�’Mock Data �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
- useEffect(() => {
- const mockSurveys = [
- {
- id: 'SYY-JNK-ZYMP-ZGP',
- customerName: 'abdgf rtgy',
- site: 'Surat',
- estimatedKw: null,
- engineer: 'Unassigned',
- scheduledDate: '2025-03-11',
- status: 'pending',
- createdAt: '2025-03-11'
- },
- {
- id: 'SYY-JNK-SY8C28-L82',
- customerName: 'Adipisicing sint asp Aut A commodi velit',
- site: 'Mumbai',
- estimatedKw: null,
- engineer: 'Unassigned',
- scheduledDate: '2025-03-10',
- status: 'completed',
- createdAt: '2025-03-10'
- },
- {
- id: 'SYY-JNK-SY8XCEL-79Y',
- customerName: 'Distinctio Nulla it',
- site: 'Bangalore',
- estimatedKw: null,
- engineer: 'Unassigned',
- scheduledDate: '2025-03-09',
- status: 'completed',
- createdAt: '2025-03-09'
- }
- ];
- setSurveys(mockSurveys);
- setLoading(false);
+ // Fetch surveys from API
+ const fetchSurveys = useCallback(async () => {
+   try {
+     setLoading(true);
+     const response = await siteSurveysApi.getAll();
+     const surveyData = response.data?.data || response.data || [];
+     setSurveys(surveyData);
+   } catch (error) {
+     console.error('Failed to fetch surveys:', error);
+     toast.error('Failed to load surveys');
+   } finally {
+     setLoading(false);
+   }
  }, []);
 
- // �’�’Stats �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ useEffect(() => {
+   fetchSurveys();
+ }, [fetchSurveys]);
+
+ // ======================= Stats =======================
  const stats = useMemo(() => ({
  total: surveys.length,
  pending: surveys.filter(s => s.status === 'pending').length,
@@ -87,7 +69,7 @@ const SurveyPage = () => {
  completed: surveys.filter(s => s.status === 'completed').length
  }), [surveys]);
 
- // �’�’Filtered Surveys �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // =============== Filtered Surveys ===============
  const filteredSurveys = useMemo(() => {
  let filtered = surveys;
  if (activeTab !== 'all') {
@@ -104,83 +86,127 @@ const SurveyPage = () => {
  return filtered;
  }, [surveys, activeTab, search]);
 
- // Pagination Logic
- const totalItems = filteredSurveys.length;
- const totalPages = Math.ceil(totalItems / itemsPerPage);
- const startIndex = (currentPage - 1) * itemsPerPage;
- const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
- const paginatedSurveys = filteredSurveys.slice(startIndex, endIndex);
-
- // Reset to page 1 when filters change
- useEffect(() => {
- setCurrentPage(1);
- }, [activeTab, search, itemsPerPage]);
-
- const handleJumpToPage = (e) => {
- if (e.key === 'Enter') {
- const page = parseInt(jumpToPage);
- if (page >= 1 && page <= totalPages) {
- setCurrentPage(page);
- setJumpToPage('');
- }
- }
+ // Handlers
+ const handleAddSurvey = async () => {
+   if (!can('survey', 'create')) {
+     toast.error('Permission denied');
+     return;
+   }
+   setIsScheduling(true);
+   
+   try {
+     const surveyData = {
+       clientName: formData.customerName,
+       siteAddress: formData.siteAddress || 'Not specified',
+       projectCapacity: formData.size ? `${formData.size} kWp` : 'To be determined',
+       engineer: formData.engineer,
+       scheduledDate: formData.scheduledDate,
+       notes: formData.notes || '',
+       status: 'pending'
+     };
+     
+     await siteSurveysApi.create(surveyData);
+     logCreate({ name: formData.customerName });
+     toast.success('Survey created successfully');
+     fetchSurveys();
+     
+     setShowAddModal(false);
+     setFormData({
+       customerName: '',
+       engineer: 'Priya Patel',
+       siteAddress: '',
+       scheduledDate: '',
+       size: '',
+       notes: ''
+     });
+   } catch (error) {
+     console.error('Failed to create survey:', error);
+     toast.error(error?.response?.data?.message || 'Failed to create survey');
+   } finally {
+     setIsScheduling(false);
+   }
  };
 
- // �’�’Handlers �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
- const handleAddSurvey = () => {
- if (!can('survey', 'create')) {
- toast.error('Permission denied');
- return;
- }
- setIsScheduling(true);
- 
- const newSurvey = {
- id: `SYY-${Math.random().toString(36).substr(2, 9).toUpperCase()}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`,
- customerName: formData.customerName,
- site: formData.siteAddress || 'Not specified',
- estimatedKw: formData.size ? parseInt(formData.size) : null,
- engineer: formData.engineer,
- scheduledDate: formData.scheduledDate,
- status: 'pending',
- createdAt: new Date().toISOString()
- };
- 
- setSurveys(prev => [newSurvey, ...prev]);
- logCreate({ id: newSurvey.id, name: formData.customerName });
- toast.success('Survey scheduled successfully');
- 
- setShowAddModal(false);
- setFormData({
- customerName: '',
- engineer: 'Priya Patel',
- siteAddress: '',
- scheduledDate: '',
- size: '',
- notes: ''
- });
- setIsScheduling(false);
+ const handleDelete = async (survey) => {
+   if (!can('survey', 'delete')) {
+     toast.error('Permission denied');
+     return;
+   }
+   if (window.confirm(`Delete survey for ${survey.clientName || survey.customerName}?`)) {
+     try {
+       await siteSurveysApi.delete(survey._id || survey.id);
+       logDelete({ id: survey._id || survey.id, name: survey.clientName || survey.customerName });
+       toast.success('Survey deleted');
+       fetchSurveys();
+     } catch (error) {
+       console.error('Failed to delete survey:', error);
+       toast.error(error?.response?.data?.message || 'Failed to delete survey');
+     }
+   }
  };
 
- const handleDelete = (survey) => {
- if (!can('survey', 'delete')) {
- toast.error('Permission denied');
- return;
- }
- if (window.confirm(`Delete survey for ${survey.customerName}?`)) {
- setSurveys(prev => prev.filter(s => s.id !== survey.id));
- logDelete({ id: survey.id, name: survey.customerName });
- toast.success('Survey deleted');
- }
+ const handleStartSurvey = async (survey) => {
+   try {
+     let surveyId = survey._id || survey.id;
+     
+     // If this is a lead placeholder, we need to check if a real survey exists
+     if (survey?.isFromLead) {
+       console.log('[handleStartSurvey] Handling lead placeholder, checking for existing survey...');
+       
+       try {
+         // First, try to get the existing survey for this lead
+         const existingSurvey = await siteSurveysApi.getByLeadId(survey.leadId || survey._id);
+         
+         if (existingSurvey?.data) {
+           // A real survey exists, use its ID
+           console.log('[handleStartSurvey] Found existing survey:', existingSurvey.data._id);
+           surveyId = existingSurvey.data._id;
+           
+           // Check if the existing survey is already in a non-pending state
+           if (existingSurvey.data.status !== 'pending') {
+             toast.error(`Cannot start: Survey is currently ${existingSurvey.data.status}`);
+             return;
+           }
+         } else {
+           // No survey exists, create one from the lead
+           console.log('[handleStartSurvey] Creating survey from lead...');
+           const leadData = {
+             leadId: survey.leadId || survey._id,
+             clientName: survey.clientName || survey.customerName || 'Unknown',
+             city: survey.city || 'Unknown',
+             projectCapacity: survey.projectCapacity || survey.size || 'To be determined',
+             engineer: survey.engineer || 'Unassigned',
+             assignedTo: survey.assignedTo
+           };
+           
+           const createdSurvey = await siteSurveysApi.createFromLead(leadData);
+           if (createdSurvey?.data) {
+             surveyId = createdSurvey.data._id;
+             console.log('[handleStartSurvey] Created survey with ID:', surveyId);
+           }
+         }
+       } catch (err) {
+         console.log('[handleStartSurvey] Error checking/creating survey from lead:', err);
+         // Continue with original ID - the backend will handle the error
+       }
+     }
+     
+     await siteSurveysApi.moveToActive(surveyId, {
+       engineer: survey.engineer || 'Unassigned',
+       notes: 'Survey started',
+       activeData: {
+         startedAt: new Date().toISOString()
+       }
+     });
+     toast.success('Survey started');
+     fetchSurveys();
+   } catch (error) {
+     console.error('Failed to start survey:', error);
+     toast.error(error?.response?.data?.message || 'Failed to start survey');
+   }
  };
 
- const handleStartSurvey = (survey) => {
- setSurveys(prev => prev.map(s => 
- s.id === survey.id ? { ...s, status: 'active' } : s
- ));
- toast.success('Survey started');
- };
-
- // �’�’Components �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // ================= Components =================
  const StatusBadge = ({ status }) => {
  const styles = {
  pending: 'bg-amber-50 text-amber-700 border-amber-200',
@@ -223,7 +249,7 @@ const SurveyPage = () => {
  </button>
  );
 
- // �’�’Views �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+ // ==================== Views ====================
  const TableView = () => (
  <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] overflow-hidden">
  <table className="w-full">
@@ -320,102 +346,7 @@ const SurveyPage = () => {
  </div>
  );
 
-// Pagination Component
-const Pagination = () => (
- <div className="flex items-center justify-between bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] px-4 py-3 mt-4">
- <div className="flex items-center gap-4">
- <div className="flex items-center gap-2">
- <span className="text-sm text-[var(--text-muted)]">Rows per page:</span>
- <select
- value={itemsPerPage}
- onChange={(e) => setItemsPerPage(Number(e.target.value))}
- className="px-2 py-1 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
- >
- <option value={5}>5</option>
- <option value={10}>10</option>
- <option value={25}>25</option>
- <option value={50}>50</option>
- </select>
- </div>
- <div className="flex items-center gap-2">
- <span className="text-sm text-[var(--text-muted)]">Jump to:</span>
- <input
- type="text"
- value={jumpToPage}
- onChange={(e) => setJumpToPage(e.target.value)}
- onKeyDown={handleJumpToPage}
- placeholder={`P${currentPage}`}
- className="w-14 px-2 py-1 rounded-lg border border-[var(--border-base)] bg-[var(--bg-elevated)] text-sm text-center text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
- />
- </div>
- <span className="text-sm text-[var(--text-secondary)]">
- {totalItems > 0 ? `${startIndex + 1}-${endIndex} of ${totalItems}` : '0-0 of 0'}
- </span>
- </div>
- <div className="flex items-center gap-1">
- <button
- onClick={() => setCurrentPage(1)}
- disabled={currentPage === 1 || totalPages === 0}
- className="p-2 rounded-lg hover:bg-[var(--bg-elevated)] disabled:opacity-40 disabled:cursor-not-allowed text-[var(--text-secondary)]"
- title="First Page"
- >
- <ChevronsLeft size={18} />
- </button>
- <button
- onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
- disabled={currentPage === 1 || totalPages === 0}
- className="p-2 rounded-lg hover:bg-[var(--bg-elevated)] disabled:opacity-40 disabled:cursor-not-allowed text-[var(--text-secondary)]"
- title="Previous Page"
- >
- <ChevronLeft size={18} />
- </button>
- {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
- let pageNum;
- if (totalPages <= 5) {
- pageNum = i + 1;
- } else if (currentPage <= 3) {
- pageNum = i + 1;
- } else if (currentPage >= totalPages - 2) {
- pageNum = totalPages - 4 + i;
- } else {
- pageNum = currentPage - 2 + i;
- }
- return (
- <button
- key={pageNum}
- onClick={() => setCurrentPage(pageNum)}
- className={`min-w-[32px] h-8 px-2 rounded-lg text-sm font-medium transition-all ${
- currentPage === pageNum
- ? 'bg-orange-500 text-white'
- : 'hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
- }`}
- >
- {pageNum}
- </button>
- );
- })}
- <button
- onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
- disabled={currentPage === totalPages || totalPages === 0}
- className="p-2 rounded-lg hover:bg-[var(--bg-elevated)] disabled:opacity-40 disabled:cursor-not-allowed text-[var(--text-secondary)]"
- title="Next Page"
- >
- <ChevronRight size={18} />
- </button>
- <button
- onClick={() => setCurrentPage(totalPages)}
- disabled={currentPage === totalPages || totalPages === 0}
- className="p-2 rounded-lg hover:bg-[var(--bg-elevated)] disabled:opacity-40 disabled:cursor-not-allowed text-[var(--text-secondary)]"
- title="Last Page"
- >
- <ChevronsRight size={18} />
- </button>
- </div>
- </div>
-);
-
-//''Render''
-
+ // ==================== Render ====================
  return (
  <div className="p-6 bg-[var(--bg-elevated)] min-h-screen">
  {/* Header */}
