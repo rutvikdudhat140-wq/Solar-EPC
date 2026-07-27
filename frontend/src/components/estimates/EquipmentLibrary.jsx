@@ -149,7 +149,7 @@ export const SOLAR_EQUIPMENT_LIBRARY = [
     model: 'PV-4MM-RD',
     description: 'TUV certified solar DC cable (per meter)',
     unitPrice: 85,
-    specs: '4mm² | Red | TUV Certified'
+    specs: '4mm  | Red | TUV Certified'
   },
   { 
     id: 'dc-cable-2',
@@ -161,7 +161,7 @@ export const SOLAR_EQUIPMENT_LIBRARY = [
     model: 'PV-4MM-BK',
     description: 'TUV certified solar DC cable (per meter)',
     unitPrice: 85,
-    specs: '4mm² | Black | TUV Certified'
+    specs: '4mm  | Black | TUV Certified'
   },
   { 
     id: 'dc-cable-3',
@@ -173,7 +173,7 @@ export const SOLAR_EQUIPMENT_LIBRARY = [
     model: 'SOLAR-6MM',
     description: 'Heavy duty DC cable for longer runs (per meter)',
     unitPrice: 125,
-    specs: '6mm² | Double insulated'
+    specs: '6mm  | Double insulated'
   },
   
   // AC Cables
@@ -187,7 +187,7 @@ export const SOLAR_EQUIPMENT_LIBRARY = [
     model: 'AC-4MM-3C',
     description: '3 phase AC cable (per meter)',
     unitPrice: 95,
-    specs: '4mm² | 3 Core | Copper'
+    specs: '4mm  | 3 Core | Copper'
   },
   { 
     id: 'ac-cable-2',
@@ -199,7 +199,7 @@ export const SOLAR_EQUIPMENT_LIBRARY = [
     model: 'AC-6MM-3C',
     description: 'Heavy duty AC cable (per meter)',
     unitPrice: 145,
-    specs: '6mm² | 3 Core | Copper'
+    specs: '6mm  | 3 Core | Copper'
   },
   
   // Earthing
@@ -558,7 +558,7 @@ export const EquipmentLibrary = ({ isOpen, onClose, onSelect }) => {
                         {item.specs}
                       </p>
                       <p className="text-sm font-semibold text-emerald-500 mt-2">
-                        ₹{item.unitPrice?.toLocaleString('en-IN')}
+                         {item.unitPrice?.toLocaleString('en-IN')}
                       </p>
                     </div>
                   </div>
@@ -577,7 +577,7 @@ export const EquipmentLibrary = ({ isOpen, onClose, onSelect }) => {
                 <p className="text-xs text-[var(--text-muted)]">{selectedItem.brand} {selectedItem.model}</p>
               </div>
               <p className="text-lg font-bold text-emerald-500">
-                ₹{(selectedItem.unitPrice * quantity).toLocaleString('en-IN')}
+                 {(selectedItem.unitPrice * quantity).toLocaleString('en-IN')}
               </p>
             </div>
             <div className="flex items-center gap-3">

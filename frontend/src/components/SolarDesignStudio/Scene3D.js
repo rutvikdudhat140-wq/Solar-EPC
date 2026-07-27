@@ -1,11 +1,11 @@
-// Scene3D.js — Three.js / R3F 3D Viewport
+// Scene3D.js   Three.js / R3F 3D Viewport
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sky, Grid, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useSolarStore } from './useSolarStore';
 
-/* ── Sun light that tracks hour/month ─────────────────────────────────────── */
+/*    Sun light that tracks hour/month                                         */
 const SunLight = () => {
     const lightRef = useRef();
     const { sunHour, sunMonth } = useSolarStore();
@@ -40,7 +40,7 @@ const SunLight = () => {
     );
 };
 
-/* ── Single Solar Panel mesh ──────────────────────────────────────────────── */
+/*    Single Solar Panel mesh                                                  */
 const PanelMesh = ({ panel, baseY, tiltRad }) => {
     const { moduleWidth, moduleHeight } = useSolarStore();
     return (
@@ -68,7 +68,7 @@ const PanelMesh = ({ panel, baseY, tiltRad }) => {
     );
 };
 
-/* ── Roof building mesh ────────────────────────────────────────────────────── */
+/*    Roof building mesh                                                        */
 const RoofMesh = ({ roof, isSelected, onClick }) => {
     const { panels, roofSettings, panelSettings } = useSolarStore();
     const roofPanels = panels.filter((p) => p.roofId === roof.id);
@@ -127,14 +127,14 @@ const RoofMesh = ({ roof, isSelected, onClick }) => {
                     whiteSpace: 'nowrap',
                     pointerEvents: 'none',
                 }}>
-                    {roof.label || roof.id} · {roofPanels.length} panels
+                    {roof.label || roof.id}   {roofPanels.length} panels
                 </div>
             </Html>
         </group>
     );
 };
 
-/* ── Obstacle mesh (tree / water-tank) ────────────────────────────────────── */
+/*    Obstacle mesh (tree / water-tank)                                        */
 const ObstacleMesh = ({ obs }) => {
     if (obs.type === 'tree') {
         return (
@@ -159,7 +159,7 @@ const ObstacleMesh = ({ obs }) => {
     );
 };
 
-/* ── Ground plane ─────────────────────────────────────────────────────────── */
+/*    Ground plane                                                             */
 const Ground = () => (
     <>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
@@ -179,7 +179,7 @@ const Ground = () => (
     </>
 );
 
-/* ── Main Scene ───────────────────────────────────────────────────────────── */
+/*    Main Scene                                                               */
 const SceneContent = () => {
     const { roofs, obstacles, selectedRoofId, setSelectedRoof } = useSolarStore();
 
@@ -220,7 +220,7 @@ const SceneContent = () => {
     );
 };
 
-/* ── Exported Canvas ──────────────────────────────────────────────────────── */
+/*    Exported Canvas                                                          */
 const Scene3D = () => (
     <Canvas
         shadows

@@ -3,7 +3,7 @@ import { cn } from '../../lib/utils';
 import { getStatus } from '../../config/status.config';
 
 /**
- * StatusBadge — config-driven, zero hardcoded colours in call-sites
+ * StatusBadge   config-driven, zero hardcoded colours in call-sites
  * Usage: <StatusBadge domain="lead" value="Hot" />
  */
 export const StatusBadge = ({ domain, value, className }) => {
@@ -20,7 +20,7 @@ export const StatusBadge = ({ domain, value, className }) => {
 };
 
 /**
- * Badge — generic coloured pill
+ * Badge   generic coloured pill
  */
 const BADGE_VARIANTS = {
   default: 'bg-[var(--bg-elevated)] text-[var(--text-muted)] border-[var(--border-muted)]',

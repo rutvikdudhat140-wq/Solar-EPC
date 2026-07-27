@@ -1,17 +1,17 @@
 /**
- * DashboardShell.js — Shared primitives for all role dashboards
+ * DashboardShell.js   Shared primitives for all role dashboards
  * Theme-aware: uses CSS variables exclusively, no hardcoded colors.
  */
 import React from 'react';
 import { ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import { ResponsiveContainer, Tooltip } from 'recharts';
 
-/* ─── Formatters ─────────────────────────────────────────────── */
+/*     Formatters                                                 */
 export const fmtCurrency = (v) => {
-    if (v >= 10000000) return `₹${(v / 10000000).toFixed(1)}Cr`;
-    if (v >= 100000) return `₹${(v / 100000).toFixed(1)}L`;
-    if (v >= 1000) return `₹${(v / 1000).toFixed(1)}K`;
-    return `₹${v}`;
+    if (v >= 10000000) return ` ${(v / 10000000).toFixed(1)}Cr`;
+    if (v >= 100000) return ` ${(v / 100000).toFixed(1)}L`;
+    if (v >= 1000) return ` ${(v / 1000).toFixed(1)}K`;
+    return ` ${v}`;
 };
 export const fmtNum = (v) => {
     if (v >= 1000000) return `${(v / 1000000).toFixed(1)}M`;
@@ -20,7 +20,7 @@ export const fmtNum = (v) => {
 };
 export const fmtPct = (v) => `${(+v || 0).toFixed(1)}%`;
 
-/* ─── Stat Card ──────────────────────────────────────────────── */
+/*     Stat Card                                                  */
 export const StatCard = ({ label, value, sub, icon: Icon, accent = 'var(--primary)', trend, trendUp }) => (
     <div className="glass-card p-5 flex flex-col gap-3 group cursor-default hover:border-[var(--border-active)] transition-all duration-200">
         <div className="flex items-start justify-between gap-2">
@@ -55,7 +55,7 @@ export const StatCard = ({ label, value, sub, icon: Icon, accent = 'var(--primar
     </div>
 );
 
-/* ─── Chart Card ─────────────────────────────────────────────── */
+/*     Chart Card                                                 */
 export const ChartCard = ({ title, subtitle, children, className = '', action }) => (
     <div className={`glass-card flex flex-col ${className}`}>
         <div className="flex items-center justify-between p-5 pb-3 border-b border-[var(--border-base)]">
@@ -69,7 +69,7 @@ export const ChartCard = ({ title, subtitle, children, className = '', action })
     </div>
 );
 
-/* ─── Section Header ─────────────────────────────────────────── */
+/*     Section Header                                             */
 export const SectionHeader = ({ title, subtitle, icon: Icon, accent = 'var(--primary)', badge }) => (
     <div className="flex items-center gap-3 mb-6">
         {Icon && (
@@ -97,7 +97,7 @@ export const SectionHeader = ({ title, subtitle, icon: Icon, accent = 'var(--pri
     </div>
 );
 
-/* ─── Activity Item ──────────────────────────────────────────── */
+/*     Activity Item                                              */
 export const ActivityItem = ({ icon: Icon, accent = 'var(--primary)', title, meta, time, status, statusColor }) => (
     <div className="flex items-start gap-3 py-3 border-b border-[var(--border-base)] last:border-0 group">
         <div
@@ -124,7 +124,7 @@ export const ActivityItem = ({ icon: Icon, accent = 'var(--primary)', title, met
     </div>
 );
 
-/* ─── Progress Row ───────────────────────────────────────────── */
+/*     Progress Row                                               */
 export const ProgressRow = ({ label, value, max, accent = 'var(--primary)', suffix = '%', showBar = true }) => {
     const pct = max ? (value / max) * 100 : value;
     return (
@@ -148,7 +148,7 @@ export const ProgressRow = ({ label, value, max, accent = 'var(--primary)', suff
     );
 };
 
-/* ─── Dashboard Grid Layouts ─────────────────────────────────── */
+/*     Dashboard Grid Layouts                                     */
 export const Grid4 = ({ children }) => (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">{children}</div>
 );
@@ -159,7 +159,7 @@ export const Grid2 = ({ children }) => (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">{children}</div>
 );
 
-/* ─── Custom Recharts Tooltip ────────────────────────────────── */
+/*     Custom Recharts Tooltip                                    */
 export const DashTooltip = ({ active, payload, label, formatter, labelFormatter }) => {
     if (!active || !payload?.length) return null;
     return (
@@ -182,18 +182,18 @@ export const DashTooltip = ({ active, payload, label, formatter, labelFormatter 
     );
 };
 
-/* ─── Loading Spinner ────────────────────────────────────────── */
+/*     Loading Spinner                                            */
 export const DashboardLoading = () => (
     <div className="flex flex-col items-center justify-center h-64 gap-4">
         <div className="relative w-12 h-12">
             <div className="absolute inset-0 rounded-full border-2 border-[var(--border-muted)]" />
             <div className="absolute inset-0 rounded-full border-2 border-[var(--primary)] border-t-transparent animate-spin" />
         </div>
-        <p className="text-[12px] text-[var(--text-muted)]">Loading dashboard…</p>
+        <p className="text-[12px] text-[var(--text-muted)]">Loading dashboard </p>
     </div>
 );
 
-/* ─── Table ──────────────────────────────────────────────────── */
+/*     Table                                                      */
 export const DashTable = ({ columns, rows }) => (
     <div className="overflow-x-auto">
         <table className="w-full text-[12px]">
@@ -221,7 +221,7 @@ export const DashTable = ({ columns, rows }) => (
     </div>
 );
 
-/* ─── Role color palette ─────────────────────────────────────── */
+/*     Role color palette                                         */
 export const ROLE_COLORS = {
     sales: { primary: '#3b82f6', secondary: '#06b6d4' },
     survey: { primary: '#f59e0b', secondary: '#f97316' },
@@ -235,7 +235,7 @@ export const ROLE_COLORS = {
     admin: { primary: '#2563eb', secondary: '#f59e0b' },
 };
 
-/* ─── Recharts theme helpers ─────────────────────────────────── */
+/*     Recharts theme helpers                                     */
 export const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316', '#ec4899'];
 
 export const chartAxisStyle = {

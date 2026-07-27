@@ -11,7 +11,7 @@ import {
   TextCursor, Highlighter, StickyNote, Shapes, X, Loader2, Send
 } from 'lucide-react';
 
-// a"€a"€ Canva-Style Visual Proposal Editor a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
+// a"  a"   Canva-Style Visual Proposal Editor a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  
 const ProposalCanvasEditor = ({
   initialData,
   onSave,
@@ -731,8 +731,8 @@ const ProposalCanvasEditor = ({
         String(idx + 1),
         item.name || item.component || '',
         String(item.quantity || 1),
-        `a"š1${(item.unitPrice || 0).toLocaleString()}`,
-        `a"š1${((item.quantity || 1) * (item.unitPrice || 0)).toLocaleString()}`
+        `a" 1${(item.unitPrice || 0).toLocaleString()}`,
+        `a" 1${((item.quantity || 1) * (item.unitPrice || 0)).toLocaleString()}`
       ])
       : []; // Empty if no items
 
@@ -801,7 +801,7 @@ const ProposalCanvasEditor = ({
         id: 'company-address',
         type: 'text',
         x: 40, y: 180, width: 350, height: 140,
-        content: `<div style="font-size: 12px; color: #4b5563; line-height: 1.7;">${companyAddress}<br>Opp. Sarthana Nature Park, ${companyCity} - ${companyZip}<br>${companyState} - India<br>📞 ${companyPhone}<br>✉️ ${companyEmail}</div>`,
+        content: `<div style="font-size: 12px; color: #4b5563; line-height: 1.7;">${companyAddress}<br>Opp. Sarthana Nature Park, ${companyCity} - ${companyZip}<br>${companyState} - India<br>   ${companyPhone}<br>   ${companyEmail}</div>`,
         style: { fontSize: 12, color: '#4b5563', fontFamily: 'Inter, system-ui, sans-serif', lineHeight: 1.7 },
         zIndex: 2
       },
@@ -964,7 +964,7 @@ const ProposalCanvasEditor = ({
         id: 'subtotal-value',
         type: 'text',
         x: 670, y: 795, width: 100, height: 20,
-        content: `<div style="font-size: 12px; color: #1f2937; text-align: right; font-weight: 600;">a"š1${subtotal.toLocaleString()}</div>`,
+        content: `<div style="font-size: 12px; color: #1f2937; text-align: right; font-weight: 600;">a" 1${subtotal.toLocaleString()}</div>`,
         style: { fontSize: 12, fontWeight: '600', color: '#1f2937', textAlign: 'right', fontFamily: 'Inter, system-ui, sans-serif' },
         zIndex: 1
       },
@@ -980,7 +980,7 @@ const ProposalCanvasEditor = ({
         id: 'gst-value',
         type: 'text',
         x: 670, y: 820, width: 100, height: 20,
-        content: `<div style="font-size: 12px; color: #1f2937; text-align: right; font-weight: 600;">a"š1${gstAmount.toLocaleString()}</div>`,
+        content: `<div style="font-size: 12px; color: #1f2937; text-align: right; font-weight: 600;">a" 1${gstAmount.toLocaleString()}</div>`,
         style: { fontSize: 12, fontWeight: '600', color: '#1f2937', textAlign: 'right', fontFamily: 'Inter, system-ui, sans-serif' },
         zIndex: 1
       },
@@ -1004,7 +1004,7 @@ const ProposalCanvasEditor = ({
         id: 'total-value',
         type: 'text',
         x: 670, y: 860, width: 100, height: 25,
-        content: `<div style="font-size: 18px; color: #059669; text-align: right; font-weight: 800;">a"š1${total.toLocaleString()}</div>`,
+        content: `<div style="font-size: 18px; color: #059669; text-align: right; font-weight: 800;">a" 1${total.toLocaleString()}</div>`,
         style: { fontSize: 18, fontWeight: '800', color: '#059669', textAlign: 'right', fontFamily: 'Inter, system-ui, sans-serif' },
         zIndex: 1
       },
@@ -1046,7 +1046,7 @@ const ProposalCanvasEditor = ({
         id: 'signature-label-right',
         type: 'text',
         x: 580, y: 1010, width: 190, height: 20,
-        content: '<div style="font-size: 12px; color: #ef4444; text-align: right;">aÅ“"¢ Signature (Customer)</div>',
+        content: '<div style="font-size: 12px; color: #ef4444; text-align: right;">a  "  Signature (Customer)</div>',
         style: { fontSize: 12, color: '#ef4444', textAlign: 'right', fontFamily: 'Inter, system-ui, sans-serif' },
         zIndex: 1
       },
@@ -1071,7 +1071,7 @@ const ProposalCanvasEditor = ({
         id: 'footer-text',
         type: 'text',
         x: 40, y: 1120, width: 730, height: 40,
-        content: `<div style="font-size: 10px; color: #9ca3af; text-align: center; line-height: 1.5;"><strong>${companyName}</strong> | ${companyAddress}, ${companyCity}, ${companyState} - ${companyZip}<br>📞 ${companyPhone} | ✉️ ${companyEmail} | 🌐 ${companyWebsite}</div>`,
+        content: `<div style="font-size: 10px; color: #9ca3af; text-align: center; line-height: 1.5;"><strong>${companyName}</strong> | ${companyAddress}, ${companyCity}, ${companyState} - ${companyZip}<br>   ${companyPhone} |    ${companyEmail} |    ${companyWebsite}</div>`,
         style: { fontSize: 10, color: '#9ca3af', textAlign: 'center', fontFamily: 'Inter, system-ui, sans-serif' },
         zIndex: 1
       }
@@ -1790,7 +1790,7 @@ const CanvasElement = ({
   );
 };
 
-// a"€a"€ Selection Box Component a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€a"€
+// a"  a"   Selection Box Component a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  a"  
 const SelectionBox = ({
   element,
   onBringToFront,

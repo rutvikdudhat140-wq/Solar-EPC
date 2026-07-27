@@ -122,7 +122,7 @@ const ReminderSidebar = ({ isOpen, onClose }) => {
               </div>
               <div>
                 <h2 className="text-sm font-bold text-[var(--text-primary)]">Reminders</h2>
-                <p className="text-[10px] text-[var(--text-muted)]">{upcomingCount} upcoming · {overdueCount} overdue</p>
+                <p className="text-[10px] text-[var(--text-muted)]">{upcomingCount} upcoming   {overdueCount} overdue</p>
               </div>
             </div>
 

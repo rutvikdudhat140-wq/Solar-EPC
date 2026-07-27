@@ -1,9 +1,9 @@
-// Map2DEnhanced.js — LIVE Google Maps with real-time location, boundary selection, and manual panel placement
+// Map2DEnhanced.js   LIVE Google Maps with real-time location, boundary selection, and manual panel placement
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSolarStore } from './useSolarStore';
 import { MapPin, Target, Grid3x3, Plus, Trash2, Play, StopCircle } from 'lucide-react';
 
-/* Converts a google.maps LatLng path → local X/Z meters (relative to centroid) */
+/* Converts a google.maps LatLng path   local X/Z meters (relative to centroid) */
 function pathToLocalXZ(path) {
     const points = [];
     for (let i = 0; i < path.getLength(); i++) {
@@ -358,7 +358,7 @@ const Map2DEnhanced = ({ lat = 28.54317, lng = 77.335763 }) => {
                     border: '1px solid rgba(59,130,246,0.2)',
                     maxWidth: 460,
                 }}>
-                    <div style={{ fontSize: 48, marginBottom: 12 }}>🛰️</div>
+                    <div style={{ fontSize: 48, marginBottom: 12 }}>   </div>
                     <p style={{ color: '#f1f5f9', fontWeight: 700, fontSize: 16, marginBottom: 8 }}>
                         Live Satellite Map View
                     </p>
@@ -390,7 +390,7 @@ const Map2DEnhanced = ({ lat = 28.54317, lng = 77.335763 }) => {
             }}>
                 <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                     <h3 style={{ fontSize: 13, fontWeight: 700, color: '#f1f5f9', marginBottom: 8 }}>
-                        📍 Live Location Control
+                           Live Location Control
                     </h3>
 
                     {/* Live Tracking Button */}
@@ -433,7 +433,7 @@ const Map2DEnhanced = ({ lat = 28.54317, lng = 77.335763 }) => {
                         }}>
                             <div>Lat: {currentLocation.lat.toFixed(6)}</div>
                             <div>Lng: {currentLocation.lng.toFixed(6)}</div>
-                            <div>Accuracy: ±{currentLocation.accuracy.toFixed(0)}m</div>
+                            <div>Accuracy:  {currentLocation.accuracy.toFixed(0)}m</div>
                         </div>
                     )}
                 </div>
@@ -441,7 +441,7 @@ const Map2DEnhanced = ({ lat = 28.54317, lng = 77.335763 }) => {
                 {/* Boundary Selection */}
                 <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                     <h3 style={{ fontSize: 13, fontWeight: 700, color: '#f1f5f9', marginBottom: 8 }}>
-                        🗺️ Boundary Selection
+                            Boundary Selection
                     </h3>
                     <button
                         onClick={() => {
@@ -477,7 +477,7 @@ const Map2DEnhanced = ({ lat = 28.54317, lng = 77.335763 }) => {
                             fontSize: 10,
                             color: '#22c55e',
                         }}>
-                            ✓ Boundary Selected
+                              Boundary Selected
                         </div>
                     )}
                 </div>
@@ -486,7 +486,7 @@ const Map2DEnhanced = ({ lat = 28.54317, lng = 77.335763 }) => {
                 {selectedArea && (
                     <div style={{ marginBottom: 12 }}>
                         <h3 style={{ fontSize: 13, fontWeight: 700, color: '#f1f5f9', marginBottom: 8 }}>
-                            ⚡ Panel Placement
+                              Panel Placement
                         </h3>
 
                         {/* Manual Mode Toggle */}
@@ -577,7 +577,7 @@ const Map2DEnhanced = ({ lat = 28.54317, lng = 77.335763 }) => {
                                     cursor: 'pointer',
                                 }}
                             >
-                                Auto-Place {gridMode.rows}×{gridMode.cols} Grid
+                                Auto-Place {gridMode.rows} {gridMode.cols} Grid
                             </button>
                         </div>
 
@@ -635,7 +635,7 @@ const Map2DEnhanced = ({ lat = 28.54317, lng = 77.335763 }) => {
                     zIndex: 10,
                     boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                 }}>
-                    🖱️ Click inside boundary to place solar panels
+                        Click inside boundary to place solar panels
                 </div>
             )}
         </div>

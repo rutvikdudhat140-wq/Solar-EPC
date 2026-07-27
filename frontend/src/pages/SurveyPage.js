@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
  Plus, MapPin, Calendar, CheckCircle, Zap, List, LayoutGrid,
  Eye, ChevronRight, Trash2, Edit2, Search, User,
- Clock, FileText, Play, X, Filter
+ Clock, FileText, Play, X, Filter, ChevronLeft, ChevronsLeft, ChevronsRight
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '../components/ui/Button';
@@ -33,6 +33,11 @@ const SurveyPage = () => {
  size: '',
  notes: ''
  });
+
+ // Pagination State
+ const [currentPage, setCurrentPage] = useState(1);
+ const [itemsPerPage, setItemsPerPage] = useState(10);
+ const [jumpToPage, setJumpToPage] = useState('');
 
  const { logCreate, logDelete } = useAuditLog('Survey');
  const { can } = usePermissions();
@@ -261,9 +266,9 @@ const SurveyPage = () => {
  </tr>
  </thead>
  <tbody className="divide-y divide-gray-200">
- {filteredSurveys.length === 0 ? (
+ {paginatedSurveys.length === 0 ? (
  <tr><td colSpan={8} className="px-6 py-12 text-center text-[var(--text-muted)]">No surveys found</td></tr>
- ) : filteredSurveys.map((survey) => (
+ ) : paginatedSurveys.map((survey) => (
  <tr key={survey.id} className="hover:bg-[var(--bg-elevated)]">
  <td className="px-6 py-4">
  <div className="flex items-center gap-3">
@@ -303,7 +308,7 @@ const SurveyPage = () => {
 
  const ListView = () => (
  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
- {filteredSurveys.map((survey) => (
+ {paginatedSurveys.map((survey) => (
  <div key={survey.id} className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-base)] p-5 hover:shadow-md transition-shadow">
  <div className="flex items-start justify-between mb-4">
  <div className="flex items-center gap-3">
@@ -379,49 +384,49 @@ const SurveyPage = () => {
  <LayoutGrid size={16} className="inline mr-1" />List
  </button>
  </div>
- <Button onClick={() => setShowAddModal(true)}><Plus size={18} className="mr-1" />New Survey</Button>
  </div>
  </div>
 
  {/* Content */}
  {loading ? <div className="text-center py-12 text-[var(--text-muted)]">Loading...</div> : viewMode === 'table' ? <TableView /> : <ListView />}
+ {!loading && totalItems > 0 && <Pagination />}
 
- {/* Add Survey Modal */}
- <Modal open={showAddModal} onClose={() => setShowAddModal(false)} title="Schedule New Survey" footer={
- <div className="flex justify-end gap-2">
- <Button variant="ghost" onClick={() => setShowAddModal(false)}>Cancel</Button>
- <Button onClick={handleAddSurvey} disabled={!formData.customerName || isScheduling}>
- {isScheduling ? 'Scheduling...' : 'Schedule Survey'}
- </Button>
- </div>
- }>
- <div className="space-y-4">
- <FormField label="Customer Name *">
- <Input value={formData.customerName} onChange={(e) => setFormData({ ...formData, customerName: e.target.value })} placeholder="Enter customer name" />
- </FormField>
- <div className="grid grid-cols-2 gap-4">
- <FormField label="Assigned Engineer">
- <Select value={formData.engineer} onChange={(e) => setFormData({ ...formData, engineer: e.target.value })}>
- <option>Priya Patel</option><option>Rahul Sharma</option><option>Amit Kumar</option><option>Sneha Reddy</option>
- </Select>
- </FormField>
- <FormField label="Est. Size (kW)">
- <Input type="number" value={formData.size} onChange={(e) => setFormData({ ...formData, size: e.target.value })} placeholder="50" />
- </FormField>
- </div>
- <FormField label="Site Address">
- <Input value={formData.siteAddress} onChange={(e) => setFormData({ ...formData, siteAddress: e.target.value })} placeholder="Enter site address" />
- </FormField>
- <FormField label="Scheduled Date">
- <Input type="date" value={formData.scheduledDate} onChange={(e) => setFormData({ ...formData, scheduledDate: e.target.value })} />
- </FormField>
- <FormField label="Notes">
- <Textarea rows={3} value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Additional notes..." />
- </FormField>
- </div>
- </Modal>
+  {/* Add Survey Modal */}
+  <Modal open={showAddModal} onClose={() => setShowAddModal(false)} title="Schedule New Survey" footer={
+    <div className="flex justify-end gap-2">
+      <Button variant="ghost" onClick={() => setShowAddModal(false)}>Cancel</Button>
+      <Button onClick={handleAddSurvey} disabled={!formData.customerName || isScheduling}>
+        {isScheduling ? 'Scheduling...' : 'Schedule Survey'}
+      </Button>
+    </div>
+  }>
+    <div className="space-y-4">
+      <FormField label="Customer Name *">
+        <Input value={formData.customerName} onChange={(e) => setFormData({ ...formData, customerName: e.target.value })} placeholder="Enter customer name" />
+      </FormField>
+      <div className="grid grid-cols-2 gap-4">
+        <FormField label="Assigned Engineer">
+          <Select value={formData.engineer} onChange={(e) => setFormData({ ...formData, engineer: e.target.value })}>
+            <option>Priya Patel</option><option>Rahul Sharma</option><option>Amit Kumar</option><option>Sneha Reddy</option>
+          </Select>
+        </FormField>
+        <FormField label="Est. Size (kW)">
+          <Input type="number" value={formData.size} onChange={(e) => setFormData({ ...formData, size: e.target.value })} placeholder="50" />
+        </FormField>
+      </div>
+      <FormField label="Site Address">
+        <Input value={formData.siteAddress} onChange={(e) => setFormData({ ...formData, siteAddress: e.target.value })} placeholder="Enter site address" />
+      </FormField>
+      <FormField label="Scheduled Date">
+        <Input type="date" value={formData.scheduledDate} onChange={(e) => setFormData({ ...formData, scheduledDate: e.target.value })} />
+      </FormField>
+      <FormField label="Notes">
+        <Textarea rows={3} value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} placeholder="Additional notes..." />
+      </FormField>
+    </div>
+  </Modal>
 
- {/* View Survey Modal */}
+{/* View Survey Modal */}
  <Modal open={!!selectedSurvey} onClose={() => setSelectedSurvey(null)} title="Survey Details" footer={<div className="flex justify-end"><Button onClick={() => setSelectedSurvey(null)}>Close</Button></div>}>
  {selectedSurvey && (
  <div className="space-y-4">

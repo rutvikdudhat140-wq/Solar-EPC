@@ -1,4 +1,4 @@
-// SurveyBottomBar.js — Bottom status bar + map type controls
+// SurveyBottomBar.js   Bottom status bar + map type controls
 import React from 'react';
 import { useSolarSurveyStore } from './useSolarSurveyStore';
 import { Map, Satellite, Layers, ZoomIn, ZoomOut } from 'lucide-react';
@@ -27,15 +27,15 @@ const SurveyBottomBar = () => {
             {/* Left: Status info */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 10, color: '#64748b' }}>
                 <span style={{ fontFamily: 'monospace' }}>
-                    📍 {mapCenter.lat.toFixed(5)}, {mapCenter.lng.toFixed(5)}
+                       {mapCenter.lat.toFixed(5)}, {mapCenter.lng.toFixed(5)}
                 </span>
-                <span>🔍 Z{mapZoom}</span>
+                <span>   Z{mapZoom}</span>
                 <span style={{ color: '#94a3b8' }}>
-                    {boundaries.length} area{boundaries.length !== 1 ? 's' : ''} · {panels.length} panels · {analysis.totalCapacityKW} kWp
+                    {boundaries.length} area{boundaries.length !== 1 ? 's' : ''}   {panels.length} panels   {analysis.totalCapacityKW} kWp
                 </span>
                 {activeTool === 'measure' && measureDistance > 0 && (
                     <span style={{ color: '#f59e0b', fontWeight: 700 }}>
-                        📏 {measureDistance.toFixed(2)} m
+                           {measureDistance.toFixed(2)} m
                     </span>
                 )}
             </div>

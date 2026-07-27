@@ -144,7 +144,7 @@ const PAGE_MAP = {
 
   compliance: { component: CompliancePage, title: 'Compliance' },
   settings: { component: SettingsPage, title: 'Settings' },
-  'hrm-permissions': { component: HrmPermissionsPage, title: 'HRM Permissions' },
+  'hrm-permissions': { component: HRMPermissionsPage, title: 'HRM Permissions' },
   intelligence: { component: IntelligenceDashboardPage, title: 'AI Intelligence' },
   documents: { component: DocumentPage, title: 'Documents' },
   profile: { component: ProfilePage, title: 'My Profile' },

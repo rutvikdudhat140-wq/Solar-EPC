@@ -1,4 +1,4 @@
-// StudioToolbar.js — Top toolbar with breadcrumb, undo/redo, save/export, 2D/3D toggle
+// StudioToolbar.js   Top toolbar with breadcrumb, undo/redo, save/export, 2D/3D toggle
 import React from 'react';
 import { useSolarStore } from './useSolarStore';
 
@@ -60,22 +60,22 @@ const StudioToolbar = ({ projectName, designName, onClose, viewMode, setViewMode
             {/* Breadcrumb */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748b' }}>
                 <span style={{ cursor: 'pointer', color: '#94a3b8' }} onClick={onClose}>Home</span>
-                <span>›</span>
+                <span> </span>
                 <span style={{ cursor: 'pointer', color: '#94a3b8' }} onClick={onClose}>Lead Summary</span>
-                <span>›</span>
+                <span> </span>
                 <span style={{ color: '#f1f5f9', fontWeight: 600 }}>Design</span>
             </div>
 
-            {/* Center — undo / redo / save / close / export */}
+            {/* Center   undo / redo / save / close / export */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <IconBtn icon="↶" title="Undo (Ctrl+Z)" />
-                <IconBtn icon="↷" title="Redo (Ctrl+Y)" />
+                <IconBtn icon=" " title="Undo (Ctrl+Z)" />
+                <IconBtn icon=" " title="Redo (Ctrl+Y)" />
                 <Divider />
-                <IconBtn icon="✓" title="Save" color="#22c55e" onClick={handleSave} />
-                <IconBtn icon="✕" title="Close" color="#ef4444" onClick={onClose} />
+                <IconBtn icon=" " title="Save" color="#22c55e" onClick={handleSave} />
+                <IconBtn icon=" " title="Close" color="#ef4444" onClick={onClose} />
                 <Divider />
-                <IconBtn icon="💾" title="Save Design JSON" onClick={handleSave} />
-                <IconBtn icon="⬇" title="Export" onClick={handleSave} />
+                <IconBtn icon="  " title="Save Design JSON" onClick={handleSave} />
+                <IconBtn icon=" " title="Export" onClick={handleSave} />
                 <Divider />
                 {/* 2D / 3D Toggle */}
                 <div style={{
@@ -105,7 +105,7 @@ const StudioToolbar = ({ projectName, designName, onClose, viewMode, setViewMode
                 </div>
             </div>
 
-            {/* Right — site survey / notifications */}
+            {/* Right   site survey / notifications */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <button style={{
                     display: 'flex', alignItems: 'center', gap: 6,
@@ -114,11 +114,11 @@ const StudioToolbar = ({ projectName, designName, onClose, viewMode, setViewMode
                     background: 'rgba(255,255,255,0.04)',
                     color: '#94a3b8', fontSize: 11, fontWeight: 600, cursor: 'pointer',
                 }}>
-                    📄 Site Survey Files
+                       Site Survey Files
                 </button>
-                <IconBtn icon="🔔" title="Notifications" />
-                <IconBtn icon="⚙️" title="Settings" />
-                <IconBtn icon="👤" title="Profile" />
+                <IconBtn icon="  " title="Notifications" />
+                <IconBtn icon="  " title="Settings" />
+                <IconBtn icon="  " title="Profile" />
             </div>
         </div>
     );

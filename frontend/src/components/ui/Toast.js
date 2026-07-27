@@ -269,7 +269,7 @@ const createToastElement = (type, title, message, duration) => {
     },
     success: {
       gradient: 'linear-gradient(135deg, rgba(16,185,129,0.95) 0%, rgba(20,184,166,0.95) 50%, rgba(13,148,136,0.95) 100%)',
-      icon: '✓', iconBg: 'rgba(16,185,129,0.25)', progress: '#34d399', border: 'rgba(16,185,129,0.4)',
+      icon: ' ', iconBg: 'rgba(16,185,129,0.25)', progress: '#34d399', border: 'rgba(16,185,129,0.4)',
     },
     info: {
       gradient: 'linear-gradient(135deg, rgba(59,130,246,0.95) 0%, rgba(99,102,241,0.95) 50%, rgba(79,70,229,0.95) 100%)',

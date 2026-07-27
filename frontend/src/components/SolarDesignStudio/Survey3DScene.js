@@ -1,4 +1,4 @@
-// Survey3DScene.js — Full 3D visualization for solar survey
+// Survey3DScene.js   Full 3D visualization for solar survey
 // Realistic panel layout, shadow analysis, smooth camera animations, architectural spacing
 import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
@@ -6,7 +6,7 @@ import { OrbitControls, Sky, Grid, Html, ContactShadows } from '@react-three/dre
 import * as THREE from 'three';
 import { useSolarSurveyStore, calculateSunPosition } from './useSolarSurveyStore';
 
-// ── Sun Light System ──────────────────────────────────────────────────────────
+//    Sun Light System                                                           
 const SunLightSystem = () => {
     const lightRef = useRef();
     const { sunSimulation, showShadows } = useSolarSurveyStore();
@@ -57,7 +57,7 @@ const SunLightSystem = () => {
     );
 };
 
-// ── Realistic Solar Panel ─────────────────────────────────────────────────────
+//    Realistic Solar Panel                                                      
 const SolarPanel = React.memo(({ position, size, tilt, azimuth, shaded, shadeFactor }) => {
     const meshRef = useRef();
     const tiltRad = (tilt || 15) * (Math.PI / 180);
@@ -103,7 +103,7 @@ const SolarPanel = React.memo(({ position, size, tilt, azimuth, shaded, shadeFac
                     <boxGeometry args={[w - 0.06, 0.005, h - 0.06]} />
                 </mesh>
 
-                {/* Cell grid lines — horizontal */}
+                {/* Cell grid lines   horizontal */}
                 {Array.from({ length: 5 }, (_, i) => {
                     const z = -h / 2 + 0.03 + (i + 1) * ((h - 0.06) / 6);
                     return (
@@ -113,7 +113,7 @@ const SolarPanel = React.memo(({ position, size, tilt, azimuth, shaded, shadeFac
                     );
                 })}
 
-                {/* Cell grid lines — vertical */}
+                {/* Cell grid lines   vertical */}
                 {Array.from({ length: 2 }, (_, i) => {
                     const x = -w / 2 + 0.03 + (i + 1) * ((w - 0.06) / 3);
                     return (
@@ -145,12 +145,12 @@ const SolarPanel = React.memo(({ position, size, tilt, azimuth, shaded, shadeFac
     );
 });
 
-// ── Boundary Building (3D roof surface) ───────────────────────────────────────
+//    Boundary Building (3D roof surface)                                        
 const BoundaryMesh = ({ boundary, isSelected, panels }) => {
     const points = boundary.localPoints;
     const h = boundary.height || 3.0;
 
-    // Create shape from local points — all hooks must come before any early return
+    // Create shape from local points   all hooks must come before any early return
     const shape = useMemo(() => {
         if (!points || points.length < 3) return null;
         const s = new THREE.Shape();
@@ -241,9 +241,9 @@ const BoundaryMesh = ({ boundary, isSelected, panels }) => {
                     pointerEvents: 'none',
                     backdropFilter: 'blur(4px)',
                 }}>
-                    {boundary.name} · {panels.length} panels
+                    {boundary.name}   {panels.length} panels
                     <div style={{ fontSize: 9, color: '#94a3b8', marginTop: 2 }}>
-                        {boundary.area.toFixed(1)} m² · {((panels.length * (panels[0]?.power || 545)) / 1000).toFixed(1)} kWp
+                        {boundary.area.toFixed(1)} m    {((panels.length * (panels[0]?.power || 545)) / 1000).toFixed(1)} kWp
                     </div>
                 </div>
             </Html>
@@ -251,7 +251,7 @@ const BoundaryMesh = ({ boundary, isSelected, panels }) => {
     );
 };
 
-// ── Exclusion Zone 3D ─────────────────────────────────────────────────────────
+//    Exclusion Zone 3D                                                          
 const ExclusionMesh = ({ zone, boundaryHeight }) => {
     const points = zone.localPoints;
     const obsHeight = zone.type === 'obstacle' ? 2.0 : zone.type === 'vent' ? 1.5 : 0.3;
@@ -310,14 +310,14 @@ const ExclusionMesh = ({ zone, boundaryHeight }) => {
                     whiteSpace: 'nowrap',
                     pointerEvents: 'none',
                 }}>
-                    🚫 {zone.label}
+                       {zone.label}
                 </div>
             </Html>
         </group>
     );
 };
 
-// ── Ground Plane ──────────────────────────────────────────────────────────────
+//    Ground Plane                                                               
 const Ground = ({ showGrid }) => (
     <>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
@@ -339,7 +339,7 @@ const Ground = ({ showGrid }) => (
     </>
 );
 
-// ── Scene Content ─────────────────────────────────────────────────────────────
+//    Scene Content                                                              
 const SceneContent = () => {
     const {
         boundaries, exclusionZones, panels,
@@ -407,9 +407,9 @@ const SceneContent = () => {
     );
 };
 
-// ══════════════════════════════════════════════════════════════════════════════
+//                                                                               
 // MAIN 3D SCENE
-// ══════════════════════════════════════════════════════════════════════════════
+//                                                                               
 const Survey3DScene = () => (
     <Canvas
         shadows

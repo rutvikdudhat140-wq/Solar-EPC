@@ -1,21 +1,21 @@
 /**
- * Solar OS — <CanAccess> Higher-Order Guard Component
+ * Solar OS   <CanAccess> Higher-Order Guard Component
  *
  * Uses the full priority-chain permission resolver:
- *   User Override → Custom Role → Base RBAC → Feature Flag gate
+ *   User Override   Custom Role   Base RBAC   Feature Flag gate
  *
  * Usage:
- *   <CanAccess module="finance" action="view">…</CanAccess>
- *   <CanAccess module="crm" feature="ai_scoring">…</CanAccess>
- *   <CanAccess module="finance" fallback={<p>No access</p>}>…</CanAccess>
- *   <CanAccess module="crm" action="delete" disabled>…</CanAccess>
+ *   <CanAccess module="finance" action="view"> </CanAccess>
+ *   <CanAccess module="crm" feature="ai_scoring"> </CanAccess>
+ *   <CanAccess module="finance" fallback={<p>No access</p>}> </CanAccess>
+ *   <CanAccess module="crm" action="delete" disabled> </CanAccess>
  *
  * Props:
- *   module    — moduleId (required)
- *   action    — actionId (optional)
- *   feature   — featureId (optional)
- *   fallback  — rendered when check fails (default: null)
- *   disabled  — if true renders children greyed-out instead of hiding
+ *   module      moduleId (required)
+ *   action      actionId (optional)
+ *   feature     featureId (optional)
+ *   fallback    rendered when check fails (default: null)
+ *   disabled    if true renders children greyed-out instead of hiding
  */
 import React from 'react';
 import { usePermissions } from '../hooks/usePermissions';

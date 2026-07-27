@@ -27,9 +27,9 @@ const chartTooltipStyle = {
   color: 'var(--text-primary)'
 };
 
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 // 1. PROJECT PIPELINE - Column Chart with Grid and Dots
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 export function ProjectPipeline2D({ data, height = 320 }) {
   return (
     <div className="w-full h-full" style={{ height }}>
@@ -81,9 +81,9 @@ export function ProjectPipeline2D({ data, height = 320 }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 // 2. INSTALLATION STATUS - Simple Clean Column Chart with Grid
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 export function InstallationStatus2D({ data, height = 320 }) {
   return (
     <div className="w-full h-full" style={{ height }}>
@@ -136,9 +136,9 @@ export function InstallationStatus2D({ data, height = 320 }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 // 3. SERVICE TICKETS - Horizontal Bar Chart
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 export function ServiceTickets2D({ data, height = 320 }) {
   return (
     <div className="w-full h-full" style={{ height }}>
@@ -185,9 +185,9 @@ export function ServiceTickets2D({ data, height = 320 }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 // 4. QUOTATION STATUS - Pie Chart with Labels
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 export function QuotationStatus2D({ data, height = 320 }) {
   return (
     <div className="w-full h-full relative" style={{ height }}>
@@ -232,9 +232,9 @@ export function QuotationStatus2D({ data, height = 320 }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 // 5. PROCUREMENT STATUS - Side by Side Column Chart (NOT stacked)
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 export function ProcurementStatus2D({ data, height = 320 }) {
   return (
     <div className="w-full h-full" style={{ height }}>
@@ -286,9 +286,9 @@ export function ProcurementStatus2D({ data, height = 320 }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 // 6. INVENTORY BY CATEGORY - Grouped Column Chart with Dots
-// ═══════════════════════════════════════════════════════════════════════════════
+//                                                                                
 export function InventoryCategory2D({ data, height = 320 }) {
   return (
     <div className="w-full h-full" style={{ height }}>

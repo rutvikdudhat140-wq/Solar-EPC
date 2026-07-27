@@ -246,8 +246,8 @@ export const generateSolarCostSummaryPDF = (data, companyData = DEFAULT_COMPANY)
     item.name || '',
     item.description || '',
     String(item.quantity || ''),
-    `₹ ${formatCurrency(item.unitPrice || 0)}`,
-    `₹ ${formatCurrency((item.quantity || 0) * (item.unitPrice || 0))}`,
+    `  ${formatCurrency(item.unitPrice || 0)}`,
+    `  ${formatCurrency((item.quantity || 0) * (item.unitPrice || 0))}`,
   ]);
 
   // Calculate total
@@ -260,7 +260,7 @@ export const generateSolarCostSummaryPDF = (data, companyData = DEFAULT_COMPANY)
     '',
     '',
     '',
-    `₹ ${formatCurrency(itemsTotal)}`,
+    `  ${formatCurrency(itemsTotal)}`,
   ]);
 
   // Render table with custom header (matching image)
@@ -382,7 +382,7 @@ export const generateSolarCostSummaryPDF = (data, companyData = DEFAULT_COMPANY)
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(...C.black);
     // Format with rupee symbol and proper spacing like in image
-    doc.text(`₹${formatCurrency(cost.value)}`, summaryX + rightColWidth - 8, costRowY, { align: 'right' });
+    doc.text(` ${formatCurrency(cost.value)}`, summaryX + rightColWidth - 8, costRowY, { align: 'right' });
 
     costRowY += 11;
   });
@@ -398,7 +398,7 @@ export const generateSolarCostSummaryPDF = (data, companyData = DEFAULT_COMPANY)
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(...C.black);
   doc.text('Subtotal:', summaryX + 8, costRowY);
-  doc.text(`₹${formatCurrency(subtotal)}`, summaryX + rightColWidth - 8, costRowY, { align: 'right' });
+  doc.text(` ${formatCurrency(subtotal)}`, summaryX + rightColWidth - 8, costRowY, { align: 'right' });
   costRowY += 10;
 
   // GST
@@ -407,7 +407,7 @@ export const generateSolarCostSummaryPDF = (data, companyData = DEFAULT_COMPANY)
   doc.text(`GST (${gstRate}%):`, summaryX + 8, costRowY);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(...C.black);
-  doc.text(`₹${formatCurrency(gstAmount)}`, summaryX + rightColWidth - 8, costRowY, { align: 'right' });
+  doc.text(` ${formatCurrency(gstAmount)}`, summaryX + rightColWidth - 8, costRowY, { align: 'right' });
   costRowY += 14;
 
   // Grand Total - Gold highlight with rounded corners
@@ -422,7 +422,7 @@ export const generateSolarCostSummaryPDF = (data, companyData = DEFAULT_COMPANY)
   doc.text('GRAND TOTAL:', summaryX + 10, grandTotalY + 11);
 
   doc.setFontSize(12);
-  doc.text(`₹${formatCurrency(grandTotal)}`, summaryX + rightColWidth - 10, grandTotalY + 11, { align: 'right' });
+  doc.text(` ${formatCurrency(grandTotal)}`, summaryX + rightColWidth - 10, grandTotalY + 11, { align: 'right' });
 
   // ============================================================
   // FOOTER

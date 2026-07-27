@@ -1,14 +1,14 @@
-// LeftSidebar.js — Tool palette matching Arka360 UI
+// LeftSidebar.js   Tool palette matching Arka360 UI
 import React from 'react';
 import { useSolarStore } from './useSolarStore';
 
 const tools = [
-    { id: 'select', icon: '↖', label: 'Select' },
-    { id: 'drawRoof', icon: '⬡', label: 'Draw Roof' },
-    { id: 'addPanel', icon: '⚡', label: 'Add Panels' },
-    { id: 'dormer', icon: '⌂', label: 'Add Dormer' },
-    { id: 'obstacle', icon: '🌲', label: 'Obstacle' },
-    { id: 'measure', icon: '📏', label: 'Measure' },
+    { id: 'select', icon: ' ', label: 'Select' },
+    { id: 'drawRoof', icon: ' ', label: 'Draw Roof' },
+    { id: 'addPanel', icon: ' ', label: 'Add Panels' },
+    { id: 'dormer', icon: ' ', label: 'Add Dormer' },
+    { id: 'obstacle', icon: '  ', label: 'Obstacle' },
+    { id: 'measure', icon: '  ', label: 'Measure' },
 ];
 
 const LeftSidebar = () => {
@@ -78,7 +78,7 @@ const LeftSidebar = () => {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
             >
-                👁
+                  
             </button>
             <button
                 title="Sun Path"
@@ -88,7 +88,7 @@ const LeftSidebar = () => {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
             >
-                ☀️
+                  
             </button>
         </div>
     );

@@ -1,6 +1,3 @@
-// Solar OS �’� AI Intelligence Center
-// Real-time AI-powered business intelligence & trade decision assistant UI. Pure frontend. No backend, no API calls.
-// All intelligence derived from mock data via useIntelligenceStore.
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { KPICard } from '../components/ui/KPICard';
@@ -16,7 +13,7 @@ import { CURRENCY } from '../config/app.config';
 
 const fmt = CURRENCY.format;
 
-// �’�’�’ICON MAP (for dynamic icon lookup) �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+
 const ICON_MAP = {
  Users, MapPin, Pencil, FileText, FolderOpen, Wrench, DollarSign,
  Package, UserX, ShieldCheck, Sparkles, IndianRupee, AlertTriangle,
@@ -58,7 +55,7 @@ const riskBadge = r => r === 'High'
  ? 'bg-amber-500/15 border-amber-500/30 text-amber-400'
  : 'bg-[var(--green)]/15 border-[var(--green)]/30 text-[var(--green)]';
 
-// �’�’�’ANIMATED COUNTER �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+
 const AnimatedNumber = ({ to, prefix = '', suffix = '', duration = 1200 }) => {
  const [display, setDisplay] = useState(0);
  const frameRef = useRef(null);
@@ -89,8 +86,7 @@ const AnimatedNumber = ({ to, prefix = '', suffix = '', duration = 1200 }) => {
  return <span>{prefix}{formatted}{suffix}</span>;
 };
 
-// �’�’�’MINI PROGRESS BAR �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
-// colorClass = Tailwind gradient classes (static), OR color = hex string for dynamic colors
+
 const MiniBar = ({ value, colorClass, color }) => (
  <div className="w-full h-1.5 rounded-full bg-[var(--bg-overlay)] overflow-hidden">
  <div
@@ -103,7 +99,7 @@ const MiniBar = ({ value, colorClass, color }) => (
  </div>
 );
 
-// �’�’�’CIRCULAR SCORE WIDGET �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+
 const CircularScore = ({ score, size = 160 }) => {
  const [animScore, setAnimScore] = useState(0);
  const frameRef = useRef(null);
@@ -148,12 +144,12 @@ const CircularScore = ({ score, size = 160 }) => {
  );
 };
 
-// �’�’�’AI STATUS BADGE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+
 const AIStatusBadge = ({ status }) => {
  const map = {
- Learning: { dot: 'bg-[var(--green)]', ring: 'ring-emerald-400/40', text: 'text-[var(--green)]', label: '�’�¦�Learning' },
- Analyzing: { dot: 'bg-amber-400', ring: 'ring-amber-400/40', text: 'text-amber-400', label: '�’�¦�Analyzing' },
- Optimizing: { dot: 'bg-[var(--primary-light)]', ring: 'ring-[var(--primary-glow)]', text: 'text-[var(--primary-light)]', label: '�’�µ Optimizing' },
+ Learning: { dot: 'bg-[var(--green)]', ring: 'ring-emerald-400/40', text: 'text-[var(--green)]', label: '’Learning' },
+ Analyzing: { dot: 'bg-amber-400', ring: 'ring-amber-400/40', text: 'text-amber-400', label: '’Analyzing' },
+ Optimizing: { dot: 'bg-[var(--primary-light)]', ring: 'ring-[var(--primary-glow)]', text: 'text-[var(--primary-light)]', label: '’µ Optimizing' },
  };
  const s = map[status] || map.Optimizing;
  return (
@@ -164,7 +160,7 @@ const AIStatusBadge = ({ status }) => {
  );
 };
 
-// �’�’�’RISK BADGE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
+// �’�’�’RISK BADGE 
 const RiskBadge = ({ level }) => (
  <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${riskBadge(level)}`}>{level}</span>
 );
@@ -189,24 +185,24 @@ const RecommendationList = ({ alerts, onNavigate }) => (
  <div className="space-y-2.5">
  {alerts.map(alert => (
  <div key={alert.id}
- className={`flex items-start gap-3 p-3 rounded-xl border transition-all hover:scale-[1.005] cursor-default ${alertColor(alert.color)}`}>
+ className={`flex flex-col sm:flex-row sm:items-start gap-3 p-3 rounded-xl border transition-all hover:scale-[1.005] cursor-default ${alertColor(alert.color)}`}>
  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${alertColor(alert.color)}`}>
  <Ic name={alert.icon} size={14} className={alertIconColor(alert.color)} />
  </div>
  <div className="flex-1 min-w-0">
- <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+ <div className="flex flex-wrap items-center gap-2 mb-0.5">
  <span className={`text-[10px] px-1.5 py-0.5 rounded-full border font-bold ${priorityBadge(alert.priority)}`}>
  {alert.priority}
  </span>
  <span className="text-[10px] text-[var(--text-faint)] font-medium">{alert.category}</span>
- <span className={`text-[10px] font-bold ml-auto ${alertIconColor(alert.color)}`}>{alert.metric}</span>
+ <span className={`text-[10px] font-bold sm:ml-auto ${alertIconColor(alert.color)}`}>{alert.metric}</span>
  </div>
  <p className="text-xs font-semibold text-[var(--text-primary)] mb-0.5">{alert.title}</p>
  <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">{alert.detail}</p>
  </div>
  <button
  onClick={() => onNavigate?.(alert.action.page)}
- className="shrink-0 text-[10px] px-2.5 py-1.5 rounded-lg bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[var(--accent)] font-semibold hover:bg-[var(--accent)]/20 transition-colors whitespace-nowrap"
+ className="shrink-0 text-[10px] px-2.5 py-1.5 rounded-lg bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[var(--accent)] font-semibold hover:bg-[var(--accent)]/20 transition-colors whitespace-nowrap w-full sm:w-auto mt-2 sm:mt-0"
  >
  {alert.action.label}
  </button>
@@ -225,11 +221,16 @@ const HealthScoreSection = ({ health }) => {
  { label: 'Team Efficiency', val: health.teamEfficiency, icon: Users },
  ];
  return (
- <div className="glass-card p-6 intelligence-hero-glow">
- <div className="flex flex-col lg:flex-row items-center gap-8">
- {/* Circular gauge */}
- <div className="flex flex-col items-center gap-3">
+ <div className="glass-card p-4 sm:p-6 intelligence-hero-glow">
+ <div className="flex flex-col lg:flex-row items-center gap-4 sm:gap-8">
+ {/* Circular gauge - responsive sizing via CSS */}
+ <div className="flex flex-col items-center gap-3 w-full lg:w-auto">
+ <div className="hidden sm:block">
  <CircularScore score={health.overall} size={172} />
+ </div>
+ <div className="sm:hidden">
+ <CircularScore score={health.overall} size={140} />
+ </div>
  <div className="text-center">
  <p className="text-sm font-extrabold text-[var(--text-primary)]">Business Health</p>
  <p className="text-[11px] text-[var(--text-muted)]">AI composite score</p>
@@ -257,7 +258,7 @@ const HealthScoreSection = ({ health }) => {
  {/* Tooltip */}
  <div className="absolute right-0 bottom-full mb-1 hidden group-hover:block z-10">
  <div className="bg-[var(--bg-surface)] border border-[var(--border-base)] rounded-lg p-2 text-[10px] text-[var(--text-muted)] whitespace-nowrap shadow-lg">
- {m.val >= 75 ? '�’�“¦ On target' : m.val >= 50 ? '�’�’Needs attention' : '�’�¦Critical �’action required'}
+ {m.val >= 75 ? '’“¦ On target' : m.val >= 50 ? '’’Needs attention' : '’¦Critical ’action required'}
  </div>
  </div>
  </div>
@@ -266,13 +267,13 @@ const HealthScoreSection = ({ health }) => {
  </div>
 
  {/* Score interpretation */}
- <div className="lg:w-52 w-full space-y-2">
+ <div className="w-full lg:w-52 space-y-2 mt-4 lg:mt-0">
  <div className="p-3 rounded-xl bg-[var(--bg-raised)] border border-[var(--border-muted)]">
  <p className="text-[10px] font-bold text-[var(--text-faint)] uppercase tracking-wider mb-2">Score Legend</p>
  {[
- { range: '75�’�100', label: 'Healthy', color: 'text-[var(--green)]', dot: 'bg-[var(--green)]' },
- { range: '50�’�74', label: 'Attention', color: 'text-amber-400', dot: 'bg-amber-400' },
- { range: '0�’�49', label: 'Critical', color: 'text-red-400', dot: 'bg-red-400' },
+ { range: '75’100', label: 'Healthy', color: 'text-[var(--green)]', dot: 'bg-[var(--green)]' },
+ { range: '50’74', label: 'Attention', color: 'text-amber-400', dot: 'bg-amber-400' },
+ { range: '0’49', label: 'Critical', color: 'text-red-400', dot: 'bg-red-400' },
  ].map(r => (
  <div key={r.range} className="flex items-center gap-2 mb-1.5">
  <div className={`w-2 h-2 rounded-full ${r.dot}`} />
@@ -287,7 +288,7 @@ const HealthScoreSection = ({ health }) => {
  {health.overall >= 75
  ? 'Operations running well. Monitor cash flow and inventory for sustained growth.'
  : health.overall >= 60
- ? 'Stable but 2�’�3 areas need intervention. Prioritise project execution and receivables.'
+ ? 'Stable but 2’3 areas need intervention. Prioritise project execution and receivables.'
  : 'Multiple risk signals detected. Immediate escalation recommended on top alerts.'}
  </p>
  </div>
@@ -299,20 +300,22 @@ const HealthScoreSection = ({ health }) => {
 
 // �’�’�’PREDICTIVE PIPELINE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const PredictivePipeline = ({ pipeline }) => (
- <div className="glass-card p-5">
- <div className="flex items-center gap-2 mb-4">
+ <div className="glass-card p-3 sm:p-5">
+ <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
+ <div className="flex items-center gap-2">
  <div className="w-6 h-6 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center">
  <Activity size={12} className="text-[var(--accent)]" />
  </div>
  <h3 className="text-[13px] font-bold text-[var(--text-primary)]">Predictive EPC Pipeline</h3>
- <span className="ml-auto text-[10px] text-[var(--text-faint)]">Live stage intelligence</span>
+ </div>
+ <span className="sm:ml-auto text-[10px] text-[var(--text-faint)]">Live stage intelligence</span>
  </div>
 
- {/* Horizontal flow */}
- <div className="flex gap-2 overflow-x-auto pb-3">
+ {/* Horizontal flow - mobile optimized */}
+ <div className="flex gap-2 overflow-x-auto pb-3 mobile-scroll-x snap-x snap-mandatory">
  {pipeline.map((stage, i) => (
  <React.Fragment key={stage.stage}>
- <div className={`flex-shrink-0 w-32 rounded-xl border p-3 transition-all hover:scale-[1.02] cursor-default
+ <div className={`flex-shrink-0 w-28 sm:w-32 rounded-xl border p-2 sm:p-3 transition-all hover:scale-[1.02] cursor-default snap-start
  ${stage.glow ? 'shadow-lg ' + (stage.riskPct > 20 ? 'shadow-red-500/15' : 'shadow-amber-500/15') : ''}
  ${stage.glow ? 'border-[var(--border-base)]' : 'border-[var(--border-muted)]'}
  bg-[var(--bg-raised)]`}>
@@ -442,7 +445,7 @@ const CashFlowForecast = ({ forecast }) => {
  </div>
  ))}
  </div>
- <svg viewBox={`0 0 ${forecast.length * 80} ${HEIGHT + 40}`} className="w-full" style={{ height: 160 }}>
+ <svg viewBox={`0 0 ${forecast.length * 80} ${HEIGHT + 40}`} className="w-full h-[120px] sm:h-[160px]">
  {/* Grid lines */}
  {[0, 0.25, 0.5, 0.75, 1].map(r => (
  <line key={r} x1="0" y1={r * HEIGHT} x2={forecast.length * 80} y2={r * HEIGHT}
@@ -481,7 +484,7 @@ const CashFlowForecast = ({ forecast }) => {
  </div>
 
  {/* Summary cards */}
- <div className="grid grid-cols-3 gap-3">
+ <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
  <div className="p-3 rounded-xl bg-[var(--green)]/5 border border-[var(--green)]/15">
  <p className="text-[10px] text-[var(--green)] font-bold mb-1">Upcoming Inflows</p>
  <p className="text-sm font-extrabold text-[var(--green)]">{fmt(forecast[0]?.inflow)}</p>
@@ -512,7 +515,7 @@ const CashFlowForecast = ({ forecast }) => {
 
 // �’�’�’TEAM PERFORMANCE �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const TeamPerformance = ({ metrics }) => (
- <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
  {metrics.map(m => (
  <div key={m.dept} className="glass-card p-4 hover:scale-[1.01] transition-all cursor-default">
  <div className="flex items-center gap-2 mb-3">
@@ -577,8 +580,8 @@ const SimulatorPanel = () => {
 
  return (
  <div className="space-y-5">
- {/* Sliders */}
- <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+ {/* Sliders - responsive grid */}
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
  {[
  { label: 'Target Margin (%)', val: margin, set: setMargin, min: 10, max: 40, color: '#22c55e', unit: '%' },
  { label: 'Installation Capacity (%)', val: capacity, set: setCapacity, min: 10, max: 100, color: '#3b82f6', unit: '%' },
@@ -607,7 +610,7 @@ const SimulatorPanel = () => {
  </div>
 
  {/* Live outputs */}
- <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
  {[
  { label: 'Revenue Forecast', val: fmt(revenueForecast), color: '#22c55e', icon: TrendingUp, sub: '12-month projection' },
  { label: 'Team Workload', val: `${workload}%`, color: workload > 80 ? '#ef4444' : workload > 60 ? '#f59e0b' : '#22c55e', icon: Users, sub: 'Capacity utilisation' },
@@ -635,10 +638,19 @@ const SimulatorPanel = () => {
 // �’�’�’INSIGHT FEED �’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’�’
 const InsightFeed = ({ feed }) => {
  const [expanded, setExpanded] = useState(false);
- const shown = expanded ? feed : feed.slice(0, 6);
+ const [isMobile, setIsMobile] = useState(false);
+
+ useEffect(() => {
+ const checkMobile = () => setIsMobile(window.innerWidth < 640);
+ checkMobile();
+ window.addEventListener('resize', checkMobile);
+ return () => window.removeEventListener('resize', checkMobile);
+ }, []);
+
+ const shown = expanded ? feed : feed.slice(0, isMobile ? 4 : 6);
 
  return (
- <div className="space-y-2">
+ <div className="space-y-2 max-h-[400px] sm:max-h-[500px] overflow-y-auto">
  {shown.map(f => (
  <div key={f.id} className="flex items-start gap-3 p-3 rounded-xl bg-[var(--bg-raised)] border border-[var(--border-muted)] hover:border-[var(--border-base)] transition-colors">
  <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0 mt-0.5 ${feedBadge(f.type)}`}>
@@ -679,14 +691,14 @@ const GlobalKPISnapshot = ({ kpis, isRefreshing }) => {
 
  if (isRefreshing) {
  return (
- <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+ <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
  {items.map(item => <SkeletonCard key={item.key} h="h-28" />)}
  </div>
  );
  }
 
  return (
- <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+ <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
  {items.map(item => {
  const d = kpis[item.key];
  return (
@@ -752,7 +764,7 @@ const IntelligenceDashboardPage = ({ onNavigate }) => {
  const highPriorityCount = alerts.filter(a => a.priority === 'High').length;
 
  return (
- <div className="animate-fade-in space-y-8 relative">
+ <div className="animate-fade-in space-y-6 sm:space-y-8 relative px-2 sm:px-0">
 
  {/* �’�’Refresh toast �’�’*/}
  {showToast && (
@@ -790,7 +802,7 @@ const IntelligenceDashboardPage = ({ onNavigate }) => {
  </div>
  </div>
 
- <div className="flex items-center gap-2 flex-wrap">
+ <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
  <AIStatusBadge status={aiStatus} />
 
  {/* Date range pills */}
@@ -922,12 +934,12 @@ const IntelligenceDashboardPage = ({ onNavigate }) => {
  </InsightCard>
  </section>
 
- {/* �’�’Footer �’�’*/}
- <div className="flex flex-col sm:flex-row items-center justify-between gap-2
- pt-4 pb-2 border-t border-[var(--border-muted)] text-[10px] text-[var(--text-faint)]">
- <span>Solar OS AI Intelligence Center �’�¡· {dateRange} �’�¡· Last updated {lastRefreshStr}</span>
+ {/*’’Footer’’*/}
+ <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2
+ pt-4 pb-2 border-t border-[var(--border-muted)] text-[10px] text-[var(--text-faint)] text-center sm:text-left">
+ <span>Solar OS AI Intelligence Center’¡· {dateRange}’¡· Last updated {lastRefreshStr}</span>
  <span className="text-violet-400/70">
- All insights derived from module data �’�¡· No external API calls
+ All insights derived from module data’¡· No external API calls
  </span>
  </div>
  </div>

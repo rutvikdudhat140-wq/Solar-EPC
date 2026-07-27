@@ -1,4 +1,4 @@
-// index.js — Export all role-specific dashboards
+// index.js   Export all role-specific dashboards
 export { default as SalesDashboard } from './SalesDashboard';
 export { default as SurveyEngineerDashboard } from './SurveyEngineerDashboard';
 export { default as DesignEngineerDashboard } from './DesignEngineerDashboard';

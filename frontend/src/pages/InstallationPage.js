@@ -1440,7 +1440,7 @@ const InstallationPage = () => {
 
  {/* KPI Cards - Finance module style with glass-card */}
  {showCardsInViews && (
- <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
  <KPICard 
  label="Total Installations" 
  value={logs.length} 
@@ -1481,7 +1481,7 @@ const InstallationPage = () => {
 
  <div className="flex items-center justify-between">
  {view !== 'table' && view !== 'dashboard' && (
- <Input placeholder="Search installations�’" value={search} onChange={e=>setSearch(e.target.value)} className="w-80" />
+ <Input placeholder="Search installations" value={search} onChange={e=>setSearch(e.target.value)} className="w-full sm:w-80" />
  )}
  </div>
 

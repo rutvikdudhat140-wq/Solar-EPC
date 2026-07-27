@@ -1,4 +1,4 @@
-// EnhancedMapView.js — Advanced 2D/3D map integration with smooth transitions
+// EnhancedMapView.js   Advanced 2D/3D map integration with smooth transitions
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { useSolarSurveyStore } from './useSolarSurveyStore';
 
@@ -377,7 +377,7 @@ const EnhancedMapView = ({
                         opacity: isTransitioning ? 0.5 : 1
                     }}
                 >
-                    {isTransitioning ? 'Transitioning...' : '🎯 Switch to 3D'}
+                    {isTransitioning ? 'Transitioning...' : '   Switch to 3D'}
                 </button>
 
                 {/* Quick Tool Buttons */}
@@ -395,7 +395,7 @@ const EnhancedMapView = ({
                             backdropFilter: 'blur(8px)'
                         }}
                     >
-                        📐 Area
+                           Area
                     </button>
                     <button
                         onClick={() => setActiveTool(activeTool === 'exclude-area' ? null : 'exclude-area')}
@@ -410,7 +410,7 @@ const EnhancedMapView = ({
                             backdropFilter: 'blur(8px)'
                         }}
                     >
-                        🚫 Exclude
+                           Exclude
                     </button>
                 </div>
             </div>
@@ -454,7 +454,7 @@ const EnhancedMapView = ({
                                 fontFamily: 'monospace',
                                 fontSize: 11
                             }}>
-                                {(area.area / 1).toFixed(0)}m²
+                                {(area.area / 1).toFixed(0)}m 
                             </span>
                         </div>
                     ))}
@@ -492,7 +492,7 @@ const EnhancedMapView = ({
                         backdropFilter: 'blur(12px)',
                         textAlign: 'center'
                     }}>
-                        <div style={{ fontSize: 24, marginBottom: 8 }}>🚀</div>
+                        <div style={{ fontSize: 24, marginBottom: 8 }}>  </div>
                         <div style={{ color: '#f1f5f9', fontSize: 14, fontWeight: 600 }}>
                             Transitioning to 3D View...
                         </div>
