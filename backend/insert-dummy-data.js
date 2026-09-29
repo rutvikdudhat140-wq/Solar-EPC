@@ -1,11 +1,8 @@
 const { MongoClient, ObjectId } = require('mongodb');
 
 // MongoDB Connection
-const MONGO_URI = 'mongodb+srv://gajeraakshit53_db_user:lvbGcIFW0ul5Bao6@akshit.thyfwea.mongodb.net/solar?retryWrites=true&w=majority';
-
-// Tenant and User IDs from your data
-const TENANT_ID = new ObjectId('69b3a89ba62e43be08282a6c');
-const USER_ID = new ObjectId('69b3a89da62e43be08282afb');
+require("dotenv").config();
+const MONGO_URI = process.env.MONGO_URI;
 
 // Helper functions
 const generateId = (prefix, num) => `${prefix}${String(num).padStart(4, '0')}`;
@@ -37,6 +34,12 @@ async function insertDummyData() {
     console.log('Connected to MongoDB');
     
     const db = client.db('solar');
+    
+    // Dynamically fetch IDs
+    const adminUser = await db.collection('users').findOne({ email: 'superadmin@solarios.com' });
+    if (!adminUser) throw new Error('Superadmin not found in Atlas!');
+    const TENANT_ID = adminUser.tenantId;
+    const USER_ID = adminUser._id;
 
     // Clear existing dummy data for this tenant
     console.log('Clearing existing dummy data...');
@@ -101,7 +104,7 @@ async function insertDummyData() {
     // 1. INSERT LEADS (1000 records)
     console.log('Inserting Leads...');
     const leads = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       const firstName = randomElement(firstNames);
       const lastName = randomElement(lastNames);
       leads.push({
@@ -111,7 +114,7 @@ async function insertDummyData() {
         phone: `+91${randomNumber(7000000000, 9999999999)}`,
         email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i}@gmail.com`,
         source: randomElement(sources),
-        statusKey: randomElement(['new', 'contacted', 'qualified', 'sitesurvey', 'proposal', 'negotiation', 'won', 'lost']),
+        statusKey: i % 2 === 0 ? 'sitesurvey' : randomElement(['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost']),
         score: randomNumber(10, 100),
         assignedTo: USER_ID,
         assignedBy: USER_ID,
@@ -202,7 +205,7 @@ async function insertDummyData() {
       'Cable Tie 300mm', 'Cable Tray 2m', 'Conduit Pipe 3m'
     ];
     
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       const baseName = itemNames[i % itemNames.length];
       items.push({
         itemId: generateId('ITM', i),
@@ -232,7 +235,7 @@ async function insertDummyData() {
     // 3. INSERT INVENTORY (30 records)
     console.log('Inserting Inventory...');
     const inventories = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       const stock = randomNumber(0, 500);
       const reserved = randomNumber(0, Math.min(stock, 50));
       inventories.push({
@@ -264,7 +267,7 @@ async function insertDummyData() {
     const projects = [];
     const projectStatuses = ['Survey', 'Design', 'Quotation', 'Procurement', 'Installation', 'Commissioned', 'On Hold'];
     
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       const customerName = `${randomElement(firstNames)} ${randomElement(lastNames)}`;
       const status = randomElement(projectStatuses);
       projects.push({
@@ -313,7 +316,7 @@ async function insertDummyData() {
     // 5. INSERT QUOTATIONS (20 records)
     console.log('Inserting Quotations...');
     const quotations = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       const panelCount = randomNumber(10, 200);
       const panelPrice = 12000;
       const inverterCount = Math.ceil(panelCount / 10);
@@ -365,7 +368,7 @@ async function insertDummyData() {
     // 6. INSTALLATIONS (15 records)
     console.log('Inserting Installations...');
     const installations = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       const project = projects[i % projects.length];
       installations.push({
         installationId: generateId('INST', i),
@@ -423,7 +426,7 @@ async function insertDummyData() {
     // 7. COMMISSIONING (10 records)
     console.log('Inserting Commissioning records...');
     const commissioningRecords = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       const installation = installations[i % installations.length];
       commissioningRecords.push({
         CommissioningId: generateId('COMM', i),
@@ -477,7 +480,7 @@ async function insertDummyData() {
     // 8. PURCHASE ORDERS (15 records)
     console.log('Inserting Purchase Orders...');
     const purchaseOrders = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       purchaseOrders.push({
         id: generateId('PO', i),
         vendorId: new ObjectId(),
@@ -507,7 +510,7 @@ async function insertDummyData() {
     // 9. DISPATCHES (12 records)
     console.log('Inserting Dispatches...');
     const dispatches = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       dispatches.push({
         id: generateId('DSP', i),
         projectId: projects[i % projects.length].projectId,
@@ -534,7 +537,7 @@ async function insertDummyData() {
     // 10. EMPLOYEES (20 records)
     console.log('Inserting Employees...');
     const employees = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       const firstName = randomElement(firstNames);
       const lastName = randomElement(lastNames);
       employees.push({
@@ -563,7 +566,7 @@ async function insertDummyData() {
     // 11. FINANCE - INVOICES (15 records)
     console.log('Inserting Invoices...');
     const invoices = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       const amount = randomNumber(100000, 5000000);
       invoices.push({
         invoiceNumber: generateId('INV', i),
@@ -595,7 +598,7 @@ async function insertDummyData() {
     console.log('Inserting Expenses...');
     const expenses = [];
     const expenseCategories = ['Materials', 'Transport', 'Labor', 'Office', 'Utilities', 'Marketing', 'Maintenance'];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       expenses.push({
         expenseNumber: generateId('EXP', i),
         category: randomElement(expenseCategories),
@@ -621,11 +624,11 @@ async function insertDummyData() {
     // 13. HRM - ATTENDANCE (30 records)
     console.log('Inserting Attendance...');
     const attendances = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       attendances.push({
         employeeId: employees[i % employees.length]._id,
-        date: randomDate(30),
-        status: randomElement(['Present', 'Absent', 'Half Day', 'Leave', 'WFH']),
+        date: i <= 10 ? new Date() : randomDate(30),
+        status: i <= 8 ? 'Present' : randomElement(['Present', 'Absent', 'Half Day', 'Leave', 'WFH']),
         checkIn: `${randomNumber(8, 10)}:${randomNumber(0, 59)}:00`,
         checkOut: `${randomNumber(17, 19)}:${randomNumber(0, 59)}:00`,
         workHours: randomNumber(4, 10),
@@ -643,9 +646,10 @@ async function insertDummyData() {
     // 14. HRM - LEAVES (15 records)
     console.log('Inserting Leaves...');
     const leaves = [];
-    for (let i = 1; i <= 1000; i++) {
-      const startDate = randomDate(60);
-      const endDate = new Date(startDate.getTime() + randomNumber(1, 7) * 24 * 60 * 60 * 1000);
+    for (let i = 1; i <= 20; i++) {
+      const isToday = i <= 3;
+      const startDate = isToday ? new Date() : randomDate(60);
+      const endDate = new Date(startDate.getTime() + randomNumber(isToday ? 0 : 1, 7) * 24 * 60 * 60 * 1000);
       leaves.push({
         employeeId: employees[i % employees.length]._id,
         leaveType: randomElement(['Sick', 'Casual', 'Earned', 'Unpaid', 'Maternity', 'Paternity']),
@@ -671,7 +675,7 @@ async function insertDummyData() {
     console.log('Inserting Documents...');
     const documents = [];
     const docTypes = ['Contract', 'Permit', 'Drawing', 'Report', 'Invoice', 'Photo', 'Manual', 'Certificate'];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       documents.push({
         documentId: generateId('DOC', i),
         title: `${randomElement(docTypes)} - ${projects[i % projects.length].projectId}`,
@@ -698,7 +702,7 @@ async function insertDummyData() {
     // 16. LOGISTICS VENDORS (8 records)
     console.log('Inserting Logistics Vendors...');
     const logisticsVendors = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       logisticsVendors.push({
         id: generateId('LVND', i),
         name: randomElement(['Speed Transport', 'Safe Logistics', 'Fast Delivery', 'Reliable Movers', 'Quick Transport']),
@@ -721,7 +725,7 @@ async function insertDummyData() {
     // 17. PROCUREMENT VENDORS (10 records)
     console.log('Inserting Procurement Vendors...');
     const procurementVendors = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       procurementVendors.push({
         vendorId: generateId('VND', i),
         name: randomElement(['Tata Solar', 'Adani Solar', 'Waaree Energies', 'Vikram Solar', 'RenewSys', 'Premier Solar', 'Jakson']),
@@ -748,7 +752,7 @@ async function insertDummyData() {
     // 18. COMPLIANCE - SUBSIDY (10 records)
     console.log('Inserting Subsidies...');
     const subsidies = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       subsidies.push({
         subsidyId: generateId('SBS', i),
         projectId: projects[i % projects.length]._id,
@@ -774,7 +778,7 @@ async function insertDummyData() {
     // 19. COMPLIANCE - NET METERING (10 records)
     console.log('Inserting Net Metering records...');
     const netMeterings = [];
-    for (let i = 1; i <= 1000; i++) {
+    for (let i = 1; i <= 20; i++) {
       netMeterings.push({
         applicationId: generateId('NETM', i),
         netMeteringId: generateId('NET', i),

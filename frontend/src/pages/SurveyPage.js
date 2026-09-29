@@ -86,6 +86,38 @@ const SurveyPage = () => {
  return filtered;
  }, [surveys, activeTab, search]);
 
+ const totalItems = filteredSurveys.length;
+ const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+ 
+ const paginatedSurveys = useMemo(() => {
+   const start = (currentPage - 1) * itemsPerPage;
+   return filteredSurveys.slice(start, start + itemsPerPage);
+ }, [filteredSurveys, currentPage, itemsPerPage]);
+
+ const Pagination = () => (
+   <div className="flex justify-between items-center px-6 py-3 bg-[var(--bg-elevated)] border-t border-[var(--border-base)] rounded-b-xl">
+     <span className="text-sm text-[var(--text-muted)]">
+       Showing {totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} entries
+     </span>
+     <div className="flex gap-2">
+       <button 
+         disabled={currentPage === 1} 
+         onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+         className="px-3 py-1 text-sm bg-[var(--bg-surface)] border border-[var(--border-base)] rounded disabled:opacity-50 text-[var(--text-primary)]"
+       >
+         Previous
+       </button>
+       <button 
+         disabled={currentPage === totalPages} 
+         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+         className="px-3 py-1 text-sm bg-[var(--bg-surface)] border border-[var(--border-base)] rounded disabled:opacity-50 text-[var(--text-primary)]"
+       >
+         Next
+       </button>
+     </div>
+   </div>
+ );
+
  // Handlers
  const handleAddSurvey = async () => {
    if (!can('survey', 'create')) {

@@ -1,4 +1,4 @@
-import { ValidationPipe, Inject, Injectable } from '@nestjs/common';
+import { ValidationPipe, Inject, Injectable, RequestMethod } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import multipart from '@fastify/multipart';
@@ -122,7 +122,13 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', {
+    exclude: [
+      { path: '/', method: RequestMethod.ALL },
+      { path: 'favicon.ico', method: RequestMethod.ALL },
+      { path: '/favicon.ico', method: RequestMethod.ALL }
+    ],
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({

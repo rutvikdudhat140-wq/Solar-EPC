@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 
 @Controller()
 export class AppController {
-  @Get()
+  @Get('/')
   getRoot() {
     return {
       success: true,
@@ -17,7 +17,12 @@ export class AppController {
     };
   }
 
-  @Get('health')
+  @Get('/api/health')
+  getHealthAPI() {
+    return this.getHealth();
+  }
+
+  @Get('/health')
   getHealth() {
     return {
       success: true,
@@ -25,5 +30,10 @@ export class AppController {
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
     };
+  }
+
+  @Get('/favicon.ico')
+  getFavicon() {
+    return '';
   }
 }

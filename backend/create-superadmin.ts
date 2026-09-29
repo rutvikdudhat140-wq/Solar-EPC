@@ -1,3 +1,5 @@
+import * as dotenv from "dotenv";
+dotenv.config();
 import * as mongoose from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
 
@@ -31,7 +33,7 @@ const Tenant = mongoose.model('Tenant', TenantSchema);
 async function createSuperAdmin() {
   try {
     // Get MongoDB URI from environment or use default
-    const mongoUri = "mongodb+srv://gajeraakshit53_db_user:lvbGcIFW0ul5Bao6@akshit.thyfwea.mongodb.net/solar?retryWrites=true&w=majority"
+    const mongoUri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/solar";
     
     console.log('🔌 Connecting to MongoDB...');
     await mongoose.connect(mongoUri);

@@ -30,6 +30,10 @@ export class EmailService {
   }
   
   private async verifyTransporter() {
+    if (!process.env.SMTP_USER) {
+      this.logger.warn('SMTP not configured, skipping verification');
+      return;
+    }
     try {
       await this.transporter.verify();
       this.logger.log('SMTP transporter verified successfully');

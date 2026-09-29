@@ -25,7 +25,7 @@ export class ExportWorker implements OnModuleInit {
       this.processNextJob().catch(err => {
         this.logger.error('[EXPORT WORKER] Error processing job:', err);
       });
-    }, 2000);
+    }, 2000) as unknown as NodeJS.Timeout;
 
     this.logger.log('[EXPORT WORKER] Worker started successfully');
   }
