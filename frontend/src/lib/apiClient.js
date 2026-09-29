@@ -1,7 +1,7 @@
 // CENTRAL API CLIENT — All API calls route through here. No direct fetch/axios in components.
 import axios from 'axios';
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
+const BASE_URL = process.env.REACT_APP_API_BASE_URL
 const TIMEOUT = parseInt(process.env.REACT_APP_API_TIMEOUT || '30000', 10);
 
 const shouldDebugLog = () => {
