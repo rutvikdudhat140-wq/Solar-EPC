@@ -113,7 +113,21 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:5173', 'http://localhost:8000', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:8000'],
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 
+        'http://localhost:5173', 'http://localhost:8000', 'http://127.0.0.1:3000', 
+        'http://127.0.0.1:3001', 'http://127.0.0.1:3002', 'http://127.0.0.1:5173', 
+        'http://127.0.0.1:8000',
+        'https://erp-solar.netlify.app',
+        process.env.FRONTEND_URL
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-tenant-id', 'X-Tenant-Id', 'tenant-id', 'X-Requested-With', 'Accept'],
